@@ -25,6 +25,7 @@
 		5F2038131D5E42AD0005D2E2 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 5F2038111D5E42AD0005D2E2 /* .gitignore */; };
 		5F2038151D5E43CD0005D2E2 /* .travis.yml in Resources */ = {isa = PBXBuildFile; fileRef = 5F2038141D5E43CD0005D2E2 /* .travis.yml */; };
 		5F2038171D5E43DD0005D2E2 /* .env in Resources */ = {isa = PBXBuildFile; fileRef = 5F2038161D5E43DD0005D2E2 /* .env */; };
+		5F2038191D5E46210005D2E2 /* Gemfile in Resources */ = {isa = PBXBuildFile; fileRef = 5F2038181D5E46210005D2E2 /* Gemfile */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -83,6 +84,7 @@
 		5F2038111D5E42AD0005D2E2 /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		5F2038141D5E43CD0005D2E2 /* .travis.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .travis.yml; sourceTree = "<group>"; };
 		5F2038161D5E43DD0005D2E2 /* .env */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = .env; path = script/.env; sourceTree = "<group>"; };
+		5F2038181D5E46210005D2E2 /* Gemfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Gemfile; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -180,6 +182,7 @@
 		5F20380B1D5E41E20005D2E2 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
+				5F2038181D5E46210005D2E2 /* Gemfile */,
 				5F2038161D5E43DD0005D2E2 /* .env */,
 				5F2038141D5E43CD0005D2E2 /* .travis.yml */,
 				5F2038101D5E42AD0005D2E2 /* .carthage_cache.yml */,
@@ -309,6 +312,7 @@
 			files = (
 				5F2038151D5E43CD0005D2E2 /* .travis.yml in Resources */,
 				5F2038131D5E42AD0005D2E2 /* .gitignore in Resources */,
+				5F2038191D5E46210005D2E2 /* Gemfile in Resources */,
 				5F2038121D5E42AD0005D2E2 /* .carthage_cache.yml in Resources */,
 				5F2038171D5E43DD0005D2E2 /* .env in Resources */,
 			);
