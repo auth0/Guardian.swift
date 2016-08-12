@@ -14,6 +14,15 @@
 		5F2037F31D5E22590005D2E2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5F2037F11D5E22590005D2E2 /* Main.storyboard */; };
 		5F2037F51D5E22590005D2E2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5F2037F41D5E22590005D2E2 /* Assets.xcassets */; };
 		5F2037F81D5E22590005D2E2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5F2037F61D5E22590005D2E2 /* LaunchScreen.storyboard */; };
+		5F2038011D5E40C70005D2E2 /* Quick.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F2037FE1D5E40C70005D2E2 /* Quick.framework */; };
+		5F2038021D5E40C70005D2E2 /* OHHTTPStubs.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F2037FF1D5E40C70005D2E2 /* OHHTTPStubs.framework */; };
+		5F2038031D5E40C70005D2E2 /* Nimble.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F2038001D5E40C70005D2E2 /* Nimble.framework */; };
+		5F2038061D5E40D80005D2E2 /* Guardian.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F2037CD1D5E1E3E0005D2E2 /* Guardian.framework */; };
+		5F2038081D5E40ED0005D2E2 /* Quick.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5F2037FE1D5E40C70005D2E2 /* Quick.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		5F2038091D5E40EE0005D2E2 /* OHHTTPStubs.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5F2037FF1D5E40C70005D2E2 /* OHHTTPStubs.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		5F20380A1D5E40EE0005D2E2 /* Nimble.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5F2038001D5E40C70005D2E2 /* Nimble.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		5F2038121D5E42AD0005D2E2 /* .carthage_cache.yml in Resources */ = {isa = PBXBuildFile; fileRef = 5F2038101D5E42AD0005D2E2 /* .carthage_cache.yml */; };
+		5F2038131D5E42AD0005D2E2 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 5F2038111D5E42AD0005D2E2 /* .gitignore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -24,7 +33,29 @@
 			remoteGlobalIDString = 5F2037CC1D5E1E3E0005D2E2;
 			remoteInfo = Guardian;
 		};
+		5F2038041D5E40D00005D2E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5F2037C41D5E1E3E0005D2E2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5F2037CC1D5E1E3E0005D2E2;
+			remoteInfo = Guardian;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		5F2038071D5E40E20005D2E2 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				5F2038081D5E40ED0005D2E2 /* Quick.framework in CopyFiles */,
+				5F2038091D5E40EE0005D2E2 /* OHHTTPStubs.framework in CopyFiles */,
+				5F20380A1D5E40EE0005D2E2 /* Nimble.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		5F2037CD1D5E1E3E0005D2E2 /* Guardian.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Guardian.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -39,6 +70,15 @@
 		5F2037F41D5E22590005D2E2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5F2037F71D5E22590005D2E2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		5F2037F91D5E22590005D2E2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5F2037FE1D5E40C70005D2E2 /* Quick.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quick.framework; path = Carthage/Build/iOS/Quick.framework; sourceTree = "<group>"; };
+		5F2037FF1D5E40C70005D2E2 /* OHHTTPStubs.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OHHTTPStubs.framework; path = Carthage/Build/iOS/OHHTTPStubs.framework; sourceTree = "<group>"; };
+		5F2038001D5E40C70005D2E2 /* Nimble.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Nimble.framework; path = Carthage/Build/iOS/Nimble.framework; sourceTree = "<group>"; };
+		5F20380C1D5E421F0005D2E2 /* Cartfile.resolved */ = {isa = PBXFileReference; lastKnownFileType = text; path = Cartfile.resolved; sourceTree = "<group>"; };
+		5F20380D1D5E421F0005D2E2 /* Cartfile.private */ = {isa = PBXFileReference; lastKnownFileType = text; path = Cartfile.private; sourceTree = "<group>"; };
+		5F20380E1D5E421F0005D2E2 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		5F20380F1D5E421F0005D2E2 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		5F2038101D5E42AD0005D2E2 /* .carthage_cache.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .carthage_cache.yml; sourceTree = "<group>"; };
+		5F2038111D5E42AD0005D2E2 /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,7 +93,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5F2038021D5E40C70005D2E2 /* OHHTTPStubs.framework in Frameworks */,
+				5F2038011D5E40C70005D2E2 /* Quick.framework in Frameworks */,
 				5F2037D81D5E1E3E0005D2E2 /* Guardian.framework in Frameworks */,
+				5F2038031D5E40C70005D2E2 /* Nimble.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -61,6 +104,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5F2038061D5E40D80005D2E2 /* Guardian.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -73,7 +117,9 @@
 				5F2037CF1D5E1E3E0005D2E2 /* Guardian */,
 				5F2037DB1D5E1E3E0005D2E2 /* GuardianTests */,
 				5F2037EC1D5E22590005D2E2 /* GuardianApp */,
+				5F2037FD1D5E40A90005D2E2 /* Frameworks */,
 				5F2037CE1D5E1E3E0005D2E2 /* Products */,
+				5F20380B1D5E41E20005D2E2 /* Support Files */,
 			);
 			sourceTree = "<group>";
 		};
@@ -117,6 +163,29 @@
 			path = GuardianApp;
 			sourceTree = "<group>";
 		};
+		5F2037FD1D5E40A90005D2E2 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				5F2037FE1D5E40C70005D2E2 /* Quick.framework */,
+				5F2037FF1D5E40C70005D2E2 /* OHHTTPStubs.framework */,
+				5F2038001D5E40C70005D2E2 /* Nimble.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		5F20380B1D5E41E20005D2E2 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				5F2038101D5E42AD0005D2E2 /* .carthage_cache.yml */,
+				5F2038111D5E42AD0005D2E2 /* .gitignore */,
+				5F20380C1D5E421F0005D2E2 /* Cartfile.resolved */,
+				5F20380D1D5E421F0005D2E2 /* Cartfile.private */,
+				5F20380E1D5E421F0005D2E2 /* LICENSE */,
+				5F20380F1D5E421F0005D2E2 /* README.md */,
+			);
+			name = "Support Files";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -156,6 +225,7 @@
 				5F2037D31D5E1E3E0005D2E2 /* Sources */,
 				5F2037D41D5E1E3E0005D2E2 /* Frameworks */,
 				5F2037D51D5E1E3E0005D2E2 /* Resources */,
+				5F2038071D5E40E20005D2E2 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -178,6 +248,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				5F2038051D5E40D00005D2E2 /* PBXTargetDependency */,
 			);
 			name = GuardianApp;
 			productName = GuardianApp;
@@ -230,6 +301,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5F2038131D5E42AD0005D2E2 /* .gitignore in Resources */,
+				5F2038121D5E42AD0005D2E2 /* .carthage_cache.yml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -283,6 +356,11 @@
 			isa = PBXTargetDependency;
 			target = 5F2037CC1D5E1E3E0005D2E2 /* Guardian */;
 			targetProxy = 5F2037D91D5E1E3E0005D2E2 /* PBXContainerItemProxy */;
+		};
+		5F2038051D5E40D00005D2E2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5F2037CC1D5E1E3E0005D2E2 /* Guardian */;
+			targetProxy = 5F2038041D5E40D00005D2E2 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -434,6 +512,10 @@
 		5F2037E51D5E1E3E0005D2E2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = GuardianTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.GuardianTests;
@@ -444,6 +526,10 @@
 		5F2037E61D5E1E3E0005D2E2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = GuardianTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.GuardianTests;
