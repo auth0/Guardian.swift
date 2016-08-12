@@ -21,11 +21,6 @@
 		5F2038081D5E40ED0005D2E2 /* Quick.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5F2037FE1D5E40C70005D2E2 /* Quick.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5F2038091D5E40EE0005D2E2 /* OHHTTPStubs.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5F2037FF1D5E40C70005D2E2 /* OHHTTPStubs.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5F20380A1D5E40EE0005D2E2 /* Nimble.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5F2038001D5E40C70005D2E2 /* Nimble.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		5F2038121D5E42AD0005D2E2 /* .carthage_cache.yml in Resources */ = {isa = PBXBuildFile; fileRef = 5F2038101D5E42AD0005D2E2 /* .carthage_cache.yml */; };
-		5F2038131D5E42AD0005D2E2 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 5F2038111D5E42AD0005D2E2 /* .gitignore */; };
-		5F2038151D5E43CD0005D2E2 /* .travis.yml in Resources */ = {isa = PBXBuildFile; fileRef = 5F2038141D5E43CD0005D2E2 /* .travis.yml */; };
-		5F2038171D5E43DD0005D2E2 /* .env in Resources */ = {isa = PBXBuildFile; fileRef = 5F2038161D5E43DD0005D2E2 /* .env */; };
-		5F2038191D5E46210005D2E2 /* Gemfile in Resources */ = {isa = PBXBuildFile; fileRef = 5F2038181D5E46210005D2E2 /* Gemfile */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -310,11 +305,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5F2038151D5E43CD0005D2E2 /* .travis.yml in Resources */,
-				5F2038131D5E42AD0005D2E2 /* .gitignore in Resources */,
-				5F2038191D5E46210005D2E2 /* Gemfile in Resources */,
-				5F2038121D5E42AD0005D2E2 /* .carthage_cache.yml in Resources */,
-				5F2038171D5E43DD0005D2E2 /* .env in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
