@@ -7,6 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		232A85DA1D6BDFCA00048DF7 /* DeviceAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 232A85D91D6BDFCA00048DF7 /* DeviceAPIClient.swift */; };
+		2374A9E41D670F5900737F2E /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2374A9E01D670F5900737F2E /* APIClient.swift */; };
+		2374A9E51D670F5900737F2E /* GuardianError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2374A9E11D670F5900737F2E /* GuardianError.swift */; };
+		2374A9E61D670F5900737F2E /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2374A9E21D670F5900737F2E /* Request.swift */; };
+		2374A9EB1D67175200737F2E /* APIClientSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2374A9EA1D67175200737F2E /* APIClientSpec.swift */; };
+		2374A9ED1D672A8D00737F2E /* Requestable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2374A9EC1D672A8D00737F2E /* Requestable.swift */; };
+		2374A9EF1D672ABD00737F2E /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2374A9EE1D672ABD00737F2E /* Result.swift */; };
+		2374A9F31D672E4F00737F2E /* Responses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2374A9F21D672E4F00737F2E /* Responses.swift */; };
+		2374A9F51D67339E00737F2E /* Matchers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2374A9F41D67339E00737F2E /* Matchers.swift */; };
 		5F2037D11D5E1E3E0005D2E2 /* Guardian.h in Headers */ = {isa = PBXBuildFile; fileRef = 5F2037D01D5E1E3E0005D2E2 /* Guardian.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		5F2037D81D5E1E3E0005D2E2 /* Guardian.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F2037CD1D5E1E3E0005D2E2 /* Guardian.framework */; };
 		5F2037EE1D5E22590005D2E2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F2037ED1D5E22590005D2E2 /* AppDelegate.swift */; };
@@ -56,6 +65,15 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		232A85D91D6BDFCA00048DF7 /* DeviceAPIClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceAPIClient.swift; sourceTree = "<group>"; };
+		2374A9E01D670F5900737F2E /* APIClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
+		2374A9E11D670F5900737F2E /* GuardianError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GuardianError.swift; sourceTree = "<group>"; };
+		2374A9E21D670F5900737F2E /* Request.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Request.swift; sourceTree = "<group>"; };
+		2374A9EA1D67175200737F2E /* APIClientSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIClientSpec.swift; sourceTree = "<group>"; };
+		2374A9EC1D672A8D00737F2E /* Requestable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Requestable.swift; sourceTree = "<group>"; };
+		2374A9EE1D672ABD00737F2E /* Result.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Result.swift; sourceTree = "<group>"; };
+		2374A9F21D672E4F00737F2E /* Responses.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Responses.swift; sourceTree = "<group>"; };
+		2374A9F41D67339E00737F2E /* Matchers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Matchers.swift; sourceTree = "<group>"; };
 		5F2037CD1D5E1E3E0005D2E2 /* Guardian.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Guardian.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F2037D01D5E1E3E0005D2E2 /* Guardian.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Guardian.h; sourceTree = "<group>"; };
 		5F2037D21D5E1E3E0005D2E2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -112,6 +130,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2374A9F11D672E4200737F2E /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				2374A9F21D672E4F00737F2E /* Responses.swift */,
+				2374A9F41D67339E00737F2E /* Matchers.swift */,
+			);
+			name = Utils;
+			sourceTree = "<group>";
+		};
 		5F2037C31D5E1E3E0005D2E2 = {
 			isa = PBXGroup;
 			children = (
@@ -137,6 +164,12 @@
 		5F2037CF1D5E1E3E0005D2E2 /* Guardian */ = {
 			isa = PBXGroup;
 			children = (
+				2374A9E01D670F5900737F2E /* APIClient.swift */,
+				232A85D91D6BDFCA00048DF7 /* DeviceAPIClient.swift */,
+				2374A9E11D670F5900737F2E /* GuardianError.swift */,
+				2374A9EC1D672A8D00737F2E /* Requestable.swift */,
+				2374A9E21D670F5900737F2E /* Request.swift */,
+				2374A9EE1D672ABD00737F2E /* Result.swift */,
 				5F2037D01D5E1E3E0005D2E2 /* Guardian.h */,
 				5F2037D21D5E1E3E0005D2E2 /* Info.plist */,
 			);
@@ -146,7 +179,9 @@
 		5F2037DB1D5E1E3E0005D2E2 /* GuardianTests */ = {
 			isa = PBXGroup;
 			children = (
+				2374A9F11D672E4200737F2E /* Utils */,
 				5F2037DE1D5E1E3E0005D2E2 /* Info.plist */,
+				2374A9EA1D67175200737F2E /* APIClientSpec.swift */,
 			);
 			path = GuardianTests;
 			sourceTree = "<group>";
@@ -332,6 +367,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2374A9E41D670F5900737F2E /* APIClient.swift in Sources */,
+				2374A9EF1D672ABD00737F2E /* Result.swift in Sources */,
+				2374A9ED1D672A8D00737F2E /* Requestable.swift in Sources */,
+				2374A9E61D670F5900737F2E /* Request.swift in Sources */,
+				2374A9E51D670F5900737F2E /* GuardianError.swift in Sources */,
+				232A85DA1D6BDFCA00048DF7 /* DeviceAPIClient.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -339,6 +380,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2374A9F51D67339E00737F2E /* Matchers.swift in Sources */,
+				2374A9F31D672E4F00737F2E /* Responses.swift in Sources */,
+				2374A9EB1D67175200737F2E /* APIClientSpec.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -480,6 +524,7 @@
 		5F2037E21D5E1E3E0005D2E2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -491,12 +536,14 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.Guardian;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
 		5F2037E31D5E1E3E0005D2E2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -514,6 +561,7 @@
 		5F2037E51D5E1E3E0005D2E2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
@@ -522,12 +570,14 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.GuardianTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
 		5F2037E61D5E1E3E0005D2E2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
