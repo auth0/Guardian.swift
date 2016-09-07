@@ -1,4 +1,4 @@
-// Result.swift
+// API.swift
 //
 // Copyright (c) 2016 Auth0 (http://auth0.com)
 //
@@ -22,9 +22,13 @@
 
 import Foundation
 
-public enum Result<T> {
+public protocol API {
     
-    case Success(payload: T?)
+    func enrollment(forTransactionId transactionId: String) -> Request<[String:String]>
     
-    case Failure(cause: ErrorType)
+    func allow(transaction transactionToken: String, withCode otpCode: String) -> Request<Void>
+    
+    func reject(transaction transactionToken: String, withCode otpCode: String, reason: String?) -> Request<Void>
+    
+    func device(forEnrollmentId id: String, token: String) -> DeviceAPI
 }

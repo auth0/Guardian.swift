@@ -22,23 +22,23 @@
 
 import Foundation
 
-public class APIClient {
+struct APIClient: API {
     
     let baseUrl: NSURL
     let session: NSURLSession
     
-    public init(baseUrl: NSURL, session: NSURLSession) {
+    init(baseUrl: NSURL, session: NSURLSession) {
         self.baseUrl = baseUrl
         self.session = session
     }
     
-    public func enrollment(forTransactionId transactionId: String) -> Request<[String:String]> {
+    func enrollment(forTransactionId transactionId: String) -> Request<[String:String]> {
         let url = baseUrl.URLByAppendingPathComponent("api/enrollment-info", isDirectory: false)
         let payload = ["enrollment_tx_id": transactionId]
         return Request(session: session, method: "POST", url: url, payload: payload)
     }
     
-    public func allow(transaction transactionToken: String, withCode otpCode: String) -> Request<Void> {
+    func allow(transaction transactionToken: String, withCode otpCode: String) -> Request<Void> {
         let url = baseUrl.URLByAppendingPathComponent("api/verify-otp", isDirectory: false)
         let payload = [
             "type": "push_notification",
@@ -47,7 +47,7 @@ public class APIClient {
         return Request(session: session, method: "POST", url: url, payload: payload, headers: ["Authorization": "Bearer \(transactionToken)"])
     }
     
-    public func reject(transaction transactionToken: String, withCode otpCode: String, reason: String? = nil) -> Request<Void> {
+    func reject(transaction transactionToken: String, withCode otpCode: String, reason: String? = nil) -> Request<Void> {
         let url = baseUrl.URLByAppendingPathComponent("api/reject-login", isDirectory: false)
         var payload = [
             "type": "push_notification",
@@ -59,7 +59,7 @@ public class APIClient {
         return Request(session: session, method: "POST", url: url, payload: payload, headers: ["Authorization": "Bearer \(transactionToken)"])
     }
     
-    public func device(forEnrollmentId id: String, token: String) -> DeviceAPIClient {
+    func device(forEnrollmentId id: String, token: String) -> DeviceAPI {
         return DeviceAPIClient(baseUrl: baseUrl, session: session, id: id, token: token)
     }
 }

@@ -44,30 +44,27 @@ public struct Request<T> : Requestable {
         
         if let payload = payload {
             guard let body = try? NSJSONSerialization.dataWithJSONObject(payload, options: []) else {
-                callback(.Failure(cause: GuardianError()))
+                callback(.Failure(cause: GuardianError(error: .InvalidPayloadError)))
                 return
             }
             request.HTTPBody = body
         }
+        
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         headers?.forEach { request.setValue($1, forHTTPHeaderField: $0) }
         
         let task = session.dataTaskWithRequest(request) { data, response, error in
             guard error == nil else {
-                callback(.Failure(cause: GuardianError(error: error!)))
+                callback(.Failure(cause: error!))
                 return
             }
             guard let httpResponse = response as? NSHTTPURLResponse else {
-                callback(.Failure(cause: GuardianError()))
-                return
-            }
-            guard let data = data else {
-                callback(.Failure(cause: GuardianError(info: nil, statusCode: httpResponse.statusCode)))
+                callback(.Failure(cause: GuardianError(error: .InvalidResponseError)))
                 return
             }
             guard (200..<300).contains(httpResponse.statusCode) else {
                 guard let info: [String:AnyObject] = json(data) else {
-                    callback(.Failure(cause: GuardianError(info: nil, statusCode: httpResponse.statusCode)))
+                    callback(.Failure(cause: GuardianError(error: .InvalidResponseError, statusCode: httpResponse.statusCode)))
                     return
                 }
                 callback(.Failure(cause: GuardianError(info: info, statusCode: httpResponse.statusCode)))

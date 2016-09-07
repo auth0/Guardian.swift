@@ -22,38 +22,37 @@
 
 import Foundation
 
-public class GuardianError : CustomStringConvertible {
-
-    let error: NSError?
+public class GuardianError: ErrorType, CustomStringConvertible {
+    
+    enum InternalError: String {
+        case InvalidPayloadError  = "a0.guardian.internal.invalid_payload"
+        case InvalidResponseError = "a0.guardian.internal.invalid_response"
+        case UnknownServerError   = "a0.guardian.internal.unknown_server_error"
+    }
+    
     let info: [String:AnyObject]?
     let statusCode: Int
-
-    init(info: [String:AnyObject]? = nil, statusCode: Int = 0) {
-        self.error = nil
+    
+    init(info: [String:AnyObject], statusCode: Int) {
         self.info = info
         self.statusCode = statusCode
     }
-
-    init(error: NSError) {
-        self.error = error
-        self.info = nil
-        self.statusCode = 0
+    
+    init(error: InternalError, statusCode: Int = 0) {
+        self.info = [
+            "errorCode": error.rawValue
+        ]
+        self.statusCode = statusCode
     }
-
+    
     var errorCode: String {
-        guard self.error == nil else {
-            return "unknown_app_error"
-        }
         guard let errorCode = self.info?["errorCode"] as? String else {
-            return "unknown_server_error"
+            return InternalError.UnknownServerError.rawValue
         }
         return errorCode;
     }
     
     public var description: String {
-        if let info = info {
-            return "GuardianError(info=\(info))"
-        }
-        return "GuardianError(errorCode=\(errorCode))"
+        return "GuardianError(errorCode=\(errorCode), info=\(info ?? [:]))"
     }
 }

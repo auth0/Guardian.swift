@@ -1,4 +1,4 @@
-// Result.swift
+// DeviceAPI.swift
 //
 // Copyright (c) 2016 Auth0 (http://auth0.com)
 //
@@ -22,9 +22,11 @@
 
 import Foundation
 
-public enum Result<T> {
+public protocol DeviceAPI {
     
-    case Success(payload: T?)
+    func delete() -> Request<Void>
     
-    case Failure(cause: ErrorType)
+    func create(withDeviceIdentifier identifier: String, name: String, notificationToken: String) -> Request<[String: AnyObject]>
+    
+    func update(deviceIdentifier identifier: String?, name: String?, notificationToken: String?) -> Request<[String: AnyObject]>
 }

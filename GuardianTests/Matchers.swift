@@ -203,7 +203,9 @@ func haveError<T>(withErrorCode errorCode: String? = nil) -> MatcherFunc<Result<
         }
         failureMessage.postfixMessage = message
         if let actual = try expression.evaluate(), case .Failure(let cause) = actual {
-            return errorCode == cause.errorCode
+            if let error = cause as? GuardianError {
+                return errorCode == error.errorCode
+            }
         }
         return false
     }

@@ -22,7 +22,7 @@
 
 import Foundation
 
-public class DeviceAPIClient {
+struct DeviceAPIClient: DeviceAPI {
     
     let session: NSURLSession
     let url: NSURL
@@ -34,22 +34,18 @@ public class DeviceAPIClient {
         self.token = token
     }
     
-    public func delete() -> Request<Void> {
+    func delete() -> Request<Void> {
         return Request(session: session, method: "DELETE", url: url, headers: ["Authorization": "Bearer \(token)"])
     }
     
-    public func create(withDeviceIdentifier identifier: String, name: String, notificationToken: String) -> Request<[String: AnyObject]> {
+    func create(withDeviceIdentifier identifier: String, name: String, notificationToken: String) -> Request<[String: AnyObject]> {
         return update(deviceIdentifier: identifier, name: name, notificationToken: notificationToken)
     }
     
-    public func update(deviceIdentifier identifier: String? = nil, name: String? = nil, notificationToken: String? = nil) -> Request<[String: AnyObject]> {
+    func update(deviceIdentifier identifier: String? = nil, name: String? = nil, notificationToken: String? = nil) -> Request<[String: AnyObject]> {
         var payload = [String:AnyObject]()
-        if let identifier = identifier {
-            payload["identifier"] = identifier
-        }
-        if let name = name {
-            payload["name"] = name
-        }
+        payload["identifier"] = identifier
+        payload["name"] = name
         if let notificationToken = notificationToken {
             payload["push_credentials"] = [
                 "service": "apns",
