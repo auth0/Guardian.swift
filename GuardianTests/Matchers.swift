@@ -195,17 +195,51 @@ func haveEnrollment(withId enrollmentId: String?, deviceIdentifier: String?, dev
     }
 }
 
-func haveError<T>(withErrorCode errorCode: String? = nil) -> MatcherFunc<Result<T>> {
+func haveGuardianError<T>(withErrorCode errorCode: String? = nil, andStatusCode statusCode: Int? = nil) -> MatcherFunc<Result<T>> {
     return MatcherFunc { expression, failureMessage in
-        var message = "be an error response with"
+        var message = "be a Guardian error response with"
         if let errorCode = errorCode {
             message = message.stringByAppendingString(" <errorCode: \(errorCode)>")
+        }
+        if let statusCode = statusCode {
+            message = message.stringByAppendingString(" <statusCode: \(statusCode)>")
         }
         failureMessage.postfixMessage = message
         if let actual = try expression.evaluate(), case .Failure(let cause) = actual {
             if let error = cause as? GuardianError {
-                return errorCode == error.errorCode
+                return (errorCode == nil || errorCode == error.errorCode) &&
+                (statusCode == nil || statusCode == error.statusCode)
             }
+        }
+        return false
+    }
+}
+
+func haveNSError<T>(withErrorCode errorCode: Int? = nil) -> MatcherFunc<Result<T>> {
+    return MatcherFunc { expression, failureMessage in
+        var message = "be an NSError"
+        if let errorCode = errorCode {
+            message = message.stringByAppendingString(" with <code: \(errorCode)>")
+        }
+        failureMessage.postfixMessage = message
+        if let actual = try expression.evaluate(), case .Failure(let cause) = actual {
+            if let error = cause as? NSError {
+                return errorCode == nil || errorCode == error.code
+            }
+        }
+        return false
+    }
+}
+
+func beSuccess(withData data: [String:String]) -> MatcherFunc<Result<[String:String]>> {
+    return MatcherFunc { expression, failureMessage in
+        let message = "be a success response with <payload: \(data)>"
+        failureMessage.postfixMessage = message
+        if let actual = try expression.evaluate(), case .Success(let payload) = actual {
+            guard let payload = payload else {
+                return false
+            }
+            return data == payload
         }
         return false
     }

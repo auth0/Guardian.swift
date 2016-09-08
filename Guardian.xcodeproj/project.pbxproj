@@ -18,6 +18,8 @@
 		2374A9F51D67339E00737F2E /* Matchers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2374A9F41D67339E00737F2E /* Matchers.swift */; };
 		2377A6411D806D9900D6FB04 /* DeviceAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2377A6401D806D9900D6FB04 /* DeviceAPI.swift */; };
 		2377A6431D806DFA00D6FB04 /* API.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2377A6421D806DFA00D6FB04 /* API.swift */; };
+		239CE2641D80CCE5008DCAE4 /* RequestSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 239CE2631D80CCE5008DCAE4 /* RequestSpec.swift */; };
+		23C67AEC1D81D6A400A38A2E /* MockNSURLSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23C67AEB1D81D6A400A38A2E /* MockNSURLSession.swift */; };
 		5F2037D11D5E1E3E0005D2E2 /* Guardian.h in Headers */ = {isa = PBXBuildFile; fileRef = 5F2037D01D5E1E3E0005D2E2 /* Guardian.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		5F2037D81D5E1E3E0005D2E2 /* Guardian.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F2037CD1D5E1E3E0005D2E2 /* Guardian.framework */; };
 		5F2037EE1D5E22590005D2E2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F2037ED1D5E22590005D2E2 /* AppDelegate.swift */; };
@@ -78,6 +80,8 @@
 		2374A9F41D67339E00737F2E /* Matchers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Matchers.swift; sourceTree = "<group>"; };
 		2377A6401D806D9900D6FB04 /* DeviceAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceAPI.swift; sourceTree = "<group>"; };
 		2377A6421D806DFA00D6FB04 /* API.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = API.swift; sourceTree = "<group>"; };
+		239CE2631D80CCE5008DCAE4 /* RequestSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestSpec.swift; sourceTree = "<group>"; };
+		23C67AEB1D81D6A400A38A2E /* MockNSURLSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockNSURLSession.swift; sourceTree = "<group>"; };
 		5F2037CD1D5E1E3E0005D2E2 /* Guardian.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Guardian.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F2037D01D5E1E3E0005D2E2 /* Guardian.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Guardian.h; sourceTree = "<group>"; };
 		5F2037D21D5E1E3E0005D2E2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -139,6 +143,7 @@
 			children = (
 				2374A9F21D672E4F00737F2E /* Responses.swift */,
 				2374A9F41D67339E00737F2E /* Matchers.swift */,
+				23C67AEB1D81D6A400A38A2E /* MockNSURLSession.swift */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
@@ -188,6 +193,7 @@
 				2374A9F11D672E4200737F2E /* Utils */,
 				5F2037DE1D5E1E3E0005D2E2 /* Info.plist */,
 				2374A9EA1D67175200737F2E /* APIClientSpec.swift */,
+				239CE2631D80CCE5008DCAE4 /* RequestSpec.swift */,
 			);
 			path = GuardianTests;
 			sourceTree = "<group>";
@@ -388,7 +394,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				239CE2641D80CCE5008DCAE4 /* RequestSpec.swift in Sources */,
 				2374A9F51D67339E00737F2E /* Matchers.swift in Sources */,
+				23C67AEC1D81D6A400A38A2E /* MockNSURLSession.swift in Sources */,
 				2374A9F31D672E4F00737F2E /* Responses.swift in Sources */,
 				2374A9EB1D67175200737F2E /* APIClientSpec.swift in Sources */,
 			);

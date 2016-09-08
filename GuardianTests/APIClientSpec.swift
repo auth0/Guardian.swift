@@ -86,7 +86,7 @@ class APIClientSpec: QuickSpec {
                     client
                         .enrollment(forTransactionId: "someInvalidTransactionID")
                         .start { result in
-                            expect(result).to(haveError(withErrorCode: "enrollment_transaction_not_found"))
+                            expect(result).to(haveGuardianError(withErrorCode: "enrollment_transaction_not_found"))
                             done()
                     }
                 }
@@ -127,7 +127,7 @@ class APIClientSpec: QuickSpec {
                     client
                         .allow(transaction: ValidTransactionToken, withCode: "someInvalidOTPCode")
                         .start { result in
-                            expect(result).to(haveError(withErrorCode: "invalid_otp"))
+                            expect(result).to(haveGuardianError(withErrorCode: "invalid_otp"))
                             done()
                     }
                 }
@@ -138,7 +138,7 @@ class APIClientSpec: QuickSpec {
                     client
                         .allow(transaction: "someInvalidTransactionToken", withCode: ValidOTPCode)
                         .start { result in
-                            expect(result).to(haveError(withErrorCode: "invalid_token"))
+                            expect(result).to(haveGuardianError(withErrorCode: "invalid_token"))
                             done()
                     }
                 }
@@ -196,7 +196,7 @@ class APIClientSpec: QuickSpec {
                     client
                         .reject(transaction: ValidTransactionToken, withCode: "someInvalidOTPCode")
                         .start { result in
-                            expect(result).to(haveError(withErrorCode: "invalid_otp"))
+                            expect(result).to(haveGuardianError(withErrorCode: "invalid_otp"))
                             done()
                     }
                 }
@@ -207,7 +207,7 @@ class APIClientSpec: QuickSpec {
                     client
                         .reject(transaction: "someInvalidTransactionToken", withCode: ValidOTPCode)
                         .start { result in
-                            expect(result).to(haveError(withErrorCode: "invalid_token"))
+                            expect(result).to(haveGuardianError(withErrorCode: "invalid_token"))
                             done()
                     }
                 }
@@ -248,7 +248,7 @@ class APIClientSpec: QuickSpec {
                         .device(forEnrollmentId: "someInvalidEnrollmentId", token: ValidEnrollmentToken)
                         .delete()
                         .start { result in
-                            expect(result).to(haveError(withErrorCode: "enrollment_not_found"))
+                            expect(result).to(haveGuardianError(withErrorCode: "enrollment_not_found"))
                             done()
                     }
                 }
@@ -260,7 +260,7 @@ class APIClientSpec: QuickSpec {
                         .device(forEnrollmentId: ValidEnrollmentId, token: "someInvalidEnrollmentToken")
                         .delete()
                         .start { result in
-                            expect(result).to(haveError(withErrorCode: "invalid_token"))
+                            expect(result).to(haveGuardianError(withErrorCode: "invalid_token"))
                             done()
                     }
                 }
@@ -315,7 +315,7 @@ class APIClientSpec: QuickSpec {
                         .device(forEnrollmentId: "someInvalidEnrollmentId", token: ValidEnrollmentToken)
                         .update(deviceIdentifier: "someDeviceIdentifier", name: "someName", notificationToken: "someNotificationToken")
                         .start { result in
-                            expect(result).to(haveError(withErrorCode: "enrollment_not_found"))
+                            expect(result).to(haveGuardianError(withErrorCode: "enrollment_not_found"))
                             done()
                     }
                 }
@@ -327,7 +327,7 @@ class APIClientSpec: QuickSpec {
                         .device(forEnrollmentId: ValidEnrollmentId, token: "someInvalidEnrollmentToken")
                         .update(deviceIdentifier: "someDeviceIdentifier", name: "someName", notificationToken: "someNotificationToken")
                         .start { result in
-                            expect(result).to(haveError(withErrorCode: "invalid_token"))
+                            expect(result).to(haveGuardianError(withErrorCode: "invalid_token"))
                             done()
                     }
                 }
