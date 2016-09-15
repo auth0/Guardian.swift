@@ -69,7 +69,7 @@ class GuardianSpec: QuickSpec {
                         return enrollmentInfoResponse(withDeviceAccountToken: ValidEnrollmentToken)
                     }.name = "Valid enrollment info"
                 stub(isUpdateEnrollment(domain: Domain)) { _ in
-                    return errorResponse(statusCode: 404, errorCode: "invalid_token", message: "Invalid transaction token")
+                    return errorResponse(statusCode: 401, errorCode: "invalid_token", message: "Invalid transaction token")
                     }.name = "Missing authentication"
                 stub(isUpdateEnrollment(domain: Domain)
                     && hasBearerToken(ValidEnrollmentToken)) { _ in
@@ -148,6 +148,60 @@ class GuardianSpec: QuickSpec {
                         .enroll(withURI: enrollmentUri, notificationToken: ValidNotificationToken)
                         .start { result in
                             expect(result).to(haveGuardianError(withErrorCode: "some_unknown_error"))
+                            done()
+                    }
+                }
+            }
+        }
+
+        describe("unenroll") {
+
+            beforeEach {
+                stub(isDeleteEnrollment(domain: Domain)) { _ in
+                    return errorResponse(statusCode: 401, errorCode: "invalid_token", message: "Invalid transaction token")
+                    }.name = "Missing authentication"
+                stub(isDeleteEnrollment(domain: Domain)
+                    && hasBearerToken(ValidEnrollmentToken)) { _ in
+                        return errorResponse(statusCode: 404, errorCode: "enrollment_not_found", message: "Enrollment not found")
+                    }.name = "Enrollment not found"
+                stub(isDeleteEnrollment(domain: Domain, enrollmentId: ValidEnrollmentId)
+                    && hasBearerToken(ValidEnrollmentToken)) { _ in
+                        return successResponse()
+                    }.name = "Valid delete enrollment"
+
+            }
+
+            it("should succeed when enrollment is valid") {
+                waitUntil(timeout: Timeout) { done in
+                    let enrollment = Enrollment(baseURL: ValidURL, id: ValidEnrollmentId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, issuer: ValidIssuer, user: ValidUser, base32Secret: ValidBase32Secret)
+                    guardian
+                        .delete(enrollment: enrollment)
+                        .start { result in
+                            expect(result).to(beSuccess())
+                            done()
+                    }
+                }
+            }
+
+            it("should fail when enrollment is not found") {
+                waitUntil(timeout: Timeout) { done in
+                    let enrollment = Enrollment(baseURL: ValidURL, id: "someInvalidEnrollmentId", deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, issuer: ValidIssuer, user: ValidUser, base32Secret: ValidBase32Secret)
+                    guardian
+                        .delete(enrollment: enrollment)
+                        .start { result in
+                            expect(result).to(haveGuardianError(withErrorCode: "enrollment_not_found"))
+                            done()
+                    }
+                }
+            }
+
+            it("should fail when enrollment token is not valid") {
+                waitUntil(timeout: Timeout) { done in
+                    let enrollment = Enrollment(baseURL: ValidURL, id: ValidEnrollmentId, deviceToken: "someInvalidEnrollmentToken", notificationToken: ValidNotificationToken, issuer: ValidIssuer, user: ValidUser, base32Secret: ValidBase32Secret)
+                    guardian
+                        .delete(enrollment: enrollment)
+                        .start { result in
+                            expect(result).to(haveGuardianError(withErrorCode: "invalid_token"))
                             done()
                     }
                 }

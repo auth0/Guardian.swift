@@ -37,4 +37,10 @@ public struct Guardian {
     public func enroll(withURI enrollmentUri: String, notificationToken: String) -> EnrollRequest {
         return EnrollRequest(api: api, enrollmentUri: enrollmentUri, notificationToken: notificationToken)
     }
+
+    public func delete(enrollment enrollment: Enrollment) -> Request<Void> {
+        return api
+            .device(forEnrollmentId: enrollment.id, token: enrollment.deviceToken)
+            .delete()
+    }
 }
