@@ -1,4 +1,4 @@
-// GuardianError.swift
+// Guardian.swift
 //
 // Copyright (c) 2016 Auth0 (http://auth0.com)
 //
@@ -22,38 +22,19 @@
 
 import Foundation
 
-public class GuardianError: ErrorType, CustomStringConvertible {
+public struct Guardian {
     
-    enum InternalError: String {
-        case InvalidPayloadError        = "a0.guardian.internal.invalid_payload"
-        case InvalidResponseError       = "a0.guardian.internal.invalid_response"
-        case UnknownServerError         = "a0.guardian.internal.unknown_server_error"
-        case InvalidEnrollmentUriError  = "a0.guardian.internal.invalid_enrollment_uri"
+    public let api: API
+    
+    init(apiClient: API) {
+        self.api = apiClient
     }
     
-    let info: [String:AnyObject]?
-    let statusCode: Int
-    
-    init(info: [String:AnyObject], statusCode: Int) {
-        self.info = info
-        self.statusCode = statusCode
+    public init(baseUrl: NSURL, session: NSURLSession = NSURLSession.sharedSession()) {
+        self.api = APIClient(baseUrl: baseUrl, session: session)
     }
     
-    init(error: InternalError, statusCode: Int = 0) {
-        self.info = [
-            "errorCode": error.rawValue
-        ]
-        self.statusCode = statusCode
-    }
-    
-    var errorCode: String {
-        guard let errorCode = self.info?["errorCode"] as? String else {
-            return InternalError.UnknownServerError.rawValue
-        }
-        return errorCode;
-    }
-    
-    public var description: String {
-        return "GuardianError(errorCode=\(errorCode), info=\(info ?? [:]))"
+    public func enroll(enrollmentUri enrollmentUri: String, notificationToken: String) -> EnrollRequest {
+        return EnrollRequest(api: api, enrollmentUri: enrollmentUri, notificationToken: notificationToken)
     }
 }

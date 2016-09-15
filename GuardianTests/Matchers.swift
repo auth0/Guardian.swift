@@ -195,6 +195,38 @@ func haveEnrollment(withId enrollmentId: String?, deviceIdentifier: String?, dev
     }
 }
 
+func haveEnrollment(withBaseUrl baseURL: NSURL, enrollmentId: String, deviceToken: String, notificationToken: String, issuer: String, user: String, base32Secret: String, algorithm: String, digits: Int, period: Int) -> MatcherFunc<Result<Enrollment>> {
+    return MatcherFunc { expression, failureMessage in
+        failureMessage.postfixMessage = "be an enrollment with" +
+            " <baseUrl: \(baseURL)>" +
+            " <id: \(enrollmentId)>" +
+            " <deviceToken: \(deviceToken)>" +
+            " <apnsToken: \(notificationToken)>" +
+            " <issuer: \(issuer)>" +
+            " <user: \(user)>" +
+            " <base32Secret: \(base32Secret)>" +
+            " <algorithm: \(algorithm)>" +
+            " <digits: \(digits)>" +
+            " <period: \(period)>"
+        
+        if let actual = try expression.evaluate(), case .Success(let result) = actual {
+            if let result = result {
+                return result.baseURL == baseURL
+                    && result.id == enrollmentId
+                    && result.deviceToken == deviceToken
+                    && result.apnsToken == notificationToken
+                    && result.issuer == issuer
+                    && result.user == user
+                    && result.base32Secret == base32Secret
+                    && result.algorithm == algorithm
+                    && result.digits == digits
+                    && result.period == period
+            }
+        }
+        return false
+    }
+}
+
 func haveGuardianError<T>(withErrorCode errorCode: String? = nil, andStatusCode statusCode: Int? = nil) -> MatcherFunc<Result<T>> {
     return MatcherFunc { expression, failureMessage in
         var message = "be a Guardian error response with"
