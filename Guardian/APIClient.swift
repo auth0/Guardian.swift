@@ -35,7 +35,7 @@ struct APIClient: API {
     func enrollment(forTransactionId transactionId: String) -> Request<[String:String]> {
         let url = baseUrl.URLByAppendingPathComponent("api/enrollment-info", isDirectory: false)
         let payload = ["enrollment_tx_id": transactionId]
-        return Request(session: session, method: "POST", url: url, payload: payload)
+        return Request(session: session, method: "POST", url: url!, payload: payload)
     }
     
     func allow(transaction transactionToken: String, withCode otpCode: String) -> Request<Void> {
@@ -44,7 +44,7 @@ struct APIClient: API {
             "type": "push_notification",
             "code": otpCode
         ]
-        return Request(session: session, method: "POST", url: url, payload: payload, headers: ["Authorization": "Bearer \(transactionToken)"])
+        return Request(session: session, method: "POST", url: url!, payload: payload, headers: ["Authorization": "Bearer \(transactionToken)"])
     }
     
     func reject(transaction transactionToken: String, withCode otpCode: String, reason: String? = nil) -> Request<Void> {
@@ -56,7 +56,7 @@ struct APIClient: API {
         if let reason = reason {
             payload["reason"] = reason
         }
-        return Request(session: session, method: "POST", url: url, payload: payload, headers: ["Authorization": "Bearer \(transactionToken)"])
+        return Request(session: session, method: "POST", url: url!, payload: payload, headers: ["Authorization": "Bearer \(transactionToken)"])
     }
     
     func device(forEnrollmentId id: String, token: String) -> DeviceAPI {

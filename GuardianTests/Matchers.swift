@@ -47,7 +47,7 @@ func hasAtLeast(parameters: [String: String]) -> OHHTTPStubsTestBlock {
 
 func hasObjectAttribute(name: String, value: [String: String]) -> OHHTTPStubsTestBlock {
     return { request in
-        guard let payload = request.a0_payload, actualValue = payload[name] as? [String: AnyObject] else { return false }
+        guard let payload = request.a0_payload, let actualValue = payload[name] as? [String: AnyObject] else { return false }
         return value.count == actualValue.count && value.reduce(true, combine: { (initial, entry) -> Bool in
             guard let value = actualValue[entry.0] as? String else { return false }
             return initial && value == entry.1
@@ -223,9 +223,8 @@ func haveNSError<T>(withErrorCode errorCode: Int? = nil) -> MatcherFunc<Result<T
         }
         failureMessage.postfixMessage = message
         if let actual = try expression.evaluate(), case .Failure(let cause) = actual {
-            if let error = cause as? NSError {
-                return errorCode == nil || errorCode == error.code
-            }
+            let error = cause as NSError
+            return errorCode == nil || errorCode == error.code
         }
         return false
     }

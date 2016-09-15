@@ -29,7 +29,7 @@ struct DeviceAPIClient: DeviceAPI {
     let token: String
     
     init(baseUrl: NSURL, session: NSURLSession, id: String, token: String) {
-        self.url = baseUrl.URLByAppendingPathComponent("api/device-accounts/\(id)", isDirectory: false)
+        self.url = baseUrl.URLByAppendingPathComponent("api/device-accounts/\(id)", isDirectory: false)!
         self.session = session
         self.token = token
     }
