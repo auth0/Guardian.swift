@@ -33,8 +33,8 @@ public struct Guardian {
     public init(baseUrl: NSURL, session: NSURLSession = NSURLSession.sharedSession()) {
         self.api = APIClient(baseUrl: baseUrl, session: session)
     }
-    
-    public func enroll(enrollmentUri enrollmentUri: String, notificationToken: String) -> EnrollRequest {
+
+    public func enroll(withURI enrollmentUri: String, notificationToken: String) -> EnrollRequest {
         return EnrollRequest(api: api, enrollmentUri: enrollmentUri, notificationToken: notificationToken)
     }
 }

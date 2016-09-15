@@ -87,7 +87,7 @@ class GuardianSpec: QuickSpec {
                 waitUntil(timeout: Timeout) { done in
                     let enrollmentUri = getEnrollmentUri(withTransactionId: ValidTransactionId, baseUrl: ValidURL.absoluteString!, enrollmentId: ValidEnrollmentId, issuer: ValidIssuer, user: ValidUser, secret: ValidBase32Secret, algorithm: ValidAlgorithm, digits: ValidDigits, period: ValidPeriod)
                     guardian
-                        .enroll(enrollmentUri: enrollmentUri, notificationToken: ValidNotificationToken)
+                        .enroll(withURI: enrollmentUri, notificationToken: ValidNotificationToken)
                         .start { result in
                             expect(result).to(haveEnrollment(withBaseUrl: ValidURL, enrollmentId: ValidEnrollmentId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, issuer: ValidIssuer, user: ValidUser, base32Secret: ValidBase32Secret, algorithm: ValidAlgorithm, digits: ValidDigits, period: ValidPeriod))
                             done()
@@ -99,7 +99,7 @@ class GuardianSpec: QuickSpec {
                 waitUntil(timeout: Timeout) { done in
                     let enrollmentUri = "someInvalidEnrollmentUri"
                     guardian
-                        .enroll(enrollmentUri: enrollmentUri, notificationToken: ValidNotificationToken)
+                        .enroll(withURI: enrollmentUri, notificationToken: ValidNotificationToken)
                         .start { result in
                             expect(result).to(haveGuardianError(withErrorCode: "a0.guardian.internal.invalid_enrollment_uri"))
                             done()
@@ -111,7 +111,7 @@ class GuardianSpec: QuickSpec {
                 waitUntil(timeout: Timeout) { done in
                     let enrollmentUri = getEnrollmentUri(withTransactionId: "someInvalidTransactionId", baseUrl: ValidURL.absoluteString!, enrollmentId: ValidEnrollmentId, issuer: ValidIssuer, user: ValidUser, secret: ValidBase32Secret, algorithm: ValidAlgorithm, digits: ValidDigits, period: ValidPeriod)
                     guardian
-                        .enroll(enrollmentUri: enrollmentUri, notificationToken: ValidNotificationToken)
+                        .enroll(withURI: enrollmentUri, notificationToken: ValidNotificationToken)
                         .start { result in
                             expect(result).to(haveGuardianError(withErrorCode: "enrollment_transaction_not_found"))
                             done()
@@ -130,7 +130,7 @@ class GuardianSpec: QuickSpec {
                 waitUntil(timeout: Timeout) { done in
                     let enrollmentUri = getEnrollmentUri(withTransactionId: ValidTransactionId, baseUrl: ValidURL.absoluteString!, enrollmentId: ValidEnrollmentId, issuer: ValidIssuer, user: ValidUser, secret: ValidBase32Secret, algorithm: ValidAlgorithm, digits: ValidDigits, period: ValidPeriod)
                     guardian
-                        .enroll(enrollmentUri: enrollmentUri, notificationToken: ValidNotificationToken)
+                        .enroll(withURI: enrollmentUri, notificationToken: ValidNotificationToken)
                         .start { result in
                             expect(result).to(haveGuardianError(withErrorCode: "a0.guardian.internal.invalid_response"))
                             done()
@@ -145,7 +145,7 @@ class GuardianSpec: QuickSpec {
                 waitUntil(timeout: Timeout) { done in
                     let enrollmentUri = getEnrollmentUri(withTransactionId: ValidTransactionId, baseUrl: ValidURL.absoluteString!, enrollmentId: ValidEnrollmentId, issuer: ValidIssuer, user: ValidUser, secret: ValidBase32Secret, algorithm: ValidAlgorithm, digits: ValidDigits, period: ValidPeriod)
                     guardian
-                        .enroll(enrollmentUri: enrollmentUri, notificationToken: ValidNotificationToken)
+                        .enroll(withURI: enrollmentUri, notificationToken: ValidNotificationToken)
                         .start { result in
                             expect(result).to(haveGuardianError(withErrorCode: "some_unknown_error"))
                             done()

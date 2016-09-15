@@ -27,7 +27,7 @@ public struct Enrollment {
     let baseURL: NSURL
     let id: String
     let deviceToken: String
-    let apnsToken: String
+    let notificationToken: String
     
     let issuer: String
     let user: String
@@ -48,98 +48,22 @@ public struct Enrollment {
     init(baseURL: NSURL,
          id: String,
          deviceToken: String,
-         apnsToken: String,
+         notificationToken: String,
          issuer: String,
          user: String,
          base32Secret: String,
-         algorithm: String,
-         digits: Int,
-         period: Int) {
+         algorithm: String? = nil,
+         digits: Int? = nil,
+         period: Int? = nil) {
         self.baseURL = baseURL
         self.id = id
         self.deviceToken = deviceToken
-        self.apnsToken = apnsToken
+        self.notificationToken = notificationToken
         self.issuer = issuer
         self.user = user
         self.base32Secret = base32Secret
-        self.algorithm = algorithm
-        self.digits = digits
-        self.period = period
-    }
-}
-
-struct EnrollmentData {
-    
-    let enrollmentTxId: String
-    let id: String
-    
-    let baseURL: NSURL
-    let issuer: String
-    let user: String
-    
-    let period: Int
-    let digits: Int
-    let algorithm: String
-    let base32Secret: String
-    
-    init?(uriString: String) {
-        guard let components = NSURLComponents(string: uriString), let otp = components.host?.lowercaseString
-            where components.scheme == "otpauth" && otp == "totp" else {
-                return nil
-        }
-        guard let path = components.path where !path.isEmpty, let parameters = components.queryItems?.asDictionary() else {
-            return nil
-        }
-        let label = path.substringFromIndex(path.startIndex.advancedBy(1))
-        let issuer = parameters["issuer"]
-        var user: String?
-        if label.containsString(":") {
-            var labelParts = label.componentsSeparatedByString(":")
-            guard issuer == labelParts.removeFirst() else {
-                return nil
-            }
-            user = labelParts.first
-        }
-        guard issuer != nil && user != nil,
-            let identifier = parameters["id"],
-            let secret = parameters["secret"],
-            let enrollmentTxId = parameters["enrollment_tx_id"],
-            let urlString = parameters["base_url"],
-            let url = NSURL(string: urlString) else {
-                return nil
-        }
-        
-        self.user = user!
-        self.issuer = issuer!
-        self.id = identifier
-        self.enrollmentTxId = enrollmentTxId
-        self.baseURL = url
-        self.base32Secret = secret
-        self.algorithm = parameters["algorithm"] ?? "sha1"
-        self.digits = Int(parameters["digits"]) ?? 6
-        self.period = Int(parameters["period"]) ?? 30
-    }
-}
-
-private extension Int {
-    
-    init?(_ value: String?) {
-        guard value != nil else {
-            return nil
-        }
-        self.init(value!)
-    }
-}
-
-private extension Array where Element: NSURLQueryItem {
-    
-    func asDictionary() -> [String: String] {
-        return self.reduce([:], combine: { (dict, item) in
-            var values = dict
-            if let value = item.value {
-                values[item.name] = value
-            }
-            return values
-        })
+        self.algorithm = algorithm ?? "sha1"
+        self.digits = digits ?? 6
+        self.period = period ?? 30
     }
 }

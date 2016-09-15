@@ -201,7 +201,7 @@ func haveEnrollment(withBaseUrl baseURL: NSURL, enrollmentId: String, deviceToke
             " <baseUrl: \(baseURL)>" +
             " <id: \(enrollmentId)>" +
             " <deviceToken: \(deviceToken)>" +
-            " <apnsToken: \(notificationToken)>" +
+            " <notificationToken: \(notificationToken)>" +
             " <issuer: \(issuer)>" +
             " <user: \(user)>" +
             " <base32Secret: \(base32Secret)>" +
@@ -214,7 +214,7 @@ func haveEnrollment(withBaseUrl baseURL: NSURL, enrollmentId: String, deviceToke
                 return result.baseURL == baseURL
                     && result.id == enrollmentId
                     && result.deviceToken == deviceToken
-                    && result.apnsToken == notificationToken
+                    && result.notificationToken == notificationToken
                     && result.issuer == issuer
                     && result.user == user
                     && result.base32Secret == base32Secret
