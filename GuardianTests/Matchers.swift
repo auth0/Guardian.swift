@@ -47,7 +47,7 @@ func hasAtLeast(parameters: [String: String]) -> OHHTTPStubsTestBlock {
 
 func hasObjectAttribute(name: String, value: [String: String]) -> OHHTTPStubsTestBlock {
     return { request in
-        guard let payload = request.a0_payload, actualValue = payload[name] as? [String: AnyObject] else { return false }
+        guard let payload = request.a0_payload, let actualValue = payload[name] as? [String: AnyObject] else { return false }
         return value.count == actualValue.count && value.reduce(true, combine: { (initial, entry) -> Bool in
             guard let value = actualValue[entry.0] as? String else { return false }
             return initial && value == entry.1
@@ -195,6 +195,38 @@ func haveEnrollment(withId enrollmentId: String?, deviceIdentifier: String?, dev
     }
 }
 
+func haveEnrollment(withBaseUrl baseURL: NSURL, enrollmentId: String, deviceToken: String, notificationToken: String, issuer: String, user: String, base32Secret: String, algorithm: String, digits: Int, period: Int) -> MatcherFunc<Result<Enrollment>> {
+    return MatcherFunc { expression, failureMessage in
+        failureMessage.postfixMessage = "be an enrollment with" +
+            " <baseUrl: \(baseURL)>" +
+            " <id: \(enrollmentId)>" +
+            " <deviceToken: \(deviceToken)>" +
+            " <notificationToken: \(notificationToken)>" +
+            " <issuer: \(issuer)>" +
+            " <user: \(user)>" +
+            " <base32Secret: \(base32Secret)>" +
+            " <algorithm: \(algorithm)>" +
+            " <digits: \(digits)>" +
+            " <period: \(period)>"
+        
+        if let actual = try expression.evaluate(), case .Success(let result) = actual {
+            if let result = result {
+                return result.baseURL == baseURL
+                    && result.id == enrollmentId
+                    && result.deviceToken == deviceToken
+                    && result.notificationToken == notificationToken
+                    && result.issuer == issuer
+                    && result.user == user
+                    && result.base32Secret == base32Secret
+                    && result.algorithm == algorithm
+                    && result.digits == digits
+                    && result.period == period
+            }
+        }
+        return false
+    }
+}
+
 func haveGuardianError<T>(withErrorCode errorCode: String? = nil, andStatusCode statusCode: Int? = nil) -> MatcherFunc<Result<T>> {
     return MatcherFunc { expression, failureMessage in
         var message = "be a Guardian error response with"
@@ -223,9 +255,8 @@ func haveNSError<T>(withErrorCode errorCode: Int? = nil) -> MatcherFunc<Result<T
         }
         failureMessage.postfixMessage = message
         if let actual = try expression.evaluate(), case .Failure(let cause) = actual {
-            if let error = cause as? NSError {
-                return errorCode == nil || errorCode == error.code
-            }
+            let error = cause as NSError
+            return errorCode == nil || errorCode == error.code
         }
         return false
     }

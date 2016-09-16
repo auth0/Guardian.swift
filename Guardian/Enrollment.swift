@@ -1,4 +1,4 @@
-// GuardianError.swift
+// Enrollment.swift
 //
 // Copyright (c) 2016 Auth0 (http://auth0.com)
 //
@@ -22,38 +22,48 @@
 
 import Foundation
 
-public class GuardianError: ErrorType, CustomStringConvertible {
+public struct Enrollment {
     
-    enum InternalError: String {
-        case InvalidPayloadError        = "a0.guardian.internal.invalid_payload"
-        case InvalidResponseError       = "a0.guardian.internal.invalid_response"
-        case UnknownServerError         = "a0.guardian.internal.unknown_server_error"
-        case InvalidEnrollmentUriError  = "a0.guardian.internal.invalid_enrollment_uri"
+    let baseURL: NSURL
+    let id: String
+    let deviceToken: String
+    let notificationToken: String
+    
+    let issuer: String
+    let user: String
+    
+    let base32Secret: String
+    let algorithm: String
+    let digits: Int
+    let period: Int
+    
+    var deviceIdentifier: String {
+        return UIDevice.currentDevice().identifierForVendor!.UUIDString
     }
     
-    let info: [String:AnyObject]?
-    let statusCode: Int
-    
-    init(info: [String:AnyObject], statusCode: Int) {
-        self.info = info
-        self.statusCode = statusCode
+    var deviceName: String {
+        return UIDevice.currentDevice().name
     }
     
-    init(error: InternalError, statusCode: Int = 0) {
-        self.info = [
-            "errorCode": error.rawValue
-        ]
-        self.statusCode = statusCode
-    }
-    
-    var errorCode: String {
-        guard let errorCode = self.info?["errorCode"] as? String else {
-            return InternalError.UnknownServerError.rawValue
-        }
-        return errorCode;
-    }
-    
-    public var description: String {
-        return "GuardianError(errorCode=\(errorCode), info=\(info ?? [:]))"
+    init(baseURL: NSURL,
+         id: String,
+         deviceToken: String,
+         notificationToken: String,
+         issuer: String,
+         user: String,
+         base32Secret: String,
+         algorithm: String? = nil,
+         digits: Int? = nil,
+         period: Int? = nil) {
+        self.baseURL = baseURL
+        self.id = id
+        self.deviceToken = deviceToken
+        self.notificationToken = notificationToken
+        self.issuer = issuer
+        self.user = user
+        self.base32Secret = base32Secret
+        self.algorithm = algorithm ?? "sha1"
+        self.digits = digits ?? 6
+        self.period = period ?? 30
     }
 }
