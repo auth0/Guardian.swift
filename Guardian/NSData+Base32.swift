@@ -79,6 +79,7 @@ private func Base32Decode(data data: String, decodingTable: [UInt8]) -> NSData? 
     var encodedBlock: [UInt8] = [0,0,0,0,0,0,0,0]
     var encodedBlockIndex = 0
     var c: UInt8
+    var error = false
     while encodedBytesToProcess >= 1 {
         encodedBytesToProcess -= 1
         c = encodedBytes[encodedBaseIndex]
@@ -90,7 +91,8 @@ private func Base32Decode(data data: String, decodingTable: [UInt8]) -> NSData? 
 
         c = decodingTable[Int(c)]
         if c == __ {
-            continue
+            error = true
+            break
         }
 
         encodedBlock[encodedBlockIndex] = c
@@ -148,8 +150,11 @@ private func Base32Decode(data data: String, decodingTable: [UInt8]) -> NSData? 
     default:
         break
     }
-    decodedBaseIndex += paddingAdjustment[encodedBlockIndex]
-    let data = NSData(bytes: decodedBytes, length: decodedBaseIndex)
+    var data: NSData? = nil
+    if !error {
+        decodedBaseIndex += paddingAdjustment[encodedBlockIndex]
+        data = NSData(bytes: decodedBytes, length: decodedBaseIndex)
+    }
     decodedBytes.destroy()
     return data
 }
