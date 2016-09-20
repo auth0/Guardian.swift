@@ -25,15 +25,16 @@ import Foundation
 extension NSData {
 
     convenience init?(fromBase32String string: String) {
-        guard let data = Base32Decode(string) else {
+        guard let data = decode(string) else {
             return nil
         }
         self.init(data: data)
     }
 }
 
+private let paddingAdjustment: [Int] = [1, 1, 1, 2, 3, 3, 4, 5]
 private let __: UInt8 = 255
-private let decodingTable: [UInt8] = [
+private let defaultDecodingTable: [UInt8] = [
     __,__,__,__, __,__,__,__, __,__,__,__, __,__,__,__,  // 0x00 - 0x0F
     __,__,__,__, __,__,__,__, __,__,__,__, __,__,__,__,  // 0x10 - 0x1F
     __,__,__,__, __,__,__,__, __,__,__,__, __,__,__,__,  // 0x20 - 0x2F
@@ -52,109 +53,55 @@ private let decodingTable: [UInt8] = [
     __,__,__,__, __,__,__,__, __,__,__,__, __,__,__,__,  // 0xF0 - 0xFF
 ]
 
-private func Base32Decode(data: String) -> NSData? {
-    return Base32Decode(data: data, decodingTable: decodingTable)
-}
-
-private func Base32Decode(data data: String, decodingTable: [UInt8]) -> NSData? {
-    let paddingAdjustment: [Int] = [0,1,1,1,2,3,3,4]
-    let encoding = data.stringByReplacingOccurrencesOfString("=", withString: "")
+private func decode(value: String, decodingTable: [UInt8] = defaultDecodingTable) -> NSData? {
+    let encoding = value.stringByReplacingOccurrencesOfString("=", withString: "")
     guard let encodedData = encoding.dataUsingEncoding(NSASCIIStringEncoding) else {
         return nil
     }
     let encodedBytes = UnsafePointer<UInt8>(encodedData.bytes)
     let encodedLength = encodedData.length
-    var encodedBlocks = (encodedLength * 5) / 40
-    if encodedLength % 8 != 0 {
-        encodedBlocks += 1
-    }
+    let encodedBlocks = Int( ceil( Double(encodedLength) / 8.0 ) )
     let expectedDataLength = encodedBlocks * 5
-
     let decodedBytes = UnsafeMutablePointer<UInt8>.alloc(expectedDataLength)
-
-    var encodedByte1: UInt8, encodedByte2: UInt8, encodedByte3: UInt8, encodedByte4: UInt8, encodedByte5: UInt8, encodedByte6: UInt8, encodedByte7: UInt8, encodedByte8: UInt8
-    var encodedBytesToProcess = encodedLength
-    var encodedBaseIndex = 0
     var decodedBaseIndex = 0
-    var encodedBlock: [UInt8] = [0,0,0,0,0,0,0,0]
+    var encodedBlock: [UInt8] = [0, 0, 0, 0, 0, 0, 0, 0]
     var encodedBlockIndex = 0
-    var c: UInt8
+
     var error = false
-    while encodedBytesToProcess >= 1 {
-        encodedBytesToProcess -= 1
-        c = encodedBytes[encodedBaseIndex]
-        encodedBaseIndex += 1
-
-        if c == UInt8("=") {
-            break // padding...
-        }
-
-        c = decodingTable[Int(c)]
-        if c == __ {
+    for encodedBaseIndex in 0..<encodedLength {
+        let currentByte = encodedBytes[encodedBaseIndex]
+        let currentValue = decodingTable[Int(currentByte)]
+        if currentValue == __ {
             error = true
             break
         }
 
-        encodedBlock[encodedBlockIndex] = c
+        encodedBlock[encodedBlockIndex] = currentValue
         encodedBlockIndex += 1
-        if encodedBlockIndex == 8 {
-            encodedByte1 = encodedBlock[0]
-            encodedByte2 = encodedBlock[1]
-            encodedByte3 = encodedBlock[2]
-            encodedByte4 = encodedBlock[3]
-            encodedByte5 = encodedBlock[4]
-            encodedByte6 = encodedBlock[5]
-            encodedByte7 = encodedBlock[6]
-            encodedByte8 = encodedBlock[7]
+        if encodedBlockIndex == 8 || encodedBaseIndex == encodedLength-1 {
+            let encodedByte8: UInt8 = encodedBlockIndex > 7 ? encodedBlock[7] : 0
+            let encodedByte7: UInt8 = encodedBlockIndex > 6 ? encodedBlock[6] : 0
+            let encodedByte6: UInt8 = encodedBlockIndex > 5 ? encodedBlock[5] : 0
+            let encodedByte5: UInt8 = encodedBlockIndex > 4 ? encodedBlock[4] : 0
+            let encodedByte4: UInt8 = encodedBlockIndex > 3 ? encodedBlock[3] : 0
+            let encodedByte3: UInt8 = encodedBlockIndex > 2 ? encodedBlock[2] : 0
+            let encodedByte2: UInt8 = encodedBlockIndex > 1 ? encodedBlock[1] : 0
+            let encodedByte1: UInt8 = encodedBlock[0]
+
             decodedBytes[decodedBaseIndex]   = ((encodedByte1 << 3) & 0xF8) | ((encodedByte2 >> 2) & 0x07)
             decodedBytes[decodedBaseIndex+1] = ((encodedByte2 << 6) & 0xC0) | ((encodedByte3 << 1) & 0x3E) | ((encodedByte4 >> 4) & 0x01)
             decodedBytes[decodedBaseIndex+2] = ((encodedByte4 << 4) & 0xF0) | ((encodedByte5 >> 1) & 0x0F)
             decodedBytes[decodedBaseIndex+3] = ((encodedByte5 << 7) & 0x80) | ((encodedByte6 << 2) & 0x7C) | ((encodedByte7 >> 3) & 0x03)
             decodedBytes[decodedBaseIndex+4] = ((encodedByte7 << 5) & 0xE0) | (encodedByte8 & 0x1F)
-            decodedBaseIndex += 5
+
+            decodedBaseIndex += paddingAdjustment[encodedBlockIndex-1]
             encodedBlockIndex = 0
         }
     }
-    encodedByte7 = 0
-    encodedByte6 = 0
-    encodedByte5 = 0
-    encodedByte4 = 0
-    encodedByte3 = 0
-    encodedByte2 = 0
-    switch encodedBlockIndex {
-    case 7:
-        encodedByte7 = encodedBlock[6]
-        fallthrough
-    case 6:
-        encodedByte6 = encodedBlock[5]
-        fallthrough
-    case 5:
-        encodedByte5 = encodedBlock[4]
-        fallthrough
-    case 4:
-        encodedByte4 = encodedBlock[3]
-        fallthrough
-    case 3:
-        encodedByte3 = encodedBlock[2]
-        fallthrough
-    case 2:
-        encodedByte2 = encodedBlock[1]
-        fallthrough
-    case 1:
-        encodedByte1 = encodedBlock[0]
-        decodedBytes[decodedBaseIndex]   = ((encodedByte1 << 3) & 0xF8) | ((encodedByte2 >> 2) & 0x07)
-        decodedBytes[decodedBaseIndex+1] = ((encodedByte2 << 6) & 0xC0) | ((encodedByte3 << 1) & 0x3E) | ((encodedByte4 >> 4) & 0x01)
-        decodedBytes[decodedBaseIndex+2] = ((encodedByte4 << 4) & 0xF0) | ((encodedByte5 >> 1) & 0x0F)
-        decodedBytes[decodedBaseIndex+3] = ((encodedByte5 << 7) & 0x80) | ((encodedByte6 << 2) & 0x7C) | ((encodedByte7 >> 3) & 0x03)
-        decodedBytes[decodedBaseIndex+4] = ((encodedByte7 << 5) & 0xE0)
-    default:
-        break
-    }
-    var data: NSData? = nil
+    var decodedData: NSData? = nil
     if !error {
-        decodedBaseIndex += paddingAdjustment[encodedBlockIndex]
-        data = NSData(bytes: decodedBytes, length: decodedBaseIndex)
+        decodedData = NSData(bytes: decodedBytes, length: decodedBaseIndex)
     }
     decodedBytes.destroy()
-    return data
+    return decodedData
 }
