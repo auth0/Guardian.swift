@@ -11,6 +11,8 @@
 		234004DF1D8CA944009AB77C /* OneTimePassword.swift in Sources */ = {isa = PBXBuildFile; fileRef = 234004DE1D8CA944009AB77C /* OneTimePassword.swift */; };
 		234004E91D9084A0009AB77C /* OneTimePasswordSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 234004E81D9084A0009AB77C /* OneTimePasswordSpec.swift */; };
 		234004EF1D909C91009AB77C /* Base32.swift in Sources */ = {isa = PBXBuildFile; fileRef = 234004EE1D909C91009AB77C /* Base32.swift */; };
+		233F75271D92F27000B8C15C /* AuthenticationNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 233F75261D92F27000B8C15C /* AuthenticationNotification.swift */; };
+		233F75291D93076600B8C15C /* AuthenticationNotificationSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 233F75281D93076600B8C15C /* AuthenticationNotificationSpec.swift */; };
 		2356C82E1D88998A00B6C84A /* EnrollRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2356C82D1D88998A00B6C84A /* EnrollRequest.swift */; };
 		2356C8301D88A10600B6C84A /* GuardianSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2356C82F1D88A10600B6C84A /* GuardianSpec.swift */; };
 		237246751D7DC63B00CCF635 /* Guardian.swift in Sources */ = {isa = PBXBuildFile; fileRef = 237246741D7DC63B00CCF635 /* Guardian.swift */; };
@@ -81,6 +83,8 @@
 		234004DE1D8CA944009AB77C /* OneTimePassword.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OneTimePassword.swift; sourceTree = "<group>"; };
 		234004E81D9084A0009AB77C /* OneTimePasswordSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OneTimePasswordSpec.swift; sourceTree = "<group>"; };
 		234004EE1D909C91009AB77C /* Base32.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Base32.swift; sourceTree = "<group>"; };
+		233F75261D92F27000B8C15C /* AuthenticationNotification.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthenticationNotification.swift; sourceTree = "<group>"; };
+		233F75281D93076600B8C15C /* AuthenticationNotificationSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthenticationNotificationSpec.swift; sourceTree = "<group>"; };
 		2356C82D1D88998A00B6C84A /* EnrollRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnrollRequest.swift; sourceTree = "<group>"; };
 		2356C82F1D88A10600B6C84A /* GuardianSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GuardianSpec.swift; sourceTree = "<group>"; };
 		237246741D7DC63B00CCF635 /* Guardian.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Guardian.swift; sourceTree = "<group>"; };
@@ -204,6 +208,7 @@
 				2356C82D1D88998A00B6C84A /* EnrollRequest.swift */,
 				234004DE1D8CA944009AB77C /* OneTimePassword.swift */,
 				234004EE1D909C91009AB77C /* Base32.swift */,
+				233F75261D92F27000B8C15C /* AuthenticationNotification.swift */,
 			);
 			path = Guardian;
 			sourceTree = "<group>";
@@ -218,6 +223,7 @@
 				2356C82F1D88A10600B6C84A /* GuardianSpec.swift */,
 				234004E81D9084A0009AB77C /* OneTimePasswordSpec.swift */,
 				23D3E43F1D91BEA200F3FDE2 /* Base32Spec.swift */,
+				233F75281D93076600B8C15C /* AuthenticationNotificationSpec.swift */,
 			);
 			path = GuardianTests;
 			sourceTree = "<group>";
@@ -415,6 +421,7 @@
 				2374A9E61D670F5900737F2E /* Request.swift in Sources */,
 				2374A9E51D670F5900737F2E /* GuardianError.swift in Sources */,
 				2356C82E1D88998A00B6C84A /* EnrollRequest.swift in Sources */,
+				233F75271D92F27000B8C15C /* AuthenticationNotification.swift in Sources */,
 				23C67AEE1D81EF5300A38A2E /* Enrollment.swift in Sources */,
 				2377A6431D806DFA00D6FB04 /* API.swift in Sources */,
 				232A85DA1D6BDFCA00048DF7 /* DeviceAPIClient.swift in Sources */,
@@ -430,6 +437,7 @@
 				2374A9F51D67339E00737F2E /* Matchers.swift in Sources */,
 				23C67AEC1D81D6A400A38A2E /* MockNSURLSession.swift in Sources */,
 				2374A9F31D672E4F00737F2E /* Responses.swift in Sources */,
+				233F75291D93076600B8C15C /* AuthenticationNotificationSpec.swift in Sources */,
 				2374A9EB1D67175200737F2E /* APIClientSpec.swift in Sources */,
 				23D3E4401D91BEA200F3FDE2 /* Base32Spec.swift in Sources */,
 				234004E91D9084A0009AB77C /* OneTimePasswordSpec.swift in Sources */,
