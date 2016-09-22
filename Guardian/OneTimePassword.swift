@@ -46,7 +46,7 @@ struct TOTP {
         self.period = period
     }
 
-    func generate(digits: Int, counter: Int) -> Int {
+    func generate(digits digits: Int, counter: Int) -> String {
         var t = UInt64(counter / period).bigEndian
         let digestData = NSMutableData(length: algorithm.digestLength)!
         CCHmac(algorithm.name, key.bytes, key.length, &t, sizeof(UInt64), digestData.mutableBytes)
@@ -62,7 +62,7 @@ struct TOTP {
 
         hash = hash % UInt32(pow(10, Float(digits)))
 
-        return Int(hash)
+        return String(format: "%0\(digits)d", Int(hash))
     }
 }
 

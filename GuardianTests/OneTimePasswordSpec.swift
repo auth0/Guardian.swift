@@ -86,7 +86,7 @@ class OneTimePasswordSpec: QuickSpec {
 
                 sharedExamples(validTOTP) { (context: SharedExampleContext) in
                     let data = context()
-                    let code = data["code"] as! Int
+                    let code = data["code"] as! String
                     let counter = data["counter"] as! Int
                     let key = data["key"] as! String
                     var otp: TOTP!
@@ -98,41 +98,41 @@ class OneTimePasswordSpec: QuickSpec {
                     }
 
                     it("should return code '\(code)' for counter '\(counter)'") {
-                        expect(otp.generate(digits, counter: counter)).to(equal(code))
+                        expect(otp.generate(digits: digits, counter: counter)).to(equal(code))
                     }
                 }
 
                 context("sha1") {
                     let key = "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ"
                     let alg = "sha1"
-                    itBehavesLike(validTOTP) { ["counter": 59,          "code": 94287082, "alg": alg, "key": key] }
-                    itBehavesLike(validTOTP) { ["counter": 1111111109,  "code": 07081804, "alg": alg, "key": key] }
-                    itBehavesLike(validTOTP) { ["counter": 1111111111,  "code": 14050471, "alg": alg, "key": key] }
-                    itBehavesLike(validTOTP) { ["counter": 1234567890,  "code": 89005924, "alg": alg, "key": key] }
-                    itBehavesLike(validTOTP) { ["counter": 2000000000,  "code": 69279037, "alg": alg, "key": key] }
-                    itBehavesLike(validTOTP) { ["counter": 20000000000, "code": 65353130, "alg": alg, "key": key] }
+                    itBehavesLike(validTOTP) { ["counter": 59,          "code": "94287082", "alg": alg, "key": key] }
+                    itBehavesLike(validTOTP) { ["counter": 1111111109,  "code": "07081804", "alg": alg, "key": key] }
+                    itBehavesLike(validTOTP) { ["counter": 1111111111,  "code": "14050471", "alg": alg, "key": key] }
+                    itBehavesLike(validTOTP) { ["counter": 1234567890,  "code": "89005924", "alg": alg, "key": key] }
+                    itBehavesLike(validTOTP) { ["counter": 2000000000,  "code": "69279037", "alg": alg, "key": key] }
+                    itBehavesLike(validTOTP) { ["counter": 20000000000, "code": "65353130", "alg": alg, "key": key] }
                 }
 
                 context("sha256") {
                     let key = "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZA===="
                     let alg = "sha256"
-                    itBehavesLike(validTOTP) { ["counter": 59,          "code": 46119246, "alg": alg, "key": key] }
-                    itBehavesLike(validTOTP) { ["counter": 1111111109,  "code": 68084774, "alg": alg, "key": key] }
-                    itBehavesLike(validTOTP) { ["counter": 1111111111,  "code": 67062674, "alg": alg, "key": key] }
-                    itBehavesLike(validTOTP) { ["counter": 1234567890,  "code": 91819424, "alg": alg, "key": key] }
-                    itBehavesLike(validTOTP) { ["counter": 2000000000,  "code": 90698825, "alg": alg, "key": key] }
-                    itBehavesLike(validTOTP) { ["counter": 20000000000, "code": 77737706, "alg": alg, "key": key] }
+                    itBehavesLike(validTOTP) { ["counter": 59,          "code": "46119246", "alg": alg, "key": key] }
+                    itBehavesLike(validTOTP) { ["counter": 1111111109,  "code": "68084774", "alg": alg, "key": key] }
+                    itBehavesLike(validTOTP) { ["counter": 1111111111,  "code": "67062674", "alg": alg, "key": key] }
+                    itBehavesLike(validTOTP) { ["counter": 1234567890,  "code": "91819424", "alg": alg, "key": key] }
+                    itBehavesLike(validTOTP) { ["counter": 2000000000,  "code": "90698825", "alg": alg, "key": key] }
+                    itBehavesLike(validTOTP) { ["counter": 20000000000, "code": "77737706", "alg": alg, "key": key] }
                 }
 
                 context("sha256") {
                     let key = "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNA="
                     let alg = "sha512"
-                    itBehavesLike(validTOTP) { ["counter": 59,          "code": 90693936, "alg": alg, "key": key] }
-                    itBehavesLike(validTOTP) { ["counter": 1111111109,  "code": 25091201, "alg": alg, "key": key] }
-                    itBehavesLike(validTOTP) { ["counter": 1111111111,  "code": 99943326, "alg": alg, "key": key] }
-                    itBehavesLike(validTOTP) { ["counter": 1234567890,  "code": 93441116, "alg": alg, "key": key] }
-                    itBehavesLike(validTOTP) { ["counter": 2000000000,  "code": 38618901, "alg": alg, "key": key] }
-                    itBehavesLike(validTOTP) { ["counter": 20000000000, "code": 47863826, "alg": alg, "key": key] }
+                    itBehavesLike(validTOTP) { ["counter": 59,          "code": "90693936", "alg": alg, "key": key] }
+                    itBehavesLike(validTOTP) { ["counter": 1111111109,  "code": "25091201", "alg": alg, "key": key] }
+                    itBehavesLike(validTOTP) { ["counter": 1111111111,  "code": "99943326", "alg": alg, "key": key] }
+                    itBehavesLike(validTOTP) { ["counter": 1234567890,  "code": "93441116", "alg": alg, "key": key] }
+                    itBehavesLike(validTOTP) { ["counter": 2000000000,  "code": "38618901", "alg": alg, "key": key] }
+                    itBehavesLike(validTOTP) { ["counter": 20000000000, "code": "47863826", "alg": alg, "key": key] }
                 }
             }
         }
