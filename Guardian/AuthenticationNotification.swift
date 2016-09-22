@@ -22,7 +22,7 @@
 
 import Foundation
 
-struct AuthenticationNotification {
+public struct AuthenticationNotification {
 
     let domain: String
     let enrollmentId: String
@@ -32,6 +32,17 @@ struct AuthenticationNotification {
     let latitude: Double?
     let longitude: Double?
     let startedAt: NSDate
+
+    init(domain: String, enrollmentId: String, transactionToken: String, source: Source? = nil, locationName: String? = nil, latitude: Double? = nil, longitude: Double? = nil, startedAt: NSDate) {
+        self.domain = domain
+        self.enrollmentId = enrollmentId
+        self.transactionToken = transactionToken
+        self.source = source
+        self.locationName = locationName
+        self.latitude = latitude
+        self.longitude = longitude
+        self.startedAt = startedAt
+    }
 
     init?(userInfo: [NSObject: AnyObject]) {
         guard
@@ -86,20 +97,12 @@ struct AuthenticationNotification {
             }
         }
 
-        self.domain = domain
-        self.enrollmentId = enrollmentId
-        self.transactionToken = token
-        self.locationName = locationName
-        self.startedAt = startedAt
-
+        var source: Source? = nil
         if browserName != nil || osName != nil {
-            self.source = Source(osName: osName, osVersion: osVersion, browserName: browserName, browserVersion: browserVersion)
-        } else {
-            self.source = nil
+            source = Source(osName: osName, osVersion: osVersion, browserName: browserName, browserVersion: browserVersion)
         }
 
-        self.latitude = latitude
-        self.longitude = longitude
+        self.init(domain: domain, enrollmentId: enrollmentId, transactionToken: token, source: source, locationName: locationName, latitude: latitude, longitude: longitude, startedAt: startedAt)
     }
 }
 
