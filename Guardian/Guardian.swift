@@ -23,15 +23,17 @@
 import Foundation
 
 public struct Guardian {
+
+    let api: API
+    let codeGenerator: CodeGenerator
     
-    public let api: API
-    
-    init(apiClient: API) {
+    init(apiClient: API, codeGenerator: CodeGenerator) {
         self.api = apiClient
+        self.codeGenerator = codeGenerator
     }
     
     public init(baseUrl: NSURL, session: NSURLSession = NSURLSession.sharedSession()) {
-        self.api = APIClient(baseUrl: baseUrl, session: session)
+        self.init(apiClient: APIClient(baseUrl: baseUrl, session: session), codeGenerator: TOTPCodeGenerator())
     }
 
     public func enroll(withURI enrollmentUri: String, notificationToken: String) -> EnrollRequest {
@@ -42,5 +44,26 @@ public struct Guardian {
         return api
             .device(forEnrollmentId: enrollment.id, token: enrollment.deviceToken)
             .delete()
+    }
+
+    public func allow(notification notification: AuthenticationNotification, enrollment: Enrollment) throws -> Request<Void> {
+        return api
+            .allow(transaction: notification.transactionToken, withCode: try codeGenerator.code(forEnrollment: enrollment))
+    }
+
+    public func reject(notification notification: AuthenticationNotification, enrollment: Enrollment, reason: String? = nil) throws -> Request<Void> {
+        return api
+            .reject(transaction: notification.transactionToken, withCode: try codeGenerator.code(forEnrollment: enrollment), reason: reason)
+    }
+}
+
+protocol CodeGenerator {
+    func code(forEnrollment enrollment: Enrollment) throws -> String
+}
+
+struct TOTPCodeGenerator : CodeGenerator {
+    func code(forEnrollment enrollment: Enrollment) throws -> String {
+        let generator = try TOTP(withBase32Secret: enrollment.base32Secret, period: enrollment.period, algorithm: enrollment.algorithm)
+        return generator.generate(digits: enrollment.digits, counter: Int(NSDate().timeIntervalSince1970))
     }
 }
