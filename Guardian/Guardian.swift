@@ -24,6 +24,10 @@ import Foundation
 
 public struct Guardian {
 
+    public enum Error: ErrorType {
+        case InvalidSecretError
+    }
+
     let api: API
     let codeGenerator: CodeGenerator
     
@@ -46,14 +50,18 @@ public struct Guardian {
             .delete()
     }
 
-    public func allow(notification notification: AuthenticationNotification, enrollment: Enrollment) throws -> Request<Void> {
-        return api
-            .allow(transaction: notification.transactionToken, withCode: try codeGenerator.code(forEnrollment: enrollment))
+    public func allow(notification notification: AuthenticationNotification, enrollment: Enrollment) -> FailableRequest<Void> {
+        return FailableRequest {
+            return self.api
+                .allow(transaction: notification.transactionToken, withCode: try self.codeGenerator.code(forEnrollment: enrollment))
+        }
     }
 
-    public func reject(notification notification: AuthenticationNotification, enrollment: Enrollment, reason: String? = nil) throws -> Request<Void> {
-        return api
-            .reject(transaction: notification.transactionToken, withCode: try codeGenerator.code(forEnrollment: enrollment), reason: reason)
+    public func reject(notification notification: AuthenticationNotification, enrollment: Enrollment, reason: String? = nil) -> FailableRequest<Void> {
+        return FailableRequest {
+            return self.api
+                .reject(transaction: notification.transactionToken, withCode: try self.codeGenerator.code(forEnrollment: enrollment), reason: reason)
+        }
     }
 }
 
@@ -63,7 +71,30 @@ protocol CodeGenerator {
 
 struct TOTPCodeGenerator : CodeGenerator {
     func code(forEnrollment enrollment: Enrollment) throws -> String {
-        let generator = try TOTP(withBase32Secret: enrollment.base32Secret, period: enrollment.period, algorithm: enrollment.algorithm)
+        guard let key = Base32.decode(enrollment.base32Secret) else {
+            throw Guardian.Error.InvalidSecretError
+        }
+        let generator = try TOTP(withKey: key, period: enrollment.period, algorithm: enrollment.algorithm)
         return generator.generate(digits: enrollment.digits, counter: Int(NSDate().timeIntervalSince1970))
+    }
+}
+
+public struct FailableRequest<T>: Requestable {
+
+    typealias RequestBuilder = () throws -> Request<T>
+
+    let buildRequest: RequestBuilder
+
+    init(builder: RequestBuilder) {
+        self.buildRequest = builder
+    }
+
+    func start(callback: (Result<T>) -> ()) {
+        do {
+            let request = try buildRequest()
+            request.start(callback)
+        } catch(let error) {
+            callback(.Failure(cause: error))
+        }
     }
 }

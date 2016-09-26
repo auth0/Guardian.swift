@@ -37,6 +37,7 @@ private let ValidNotificationToken = "aValidNotificationToken"
 private let ValidIssuer = "aValidIssuer"
 private let ValidUser = "aValidUser"
 private let ValidBase32Secret = "aValidBase32Secret"
+private let InvalidBase32Secret = "anInvalidBase32Secret!?"
 private let ValidAlgorithm = "SHA1"
 private let ValidDigits = 7
 private let ValidPeriod = 29
@@ -235,10 +236,9 @@ class GuardianSpec: QuickSpec {
                 waitUntil(timeout: Timeout) { done in
                     let enrollment = Enrollment(baseURL: ValidURL, id: ValidEnrollmentId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, issuer: ValidIssuer, user: ValidUser, base32Secret: ValidBase32Secret)
                     let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, startedAt: NSDate())
-                    let request = try? fixedOtpGuardian
+                    fixedOtpGuardian
                         .allow(notification: notification, enrollment: enrollment)
-                    expect(request).toNot(beNil())
-                    request?.start { result in
+                        .start { result in
                             expect(result).to(beSuccess())
                             done()
                     }
@@ -250,12 +250,11 @@ class GuardianSpec: QuickSpec {
                 waitUntil(timeout: Timeout) { done in
                     let enrollment = Enrollment(baseURL: ValidURL, id: ValidEnrollmentId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, issuer: ValidIssuer, user: ValidUser, base32Secret: ValidBase32Secret)
                     let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, startedAt: NSDate())
-                    let request = try? fixedOtpGuardian
+                    fixedOtpGuardian
                         .allow(notification: notification, enrollment: enrollment)
-                    expect(request).toNot(beNil())
-                    request?.start { result in
-                        expect(result).to(haveGuardianError(withErrorCode: "invalid_otp"))
-                        done()
+                        .start { result in
+                            expect(result).to(haveGuardianError(withErrorCode: "invalid_otp"))
+                            done()
                     }
                 }
             }
@@ -265,11 +264,23 @@ class GuardianSpec: QuickSpec {
                 waitUntil(timeout: Timeout) { done in
                     let enrollment = Enrollment(baseURL: ValidURL, id: ValidEnrollmentId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, issuer: ValidIssuer, user: ValidUser, base32Secret: ValidBase32Secret)
                     let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: "someInvalidTransactionToken", startedAt: NSDate())
-                    let request = try? fixedOtpGuardian
+                    fixedOtpGuardian
                         .allow(notification: notification, enrollment: enrollment)
-                    expect(request).toNot(beNil())
-                    request?.start { result in
+                        .start { result in
                             expect(result).to(haveGuardianError(withErrorCode: "invalid_token"))
+                            done()
+                    }
+                }
+            }
+
+            it("should fail when enrollment secret is invalid") {
+                waitUntil(timeout: Timeout) { done in
+                    let enrollment = Enrollment(baseURL: ValidURL, id: ValidEnrollmentId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, issuer: ValidIssuer, user: ValidUser, base32Secret: InvalidBase32Secret)
+                    let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, startedAt: NSDate())
+                    guardian
+                        .allow(notification: notification, enrollment: enrollment)
+                        .start { result in
+                            expect(result).to(haveError(ofType: Guardian.Error.InvalidSecretError))
                             done()
                     }
                 }
@@ -305,12 +316,11 @@ class GuardianSpec: QuickSpec {
                 waitUntil(timeout: Timeout) { done in
                     let enrollment = Enrollment(baseURL: ValidURL, id: ValidEnrollmentId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, issuer: ValidIssuer, user: ValidUser, base32Secret: ValidBase32Secret)
                     let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, startedAt: NSDate())
-                    let request = try? fixedOtpGuardian
+                    fixedOtpGuardian
                         .reject(notification: notification, enrollment: enrollment)
-                    expect(request).toNot(beNil())
-                    request?.start { result in
-                        expect(result).to(beSuccess())
-                        done()
+                        .start { result in
+                            expect(result).to(beSuccess())
+                            done()
                     }
                 }
             }
@@ -320,12 +330,11 @@ class GuardianSpec: QuickSpec {
                 waitUntil(timeout: Timeout) { done in
                     let enrollment = Enrollment(baseURL: ValidURL, id: ValidEnrollmentId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, issuer: ValidIssuer, user: ValidUser, base32Secret: ValidBase32Secret)
                     let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, startedAt: NSDate())
-                    let request = try? fixedOtpGuardian
+                    fixedOtpGuardian
                         .reject(notification: notification, enrollment: enrollment, reason: RejectReason)
-                    expect(request).toNot(beNil())
-                    request?.start { result in
-                        expect(result).to(beSuccess())
-                        done()
+                        .start { result in
+                            expect(result).to(beSuccess())
+                            done()
                     }
                 }
             }
@@ -335,12 +344,11 @@ class GuardianSpec: QuickSpec {
                 waitUntil(timeout: Timeout) { done in
                     let enrollment = Enrollment(baseURL: ValidURL, id: ValidEnrollmentId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, issuer: ValidIssuer, user: ValidUser, base32Secret: ValidBase32Secret)
                     let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, startedAt: NSDate())
-                    let request = try? fixedOtpGuardian
+                    fixedOtpGuardian
                         .reject(notification: notification, enrollment: enrollment)
-                    expect(request).toNot(beNil())
-                    request?.start { result in
-                        expect(result).to(haveGuardianError(withErrorCode: "invalid_otp"))
-                        done()
+                        .start { result in
+                            expect(result).to(haveGuardianError(withErrorCode: "invalid_otp"))
+                            done()
                     }
                 }
             }
@@ -350,12 +358,24 @@ class GuardianSpec: QuickSpec {
                 waitUntil(timeout: Timeout) { done in
                     let enrollment = Enrollment(baseURL: ValidURL, id: ValidEnrollmentId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, issuer: ValidIssuer, user: ValidUser, base32Secret: ValidBase32Secret)
                     let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: "someInvalidTransactionToken", startedAt: NSDate())
-                    let request = try? fixedOtpGuardian
+                    fixedOtpGuardian
                         .reject(notification: notification, enrollment: enrollment)
-                    expect(request).toNot(beNil())
-                    request?.start { result in
-                        expect(result).to(haveGuardianError(withErrorCode: "invalid_token"))
-                        done()
+                        .start { result in
+                            expect(result).to(haveGuardianError(withErrorCode: "invalid_token"))
+                            done()
+                    }
+                }
+            }
+
+            it("should fail when enrollment secret is invalid") {
+                waitUntil(timeout: Timeout) { done in
+                    let enrollment = Enrollment(baseURL: ValidURL, id: ValidEnrollmentId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, issuer: ValidIssuer, user: ValidUser, base32Secret: InvalidBase32Secret)
+                    let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, startedAt: NSDate())
+                    guardian
+                        .reject(notification: notification, enrollment: enrollment, reason: RejectReason)
+                        .start { result in
+                            expect(result).to(haveError(ofType: Guardian.Error.InvalidSecretError))
+                            done()
                     }
                 }
             }
