@@ -55,17 +55,19 @@ class Base32 {
         let encodedBlocks = Int( ceil( Double(encodedLength) / 8.0 ) )
         let expectedDataLength = encodedBlocks * 5
         let decodedBytes = UnsafeMutablePointer<UInt8>.alloc(expectedDataLength)
+        defer { // will be executed after the current scope is exited, i.e. after the function returns
+            // always free memory
+            decodedBytes.destroy()
+        }
         var decodedBaseIndex = 0
         var encodedBlock: [UInt8] = [0, 0, 0, 0, 0, 0, 0, 0]
         var encodedBlockIndex = 0
 
-        var error = false
         for encodedBaseIndex in 0..<encodedLength {
             let currentByte = encodedBytes[encodedBaseIndex]
             let currentValue = decodingTable[Int(currentByte)]
             if currentValue == __ {
-                error = true
-                break
+                return nil
             }
 
             encodedBlock[encodedBlockIndex] = currentValue
@@ -90,11 +92,7 @@ class Base32 {
                 encodedBlockIndex = 0
             }
         }
-        var decodedData: NSData? = nil
-        if !error {
-            decodedData = NSData(bytes: decodedBytes, length: decodedBaseIndex)
-        }
-        decodedBytes.destroy()
-        return decodedData
+
+        return NSData(bytes: decodedBytes, length: decodedBaseIndex)
     }
 }
