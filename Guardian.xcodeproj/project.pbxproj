@@ -10,7 +10,7 @@
 		232A85DA1D6BDFCA00048DF7 /* DeviceAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 232A85D91D6BDFCA00048DF7 /* DeviceAPIClient.swift */; };
 		234004DF1D8CA944009AB77C /* OneTimePassword.swift in Sources */ = {isa = PBXBuildFile; fileRef = 234004DE1D8CA944009AB77C /* OneTimePassword.swift */; };
 		234004E91D9084A0009AB77C /* OneTimePasswordSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 234004E81D9084A0009AB77C /* OneTimePasswordSpec.swift */; };
-		234004EF1D909C91009AB77C /* NSData+Base32.swift in Sources */ = {isa = PBXBuildFile; fileRef = 234004EE1D909C91009AB77C /* NSData+Base32.swift */; };
+		234004EF1D909C91009AB77C /* Base32.swift in Sources */ = {isa = PBXBuildFile; fileRef = 234004EE1D909C91009AB77C /* Base32.swift */; };
 		2356C82E1D88998A00B6C84A /* EnrollRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2356C82D1D88998A00B6C84A /* EnrollRequest.swift */; };
 		2356C8301D88A10600B6C84A /* GuardianSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2356C82F1D88A10600B6C84A /* GuardianSpec.swift */; };
 		237246751D7DC63B00CCF635 /* Guardian.swift in Sources */ = {isa = PBXBuildFile; fileRef = 237246741D7DC63B00CCF635 /* Guardian.swift */; };
@@ -80,7 +80,7 @@
 		232A85D91D6BDFCA00048DF7 /* DeviceAPIClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceAPIClient.swift; sourceTree = "<group>"; };
 		234004DE1D8CA944009AB77C /* OneTimePassword.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OneTimePassword.swift; sourceTree = "<group>"; };
 		234004E81D9084A0009AB77C /* OneTimePasswordSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OneTimePasswordSpec.swift; sourceTree = "<group>"; };
-		234004EE1D909C91009AB77C /* NSData+Base32.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSData+Base32.swift"; sourceTree = "<group>"; };
+		234004EE1D909C91009AB77C /* Base32.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Base32.swift; sourceTree = "<group>"; };
 		2356C82D1D88998A00B6C84A /* EnrollRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnrollRequest.swift; sourceTree = "<group>"; };
 		2356C82F1D88A10600B6C84A /* GuardianSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GuardianSpec.swift; sourceTree = "<group>"; };
 		237246741D7DC63B00CCF635 /* Guardian.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Guardian.swift; sourceTree = "<group>"; };
@@ -203,7 +203,7 @@
 				23C67AED1D81EF5300A38A2E /* Enrollment.swift */,
 				2356C82D1D88998A00B6C84A /* EnrollRequest.swift */,
 				234004DE1D8CA944009AB77C /* OneTimePassword.swift */,
-				234004EE1D909C91009AB77C /* NSData+Base32.swift */,
+				234004EE1D909C91009AB77C /* Base32.swift */,
 			);
 			path = Guardian;
 			sourceTree = "<group>";
@@ -407,7 +407,7 @@
 			files = (
 				234004DF1D8CA944009AB77C /* OneTimePassword.swift in Sources */,
 				2374A9E41D670F5900737F2E /* APIClient.swift in Sources */,
-				234004EF1D909C91009AB77C /* NSData+Base32.swift in Sources */,
+				234004EF1D909C91009AB77C /* Base32.swift in Sources */,
 				2374A9EF1D672ABD00737F2E /* Result.swift in Sources */,
 				2374A9ED1D672A8D00737F2E /* Requestable.swift in Sources */,
 				237246751D7DC63B00CCF635 /* Guardian.swift in Sources */,

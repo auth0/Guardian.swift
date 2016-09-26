@@ -31,8 +31,14 @@ class Base32Spec: QuickSpec {
 
         describe("base32") {
 
-            // test vector from https://tools.ietf.org/html/rfc4648#section-10
             describe("decode") {
+
+                it("should return nil for invalid input") {
+                    expect(Base32.decode("somethingNotBase32encoded!?")).to(beNil())
+                }
+            }
+
+            describe("test vectors") {
 
                 let validBase32Encoding = "valid base32 encoding"
 
@@ -42,10 +48,11 @@ class Base32Spec: QuickSpec {
                     let decoded = data["decoded"] as! NSData
 
                     it("should return data '\(decoded)' for string '\(encoded)'") {
-                        expect(NSData(fromBase32String: encoded)).to(equal(decoded))
+                        expect(Base32.decode(encoded)).to(equal(decoded))
                     }
                 }
 
+                // test vector from https://tools.ietf.org/html/rfc4648#section-10
                 context("rfc4648") {
                     let f: UInt8 = 0x66
                     let o: UInt8 = 0x6F

@@ -26,7 +26,6 @@ import CommonCrypto
 struct TOTP {
 
     enum Error: ErrorType {
-        case InvalidBase32Key
         case NotSupportedHashAlgorithm(String)
     }
 
@@ -34,10 +33,7 @@ struct TOTP {
     let period: Int
     let algorithm: Algorithm
 
-    init(withBase32Secret base32Secret: String, period: Int, algorithm: String) throws {
-        guard let key = NSData(fromBase32String: base32Secret) else {
-            throw Error.InvalidBase32Key
-        }
+    init(withKey key: NSData, period: Int, algorithm: String) throws {
         guard let alg = Algorithm(rawValue: algorithm.lowercaseString) else {
             throw Error.NotSupportedHashAlgorithm(algorithm.lowercaseString)
         }
