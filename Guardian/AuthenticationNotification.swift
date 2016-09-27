@@ -24,31 +24,29 @@ import Foundation
 
 public struct AuthenticationNotification {
 
-    let domain: String
-    let enrollmentId: String
-    let transactionToken: String
-    let source: Source?
-    let locationName: String?
-    let latitude: Double?
-    let longitude: Double?
-    let startedAt: NSDate
+    private static let AuthenticationCategory = "com.auth0.notification.authentication"
 
-    init(domain: String, enrollmentId: String, transactionToken: String, source: Source? = nil, locationName: String? = nil, latitude: Double? = nil, longitude: Double? = nil, startedAt: NSDate) {
+    public let domain: String
+    public let enrollmentId: String
+    public let transactionToken: String
+    public let source: Source?
+    public let location: Location?
+    public let startedAt: NSDate
+
+    init(domain: String, enrollmentId: String, transactionToken: String, startedAt: NSDate, source: Source?, location: Location?) {
         self.domain = domain
         self.enrollmentId = enrollmentId
         self.transactionToken = transactionToken
         self.source = source
-        self.locationName = locationName
-        self.latitude = latitude
-        self.longitude = longitude
+        self.location = location
         self.startedAt = startedAt
     }
 
-    init?(userInfo: [NSObject: AnyObject]) {
+    public init?(userInfo: [NSObject: AnyObject]) {
         guard
-            let json = userInfo as? [String:AnyObject],
-            let aps = json["aps"] as? [String:AnyObject],
-            let category = aps["category"] as? String where category == NotificationService.AuthenticationCategory
+            let json = userInfo as? [String: AnyObject],
+            let aps = json["aps"] as? [String: AnyObject],
+            let category = aps["category"] as? String where category == AuthenticationNotification.AuthenticationCategory
             else {
                 return nil
         }
@@ -57,7 +55,7 @@ public struct AuthenticationNotification {
         formatter.locale = locale
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
         guard
-            let mfa = json["mfa"] as? [String:AnyObject],
+            let mfa = json["mfa"] as? [String: AnyObject],
             let enrollmentId = mfa["dai"] as? String,
             let token = mfa["txtkn"] as? String,
             let when = mfa["d"] as? String,
@@ -66,61 +64,52 @@ public struct AuthenticationNotification {
             else {
                 return nil
         }
-        var browserName: String?
-        var browserVersion: String?
-        var osName: String?
-        var osVersion: String?
-        if let source = mfa["s"] as? [String:AnyObject] {
-            if let browser = source["b"] as? [String:AnyObject] {
-                browserName = browser["n"] as? String
-                browserVersion = browser["v"] as? String
-            }
-            if let os = source["os"] as? [String:AnyObject] {
-                osName = os["n"] as? String
-                osVersion = os["v"] as? String
-            }
-        }
-        var locationName: String?
-        var latitude: Double?
-        var longitude: Double?
-        if let location = mfa["l"] as?  [String:AnyObject] {
-            locationName = location["n"] as? String
-            let latitudeValue = location["lat"]
-            let longitudeValue = location["long"]
-            if let latitudeString = latitudeValue as? String,
-                let longitudeString = longitudeValue as? String {
-                latitude = Double(latitudeString)
-                longitude = Double(longitudeString)
-            } else {
-                latitude = latitudeValue as? Double
-                longitude = longitudeValue as? Double
-            }
-        }
+        let source = Source(fromJSON: mfa["s"])
+        let location = Location(fromJSON: mfa["l"])
 
-        var source: Source? = nil
-        if browserName != nil || osName != nil {
-            source = Source(osName: osName, osVersion: osVersion, browserName: browserName, browserVersion: browserVersion)
-        }
-
-        self.init(domain: domain, enrollmentId: enrollmentId, transactionToken: token, source: source, locationName: locationName, latitude: latitude, longitude: longitude, startedAt: startedAt)
+        self.init(domain: domain, enrollmentId: enrollmentId, transactionToken: token, startedAt: startedAt, source: source, location: location)
     }
 }
 
-struct Source {
+public struct Source {
 
     let osName: String?
     let osVersion: String?
     let browserName: String?
     let browserVersion: String?
 
-    var browser: (name: String, version: String?)? {
+    init?(fromJSON json: AnyObject?) {
+        guard let source = json as? [String: AnyObject] else {
+            return nil
+        }
+        if let browser = source["b"] as? [String: AnyObject] {
+            browserName = browser["n"] as? String
+            browserVersion = browser["v"] as? String
+        } else {
+            browserName = nil
+            browserVersion = nil
+        }
+        if let os = source["os"] as? [String: AnyObject] {
+            osName = os["n"] as? String
+            osVersion = os["v"] as? String
+        } else {
+            osName = nil
+            osVersion = nil
+        }
+
+        if browserName == nil && osName == nil {
+            return nil
+        }
+    }
+
+    public var browser: (name: String, version: String?)? {
         guard let name = browserName else {
             return nil
         }
         return (name: name, version: browserVersion)
     }
 
-    var os: (name: String, version: String?)? {
+    public var os: (name: String, version: String?)? {
         guard let name = osName else {
             return nil
         }
@@ -128,9 +117,27 @@ struct Source {
     }
 }
 
-class NotificationService {
+public struct Location {
 
-    static let AuthenticationCategory = "com.auth0.notification.authentication"
-    static let AuthenticationAcceptAction = "\(NotificationService.AuthenticationCategory).accept"
-    static let AuthenticationRejectAction = "\(NotificationService.AuthenticationCategory).reject"
+    public let name: String?
+    public let latitude: Double?
+    public let longitude: Double?
+
+    init?(fromJSON json: AnyObject?) {
+        guard let location = json as? [String: AnyObject] else {
+            return nil
+        }
+
+        name = location["n"] as? String
+        let latitudeValue = location["lat"]
+        let longitudeValue = location["long"]
+        if let latitudeString = latitudeValue as? String,
+            let longitudeString = longitudeValue as? String {
+            latitude = Double(latitudeString)
+            longitude = Double(longitudeString)
+        } else {
+            latitude = latitudeValue as? Double
+            longitude = longitudeValue as? Double
+        }
+    }
 }
