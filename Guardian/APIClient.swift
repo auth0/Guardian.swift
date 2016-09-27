@@ -22,23 +22,23 @@
 
 import Foundation
 
-struct APIClient: API {
-    
+public struct APIClient: API {
+
     let baseUrl: NSURL
     let session: NSURLSession
     
-    init(baseUrl: NSURL, session: NSURLSession) {
+    public init(baseUrl: NSURL, session: NSURLSession) {
         self.baseUrl = baseUrl
         self.session = session
     }
     
-    func enrollment(forTransactionId transactionId: String) -> Request<[String: String]> {
+    public func enrollment(forTransactionId transactionId: String) -> Request<[String: String]> {
         let url = baseUrl.URLByAppendingPathComponent("api/enrollment-info")!
         let payload = ["enrollment_tx_id": transactionId]
         return Request(session: session, method: "POST", url: url, payload: payload)
     }
     
-    func allow(transaction transactionToken: String, withCode otpCode: String) -> Request<Void> {
+    public func allow(transaction transactionToken: String, withCode otpCode: String) -> Request<Void> {
         let url = baseUrl.URLByAppendingPathComponent("api/verify-otp")!
         let payload = [
             "type": "push_notification",
@@ -47,7 +47,7 @@ struct APIClient: API {
         return Request(session: session, method: "POST", url: url, payload: payload, headers: ["Authorization": "Bearer \(transactionToken)"])
     }
     
-    func reject(transaction transactionToken: String, withCode otpCode: String, reason: String? = nil) -> Request<Void> {
+    public func reject(transaction transactionToken: String, withCode otpCode: String, reason: String? = nil) -> Request<Void> {
         let url = baseUrl.URLByAppendingPathComponent("api/reject-login")!
         var payload = [
             "code": otpCode
@@ -58,7 +58,7 @@ struct APIClient: API {
         return Request(session: session, method: "POST", url: url, payload: payload, headers: ["Authorization": "Bearer \(transactionToken)"])
     }
     
-    func device(forEnrollmentId id: String, token: String) -> DeviceAPI {
+    public func device(forEnrollmentId id: String, token: String) -> DeviceAPI {
         return DeviceAPIClient(baseUrl: baseUrl, session: session, id: id, token: token)
     }
 }

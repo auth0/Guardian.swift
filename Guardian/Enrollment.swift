@@ -24,20 +24,20 @@ import Foundation
 
 public struct Enrollment {
     
-    let id: String
-    var deviceToken: String
-    var notificationToken: String
+    public let id: String
+    public var deviceToken: String
+    public var notificationToken: String
     
-    let base32Secret: String
-    let algorithm: String
-    let digits: Int
-    let period: Int
+    public let base32Secret: String
+    public let algorithm: String
+    public let digits: Int
+    public let period: Int
     
-    var deviceIdentifier: String {
+    public var deviceIdentifier: String {
         return UIDevice.currentDevice().identifierForVendor!.UUIDString
     }
     
-    var deviceName: String {
+    public var deviceName: String {
         return UIDevice.currentDevice().name
     }
     

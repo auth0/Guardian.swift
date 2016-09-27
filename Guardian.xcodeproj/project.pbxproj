@@ -35,6 +35,15 @@
 		5F1DB45B1DA4649600264437 /* Authentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1DB45A1DA4649600264437 /* Authentication.swift */; };
 		5F1DB45D1DA4750F00264437 /* AuthenticationSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1DB45C1DA4750F00264437 /* AuthenticationSpec.swift */; };
 		5F1DB45F1DA4757800264437 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1DB45E1DA4757800264437 /* Constants.swift */; };
+		23FE507A1D947DF600407A1D /* QRCodeReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23FE50731D947DF600407A1D /* QRCodeReader.swift */; };
+		23FE507B1D947DF600407A1D /* QRCodeReaderResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23FE50741D947DF600407A1D /* QRCodeReaderResult.swift */; };
+		23FE507C1D947DF600407A1D /* QRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23FE50751D947DF600407A1D /* QRCodeViewController.swift */; };
+		23FE507D1D947DF600407A1D /* QRCodeViewControllerBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23FE50761D947DF600407A1D /* QRCodeViewControllerBuilder.swift */; };
+		23FE507E1D947DF600407A1D /* ReaderOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23FE50771D947DF600407A1D /* ReaderOverlayView.swift */; };
+		23FE507F1D947DF600407A1D /* SwitchCameraButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23FE50781D947DF600407A1D /* SwitchCameraButton.swift */; };
+		23FE50801D947DF600407A1D /* ToggleTorchButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23FE50791D947DF600407A1D /* ToggleTorchButton.swift */; };
+		23FE50831D949EC400407A1D /* Guardian.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F2037CD1D5E1E3E0005D2E2 /* Guardian.framework */; };
+		23FE50841D949EC400407A1D /* Guardian.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5F2037CD1D5E1E3E0005D2E2 /* Guardian.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5F2037D11D5E1E3E0005D2E2 /* Guardian.h in Headers */ = {isa = PBXBuildFile; fileRef = 5F2037D01D5E1E3E0005D2E2 /* Guardian.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		5F2037D81D5E1E3E0005D2E2 /* Guardian.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F2037CD1D5E1E3E0005D2E2 /* Guardian.framework */; };
 		5F2037EE1D5E22590005D2E2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F2037ED1D5E22590005D2E2 /* AppDelegate.swift */; };
@@ -45,7 +54,6 @@
 		5F2038011D5E40C70005D2E2 /* Quick.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F2037FE1D5E40C70005D2E2 /* Quick.framework */; };
 		5F2038021D5E40C70005D2E2 /* OHHTTPStubs.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F2037FF1D5E40C70005D2E2 /* OHHTTPStubs.framework */; };
 		5F2038031D5E40C70005D2E2 /* Nimble.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F2038001D5E40C70005D2E2 /* Nimble.framework */; };
-		5F2038061D5E40D80005D2E2 /* Guardian.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F2037CD1D5E1E3E0005D2E2 /* Guardian.framework */; };
 		5F2038081D5E40ED0005D2E2 /* Quick.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5F2037FE1D5E40C70005D2E2 /* Quick.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5F2038091D5E40EE0005D2E2 /* OHHTTPStubs.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5F2037FF1D5E40C70005D2E2 /* OHHTTPStubs.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5F20380A1D5E40EE0005D2E2 /* Nimble.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5F2038001D5E40C70005D2E2 /* Nimble.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -69,6 +77,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		23FE50851D949EC400407A1D /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				23FE50841D949EC400407A1D /* Guardian.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		5F2038071D5E40E20005D2E2 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -112,6 +131,13 @@
 		5F1DB45A1DA4649600264437 /* Authentication.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Authentication.swift; sourceTree = "<group>"; };
 		5F1DB45C1DA4750F00264437 /* AuthenticationSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthenticationSpec.swift; sourceTree = "<group>"; };
 		5F1DB45E1DA4757800264437 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		23FE50731D947DF600407A1D /* QRCodeReader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = QRCodeReader.swift; path = QRCodeReader/QRCodeReader.swift; sourceTree = "<group>"; };
+		23FE50741D947DF600407A1D /* QRCodeReaderResult.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = QRCodeReaderResult.swift; path = QRCodeReader/QRCodeReaderResult.swift; sourceTree = "<group>"; };
+		23FE50751D947DF600407A1D /* QRCodeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = QRCodeViewController.swift; path = QRCodeReader/QRCodeViewController.swift; sourceTree = "<group>"; };
+		23FE50761D947DF600407A1D /* QRCodeViewControllerBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = QRCodeViewControllerBuilder.swift; path = QRCodeReader/QRCodeViewControllerBuilder.swift; sourceTree = "<group>"; };
+		23FE50771D947DF600407A1D /* ReaderOverlayView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ReaderOverlayView.swift; path = QRCodeReader/ReaderOverlayView.swift; sourceTree = "<group>"; };
+		23FE50781D947DF600407A1D /* SwitchCameraButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SwitchCameraButton.swift; path = QRCodeReader/SwitchCameraButton.swift; sourceTree = "<group>"; };
+		23FE50791D947DF600407A1D /* ToggleTorchButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ToggleTorchButton.swift; path = QRCodeReader/ToggleTorchButton.swift; sourceTree = "<group>"; };
 		5F2037CD1D5E1E3E0005D2E2 /* Guardian.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Guardian.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F2037D01D5E1E3E0005D2E2 /* Guardian.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Guardian.h; sourceTree = "<group>"; };
 		5F2037D21D5E1E3E0005D2E2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -161,7 +187,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5F2038061D5E40D80005D2E2 /* Guardian.framework in Frameworks */,
+				23FE50831D949EC400407A1D /* Guardian.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -209,6 +235,18 @@
 				234004EE1D909C91009AB77C /* Base32.swift */,
 			);
 			name = Utils;
+		23FE50811D947DFD00407A1D /* QRCodeReader */ = {
+			isa = PBXGroup;
+			children = (
+				23FE50731D947DF600407A1D /* QRCodeReader.swift */,
+				23FE50741D947DF600407A1D /* QRCodeReaderResult.swift */,
+				23FE50751D947DF600407A1D /* QRCodeViewController.swift */,
+				23FE50761D947DF600407A1D /* QRCodeViewControllerBuilder.swift */,
+				23FE50771D947DF600407A1D /* ReaderOverlayView.swift */,
+				23FE50781D947DF600407A1D /* SwitchCameraButton.swift */,
+				23FE50791D947DF600407A1D /* ToggleTorchButton.swift */,
+			);
+			name = QRCodeReader;
 			sourceTree = "<group>";
 		};
 		5F1DB4591DA4648300264437 /* Authentication */ = {
@@ -286,6 +324,7 @@
 		5F2037EC1D5E22590005D2E2 /* GuardianApp */ = {
 			isa = PBXGroup;
 			children = (
+				23FE50811D947DFD00407A1D /* QRCodeReader */,
 				5F2037ED1D5E22590005D2E2 /* AppDelegate.swift */,
 				5F2037EF1D5E22590005D2E2 /* ViewController.swift */,
 				5F2037F11D5E22590005D2E2 /* Main.storyboard */,
@@ -381,6 +420,7 @@
 				5F2037E71D5E22590005D2E2 /* Sources */,
 				5F2037E81D5E22590005D2E2 /* Frameworks */,
 				5F2037E91D5E22590005D2E2 /* Resources */,
+				23FE50851D949EC400407A1D /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -404,14 +444,19 @@
 				TargetAttributes = {
 					5F2037CC1D5E1E3E0005D2E2 = {
 						CreatedOnToolsVersion = 7.3.1;
+						DevelopmentTeam = UR8G667HT6;
 						LastSwiftMigration = 0800;
+						ProvisioningStyle = Automatic;
 					};
 					5F2037D61D5E1E3E0005D2E2 = {
 						CreatedOnToolsVersion = 7.3.1;
+						DevelopmentTeam = UR8G667HT6;
 						LastSwiftMigration = 0800;
 					};
 					5F2037EA1D5E22590005D2E2 = {
 						CreatedOnToolsVersion = 7.3.1;
+						LastSwiftMigration = 0800;
+						ProvisioningStyle = Manual;
 					};
 				};
 			};
@@ -509,7 +554,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				5F2037F01D5E22590005D2E2 /* ViewController.swift in Sources */,
+				23FE507A1D947DF600407A1D /* QRCodeReader.swift in Sources */,
+				23FE507F1D947DF600407A1D /* SwitchCameraButton.swift in Sources */,
+				23FE507D1D947DF600407A1D /* QRCodeViewControllerBuilder.swift in Sources */,
 				5F2037EE1D5E22590005D2E2 /* AppDelegate.swift in Sources */,
+				23FE507E1D947DF600407A1D /* ReaderOverlayView.swift in Sources */,
+				23FE50801D947DF600407A1D /* ToggleTorchButton.swift in Sources */,
+				23FE507B1D947DF600407A1D /* QRCodeReaderResult.swift in Sources */,
+				23FE507C1D947DF600407A1D /* QRCodeViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -648,8 +700,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = UR8G667HT6;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -657,7 +710,7 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.Guardian;
+				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.sdk.Guardian;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "";
@@ -670,8 +723,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = UR8G667HT6;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -679,7 +733,7 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.Guardian;
+				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.sdk.Guardian;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "";
@@ -691,6 +745,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				DEVELOPMENT_TEAM = UR8G667HT6;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
@@ -708,6 +763,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				DEVELOPMENT_TEAM = UR8G667HT6;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
@@ -723,24 +779,30 @@
 		5F2037FA1D5E22590005D2E2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = GuardianApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.sdk.GuardianApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.guardian.sample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 2.3;
 			};
 			name = Debug;
 		};
 		5F2037FB1D5E22590005D2E2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = GuardianApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.sdk.GuardianApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.guardian.sample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 2.3;
 			};
 			name = Release;
 		};
