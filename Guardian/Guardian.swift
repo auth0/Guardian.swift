@@ -28,8 +28,8 @@ public struct Guardian {
         case InvalidSecretError
     }
 
-    let api: API
-    let codeGenerator: CodeGenerator
+    private let api: API
+    private let codeGenerator: CodeGenerator
     
     init(apiClient: API, codeGenerator: CodeGenerator) {
         self.api = apiClient
@@ -52,15 +52,17 @@ public struct Guardian {
 
     public func allow(notification notification: AuthenticationNotification, enrollment: Enrollment) -> FailableRequest<Void> {
         return FailableRequest {
+            let code = try self.codeGenerator.code(forEnrollment: enrollment)
             return self.api
-                .allow(transaction: notification.transactionToken, withCode: try self.codeGenerator.code(forEnrollment: enrollment))
+                .allow(transaction: notification.transactionToken, withCode: code)
         }
     }
 
     public func reject(notification notification: AuthenticationNotification, enrollment: Enrollment, reason: String? = nil) -> FailableRequest<Void> {
         return FailableRequest {
+            let code = try self.codeGenerator.code(forEnrollment: enrollment)
             return self.api
-                .reject(transaction: notification.transactionToken, withCode: try self.codeGenerator.code(forEnrollment: enrollment), reason: reason)
+                .reject(transaction: notification.transactionToken, withCode: code, reason: reason)
         }
     }
 }
@@ -69,7 +71,7 @@ protocol CodeGenerator {
     func code(forEnrollment enrollment: Enrollment) throws -> String
 }
 
-struct TOTPCodeGenerator : CodeGenerator {
+struct TOTPCodeGenerator: CodeGenerator {
     func code(forEnrollment enrollment: Enrollment) throws -> String {
         guard let key = Base32.decode(enrollment.base32Secret) else {
             throw Guardian.Error.InvalidSecretError
@@ -83,13 +85,13 @@ public struct FailableRequest<T>: Requestable {
 
     typealias RequestBuilder = () throws -> Request<T>
 
-    let buildRequest: RequestBuilder
+    private let buildRequest: RequestBuilder
 
     init(builder: RequestBuilder) {
         self.buildRequest = builder
     }
 
-    func start(callback: (Result<T>) -> ()) {
+    public func start(callback: (Result<T>) -> ()) {
         do {
             let request = try buildRequest()
             request.start(callback)
