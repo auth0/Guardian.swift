@@ -298,18 +298,17 @@ class GuardianSpec: QuickSpec {
                     return errorResponse(statusCode: 401, errorCode: "invalid_token", message: "Invalid transaction token")
                     }.name = "Missing authentication"
                 stub(isRejectLogin(domain: Domain)
-                    && hasBearerToken(ValidTransactionToken)
-                    && hasAtLeast(["type": "push_notification"])) { _ in
+                    && hasBearerToken(ValidTransactionToken)) { _ in
                         return errorResponse(statusCode: 401, errorCode: "invalid_otp", message: "Invalid OTP code")
                     }.name = "Invalid OTP code"
                 stub(isRejectLogin(domain: Domain)
                     && hasBearerToken(ValidTransactionToken)
-                    && hasAtLeast(["code": ValidOTPCodeWithRejectReason, "type": "push_notification", "reason": RejectReason])) { _ in
+                    && hasAtLeast(["code": ValidOTPCodeWithRejectReason, "reason": RejectReason])) { _ in
                         return successResponse()
                     }.name = "Valid reject-login with reason"
                 stub(isRejectLogin(domain: Domain)
                     && hasBearerToken(ValidTransactionToken)
-                    && hasAtLeast(["code": ValidOTPCode, "type": "push_notification"])
+                    && hasAtLeast(["code": ValidOTPCode])
                     && hasNoneOf(["reason"])) { _ in
                         return successResponse()
                     }.name = "Valid reject-login without reason"
