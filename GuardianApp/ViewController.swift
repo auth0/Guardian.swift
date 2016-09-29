@@ -26,13 +26,14 @@ import Guardian
 
 class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
 
-    let guardian = Guardian(baseUrl: NSURL(string: "https://nikolaseu-test.guardian.auth0.com")!)
+    @IBOutlet var enrollButton: UIButton!
+    @IBOutlet var unenrollButton: UIButton!
 
-    var enrollment: Enrollment? = nil
-
-    @IBOutlet var enrollButton: UIButton?
-    @IBOutlet var unenrollButton: UIButton?
-    @IBOutlet var enrollmentTextView: UITextView?
+    @IBOutlet var enrollmentView: UIView!
+    @IBOutlet var issuerLabel: UILabel!
+    @IBOutlet var userLabel: UILabel!
+    @IBOutlet var enrollmentLabel: UILabel!
+    @IBOutlet var secretLabel: UILabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,51 +48,43 @@ class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
     }
 
     @IBAction func scanAction(sender: AnyObject) {
-        if QRCodeReader.supportsMetadataObjectTypes() {
-            let reader = createReader()
-            reader.modalPresentationStyle = .FormSheet
-            reader.delegate               = self
+        if let _ = AppDelegate.pushToken {
+            if QRCodeReader.supportsMetadataObjectTypes() {
+                let reader = createReader()
+                reader.modalPresentationStyle = .FormSheet
+                reader.delegate               = self
 
-            reader.completionBlock = { (result: QRCodeReaderResult?) in
-                if let result = result {
-                    print("Completion with result: \(result.value) of type \(result.metadataType)")
+                reader.completionBlock = { (result: QRCodeReaderResult?) in
+                    if let result = result {
+                        print("Completion with result: \(result.value) of type \(result.metadataType)")
+                    }
                 }
+
+                presentViewController(reader, animated: true, completion: nil)
+            } else {
+                let alert = UIAlertController(title: "Error", message: "Reader not supported by the current device", preferredStyle: .Alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
+                
+                presentViewController(alert, animated: true, completion: nil)
             }
-
-            presentViewController(reader, animated: true, completion: nil)
-        } else {
-            let alert = UIAlertController(title: "Error", message: "Reader not supported by the current device", preferredStyle: .Alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
-
-            presentViewController(alert, animated: true, completion: nil)
         }
     }
 
     // MARK: - QRCodeReader Delegate Methods
     func reader(reader: QRCodeReaderViewController, didScanResult result: QRCodeReaderResult) {
-        self.dismissViewControllerAnimated(true) { [weak self] in
-            self?.guardian
-                .enroll(withURI: result.value, notificationToken: "1234567890123456789012345678901234567890123456789012345678901234")
-                .start { result in
-                    switch result {
-                    case .Failure(let cause):
-                        var errorMessage = "Unknown error"
-                        if let cause = cause as? GuardianError {
-                            errorMessage = cause.description
-                        }
-                        let alert = UIAlertController(
-                            title: "Enroll failed",
-                            message: errorMessage,
-                            preferredStyle: .Alert
-                        )
-                        alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
+        self.dismissViewControllerAnimated(true) { [unowned self] in
 
-                        self?.presentViewController(alert, animated: true, completion: nil)
-                    case .Success(let enrollment):
-                        self?.enrollment = enrollment
-                    }
-                    self?.updateView()
-            }
+                AppDelegate.guardian
+                    .enroll(withURI: result.value, notificationToken: AppDelegate.pushToken!)
+                    .start { result in
+                        switch result {
+                        case .Failure(let cause):
+                            self.showError("Enroll failed", cause)
+                        case .Success(let enrollment):
+                            AppDelegate.enrollment = enrollment
+                        }
+                        self.updateView()
+                }
         }
     }
 
@@ -111,43 +104,49 @@ class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
     }
 
     @IBAction func unenrollAction(sender: AnyObject) {
-        if let enrollment = enrollment {
-            self.guardian
-            .delete(enrollment: enrollment)
-                .start { [weak self] result in
+        if let enrollment = AppDelegate.enrollment {
+            AppDelegate.guardian
+                .delete(enrollment: enrollment)
+                .start { [unowned self] result in
                     switch result {
                     case .Failure(let cause):
-                        var errorMessage = "Unknown error"
-                        if let cause = cause as? GuardianError {
-                            errorMessage = cause.description
-                        }
-                        let alert = UIAlertController(
-                            title: "Unenroll failed",
-                            message: errorMessage,
-                            preferredStyle: .Alert
-                        )
-                        alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
-                        self?.presentViewController(alert, animated: true, completion: nil)
+                        self.showError("Unenroll failed", cause)
                     case .Success(payload: _):
-                        self?.enrollment = nil
+                        AppDelegate.enrollment = nil
                     }
-                    self?.updateView()
+                    self.updateView()
             }
         }
     }
 
     func updateView() {
-        dispatch_async(dispatch_get_main_queue()) { [weak self] in
-            let haveEnrollment = self?.enrollment != nil
-            if let enrollment = self?.enrollment {
-                self?.enrollmentTextView?.text =
-                    "Issuer: \(enrollment.issuer)\n" +
-                    "User: \(enrollment.user)\n" +
-                    "Enrollment id: \(enrollment.id)\n"
+        dispatch_async(dispatch_get_main_queue()) { [unowned self] in
+            let haveEnrollment = AppDelegate.enrollment != nil
+            if let enrollment = AppDelegate.enrollment {
+                self.issuerLabel.text = enrollment.issuer
+                self.userLabel.text = enrollment.user
+                self.enrollmentLabel.text = enrollment.id
+                self.secretLabel.text = enrollment.base32Secret
             }
-            self?.enrollButton?.hidden = haveEnrollment
-            self?.unenrollButton?.hidden = !haveEnrollment
-            self?.enrollmentTextView?.hidden = !haveEnrollment
+            self.enrollButton.hidden = haveEnrollment
+            self.unenrollButton.hidden = !haveEnrollment
+            self.enrollmentView.hidden = !haveEnrollment
+        }
+    }
+
+    func showError(title: String, _ cause: ErrorType) {
+        dispatch_async(dispatch_get_main_queue()) { [unowned self] in
+            var errorMessage = "Unknown error"
+            if let cause = cause as? GuardianError {
+                errorMessage = cause.description
+            }
+            let alert = UIAlertController(
+                title: title,
+                message: errorMessage,
+                preferredStyle: .Alert
+            )
+            alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
+            self.presentViewController(alert, animated: true, completion: nil)
         }
     }
 }

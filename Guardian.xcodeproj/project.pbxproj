@@ -13,6 +13,7 @@
 		234004DF1D8CA944009AB77C /* OneTimePassword.swift in Sources */ = {isa = PBXBuildFile; fileRef = 234004DE1D8CA944009AB77C /* OneTimePassword.swift */; };
 		234004E91D9084A0009AB77C /* OneTimePasswordSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 234004E81D9084A0009AB77C /* OneTimePasswordSpec.swift */; };
 		234004EF1D909C91009AB77C /* Base32.swift in Sources */ = {isa = PBXBuildFile; fileRef = 234004EE1D909C91009AB77C /* Base32.swift */; };
+		234B25B21D9DA37D00078FA0 /* NotificationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 234B25B11D9DA37D00078FA0 /* NotificationController.swift */; };
 		2356C82E1D88998A00B6C84A /* EnrollRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2356C82D1D88998A00B6C84A /* EnrollRequest.swift */; };
 		2356C8301D88A10600B6C84A /* GuardianSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2356C82F1D88A10600B6C84A /* GuardianSpec.swift */; };
 		235B4B221DA3F51D00CEB5DC /* A0HMAC.m in Sources */ = {isa = PBXBuildFile; fileRef = 235B4B211DA3F51D00CEB5DC /* A0HMAC.m */; };
@@ -110,6 +111,7 @@
 		234004E81D9084A0009AB77C /* OneTimePasswordSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OneTimePasswordSpec.swift; sourceTree = "<group>"; };
 		234004EE1D909C91009AB77C /* Base32.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Base32.swift; sourceTree = "<group>"; };
 		234B25AD1D9D554800078FA0 /* GuardianApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GuardianApp.entitlements; sourceTree = "<group>"; };
+		234B25B11D9DA37D00078FA0 /* NotificationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationController.swift; sourceTree = "<group>"; };
 		2356C82D1D88998A00B6C84A /* EnrollRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnrollRequest.swift; sourceTree = "<group>"; };
 		2356C82F1D88A10600B6C84A /* GuardianSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GuardianSpec.swift; sourceTree = "<group>"; };
 		235B4B211DA3F51D00CEB5DC /* A0HMAC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = A0HMAC.m; sourceTree = "<group>"; };
@@ -333,6 +335,7 @@
 				5F2037F41D5E22590005D2E2 /* Assets.xcassets */,
 				5F2037F61D5E22590005D2E2 /* LaunchScreen.storyboard */,
 				5F2037F91D5E22590005D2E2 /* Info.plist */,
+				234B25B11D9DA37D00078FA0 /* NotificationController.swift */,
 			);
 			path = GuardianApp;
 			sourceTree = "<group>";
@@ -561,6 +564,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				234B25B21D9DA37D00078FA0 /* NotificationController.swift in Sources */,
 				5F2037F01D5E22590005D2E2 /* ViewController.swift in Sources */,
 				23FE507A1D947DF600407A1D /* QRCodeReader.swift in Sources */,
 				23FE507F1D947DF600407A1D /* SwitchCameraButton.swift in Sources */,

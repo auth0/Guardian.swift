@@ -21,16 +21,54 @@
 // THE SOFTWARE.
 
 import UIKit
+import Guardian
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-    var window: UIWindow?
+    static let guardian = Guardian(baseUrl: NSURL(string: "https://nikolaseu-test.guardian.auth0.com")!)
+    static var enrollment: Enrollment? = nil
+    static var pushToken: String?
 
+    var window: UIWindow?
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
+
+        // Set up push notifications
+        let notificationTypes: UIUserNotificationType = [UIUserNotificationType.Alert, UIUserNotificationType.Badge, UIUserNotificationType.Sound]
+        let pushNotificationSettings = UIUserNotificationSettings(forTypes: notificationTypes, categories: nil)
+        application.registerUserNotificationSettings(pushNotificationSettings)
+        application.registerForRemoteNotifications()
+
         return true
+    }
+
+    func application(application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: NSData) {
+        // when the registration for push notification succeeds
+        AppDelegate.pushToken = String(deviceToken)
+            .stringByReplacingOccurrencesOfString("<", withString: "")
+            .stringByReplacingOccurrencesOfString(">", withString: "")
+            .stringByReplacingOccurrencesOfString(" ", withString: "")
+        print("DEVICE TOKEN = \(deviceToken) => \(AppDelegate.pushToken)")
+    }
+
+    func application(application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: NSError) {
+        // when there's an error and the registration for push notifications failed
+        print(error)
+    }
+
+    func application(application: UIApplication, didReceiveRemoteNotification userInfo: [NSObject : AnyObject]) {
+        // when the app is open and we receive a push notification
+        print(userInfo)
+
+        if let notification = AuthenticationNotification(userInfo: userInfo) {
+            print(notification)
+            
+            let notificationController = rootController?.storyboard?.instantiateViewControllerWithIdentifier("NotificationView") as! NotificationController
+            notificationController.notification = notification
+            rootController?.presentViewController(notificationController, animated: true, completion: nil)
+        }
     }
 
     func applicationWillResignActive(application: UIApplication) {
@@ -55,6 +93,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
 
-
+    var rootController: UIViewController? {
+        return self.window?.rootViewController
+    }
 }
 
