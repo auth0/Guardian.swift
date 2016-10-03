@@ -27,13 +27,9 @@ public struct Guardian {
     private let api: API
     private let codeGenerator: CodeGenerator
     
-    init(apiClient: API, codeGenerator: CodeGenerator) {
-        self.api = apiClient
+    public init(baseUrl: NSURL, session: NSURLSession = NSURLSession.sharedSession(), codeGenerator: CodeGenerator = TOTPCodeGenerator()) {
+        self.api = APIClient(baseUrl: baseUrl, session: session)
         self.codeGenerator = codeGenerator
-    }
-    
-    public init(baseUrl: NSURL, session: NSURLSession = NSURLSession.sharedSession()) {
-        self.init(apiClient: APIClient(baseUrl: baseUrl, session: session), codeGenerator: TOTPCodeGenerator())
     }
 
     public func enroll(withURI enrollmentUri: String, notificationToken: String) -> EnrollRequest {
