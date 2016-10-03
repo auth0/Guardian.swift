@@ -24,10 +24,6 @@ import Foundation
 
 public struct Guardian {
 
-    public enum Error: ErrorType {
-        case InvalidSecretError
-    }
-
     private let api: API
     private let codeGenerator: CodeGenerator
     
@@ -50,38 +46,46 @@ public struct Guardian {
             .delete()
     }
 
-    public func allow(notification notification: AuthenticationNotification, enrollment: Enrollment) -> FailableRequest<Void> {
-        return FailableRequest {
-            let code = try self.codeGenerator.code(forEnrollment: enrollment)
+    public func allow(notification notification: AuthenticationNotification, enrollment: Enrollment) -> GuardianRequest<Void> {
+        return GuardianRequest {
+            let code = try self.codeGenerator.generate(forEnrollment: enrollment)
             return self.api
                 .allow(transaction: notification.transactionToken, withCode: code)
         }
     }
 
-    public func reject(notification notification: AuthenticationNotification, enrollment: Enrollment, reason: String? = nil) -> FailableRequest<Void> {
-        return FailableRequest {
-            let code = try self.codeGenerator.code(forEnrollment: enrollment)
+    public func reject(notification notification: AuthenticationNotification, withReason reason: String? = nil, enrollment: Enrollment) -> GuardianRequest<Void> {
+        return GuardianRequest {
+            let code = try self.codeGenerator.generate(forEnrollment: enrollment)
             return self.api
                 .reject(transaction: notification.transactionToken, withCode: code, reason: reason)
         }
     }
 }
 
-protocol CodeGenerator {
-    func code(forEnrollment enrollment: Enrollment) throws -> String
+public enum CodeGeneratorError: ErrorType {
+    case InvalidSecret
+    case InvalidAlgorithm(String)
+}
+
+public protocol CodeGenerator {
+    func generate(forEnrollment enrollment: Enrollment) throws -> String
 }
 
 struct TOTPCodeGenerator: CodeGenerator {
-    func code(forEnrollment enrollment: Enrollment) throws -> String {
+    func generate(forEnrollment enrollment: Enrollment) throws -> String {
         guard let key = Base32.decode(enrollment.base32Secret) else {
-            throw Guardian.Error.InvalidSecretError
+            throw CodeGeneratorError.InvalidSecret
         }
-        let generator = try TOTP(withKey: key, period: enrollment.period, algorithm: enrollment.algorithm)
+        guard let algorithm = Algorithm(rawValue: enrollment.algorithm.lowercaseString) else {
+            throw CodeGeneratorError.InvalidAlgorithm(enrollment.algorithm)
+        }
+        let generator = TOTP(withKey: key, period: enrollment.period, algorithm: algorithm)
         return generator.generate(digits: enrollment.digits, counter: Int(NSDate().timeIntervalSince1970))
     }
 }
 
-public struct FailableRequest<T>: Requestable {
+public struct GuardianRequest<T>: Requestable {
 
     typealias RequestBuilder = () throws -> Request<T>
 

@@ -29,53 +29,33 @@ class OneTimePasswordSpec: QuickSpec {
 
     override func spec() {
 
-        describe("constructor") {
+        describe("algorithm rawValue constructor") {
 
-            it("should return valid sha1 totp generator") {
-                let base32Secret = "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ"
-                let period = 30
-                let key = Base32.decode(base32Secret)!
-                expect(try? TOTP(withKey: key, period: period, algorithm: "sha1")).toNot(beNil())
+            it("should return valid sha1 algorithm") {
+                expect(Algorithm(rawValue: "sha1")).toNot(beNil())
             }
 
-            it("should return valid sha256 totp generator") {
-                let base32Secret = "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ"
-                let period = 30
-                let key = Base32.decode(base32Secret)!
-                expect(try? TOTP(withKey: key, period: period, algorithm: "SHA256")).toNot(beNil())
+            it("should return valid sha256 algorithm") {
+                expect(Algorithm(rawValue: "sha256")).toNot(beNil())
             }
 
-            it("should return valid sha512 totp generator") {
-                let base32Secret = "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ"
-                let period = 30
-                let key = Base32.decode(base32Secret)!
-                expect(try? TOTP(withKey: key, period: period, algorithm: "sha512")).toNot(beNil())
+            it("should return valid sha512 algorithm") {
+                expect(Algorithm(rawValue: "sha512")).toNot(beNil())
             }
 
             it("should fail when using not supported algorithm") {
-                let base32Secret = "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ"
-                let period = 30
-                let key = Base32.decode(base32Secret)!
-                expect { try TOTP(withKey: key, period: period, algorithm: "something") }.to(throwError(TOTP.Error.NotSupportedHashAlgorithm("something")))
+                expect(Algorithm(rawValue: "something")).to(beNil())
             }
         }
 
         describe("totp") {
 
             var algorithmName = "sha1"
-            var base32Secret = "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ"
             var period = 30
             let digits = 8
 
             beforeEach {
-                base32Secret = "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ"
                 period = 30
-            }
-
-            it("should return valid totp generator") {
-                let key = Base32.decode(base32Secret)!
-                let otp = try? TOTP(withKey: key, period: period, algorithm: "sha1")
-                expect(otp).toNot(beNil())
             }
 
             // Test vector from RFC 6238 https://tools.ietf.org/html/rfc6238#appendix-B
@@ -93,7 +73,7 @@ class OneTimePasswordSpec: QuickSpec {
                     beforeEach {
                         algorithmName = data["alg"] as! String
                         let key = Base32.decode(base32Secret)!
-                        otp = try! TOTP(withKey: key, period: period, algorithm: algorithmName)
+                        otp = TOTP(withKey: key, period: period, algorithm: Algorithm(rawValue: algorithmName)!)
                     }
 
                     it("should return code '\(code)' for counter '\(counter)'") {
@@ -123,7 +103,7 @@ class OneTimePasswordSpec: QuickSpec {
                     itBehavesLike(validTOTP) { ["counter": 20000000000, "code": "77737706", "alg": alg, "key": key] }
                 }
 
-                context("sha256") {
+                context("sha512") {
                     let key = "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNA="
                     let alg = "sha512"
                     itBehavesLike(validTOTP) { ["counter": 59,          "code": "90693936", "alg": alg, "key": key] }
