@@ -26,85 +26,17 @@ public func api(forDomain domain: String, session: NSURLSession = .sharedSession
     return APIClient(baseUrl: url(from: domain)!, session: session)
 }
 
+public func authentication(forDomain domain: String, session: NSURLSession = .sharedSession()) -> Authentication {
+    let client = api(forDomain: domain, session: session)
+    return Authentication(api: client)
+}
+
+public func enroll(forDomain domain: String, session: NSURLSession = .sharedSession(), usingUri uri: String, notificationToken: String) -> EnrollRequest {
+    let client = api(forDomain: domain, session: session)
+    return EnrollRequest(api: client, enrollmentUri: uri, notificationToken: notificationToken)
+}
+
 func url(from domain: String) -> NSURL? {
     guard domain.hasPrefix("http") else { return NSURL(string: "https://\(domain)") }
     return NSURL(string: domain)
-}
-
-public struct _Guardian {
-
-    private let api: API
-    private let codeGenerator: CodeGenerator
-    
-    public init(baseUrl: NSURL, session: NSURLSession = NSURLSession.sharedSession(), codeGenerator: CodeGenerator = TOTPCodeGenerator()) {
-        self.api = APIClient(baseUrl: baseUrl, session: session)
-        self.codeGenerator = codeGenerator
-    }
-
-    public func enroll(withUri enrollmentUri: String, notificationToken: String) -> EnrollRequest {
-        return EnrollRequest(api: api, enrollmentUri: enrollmentUri, notificationToken: notificationToken)
-    }
-
-    public func delete(enrollment enrollment: Enrollment) -> Request<Void> {
-        return api
-            .device(forEnrollmentId: enrollment.id, token: enrollment.deviceToken)
-            .delete()
-    }
-
-    public func allow(notification notification: Notification, enrollment: Enrollment) -> GuardianRequest<Void> {
-        return GuardianRequest {
-            let code = try self.codeGenerator.generate(forEnrollment: enrollment)
-            return self.api
-                .allow(transaction: notification.transactionToken, withCode: code)
-        }
-    }
-
-    public func reject(notification notification: Notification, withReason reason: String? = nil, enrollment: Enrollment) -> GuardianRequest<Void> {
-        return GuardianRequest {
-            let code = try self.codeGenerator.generate(forEnrollment: enrollment)
-            return self.api
-                .reject(transaction: notification.transactionToken, withCode: code, reason: reason)
-        }
-    }
-}
-
-public enum CodeGeneratorError: ErrorType {
-    case InvalidSecret
-    case InvalidAlgorithm(String)
-}
-
-public protocol CodeGenerator {
-    func generate(forEnrollment enrollment: Enrollment) throws -> String
-}
-
-struct TOTPCodeGenerator: CodeGenerator {
-    func generate(forEnrollment enrollment: Enrollment) throws -> String {
-        guard let key = Base32.decode(enrollment.base32Secret) else {
-            throw CodeGeneratorError.InvalidSecret
-        }
-        guard let generator = TOTP(withKey: key, period: enrollment.period, algorithm: enrollment.algorithm) else {
-            throw CodeGeneratorError.InvalidAlgorithm(enrollment.algorithm)
-        }
-        return generator.generate(digits: enrollment.digits, counter: Int(NSDate().timeIntervalSince1970))
-    }
-}
-
-public struct GuardianRequest<T>: Requestable {
-
-    typealias RequestBuilder = () throws -> Request<T>
-
-    private let buildRequest: RequestBuilder
-
-    init(builder: RequestBuilder) {
-        self.buildRequest = builder
-    }
-
-    public func start(callback: (Result<T>) -> ()) {
-        do {
-            let request = try buildRequest()
-            request.start(callback)
-        } catch(let error) {
-            callback(.Failure(cause: error))
-        }
-    }
 }
