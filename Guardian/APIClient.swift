@@ -50,8 +50,7 @@ struct APIClient: API {
     func reject(transaction transactionToken: String, withCode otpCode: String, reason: String? = nil) -> Request<Void> {
         let url = baseUrl.URLByAppendingPathComponent("api/reject-login")!
         var payload = [
-            "type": "push_notification",
-            "code": otpCode,
+            "code": otpCode
         ]
         if let reason = reason {
             payload["reason"] = reason

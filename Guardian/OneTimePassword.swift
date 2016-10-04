@@ -25,20 +25,13 @@ import CommonCrypto
 
 struct TOTP {
 
-    enum Error: ErrorType {
-        case NotSupportedHashAlgorithm(String)
-    }
-
     let key: NSData
     let period: Int
     let algorithm: Algorithm
 
-    init(withKey key: NSData, period: Int, algorithm: String) throws {
-        guard let alg = Algorithm(rawValue: algorithm.lowercaseString) else {
-            throw Error.NotSupportedHashAlgorithm(algorithm.lowercaseString)
-        }
+    init(withKey key: NSData, period: Int, algorithm: Algorithm) {
         self.key = key
-        self.algorithm = alg
+        self.algorithm = algorithm
         self.period = period
     }
 

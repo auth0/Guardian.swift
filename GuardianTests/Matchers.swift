@@ -262,6 +262,19 @@ func haveNSError<T>(withErrorCode errorCode: Int? = nil) -> MatcherFunc<Result<T
     }
 }
 
+func haveError<T, E where E: ErrorType, E: Equatable>(error: E) -> MatcherFunc<Result<T>> {
+    return MatcherFunc { expression, failureMessage in
+        let message = "fail with <error: \(error)>"
+        failureMessage.postfixMessage = message
+        if let actual = try expression.evaluate(), case .Failure(let cause) = actual {
+            if let cause = cause as? E {
+                return cause == error
+            }
+        }
+        return false
+    }
+}
+
 func beSuccess(withData data: [String:String]) -> MatcherFunc<Result<[String:String]>> {
     return MatcherFunc { expression, failureMessage in
         let message = "be a success response with <payload: \(data)>"
