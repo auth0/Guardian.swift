@@ -32,7 +32,7 @@ struct APIClient: API {
         self.session = session
     }
     
-    func enrollment(forTransactionId transactionId: String) -> Request<[String:String]> {
+    func enrollment(forTransactionId transactionId: String) -> Request<[String: String]> {
         let url = baseUrl.URLByAppendingPathComponent("api/enrollment-info")!
         let payload = ["enrollment_tx_id": transactionId]
         return Request(session: session, method: "POST", url: url, payload: payload)

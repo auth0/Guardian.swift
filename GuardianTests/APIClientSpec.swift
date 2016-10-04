@@ -279,7 +279,7 @@ class APIClientSpec: QuickSpec {
                 stub(isUpdateEnrollment(domain: Domain, enrollmentId: ValidEnrollmentId)
                     && hasBearerToken(ValidEnrollmentToken)) { req in
                         let payload = req.a0_payload
-                        let pushCredentials = payload?["push_credentials"] as? [String:String]
+                        let pushCredentials = payload?["push_credentials"] as? [String: String]
                         return enrollmentResponse(enrollmentId: ValidEnrollmentId, deviceIdentifier: payload?["identifier"] as? String, name: payload?["name"] as? String, service: pushCredentials?["service"], notificationToken: pushCredentials?["token"])
                     }.name = "Valid updated enrollment"
             }

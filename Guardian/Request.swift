@@ -27,10 +27,10 @@ public struct Request<T> : Requestable {
     let session: NSURLSession
     let method: String
     let url: NSURL
-    let payload: AnyObject?
-    let headers: [String:String]?
+    let payload: [String: AnyObject]?
+    let headers: [String: String]?
     
-    init(session: NSURLSession, method: String, url: NSURL, payload: AnyObject? = nil, headers: [String:String]? = nil) {
+    init(session: NSURLSession, method: String, url: NSURL, payload: [String: AnyObject]? = nil, headers: [String: String]? = nil) {
         self.session = session
         self.method = method
         self.url = url
@@ -54,21 +54,15 @@ public struct Request<T> : Requestable {
         headers?.forEach { request.setValue($1, forHTTPHeaderField: $0) }
         
         let task = session.dataTaskWithRequest(request) { data, response, error in
-            guard error == nil else {
-                callback(.Failure(cause: error!))
-                return
-            }
+            if let error = error { return callback(.Failure(cause: error)) }
             guard let httpResponse = response as? NSHTTPURLResponse else {
-                callback(.Failure(cause: GuardianError(error: .InvalidResponseError)))
-                return
+                return callback(.Failure(cause: GuardianError(error: .InvalidResponseError)))
             }
             guard (200..<300).contains(httpResponse.statusCode) else {
-                guard let info: [String:AnyObject] = json(data) else {
-                    callback(.Failure(cause: GuardianError(error: .InvalidResponseError, statusCode: httpResponse.statusCode)))
-                    return
+                guard let info: [String: AnyObject] = json(data) else {
+                    return callback(.Failure(cause: GuardianError(error: .InvalidResponseError, statusCode: httpResponse.statusCode)))
                 }
-                callback(.Failure(cause: GuardianError(info: info, statusCode: httpResponse.statusCode)))
-                return
+                return callback(.Failure(cause: GuardianError(info: info, statusCode: httpResponse.statusCode)))
             }
             callback(.Success(payload: json(data)))
         }

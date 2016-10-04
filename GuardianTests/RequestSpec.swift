@@ -192,12 +192,12 @@ class RequestSpec: QuickSpec {
             it("should succeed with parsed payload") {
                 waitUntil(timeout: Timeout) { done in
                     let response = NSHTTPURLResponse(URL: ValidURL, statusCode: 201, HTTPVersion: nil, headerFields: nil)
-                    let payload: [String:String] = [
+                    let payload: [String: String] = [
                         "someField": "someValue"
                     ]
                     let data = try? NSJSONSerialization.dataWithJSONObject(payload, options: [])
                     let session = MockNSURLSession(data: data, response: response, error: nil)
-                    Request<[String:String]>(session: session, method: ValidMethod, url: ValidURL)
+                    Request<[String: String]>(session: session, method: ValidMethod, url: ValidURL)
                         .start { result in
                             expect(result).to(beSuccess(withData: ["someField": "someValue"]))
                             done()
