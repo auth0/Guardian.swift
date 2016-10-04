@@ -1,4 +1,4 @@
-// AuthenticationNotification.swift
+// Notification.swift
 //
 // Copyright (c) 2016 Auth0 (http://auth0.com)
 //
@@ -22,9 +22,10 @@
 
 import Foundation
 
-public struct AuthenticationNotification {
+private let AuthenticationCategory = "com.auth0.notification.authentication"
 
-    private static let AuthenticationCategory = "com.auth0.notification.authentication"
+public struct Notification {
+
 
     public let domain: String
     public let enrollmentId: String
@@ -46,7 +47,7 @@ public struct AuthenticationNotification {
         guard
             let json = userInfo as? [String: AnyObject],
             let aps = json["aps"] as? [String: AnyObject],
-            let category = aps["category"] as? String where category == AuthenticationNotification.AuthenticationCategory
+            let category = aps["category"] as? String where category == AuthenticationCategory
             else {
                 return nil
         }

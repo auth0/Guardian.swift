@@ -105,7 +105,7 @@ guardian
 Once you have the enrollment in place, you will receive a push notification every time the user
 has to validate his identity with MFA.
 
-Guardian provides a method to parse the data received from APNs and return a `AuthenticationNotification`
+Guardian provides a method to parse the data received from APNs and return a `Notification`
 instance ready to be used.
 
 For example, your `AppDelegate` might have something like this:
@@ -114,7 +114,7 @@ For example, your `AppDelegate` might have something like this:
 func application(application: UIApplication, didReceiveRemoteNotification userInfo: [NSObject : AnyObject]) {
     // when the app is open and we receive a push notification
 
-    if let notification = AuthenticationNotification(userInfo: userInfo) {
+    if let notification = Notification(userInfo: userInfo) {
         // we have received a Guardian push notification
     }
 }
