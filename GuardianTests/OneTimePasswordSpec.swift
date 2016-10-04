@@ -29,22 +29,32 @@ class OneTimePasswordSpec: QuickSpec {
 
     override func spec() {
 
-        describe("algorithm rawValue constructor") {
+        describe("constructor") {
+
+            let period = 30
 
             it("should return valid sha1 algorithm") {
-                expect(Algorithm(rawValue: "sha1")).toNot(beNil())
+                let base32Secret = "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ"
+                let key = Base32.decode(base32Secret)!
+                expect(TOTP(withKey: key, period: period, algorithm: "sha1")).toNot(beNil())
             }
 
             it("should return valid sha256 algorithm") {
-                expect(Algorithm(rawValue: "sha256")).toNot(beNil())
+                let base32Secret = "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZA===="
+                let key = Base32.decode(base32Secret)!
+                expect(TOTP(withKey: key, period: period, algorithm: "sha256")).toNot(beNil())
             }
 
             it("should return valid sha512 algorithm") {
-                expect(Algorithm(rawValue: "sha512")).toNot(beNil())
+                let base32Secret = "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNA="
+                let key = Base32.decode(base32Secret)!
+                expect(TOTP(withKey: key, period: period, algorithm: "sha512")).toNot(beNil())
             }
 
             it("should fail when using not supported algorithm") {
-                expect(Algorithm(rawValue: "something")).to(beNil())
+                let base32Secret = "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNA="
+                let key = Base32.decode(base32Secret)!
+                expect(TOTP(withKey: key, period: period, algorithm: "something")).to(beNil())
             }
         }
 
@@ -73,7 +83,7 @@ class OneTimePasswordSpec: QuickSpec {
                     beforeEach {
                         algorithmName = data["alg"] as! String
                         let key = Base32.decode(base32Secret)!
-                        otp = TOTP(withKey: key, period: period, algorithm: Algorithm(rawValue: algorithmName)!)
+                        otp = TOTP(withKey: key, period: period, algorithm: algorithmName)
                     }
 
                     it("should return code '\(code)' for counter '\(counter)'") {

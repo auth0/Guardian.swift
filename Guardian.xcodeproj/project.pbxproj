@@ -632,7 +632,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.Guardian;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				"SWIFT_INCLUDE_PATHS[arch=*]" = "$(SRCROOT)/CommonCrypto";
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 2.3;
 			};
@@ -654,7 +654,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.Guardian;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				"SWIFT_INCLUDE_PATHS[arch=*]" = "$(SRCROOT)/CommonCrypto";
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_VERSION = 2.3;
 			};
 			name = Release;
