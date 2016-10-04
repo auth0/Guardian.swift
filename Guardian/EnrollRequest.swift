@@ -27,7 +27,9 @@ public struct EnrollRequest: Requestable {
     private let api: API
     private let enrollmentUri: String
     private let notificationToken: String
-    
+
+    typealias T = Enrollment
+
     init(api: API, enrollmentUri: String, notificationToken: String) {
         self.api = api
         self.enrollmentUri = enrollmentUri

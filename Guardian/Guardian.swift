@@ -32,7 +32,7 @@ public struct Guardian {
         self.codeGenerator = codeGenerator
     }
 
-    public func enroll(withURI enrollmentUri: String, notificationToken: String) -> EnrollRequest {
+    public func enroll(withUri enrollmentUri: String, notificationToken: String) -> EnrollRequest {
         return EnrollRequest(api: api, enrollmentUri: enrollmentUri, notificationToken: notificationToken)
     }
 
@@ -42,7 +42,7 @@ public struct Guardian {
             .delete()
     }
 
-    public func allow(notification notification: AuthenticationNotification, enrollment: Enrollment) -> GuardianRequest<Void> {
+    public func allow(notification notification: Notification, enrollment: Enrollment) -> GuardianRequest<Void> {
         return GuardianRequest {
             let code = try self.codeGenerator.generate(forEnrollment: enrollment)
             return self.api
@@ -50,7 +50,7 @@ public struct Guardian {
         }
     }
 
-    public func reject(notification notification: AuthenticationNotification, withReason reason: String? = nil, enrollment: Enrollment) -> GuardianRequest<Void> {
+    public func reject(notification notification: Notification, withReason reason: String? = nil, enrollment: Enrollment) -> GuardianRequest<Void> {
         return GuardianRequest {
             let code = try self.codeGenerator.generate(forEnrollment: enrollment)
             return self.api

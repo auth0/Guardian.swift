@@ -43,7 +43,7 @@ struct DeviceAPIClient: DeviceAPI {
     }
     
     func update(deviceIdentifier identifier: String? = nil, name: String? = nil, notificationToken: String? = nil) -> Request<[String: AnyObject]> {
-        var payload = [String:AnyObject]()
+        var payload = [String: AnyObject]()
         payload["identifier"] = identifier
         payload["name"] = name
         if let notificationToken = notificationToken {

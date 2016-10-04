@@ -24,7 +24,7 @@ import Foundation
 
 public protocol API {
     
-    func enrollment(forTransactionId transactionId: String) -> Request<[String:String]>
+    func enrollment(forTransactionId transactionId: String) -> Request<[String: String]>
     
     func allow(transaction transactionToken: String, withCode otpCode: String) -> Request<Void>
     

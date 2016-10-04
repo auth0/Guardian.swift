@@ -121,7 +121,7 @@ func isUpdateEnrollment(domain domain: String, enrollmentId: String? = nil) -> O
     return isMethodPATCH() && isEnrollment(domain: domain, enrollmentId: enrollmentId)
 }
 
-func haveDeviceAccountToken(deviceAccountToken: String?) -> MatcherFunc<Result<[String:String]>> {
+func haveDeviceAccountToken(deviceAccountToken: String?) -> MatcherFunc<Result<[String: String]>> {
     return MatcherFunc { expression, failureMessage in
         var message = "be a successful enrollment info result with"
         if let deviceAccountToken = deviceAccountToken {
@@ -137,7 +137,7 @@ func haveDeviceAccountToken(deviceAccountToken: String?) -> MatcherFunc<Result<[
     }
 }
 
-func haveEnrollment(withId enrollmentId: String?, deviceIdentifier: String?, deviceName: String?, notificationService: String?, notificationToken: String?) -> MatcherFunc<Result<[String:AnyObject]>> {
+func haveEnrollment(withId enrollmentId: String?, deviceIdentifier: String?, deviceName: String?, notificationService: String?, notificationToken: String?) -> MatcherFunc<Result<[String: AnyObject]>> {
     return MatcherFunc { expression, failureMessage in
         var message = "be a successful enrollment info result with"
         if let enrollmentId = enrollmentId {
@@ -174,7 +174,7 @@ func haveEnrollment(withId enrollmentId: String?, deviceIdentifier: String?, dev
                     }
                 }
                 if notificationService != nil || notificationToken != nil {
-                    guard let pushCredentials = result["push_credentials"] as? [String:String] else {
+                    guard let pushCredentials = result["push_credentials"] as? [String: String] else {
                         return false
                     }
                     if let notificationService = notificationService {
@@ -275,7 +275,7 @@ func haveError<T, E where E: ErrorType, E: Equatable>(error: E) -> MatcherFunc<R
     }
 }
 
-func beSuccess(withData data: [String:String]) -> MatcherFunc<Result<[String:String]>> {
+func beSuccess(withData data: [String: String]) -> MatcherFunc<Result<[String: String]>> {
     return MatcherFunc { expression, failureMessage in
         let message = "be a success response with <payload: \(data)>"
         failureMessage.postfixMessage = message

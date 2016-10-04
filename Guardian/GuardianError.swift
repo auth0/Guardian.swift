@@ -31,10 +31,10 @@ public class GuardianError: ErrorType, CustomStringConvertible {
         case InvalidEnrollmentUriError  = "a0.guardian.internal.invalid_enrollment_uri"
     }
     
-    let info: [String:AnyObject]?
+    let info: [String: AnyObject]?
     let statusCode: Int
     
-    init(info: [String:AnyObject], statusCode: Int) {
+    init(info: [String: AnyObject], statusCode: Int) {
         self.info = info
         self.statusCode = statusCode
     }
