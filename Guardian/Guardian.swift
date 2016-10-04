@@ -32,7 +32,7 @@ public struct Guardian {
         self.codeGenerator = codeGenerator
     }
 
-    public func enroll(withURI enrollmentUri: String, notificationToken: String) -> EnrollRequest {
+    public func enroll(withUri enrollmentUri: String, notificationToken: String) -> EnrollRequest {
         return EnrollRequest(api: api, enrollmentUri: enrollmentUri, notificationToken: notificationToken)
     }
 

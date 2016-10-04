@@ -168,6 +168,37 @@
 			name = Utils;
 			sourceTree = "<group>";
 		};
+		5F1DB4561DA41BBF00264437 /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+				2374A9E11D670F5900737F2E /* GuardianError.swift */,
+				2374A9EC1D672A8D00737F2E /* Requestable.swift */,
+				2374A9E21D670F5900737F2E /* Request.swift */,
+				2374A9EE1D672ABD00737F2E /* Result.swift */,
+			);
+			name = Networking;
+			sourceTree = "<group>";
+		};
+		5F1DB4571DA41BD100264437 /* API */ = {
+			isa = PBXGroup;
+			children = (
+				2377A6421D806DFA00D6FB04 /* API.swift */,
+				2374A9E01D670F5900737F2E /* APIClient.swift */,
+				2377A6401D806D9900D6FB04 /* DeviceAPI.swift */,
+				232A85D91D6BDFCA00048DF7 /* DeviceAPIClient.swift */,
+			);
+			name = API;
+			sourceTree = "<group>";
+		};
+		5F1DB4581DA431CF00264437 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				234004DE1D8CA944009AB77C /* OneTimePassword.swift */,
+				234004EE1D909C91009AB77C /* Base32.swift */,
+			);
+			name = Utils;
+			sourceTree = "<group>";
+		};
 		5F2037C31D5E1E3E0005D2E2 = {
 			isa = PBXGroup;
 			children = (
@@ -193,22 +224,15 @@
 		5F2037CF1D5E1E3E0005D2E2 /* Guardian */ = {
 			isa = PBXGroup;
 			children = (
-				2377A6421D806DFA00D6FB04 /* API.swift */,
-				2374A9E01D670F5900737F2E /* APIClient.swift */,
-				2377A6401D806D9900D6FB04 /* DeviceAPI.swift */,
-				232A85D91D6BDFCA00048DF7 /* DeviceAPIClient.swift */,
-				2374A9E11D670F5900737F2E /* GuardianError.swift */,
-				2374A9EC1D672A8D00737F2E /* Requestable.swift */,
-				2374A9E21D670F5900737F2E /* Request.swift */,
-				2374A9EE1D672ABD00737F2E /* Result.swift */,
+				5F1DB4571DA41BD100264437 /* API */,
+				5F1DB4561DA41BBF00264437 /* Networking */,
 				5F2037D01D5E1E3E0005D2E2 /* Guardian.h */,
 				5F2037D21D5E1E3E0005D2E2 /* Info.plist */,
 				237246741D7DC63B00CCF635 /* Guardian.swift */,
 				23C67AED1D81EF5300A38A2E /* Enrollment.swift */,
 				2356C82D1D88998A00B6C84A /* EnrollRequest.swift */,
-				234004DE1D8CA944009AB77C /* OneTimePassword.swift */,
-				234004EE1D909C91009AB77C /* Base32.swift */,
 				233F75261D92F27000B8C15C /* AuthenticationNotification.swift */,
+				5F1DB4581DA431CF00264437 /* Utils */,
 			);
 			path = Guardian;
 			sourceTree = "<group>";
