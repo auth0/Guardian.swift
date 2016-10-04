@@ -30,10 +30,9 @@
 
 @implementation A0HMAC
 
-- (instancetype)initWithAlgorithm:(NSString *)algorithm andKey:(NSData *)key {
+- (instancetype)initWithAlgorithm:(NSString *)algorithm key:(NSData *)key {
     self = [super init];
     if (self) {
-        _key = key;
         const NSString * alg = algorithm.lowercaseString;
         if ([@"sha1"  isEqual: alg]) {
             _algorithm = kCCHmacAlgSHA1;
@@ -45,20 +44,21 @@
             _algorithm = kCCHmacAlgSHA512;
             _digestLength = CC_SHA512_DIGEST_LENGTH;
         } else {
-            self = nil;
+            return nil;
         }
+        _key = key;
     }
     return self;
 }
 
 - (NSData *)sign:(NSData *)data {
-    uint8_t * hashBytes = malloc(_digestLength * sizeof(uint8_t));
+    uint8_t * hashBytes = malloc(self.digestLength * sizeof(uint8_t));
     if (!hashBytes) {
         return nil;
     }
-    memset(hashBytes, 0x0, _digestLength);
-    CCHmac(_algorithm, _key.bytes, _key.length, data.bytes, data.length, hashBytes);
-    NSData *hash = [NSData dataWithBytes:hashBytes length:_digestLength];
+    memset(hashBytes, 0x0, self.digestLength);
+    CCHmac(self.algorithm, self.key.bytes, self.key.length, data.bytes, data.length, hashBytes);
+    NSData *hash = [NSData dataWithBytes:hashBytes length:self.digestLength];
     free(hashBytes);
     return hash;
 }

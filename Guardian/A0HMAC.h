@@ -22,12 +22,14 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
 @interface A0HMAC: NSObject
 
-@property (readonly, nonatomic) size_t digestLength;
+@property (readonly, nonatomic) NSInteger digestLength;
 
-- (instancetype)initWithAlgorithm: (NSString *)algorithm andKey: (NSData *)key;
+- (nullable instancetype)initWithAlgorithm: (NSString *)algorithm key: (NSData *)key;
 
 - (NSData *)sign: (NSData *)data;
 
 @end
+NS_ASSUME_NONNULL_END

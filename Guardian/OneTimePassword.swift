@@ -28,7 +28,7 @@ struct TOTP {
     let period: Int
 
     init?(withKey key: NSData, period: Int, algorithm: String) {
-        guard let hmac = A0HMAC(algorithm: algorithm, andKey: key) else {
+        guard let hmac = A0HMAC(algorithm: algorithm, key: key) else {
             return nil
         }
 
@@ -38,7 +38,7 @@ struct TOTP {
 
     func generate(digits digits: Int, counter: Int) -> String {
         var t = UInt64(counter / period).bigEndian
-        let buffer = NSMutableData(bytes:&t, length:sizeof(UInt64));
+        let buffer = NSData(bytes: &t, length: sizeof(UInt64));
         let digestData = hmac.sign(buffer)
 
         var offset: UInt8 = 0

@@ -197,6 +197,8 @@
 		5F1DB4581DA431CF00264437 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				235B4B251DA3F85A00CEB5DC /* A0HMAC.h */,
+				235B4B211DA3F51D00CEB5DC /* A0HMAC.m */,
 				234004DE1D8CA944009AB77C /* OneTimePassword.swift */,
 				234004EE1D909C91009AB77C /* Base32.swift */,
 			);
@@ -237,8 +239,6 @@
 				2356C82D1D88998A00B6C84A /* EnrollRequest.swift */,
 				233F75261D92F27000B8C15C /* Notification.swift */,
 				5F1DB4581DA431CF00264437 /* Utils */,
-				235B4B211DA3F51D00CEB5DC /* A0HMAC.m */,
-				235B4B251DA3F85A00CEB5DC /* A0HMAC.h */,
 			);
 			path = Guardian;
 			sourceTree = "<group>";
