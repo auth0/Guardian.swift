@@ -22,7 +22,16 @@
 
 import Foundation
 
-public struct Guardian {
+public func api(forDomain domain: String, session: NSURLSession = .sharedSession()) -> API {
+    return APIClient(baseUrl: url(from: domain)!, session: session)
+}
+
+func url(from domain: String) -> NSURL? {
+    guard domain.hasPrefix("http") else { return NSURL(string: "https://\(domain)") }
+    return NSURL(string: domain)
+}
+
+public struct _Guardian {
 
     private let api: API
     private let codeGenerator: CodeGenerator
