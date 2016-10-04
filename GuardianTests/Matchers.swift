@@ -26,15 +26,6 @@ import Nimble
 
 @testable import Guardian
 
-func hasAllOf(parameters: [String: String]) -> OHHTTPStubsTestBlock {
-    return { request in
-        guard let payload = request.a0_payload else { return false }
-        return parameters.count == payload.count && parameters.reduce(true, combine: { (initial, entry) -> Bool in
-            return initial && payload[entry.0] as? String == entry.1
-        })
-    }
-}
-
 func hasAtLeast(parameters: [String: String]) -> OHHTTPStubsTestBlock {
     return { request in
         guard let payload = request.a0_payload else { return false }
@@ -45,13 +36,11 @@ func hasAtLeast(parameters: [String: String]) -> OHHTTPStubsTestBlock {
     }
 }
 
-func hasObjectAttribute(name: String, value: [String: String]) -> OHHTTPStubsTestBlock {
+func hasOtpCode(inParameter name: String) -> OHHTTPStubsTestBlock {
     return { request in
-        guard let payload = request.a0_payload, let actualValue = payload[name] as? [String: AnyObject] else { return false }
-        return value.count == actualValue.count && value.reduce(true, combine: { (initial, entry) -> Bool in
-            guard let value = actualValue[entry.0] as? String else { return false }
-            return initial && value == entry.1
-        })
+        guard let payload = request.a0_payload else { return false }
+        let code = payload[name] as? String
+        return code != nil
     }
 }
 
@@ -64,19 +53,6 @@ func hasNoneOf(names: [String]) -> OHHTTPStubsTestBlock {
 
 func hasNoneOf(parameters: [String: String]) -> OHHTTPStubsTestBlock {
     return !hasAtLeast(parameters)
-}
-
-func hasQueryParameters(parameters: [String: String]) -> OHHTTPStubsTestBlock {
-    return { request in
-        guard
-            let url = request.URL,
-            let components = NSURLComponents(URL: url, resolvingAgainstBaseURL: true),
-            let items = components.queryItems
-            else { return false }
-        return items.count == parameters.count && items.reduce(true, combine: { (initial, item) -> Bool in
-            return initial && parameters[item.name] == item.value
-        })
-    }
 }
 
 func hasBearerToken(token: String) -> OHHTTPStubsTestBlock {

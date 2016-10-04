@@ -26,24 +26,12 @@ import OHHTTPStubs
 
 @testable import Guardian
 
-private let Timeout: NSTimeInterval = 2
-
-private let ValidURL = NSURL(string: "https://some.valid.url.com/")!
 private let ValidMethod = "GET"
 private let ErrorCode = 1
 
 class RequestSpec: QuickSpec {
     
     override func spec() {
-        
-        beforeEach {
-            
-        }
-        
-        afterEach {
-            
-        }
-        
         
         describe("constructor") {
             

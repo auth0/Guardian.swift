@@ -26,21 +26,6 @@ import OHHTTPStubs
 
 @testable import Guardian
 
-private let Domain = "tenant.guardian.auth0.com"
-private let Timeout: NSTimeInterval = 2
-
-private let ValidTransactionId = "aValidTransactionId"
-private let DeviceAccountToken = "someDeviceAccountToken"
-private let ValidTransactionToken = "aValidTransactionToken"
-private let ValidOTPCode = "aValidOTPCode"
-private let RejectReason = "aRejectReason"
-private let ValidEnrollmentId = "aValidEnrollmentId"
-private let ValidEnrollmentToken = "aValidEnrollmentToken"
-private let ValidDeviceIdentifier = "aValidDeviceIdentifier"
-private let ValidDeviceName = "aValidDeviceName"
-private let ValidNotificationService = "apns"
-private let ValidNotificationToken = "aValidNotificationToken"
-
 class APIClientSpec: QuickSpec {
     
     override func spec() {
