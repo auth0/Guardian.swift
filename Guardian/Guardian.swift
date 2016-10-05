@@ -76,7 +76,6 @@ struct TOTPCodeGenerator: CodeGenerator {
         guard let generator = TOTP(withKey: key, period: enrollment.period, algorithm: enrollment.algorithm) else {
             throw CodeGeneratorError.InvalidAlgorithm(enrollment.algorithm)
         }
-
         return generator.generate(digits: enrollment.digits, counter: Int(NSDate().timeIntervalSince1970))
     }
 }

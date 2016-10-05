@@ -40,7 +40,6 @@ struct TOTP {
         var t = UInt64(counter / period).bigEndian
         let buffer = NSData(bytes: &t, length: sizeof(UInt64));
         let digestData = hmac.sign(buffer)
-
         var offset: UInt8 = 0
         digestData.getBytes(&offset, range: NSRange(location: hmac.digestLength - 1, length: sizeof(UInt8)))
         offset &= 0x0f

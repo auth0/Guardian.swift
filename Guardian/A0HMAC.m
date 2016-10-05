@@ -52,14 +52,10 @@
 }
 
 - (NSData *)sign:(NSData *)data {
-    uint8_t * hashBytes = malloc(self.digestLength * sizeof(uint8_t));
-    if (!hashBytes) {
-        return nil;
-    }
+    uint8_t * hashBytes[self.digestLength];
     memset(hashBytes, 0x0, self.digestLength);
     CCHmac(self.algorithm, self.key.bytes, self.key.length, data.bytes, data.length, hashBytes);
     NSData *hash = [NSData dataWithBytes:hashBytes length:self.digestLength];
-    free(hashBytes);
     return hash;
 }
 
