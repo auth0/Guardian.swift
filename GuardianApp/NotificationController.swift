@@ -25,7 +25,7 @@ import Guardian
 
 class NotificationController: UIViewController {
 
-    var notification: AuthenticationNotification? = nil
+    var notification: Notification? = nil
 
     @IBOutlet var issuerLabel: UILabel!
     @IBOutlet var userLabel: UILabel!
@@ -37,8 +37,9 @@ class NotificationController: UIViewController {
         guard let notification = notification, enrollment = AppDelegate.enrollment else {
             return self.dismissViewControllerAnimated(true, completion: nil)
         }
-        AppDelegate.guardian
-            .allow(notification: notification, enrollment: enrollment)
+        Guardian
+            .authentication(forDomain: AppDelegate.guardianDomain, andEnrollment: enrollment)
+            .allow(notification: notification)
             .start { result in
                 print(result)
                 switch result {
@@ -56,8 +57,9 @@ class NotificationController: UIViewController {
         guard let notification = notification, enrollment = AppDelegate.enrollment else {
             return self.dismissViewControllerAnimated(true, completion: nil)
         }
-        AppDelegate.guardian
-            .reject(notification: notification, enrollment: enrollment)
+        Guardian
+            .authentication(forDomain: AppDelegate.guardianDomain, andEnrollment: enrollment)
+            .reject(notification: notification)
             .start { result in
                 print(result)
                 switch result {
@@ -74,12 +76,10 @@ class NotificationController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        guard let notification = notification, enrollment = AppDelegate.enrollment else {
+        guard let notification = notification, _ = AppDelegate.enrollment else {
             return
         }
 
-        issuerLabel.text = enrollment.issuer
-        userLabel.text = enrollment.user
         browserLabel.text = notification.source?.browser?.name ?? "Unknown"
         locationLabel.text = notification.location?.name ?? "Unknown"
         dateLabel.text = "\(notification.startedAt)"

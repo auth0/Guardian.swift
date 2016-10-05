@@ -74,8 +74,8 @@ class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
     func reader(reader: QRCodeReaderViewController, didScanResult result: QRCodeReaderResult) {
         self.dismissViewControllerAnimated(true) { [unowned self] in
 
-                AppDelegate.guardian
-                    .enroll(withURI: result.value, notificationToken: AppDelegate.pushToken!)
+                Guardian
+                    .enroll(forDomain: AppDelegate.guardianDomain, usingUri: result.value, notificationToken: AppDelegate.pushToken!)
                     .start { result in
                         switch result {
                         case .Failure(let cause):
@@ -105,8 +105,10 @@ class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
 
     @IBAction func unenrollAction(sender: AnyObject) {
         if let enrollment = AppDelegate.enrollment {
-            AppDelegate.guardian
-                .delete(enrollment: enrollment)
+            Guardian
+                .api(forDomain: AppDelegate.guardianDomain)
+                .device(forEnrollmentId: enrollment.id, token: enrollment.deviceToken)
+                .delete()
                 .start { [unowned self] result in
                     switch result {
                     case .Failure(let cause):
@@ -123,8 +125,6 @@ class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
         dispatch_async(dispatch_get_main_queue()) { [unowned self] in
             let haveEnrollment = AppDelegate.enrollment != nil
             if let enrollment = AppDelegate.enrollment {
-                self.issuerLabel.text = enrollment.issuer
-                self.userLabel.text = enrollment.user
                 self.enrollmentLabel.text = enrollment.id
                 self.secretLabel.text = enrollment.base32Secret
             }

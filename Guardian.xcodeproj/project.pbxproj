@@ -238,6 +238,8 @@
 				234004EE1D909C91009AB77C /* Base32.swift */,
 			);
 			name = Utils;
+            sourceTree = "<group>";
+        };
 		23FE50811D947DFD00407A1D /* QRCodeReader */ = {
 			isa = PBXGroup;
 			children = (

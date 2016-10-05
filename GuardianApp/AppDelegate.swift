@@ -26,9 +26,9 @@ import Guardian
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-    static let guardian = Guardian(baseUrl: NSURL(string: "https://nikolaseu-test.guardian.auth0.com")!)
+    static let guardianDomain = "nikolaseu-test.guardian.auth0.com"
     static var enrollment: Enrollment? = nil
-    static var pushToken: String?
+    static var pushToken: String? = nil
 
     var window: UIWindow?
 
@@ -62,7 +62,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // when the app is open and we receive a push notification
         print(userInfo)
 
-        if let notification = AuthenticationNotification(userInfo: userInfo) {
+        if let notification = Guardian.notification(from: userInfo) {
             print(notification)
             
             let notificationController = rootController?.storyboard?.instantiateViewControllerWithIdentifier("NotificationView") as! NotificationController
