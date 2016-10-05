@@ -44,5 +44,5 @@ let RejectReason = "aRejectReason"
 
 let ValidDeviceIdentifier = "aValidDeviceIdentifier"
 let ValidDeviceName = "aValidDeviceName"
-let ValidNotificationService = "apns"
+let ValidNotificationService = "APNS"
 let DeviceAccountToken = NSUUID().UUIDString

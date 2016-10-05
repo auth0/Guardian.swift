@@ -48,7 +48,7 @@ struct DeviceAPIClient: DeviceAPI {
         payload["name"] = name
         if let notificationToken = notificationToken {
             payload["push_credentials"] = [
-                "service": "apns",
+                "service": "APNS",
                 "token": notificationToken
             ]
         }

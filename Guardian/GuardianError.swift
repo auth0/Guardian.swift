@@ -46,7 +46,7 @@ public class GuardianError: ErrorType, CustomStringConvertible, Equatable {
         self.statusCode = statusCode
     }
     
-    var errorCode: String {
+    public var errorCode: String {
         guard let errorCode = self.info?["errorCode"] as? String else {
             return failedRequestMessage
         }

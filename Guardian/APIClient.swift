@@ -23,7 +23,7 @@
 import Foundation
 
 struct APIClient: API {
-    
+
     let baseUrl: NSURL
     let session: NSURLSession
     
