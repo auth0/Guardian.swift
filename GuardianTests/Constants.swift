@@ -1,4 +1,4 @@
-// Enrollment.swift
+// Constants.swift
 //
 // Copyright (c) 2016 Auth0 (http://auth0.com)
 //
@@ -22,40 +22,27 @@
 
 import Foundation
 
-public struct Enrollment {
-    
-    let id: String
-    var deviceToken: String
-    var notificationToken: String
-    
-    let base32Secret: String
-    let algorithm: String
-    let digits: Int
-    let period: Int
-    
-    var deviceIdentifier: String {
-        return UIDevice.currentDevice().identifierForVendor!.UUIDString
-    }
-    
-    var deviceName: String {
-        return UIDevice.currentDevice().name
-    }
-    
-    init(
-         id: String,
-         deviceToken: String,
-         notificationToken: String,
-         base32Secret: String,
-         algorithm: String = "sha1",
-         digits: Int = 6,
-         period: Int = 30
-        ) {
-        self.id = id
-        self.deviceToken = deviceToken
-        self.notificationToken = notificationToken
-        self.base32Secret = base32Secret
-        self.algorithm = algorithm ?? "sha1"
-        self.digits = digits ?? 6
-        self.period = period ?? 30
-    }
-}
+let Domain = "tenant.guardian.auth0.com"
+let Timeout: NSTimeInterval = 2
+
+let ValidURL = NSURL(string: "https://\(Domain)/")!
+let ValidTransactionId = NSUUID().UUIDString
+let ValidEnrollmentId = NSUUID().UUIDString
+let ValidEnrollmentToken = NSUUID().UUIDString
+let ValidNotificationToken = NSUUID().UUIDString
+let ValidIssuer = "aValidIssuer"
+let ValidUser = "aValidUser"
+let ValidBase32Secret = "aValidBase32Secret"
+let InvalidBase32Secret = "anInvalidBase32Secret!?"
+let ValidAlgorithm = "SHA1"
+let ValidDigits = 7
+let ValidPeriod = 29
+let ValidTransactionToken = "aValidTransactionToken"
+let ValidOTPCode = "aValidOTPCode"
+let ValidOTPCodeWithRejectReason = "aValidOTPCodeWithRejectReason"
+let RejectReason = "aRejectReason"
+
+let ValidDeviceIdentifier = "aValidDeviceIdentifier"
+let ValidDeviceName = "aValidDeviceName"
+let ValidNotificationService = "apns"
+let DeviceAccountToken = NSUUID().UUIDString

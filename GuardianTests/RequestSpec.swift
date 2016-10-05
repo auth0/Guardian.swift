@@ -26,24 +26,12 @@ import OHHTTPStubs
 
 @testable import Guardian
 
-private let Timeout: NSTimeInterval = 2
-
-private let ValidURL = NSURL(string: "https://some.valid.url.com/")!
 private let ValidMethod = "GET"
 private let ErrorCode = 1
 
 class RequestSpec: QuickSpec {
     
     override func spec() {
-        
-        beforeEach {
-            
-        }
-        
-        afterEach {
-            
-        }
-        
         
         describe("constructor") {
             
@@ -131,7 +119,7 @@ class RequestSpec: QuickSpec {
                     let session = MockNSURLSession(data: nil, response: NSURLResponse(), error: nil)
                     Request<Void>(session: session, method: ValidMethod, url: ValidURL)
                         .start { result in
-                            expect(result).to(haveGuardianError(withErrorCode: GuardianError.InternalError.InvalidResponseError.rawValue))
+                            expect(result).to(haveGuardianError(withErrorCode: GuardianError.invalidResponse.errorCode))
                             done()
                     }
                 }
@@ -143,7 +131,7 @@ class RequestSpec: QuickSpec {
                     let session = MockNSURLSession(data: nil, response: response, error: nil)
                     Request<Void>(session: session, method: ValidMethod, url: ValidURL)
                         .start { result in
-                            expect(result).to(haveGuardianError(withErrorCode: GuardianError.InternalError.InvalidResponseError.rawValue, andStatusCode: 404))
+                            expect(result).to(haveGuardianError(withErrorCode: GuardianError.invalidResponse.errorCode, andStatusCode: 404))
                             done()
                     }
                 }
@@ -156,7 +144,7 @@ class RequestSpec: QuickSpec {
                     let session = MockNSURLSession(data: data, response: response, error: nil)
                     Request<Void>(session: session, method: ValidMethod, url: ValidURL)
                         .start { result in
-                            expect(result).to(haveGuardianError(withErrorCode: GuardianError.InternalError.InvalidResponseError.rawValue, andStatusCode: 401))
+                            expect(result).to(haveGuardianError(withErrorCode: GuardianError.invalidResponse.errorCode, andStatusCode: 401))
                             done()
                     }
                 }

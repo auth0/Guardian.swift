@@ -44,7 +44,7 @@ public struct Request<T> : Requestable {
         
         if let payload = payload {
             guard let body = try? NSJSONSerialization.dataWithJSONObject(payload, options: []) else {
-                callback(.Failure(cause: GuardianError(error: .InvalidPayloadError)))
+                callback(.Failure(cause: GuardianError.invalidPayload))
                 return
             }
             request.HTTPBody = body
@@ -56,11 +56,11 @@ public struct Request<T> : Requestable {
         let task = session.dataTaskWithRequest(request) { data, response, error in
             if let error = error { return callback(.Failure(cause: error)) }
             guard let httpResponse = response as? NSHTTPURLResponse else {
-                return callback(.Failure(cause: GuardianError(error: .InvalidResponseError)))
+                return callback(.Failure(cause: GuardianError.invalidResponse))
             }
             guard (200..<300).contains(httpResponse.statusCode) else {
                 guard let info: [String: AnyObject] = json(data) else {
-                    return callback(.Failure(cause: GuardianError(error: .InvalidResponseError, statusCode: httpResponse.statusCode)))
+                    return callback(.Failure(cause: GuardianError.invalidResponse(withStatus: httpResponse.statusCode)))
                 }
                 return callback(.Failure(cause: GuardianError(info: info, statusCode: httpResponse.statusCode)))
             }
