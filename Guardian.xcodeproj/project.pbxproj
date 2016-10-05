@@ -15,6 +15,8 @@
 		234004EF1D909C91009AB77C /* Base32.swift in Sources */ = {isa = PBXBuildFile; fileRef = 234004EE1D909C91009AB77C /* Base32.swift */; };
 		2356C82E1D88998A00B6C84A /* EnrollRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2356C82D1D88998A00B6C84A /* EnrollRequest.swift */; };
 		2356C8301D88A10600B6C84A /* GuardianSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2356C82F1D88A10600B6C84A /* GuardianSpec.swift */; };
+		235B4B221DA3F51D00CEB5DC /* A0HMAC.m in Sources */ = {isa = PBXBuildFile; fileRef = 235B4B211DA3F51D00CEB5DC /* A0HMAC.m */; };
+		235B4B261DA3F85A00CEB5DC /* A0HMAC.h in Headers */ = {isa = PBXBuildFile; fileRef = 235B4B251DA3F85A00CEB5DC /* A0HMAC.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		237246751D7DC63B00CCF635 /* Guardian.swift in Sources */ = {isa = PBXBuildFile; fileRef = 237246741D7DC63B00CCF635 /* Guardian.swift */; };
 		2374A9E41D670F5900737F2E /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2374A9E01D670F5900737F2E /* APIClient.swift */; };
 		2374A9E51D670F5900737F2E /* GuardianError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2374A9E11D670F5900737F2E /* GuardianError.swift */; };
@@ -87,6 +89,8 @@
 		234004EE1D909C91009AB77C /* Base32.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Base32.swift; sourceTree = "<group>"; };
 		2356C82D1D88998A00B6C84A /* EnrollRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnrollRequest.swift; sourceTree = "<group>"; };
 		2356C82F1D88A10600B6C84A /* GuardianSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GuardianSpec.swift; sourceTree = "<group>"; };
+		235B4B211DA3F51D00CEB5DC /* A0HMAC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = A0HMAC.m; sourceTree = "<group>"; };
+		235B4B251DA3F85A00CEB5DC /* A0HMAC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = A0HMAC.h; sourceTree = "<group>"; };
 		237246741D7DC63B00CCF635 /* Guardian.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Guardian.swift; sourceTree = "<group>"; };
 		2374A9E01D670F5900737F2E /* APIClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
 		2374A9E11D670F5900737F2E /* GuardianError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = GuardianError.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
@@ -193,6 +197,8 @@
 		5F1DB4581DA431CF00264437 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				235B4B251DA3F85A00CEB5DC /* A0HMAC.h */,
+				235B4B211DA3F51D00CEB5DC /* A0HMAC.m */,
 				234004DE1D8CA944009AB77C /* OneTimePassword.swift */,
 				234004EE1D909C91009AB77C /* Base32.swift */,
 			);
@@ -299,6 +305,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5F2037D11D5E1E3E0005D2E2 /* Guardian.h in Headers */,
+				235B4B261DA3F85A00CEB5DC /* A0HMAC.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -447,6 +454,7 @@
 				2356C82E1D88998A00B6C84A /* EnrollRequest.swift in Sources */,
 				233F75271D92F27000B8C15C /* Notification.swift in Sources */,
 				23C67AEE1D81EF5300A38A2E /* Enrollment.swift in Sources */,
+				235B4B221DA3F51D00CEB5DC /* A0HMAC.m in Sources */,
 				2377A6431D806DFA00D6FB04 /* API.swift in Sources */,
 				232A85DA1D6BDFCA00048DF7 /* DeviceAPIClient.swift in Sources */,
 			);
@@ -624,7 +632,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.Guardian;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				"SWIFT_INCLUDE_PATHS[arch=*]" = "$(SRCROOT)/CommonCrypto";
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 2.3;
 			};
@@ -646,7 +654,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.Guardian;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				"SWIFT_INCLUDE_PATHS[arch=*]" = "$(SRCROOT)/CommonCrypto";
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_VERSION = 2.3;
 			};
 			name = Release;

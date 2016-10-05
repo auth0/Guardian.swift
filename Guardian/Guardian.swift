@@ -73,10 +73,9 @@ struct TOTPCodeGenerator: CodeGenerator {
         guard let key = Base32.decode(enrollment.base32Secret) else {
             throw CodeGeneratorError.InvalidSecret
         }
-        guard let algorithm = Algorithm(rawValue: enrollment.algorithm.lowercaseString) else {
+        guard let generator = TOTP(withKey: key, period: enrollment.period, algorithm: enrollment.algorithm) else {
             throw CodeGeneratorError.InvalidAlgorithm(enrollment.algorithm)
         }
-        let generator = TOTP(withKey: key, period: enrollment.period, algorithm: algorithm)
         return generator.generate(digits: enrollment.digits, counter: Int(NSDate().timeIntervalSince1970))
     }
 }

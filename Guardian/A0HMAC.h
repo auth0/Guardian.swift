@@ -1,4 +1,4 @@
-// Guardian.h
+// A0HMAC.h
 //
 // Copyright (c) 2016 Auth0 (http://auth0.com)
 //
@@ -20,14 +20,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 
-//! Project version number for Guardian.
-FOUNDATION_EXPORT double GuardianVersionNumber;
+NS_ASSUME_NONNULL_BEGIN
+@interface A0HMAC: NSObject
 
-//! Project version string for Guardian.
-FOUNDATION_EXPORT const unsigned char GuardianVersionString[];
+@property (readonly, nonatomic) NSInteger digestLength;
 
-// In this header, you should import all the public headers of your framework using statements like #import <Guardian/PublicHeader.h>
+- (nullable instancetype)initWithAlgorithm: (NSString *)algorithm key: (NSData *)key;
 
-#include <Guardian/A0HMAC.h>
+- (NSData *)sign: (NSData *)data;
+
+@end
+NS_ASSUME_NONNULL_END
