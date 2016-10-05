@@ -64,7 +64,7 @@ class AuthenticationSpec: QuickSpec {
                 let enrollment = Enrollment(id: ValidEnrollmentId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, base32Secret: ValidBase32Secret)
                 let auth = Guardian.authentication(forDomain: Domain, andEnrollment: enrollment)
                 waitUntil(timeout: Timeout) { done in
-                    let notification = Notification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, startedAt: NSDate(), source: nil, location: nil)
+                    let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, startedAt: NSDate(), source: nil, location: nil)
                     auth
                         .allow(notification: notification)
                         .start { result in
@@ -78,7 +78,7 @@ class AuthenticationSpec: QuickSpec {
                 let enrollment = Enrollment(id: ValidEnrollmentId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, base32Secret: ValidBase32Secret)
                 let auth = Guardian.authentication(forDomain: Domain, andEnrollment: enrollment)
                 waitUntil(timeout: Timeout) { done in
-                    let notification = Notification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, startedAt: NSDate(), source: nil, location: nil)
+                    let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, startedAt: NSDate(), source: nil, location: nil)
                     auth
                         .allow(notification: notification)
                         .start { result in
@@ -92,7 +92,7 @@ class AuthenticationSpec: QuickSpec {
                 let enrollment = Enrollment(id: ValidEnrollmentId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, base32Secret: ValidBase32Secret)
                 let fixedOtpGuardian = Guardian.authentication(forDomain: Domain, andEnrollment: enrollment)
                 waitUntil(timeout: Timeout) { done in
-                    let notification = Notification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: "someInvalidTransactionToken", startedAt: NSDate(), source: nil, location: nil)
+                    let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: "someInvalidTransactionToken", startedAt: NSDate(), source: nil, location: nil)
                     fixedOtpGuardian
                         .allow(notification: notification)
                         .start { result in
@@ -105,7 +105,7 @@ class AuthenticationSpec: QuickSpec {
             it("should fail when enrollment secret is invalid") {
                 waitUntil(timeout: Timeout) { done in
                     let enrollment = Enrollment(id: ValidEnrollmentId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, base32Secret: InvalidBase32Secret)
-                    let notification = Notification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, startedAt: NSDate(), source: nil, location: nil)
+                    let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, startedAt: NSDate(), source: nil, location: nil)
                     Guardian.authentication(forDomain: Domain, andEnrollment: enrollment)
                         .allow(notification: notification)
                         .start { result in
@@ -118,7 +118,7 @@ class AuthenticationSpec: QuickSpec {
             it("should fail when enrollment algorithm is invalid") {
                 waitUntil(timeout: Timeout) { done in
                     let enrollment = Enrollment(id: ValidEnrollmentId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, base32Secret: ValidBase32Secret, algorithm: "anInvalidAlgorithm")
-                    let notification = Notification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, startedAt: NSDate(), source: nil, location: nil)
+                    let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, startedAt: NSDate(), source: nil, location: nil)
                     Guardian.authentication(forDomain: Domain, andEnrollment: enrollment)
                         .allow(notification: notification)
                         .start { result in
@@ -151,7 +151,7 @@ class AuthenticationSpec: QuickSpec {
                 let enrollment = Enrollment(id: ValidEnrollmentId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, base32Secret: ValidBase32Secret)
                 let auth = Guardian.authentication(forDomain: Domain, andEnrollment: enrollment)
                 waitUntil(timeout: Timeout) { done in
-                    let notification = Notification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, startedAt: NSDate(), source: nil, location: nil)
+                    let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, startedAt: NSDate(), source: nil, location: nil)
                     auth
                         .reject(notification: notification)
                         .start { result in
@@ -171,7 +171,7 @@ class AuthenticationSpec: QuickSpec {
                 let enrollment = Enrollment(id: ValidEnrollmentId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, base32Secret: ValidBase32Secret)
                 let auth = Guardian.authentication(forDomain: Domain, andEnrollment: enrollment)
                 waitUntil(timeout: Timeout) { done in
-                    let notification = Notification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, startedAt: NSDate(), source: nil, location: nil)
+                    let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, startedAt: NSDate(), source: nil, location: nil)
                     auth
                         .reject(notification: notification, withReason: RejectReason)
                         .start { result in
@@ -185,7 +185,7 @@ class AuthenticationSpec: QuickSpec {
                 let enrollment = Enrollment(id: ValidEnrollmentId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, base32Secret: ValidBase32Secret)
                 let auth = Guardian.authentication(forDomain: Domain, andEnrollment: enrollment)
                 waitUntil(timeout: Timeout) { done in
-                    let notification = Notification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, startedAt: NSDate(), source: nil, location: nil)
+                    let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, startedAt: NSDate(), source: nil, location: nil)
                     auth
                         .reject(notification: notification)
                         .start { result in
@@ -199,7 +199,7 @@ class AuthenticationSpec: QuickSpec {
                 let enrollment = Enrollment(id: ValidEnrollmentId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, base32Secret: ValidBase32Secret)
                 let auth = Guardian.authentication(forDomain: Domain, andEnrollment: enrollment)
                 waitUntil(timeout: Timeout) { done in
-                    let notification = Notification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: "someInvalidTransactionToken", startedAt: NSDate(), source: nil, location: nil)
+                    let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: "someInvalidTransactionToken", startedAt: NSDate(), source: nil, location: nil)
                     auth
                         .reject(notification: notification)
                         .start { result in
@@ -212,7 +212,7 @@ class AuthenticationSpec: QuickSpec {
             it("should fail when enrollment secret is invalid") {
                 waitUntil(timeout: Timeout) { done in
                     let enrollment = Enrollment(id: ValidEnrollmentId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, base32Secret: InvalidBase32Secret)
-                    let notification = Notification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, startedAt: NSDate(), source: nil, location: nil)
+                    let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, startedAt: NSDate(), source: nil, location: nil)
                     Guardian.authentication(forDomain: Domain, andEnrollment: enrollment)
                         .reject(notification: notification, withReason: RejectReason)
                         .start { result in
@@ -225,7 +225,7 @@ class AuthenticationSpec: QuickSpec {
             it("should fail when enrollment algorithm is invalid") {
                 waitUntil(timeout: Timeout) { done in
                     let enrollment = Enrollment(id: ValidEnrollmentId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, base32Secret: ValidBase32Secret, algorithm: "anInvalidAlgorithm")
-                    let notification = Notification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, startedAt: NSDate(), source: nil, location: nil)
+                    let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, startedAt: NSDate(), source: nil, location: nil)
                     Guardian.authentication(forDomain: Domain, andEnrollment: enrollment)
                         .reject(notification: notification, withReason: RejectReason)
                         .start { result in

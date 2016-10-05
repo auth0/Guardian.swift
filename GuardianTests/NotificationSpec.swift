@@ -31,7 +31,7 @@ class NotificationSpec: QuickSpec {
         describe("init") {
 
             context("valid payload") {
-                let notification = Notification(userInfo: payload())
+                let notification = AuthenticationNotification(userInfo: payload())
 
                 it("should build with valid payload") {
                     expect(notification).toNot(beNil())
@@ -39,10 +39,10 @@ class NotificationSpec: QuickSpec {
 
                 it("should have source") {
                     expect(notification?.source).toNot(beNil())
-                    expect(notification?.source?.browserName).to(equal("Safari"))
-                    expect(notification?.source?.browserVersion).to(equal("9.0.3"))
-                    expect(notification?.source?.osName).to(equal("Mac OS"))
-                    expect(notification?.source?.osVersion).to(equal("10.11.3"))
+                    expect(notification?.source?.browser?.name).to(equal("Safari"))
+                    expect(notification?.source?.browser?.version).to(equal("9.0.3"))
+                    expect(notification?.source?.os?.name).to(equal("Mac OS"))
+                    expect(notification?.source?.os?.version).to(equal("10.11.3"))
                 }
 
                 it("should have account id") {
@@ -81,22 +81,22 @@ class NotificationSpec: QuickSpec {
                 var notification: Notification!
 
                 it("should include full source") {
-                    notification = Notification(userInfo: payload(browser: browser, os: os))
+                    notification = AuthenticationNotification(userInfo: payload(browser: browser, os: os))
                     expect(notification.source).toNot(beNil())
                 }
 
                 it("should include only browser") {
-                    notification = Notification(userInfo: payload(browser: browser, os: nil))
+                    notification = AuthenticationNotification(userInfo: payload(browser: browser, os: nil))
                     expect(notification.source).toNot(beNil())
                 }
 
                 it("should include only os") {
-                    notification = Notification(userInfo: payload(browser: nil, os: os))
+                    notification = AuthenticationNotification(userInfo: payload(browser: nil, os: os))
                     expect(notification.source).toNot(beNil())
                 }
 
                 it("should return nothing when missing source") {
-                    notification = Notification(userInfo: payload(browser: nil, os: nil))
+                    notification = AuthenticationNotification(userInfo: payload(browser: nil, os: nil))
                     expect(notification.source).to(beNil())
                 }
             }
@@ -106,37 +106,37 @@ class NotificationSpec: QuickSpec {
                 var notification: Notification!
 
                 it("should fail with empty payload") {
-                    notification = Notification(userInfo: [:])
+                    notification = AuthenticationNotification(userInfo: [:])
                     expect(notification).to(beNil())
                 }
 
                 it("should not fail without source") {
-                    notification = Notification(userInfo: payload(browser: nil, os: nil))
+                    notification = AuthenticationNotification(userInfo: payload(browser: nil, os: nil))
                     expect(notification).toNot(beNil())
                 }
 
                 it("should fail without domain") {
-                    notification = Notification(userInfo: payload(host: nil))
+                    notification = AuthenticationNotification(userInfo: payload(host: nil))
                     expect(notification).to(beNil())
                 }
 
                 it("should fail without account id") {
-                    notification = Notification(userInfo: payload(device: nil))
+                    notification = AuthenticationNotification(userInfo: payload(device: nil))
                     expect(notification).to(beNil())
                 }
 
                 it("should fail without tx id") {
-                    notification = Notification(userInfo: payload(token: nil))
+                    notification = AuthenticationNotification(userInfo: payload(token: nil))
                     expect(notification).to(beNil())
                 }
 
                 it("should fail without started at") {
-                    notification = Notification(userInfo: payload(startedAt: nil))
+                    notification = AuthenticationNotification(userInfo: payload(startedAt: nil))
                     expect(notification).to(beNil())
                 }
 
                 it("should fail if notification category is invalid") {
-                    notification = Notification(userInfo: payload(category: "some other category"))
+                    notification = AuthenticationNotification(userInfo: payload(category: "some other category"))
                     expect(notification).to(beNil())
                 }
             }

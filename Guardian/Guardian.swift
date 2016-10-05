@@ -37,7 +37,7 @@ public func enroll(forDomain domain: String, session: NSURLSession = .sharedSess
 }
 
 public func notification(from userInfo: [NSObject: AnyObject]) -> Notification? {
-    return Notification(userInfo: userInfo)
+    return AuthenticationNotification(userInfo: userInfo)
 }
 
 func url(from domain: String) -> NSURL? {
