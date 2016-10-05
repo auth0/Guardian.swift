@@ -36,6 +36,10 @@ public func enroll(forDomain domain: String, session: NSURLSession = .sharedSess
     return EnrollRequest(api: client, enrollmentUri: uri, notificationToken: notificationToken)
 }
 
+public func notification(from userInfo: [NSObject: AnyObject]) -> Notification? {
+    return Notification(userInfo: userInfo)
+}
+
 func url(from domain: String) -> NSURL? {
     guard domain.hasPrefix("http") else { return NSURL(string: "https://\(domain)") }
     return NSURL(string: domain)

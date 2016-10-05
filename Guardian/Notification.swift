@@ -26,7 +26,6 @@ private let AuthenticationCategory = "com.auth0.notification.authentication"
 
 public struct Notification {
 
-
     public let domain: String
     public let enrollmentId: String
     public let transactionToken: String
@@ -43,14 +42,12 @@ public struct Notification {
         self.startedAt = startedAt
     }
 
-    public init?(userInfo: [NSObject: AnyObject]) {
+    init?(userInfo: [NSObject: AnyObject]) {
         guard
             let json = userInfo as? [String: AnyObject],
             let aps = json["aps"] as? [String: AnyObject],
             let category = aps["category"] as? String where category == AuthenticationCategory
-            else {
-                return nil
-        }
+            else { return nil }
         let locale = NSLocale(localeIdentifier: "en_US_POSIX")
         let formatter = NSDateFormatter()
         formatter.locale = locale
@@ -62,9 +59,7 @@ public struct Notification {
             let when = mfa["d"] as? String,
             let startedAt = formatter.dateFromString(when),
             let domain = mfa["sh"] as? String
-            else {
-                return nil
-        }
+            else { return nil }
         let source = Source(fromJSON: mfa["s"])
         let location = Location(fromJSON: mfa["l"])
 
