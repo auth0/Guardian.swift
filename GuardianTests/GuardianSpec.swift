@@ -59,17 +59,19 @@ class GuardianSpec: QuickSpec {
 
         describe("authentication(forDomain:, session:)") {
 
+            let enrollment = Enrollment(id: "ID", deviceToken: "TOKEN", notificationToken: "TOKEN", base32Secret: "SECRET")
+
             it("should return authentication with domain only") {
-                expect(Guardian.authentication(forDomain: "samples.guardian.auth0.com")).toNot(beNil())
+                expect(Guardian.authentication(forDomain: "samples.guardian.auth0.com", andEnrollment: enrollment)).toNot(beNil())
             }
 
             it("should return authentication with http url") {
-                expect(Guardian.authentication(forDomain: "https://samples.guardian.auth0.com")).toNot(beNil())
+                expect(Guardian.authentication(forDomain: "https://samples.guardian.auth0.com", andEnrollment: enrollment)).toNot(beNil())
             }
 
             it("should return authentication with domain and URLSession") {
                 let session = NSURLSession(configuration: .ephemeralSessionConfiguration())
-                expect(Guardian.authentication(forDomain: "samples.guardian.auth0.com", session: session)).toNot(beNil())
+                expect(Guardian.authentication(forDomain: "samples.guardian.auth0.com", andEnrollment: enrollment, session: session)).toNot(beNil())
             }
             
         }
@@ -173,17 +175,3 @@ class GuardianSpec: QuickSpec {
 func enrollmentUri(withTransactionId transactionId: String, baseUrl: String, enrollmentId: String, issuer: String, user: String, secret: String, algorithm: String, digits: Int, period: Int) -> String {
     return "otpauth://totp/\(issuer):\(user)?secret=\(secret)&issuer=\(issuer)&enrollment_tx_id=\(transactionId)&id=\(enrollmentId)&algorithm=\(algorithm)&digits=\(digits)&period=\(period)&base_url=\(baseUrl)"
 }
-
-extension CodeGeneratorError: Equatable {}
-
-public func ==(lhs: CodeGeneratorError, rhs: CodeGeneratorError) -> Bool {
-    switch (lhs, rhs) {
-    case (.InvalidAlgorithm(let l), .InvalidAlgorithm(let r)):
-        return l == r
-    case (.InvalidSecret, .InvalidSecret):
-        return true
-    default:
-        return false
-    }
-}
-

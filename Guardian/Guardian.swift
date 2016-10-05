@@ -26,9 +26,9 @@ public func api(forDomain domain: String, session: NSURLSession = .sharedSession
     return APIClient(baseUrl: url(from: domain)!, session: session)
 }
 
-public func authentication(forDomain domain: String, session: NSURLSession = .sharedSession()) -> Authentication {
+public func authentication(forDomain domain: String, andEnrollment enrollment: Enrollment, session: NSURLSession = .sharedSession()) -> Authentication {
     let client = api(forDomain: domain, session: session)
-    return Authentication(api: client)
+    return TOTPAuthentication(api: client, enrollment: enrollment)
 }
 
 public func enroll(forDomain domain: String, session: NSURLSession = .sharedSession(), usingUri uri: String, notificationToken: String) -> EnrollRequest {

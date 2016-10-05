@@ -22,15 +22,15 @@
 
 import Foundation
 
-public class GuardianError: ErrorType, CustomStringConvertible {
-    
-    enum InternalError: String {
-        case InvalidPayloadError        = "a0.guardian.internal.invalid_payload"
-        case InvalidResponseError       = "a0.guardian.internal.invalid_response"
-        case UnknownServerError         = "a0.guardian.internal.unknown_server_error"
-        case InvalidEnrollmentUriError  = "a0.guardian.internal.invalid_enrollment_uri"
-    }
-    
+private let invalidPayloadMessage = "a0.guardian.internal.invalid_payload"
+private let invalidResponseMessage = "a0.guardian.internal.invalid_response"
+private let failedRequestMessage = "a0.guardian.internal.unknown_server_error"
+private let invalidEnrollmentUriMessage = "a0.guardian.internal.invalid_enrollment_uri"
+private let invalidBase32SecretMessage = "a0.guardian.internal.invalid_base32_secret"
+private let invalidOTPAlgorithmMessage = "a0.guardian.internal.invalid_otp_algorithm"
+
+public class GuardianError: ErrorType, CustomStringConvertible, Equatable {
+
     let info: [String: AnyObject]?
     let statusCode: Int
     
@@ -39,21 +39,55 @@ public class GuardianError: ErrorType, CustomStringConvertible {
         self.statusCode = statusCode
     }
     
-    init(error: InternalError, statusCode: Int = 0) {
+    init(string: String, statusCode: Int = 0) {
         self.info = [
-            "errorCode": error.rawValue
+            "errorCode": string
         ]
         self.statusCode = statusCode
     }
     
     var errorCode: String {
         guard let errorCode = self.info?["errorCode"] as? String else {
-            return InternalError.UnknownServerError.rawValue
+            return failedRequestMessage
         }
         return errorCode;
     }
     
     public var description: String {
         return "GuardianError(errorCode=\(errorCode), info=\(info ?? [:]))"
+    }
+}
+
+public func ==(lhs: GuardianError, rhs: GuardianError) -> Bool {
+    return lhs.errorCode == rhs.errorCode && lhs.statusCode == rhs.statusCode
+}
+
+internal extension GuardianError {
+    static var failedRequest: GuardianError {
+        return GuardianError(string: failedRequestMessage)
+    }
+
+    static var invalidBase32Secret: GuardianError {
+        return GuardianError(string: invalidBase32SecretMessage)
+    }
+
+    static var invalidOTPAlgorithm: GuardianError {
+        return GuardianError(string: invalidOTPAlgorithmMessage)
+    }
+
+    static var invalidPayload: GuardianError {
+        return GuardianError(string: invalidPayloadMessage)
+    }
+
+    static var invalidResponse: GuardianError {
+        return GuardianError(string: invalidResponseMessage)
+    }
+
+    static func invalidResponse(withStatus status: Int) -> GuardianError {
+        return GuardianError(string: invalidResponseMessage, statusCode: status)
+    }
+
+    static var invalidEnrollmentUri: GuardianError {
+        return GuardianError(string: invalidEnrollmentUriMessage)
     }
 }

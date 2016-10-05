@@ -187,12 +187,9 @@ func haveEnrollment(withBaseUrl baseURL: NSURL, enrollmentId: String, deviceToke
         
         if let actual = try expression.evaluate(), case .Success(let result) = actual {
             if let result = result {
-                return result.baseURL == baseURL
-                    && result.id == enrollmentId
+                return result.id == enrollmentId
                     && result.deviceToken == deviceToken
                     && result.notificationToken == notificationToken
-                    && result.issuer == issuer
-                    && result.user == user
                     && result.base32Secret == base32Secret
                     && result.algorithm == algorithm
                     && result.digits == digits

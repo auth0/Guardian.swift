@@ -24,13 +24,9 @@ import Foundation
 
 public struct Enrollment {
     
-    let baseURL: NSURL
     let id: String
-    let deviceToken: String
-    let notificationToken: String
-    
-    let issuer: String
-    let user: String
+    var deviceToken: String
+    var notificationToken: String
     
     let base32Secret: String
     let algorithm: String
@@ -45,22 +41,18 @@ public struct Enrollment {
         return UIDevice.currentDevice().name
     }
     
-    init(baseURL: NSURL,
+    init(
          id: String,
          deviceToken: String,
          notificationToken: String,
-         issuer: String,
-         user: String,
          base32Secret: String,
-         algorithm: String? = nil,
-         digits: Int? = nil,
-         period: Int? = nil) {
-        self.baseURL = baseURL
+         algorithm: String = "sha1",
+         digits: Int = 6,
+         period: Int = 30
+        ) {
         self.id = id
         self.deviceToken = deviceToken
         self.notificationToken = notificationToken
-        self.issuer = issuer
-        self.user = user
         self.base32Secret = base32Secret
         self.algorithm = algorithm ?? "sha1"
         self.digits = digits ?? 6

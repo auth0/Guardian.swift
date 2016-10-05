@@ -22,56 +22,55 @@
 
 import Foundation
 
-public struct Authentication {
+public protocol Authentication {
+    func allow(notification notification: Notification) -> GuardianRequest
+    func reject(notification notification: Notification, withReason reason: String?) -> GuardianRequest
+}
 
-    private let api: API
-
-    public init(api: API) {
-        self.api = api
+public extension Authentication {
+    public func reject(notification notification: Notification, withReason reason: String? = nil) -> GuardianRequest {
+        return self.reject(notification: notification, withReason: reason)
     }
+}
 
-    public func allow(notification notification: Notification, enrollment: Enrollment) -> GuardianRequest<Void> {
+struct TOTPAuthentication: Authentication {
+
+    let api: API
+    let enrollment: Enrollment
+
+    func allow(notification notification: Notification) -> GuardianRequest {
         return GuardianRequest {
-            let code = try TOTPCodeGenerator().generate(forEnrollment: enrollment)
+            let code = try totp(from: self.enrollment)
+                .generate(digits: self.enrollment.digits, counter: Int(NSDate().timeIntervalSince1970))
             return self.api
                 .allow(transaction: notification.transactionToken, withCode: code)
         }
     }
 
-    public func reject(notification notification: Notification, withReason reason: String? = nil, enrollment: Enrollment) -> GuardianRequest<Void> {
+    func reject(notification notification: Notification, withReason reason: String? = nil) -> GuardianRequest {
         return GuardianRequest {
-            let code = try TOTPCodeGenerator().generate(forEnrollment: enrollment)
+            let code = try totp(from: self.enrollment)
+                .generate(digits: self.enrollment.digits, counter: Int(NSDate().timeIntervalSince1970))
             return self.api
                 .reject(transaction: notification.transactionToken, withCode: code, reason: reason)
         }
     }
-
 }
 
-public enum CodeGeneratorError: ErrorType {
-    case InvalidSecret
-    case InvalidAlgorithm(String)
-}
-
-public protocol CodeGenerator {
-    func generate(forEnrollment enrollment: Enrollment) throws -> String
-}
-
-struct TOTPCodeGenerator: CodeGenerator {
-    func generate(forEnrollment enrollment: Enrollment) throws -> String {
-        guard let key = Base32.decode(enrollment.base32Secret) else {
-            throw CodeGeneratorError.InvalidSecret
-        }
-        guard let generator = TOTP(withKey: key, period: enrollment.period, algorithm: enrollment.algorithm) else {
-            throw CodeGeneratorError.InvalidAlgorithm(enrollment.algorithm)
-        }
-        return generator.generate(digits: enrollment.digits, counter: Int(NSDate().timeIntervalSince1970))
+func totp(from enrollment: Enrollment) throws -> TOTP {
+    guard let key = Base32.decode(enrollment.base32Secret) else {
+        throw GuardianError.invalidBase32Secret
     }
+    guard let totp = TOTP(withKey: key, period: enrollment.period, algorithm: enrollment.algorithm) else {
+        throw GuardianError.invalidOTPAlgorithm
+    }
+    return totp
 }
 
-public struct GuardianRequest<T>: Requestable {
+public struct GuardianRequest: Requestable {
 
-    typealias RequestBuilder = () throws -> Request<T>
+    typealias T = Void
+    typealias RequestBuilder = () throws -> Request<Void>
 
     private let buildRequest: RequestBuilder
 
@@ -79,7 +78,7 @@ public struct GuardianRequest<T>: Requestable {
         self.buildRequest = builder
     }
 
-    public func start(callback: (Result<T>) -> ()) {
+    public func start(callback: (Result<Void>) -> ()) {
         do {
             let request = try buildRequest()
             request.start(callback)
