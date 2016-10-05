@@ -27,8 +27,6 @@ class NotificationController: UIViewController {
 
     var notification: Notification? = nil
 
-    @IBOutlet var issuerLabel: UILabel!
-    @IBOutlet var userLabel: UILabel!
     @IBOutlet var browserLabel: UILabel!
     @IBOutlet var locationLabel: UILabel!
     @IBOutlet var dateLabel: UILabel!

@@ -30,8 +30,6 @@ class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
     @IBOutlet var unenrollButton: UIButton!
 
     @IBOutlet var enrollmentView: UIView!
-    @IBOutlet var issuerLabel: UILabel!
-    @IBOutlet var userLabel: UILabel!
     @IBOutlet var enrollmentLabel: UILabel!
     @IBOutlet var secretLabel: UILabel!
 
