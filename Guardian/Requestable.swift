@@ -23,8 +23,14 @@
 import Foundation
 
 protocol Requestable {
-    
+
     associatedtype T
-    
+
+    /**
+     Executes the request in a background thread
+     
+     - parameter callback: the termination callback, where the result is 
+                           received
+     */
     func start(callback: (Result<T>) -> ())
 }

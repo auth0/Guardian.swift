@@ -22,8 +22,69 @@
 
 import Foundation
 
+/**
+ An `Authentication` lets you allow or reject a `Notification`
+ 
+ ```
+ let enrollment: Enrollment = // the object you obtained when enrolling
+ let authenticator = Guardian
+    .authentication(forDomain: "tenant.guardian.auth0.com", andEnrollment: enrollment)
+ ```
+ */
 public protocol Authentication {
+
+    /**
+     Allows/verifies the authentication request
+
+     ```
+     let enrollment: Enrollment = // the object you obtained when enrolling
+     let notification: Notification = // the notification received
+     Guardian
+        .authentication(forDomain: "tenant.guardian.auth0.com", andEnrollment: enrollment)
+        .allow(notification: notification)
+        .start { result in
+            switch result {
+            case .Success(_):
+                // auth request allowed successfuly
+            case .Failure(let cause):
+                // failed to allow auth request
+            }
+     }
+     ```
+
+     - parameter notification: the notification that contains the authentication
+                               request that should be allowed.
+     
+     - returns: a request to execute
+     */
     func allow(notification notification: Notification) -> GuardianRequest
+
+    /**
+     Reject/denies the authentication request
+     
+     ```
+     let enrollment: Enrollment = // the object you obtained when enrolling
+     let notification: Notification = // the notification received
+     Guardian
+        .authentication(forDomain: "tenant.guardian.auth0.com", andEnrollment: enrollment)
+        .reject(notification: notification, withReason: "mistake")
+        .start { result in
+            switch result {
+            case .Success(_):
+                // auth request rejected successfuly
+            case .Failure(let cause):
+                // failed to reject auth request
+            }
+     }
+     ```
+
+     - parameter notification: the notification that contains the authentication
+                               request that should be allowed.
+     - parameter withReason:   an optional string that identifies the reason why
+                               this authentication request is being rejected.
+
+     - returns: a request to execute
+     */
     func reject(notification notification: Notification, withReason reason: String?) -> GuardianRequest
 }
 
@@ -78,6 +139,12 @@ public struct GuardianRequest: Requestable {
         self.buildRequest = builder
     }
 
+    /**
+     Executes the request in a background thread
+
+     - parameter callback: the termination callback, where the result is
+     received
+     */
     public func start(callback: (Result<Void>) -> ()) {
         do {
             let request = try buildRequest()

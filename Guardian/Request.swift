@@ -22,7 +22,7 @@
 
 import Foundation
 
-public struct Request<T> : Requestable {
+public struct Request<T>: Requestable {
 
     let session: NSURLSession
     let method: String
@@ -38,6 +38,12 @@ public struct Request<T> : Requestable {
         self.headers = headers
     }
 
+    /**
+     Executes the request in a background thread
+
+     - parameter callback: the termination callback, where the result is
+     received
+     */
     public func start(callback: (Result<T>) -> ()) {
         let request = NSMutableURLRequest(URL: url)
         request.HTTPMethod = method

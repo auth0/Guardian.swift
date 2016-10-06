@@ -22,9 +22,32 @@
 
 import Foundation
 
+/**
+ The end result of any `Requestable`.
+ 
+ An instance of this enum is always sent to the callback of `Requestable.start`
+ 
+ ```
+ let request: Requestable = // any Guardian request
+ request.start { result in
+    switch result {
+    case .Success(let response):
+        // the request finished successfuly
+    case .Failure(let cause):
+        // something failed, check `cause`
+    }
+ }
+ ```
+ */
 public enum Result<T> {
-    
+
+    /**
+     The action finished successfuly, the result can be accessed at `payload`
+     */
     case Success(payload: T?)
-    
+
+    /**
+     The action failed, the cause can be accessed at `cause`
+     */
     case Failure(cause: ErrorType)
 }
