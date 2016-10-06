@@ -24,14 +24,50 @@ import Foundation
 
 private let AuthenticationCategory = "com.auth0.notification.authentication"
 
-public struct Notification {
 
-    public let domain: String
-    public let enrollmentId: String
-    public let transactionToken: String
-    public let source: Source?
-    public let location: Location?
-    public let startedAt: NSDate
+@objc(A0GNotification)
+public protocol Notification {
+    var domain: String { get }
+    var enrollmentId: String { get }
+    var transactionToken: String { get }
+    var source: Source? { get }
+    var location: Location? { get }
+    var startedAt: NSDate { get }
+}
+
+@objc(A0GSource)
+public protocol Source {
+    var os: OS? { get }
+    var browser: Browser? { get }
+}
+
+@objc(A0GBrowser)
+public protocol Browser {
+    var name: String { get }
+    var version: String? { get }
+}
+
+@objc(A0GOS)
+public protocol OS {
+    var name: String { get }
+    var version: String? { get }
+}
+
+@objc(A0GLocation)
+public protocol Location {
+    var name: String? { get }
+    var latitude: NSNumber? { get }
+    var longitude: NSNumber? { get }
+}
+
+class AuthenticationNotification: NSObject, Notification {
+
+    let domain: String
+    let enrollmentId: String
+    let transactionToken: String
+    let source: Source?
+    let location: Location?
+    let startedAt: NSDate
 
     init(domain: String, enrollmentId: String, transactionToken: String, startedAt: NSDate, source: Source?, location: Location?) {
         self.domain = domain
@@ -42,7 +78,7 @@ public struct Notification {
         self.startedAt = startedAt
     }
 
-    init?(userInfo: [NSObject: AnyObject]) {
+    convenience init?(userInfo: [NSObject: AnyObject]) {
         guard
             let json = userInfo as? [String: AnyObject],
             let aps = json["aps"] as? [String: AnyObject],
@@ -60,64 +96,61 @@ public struct Notification {
             let startedAt = formatter.dateFromString(when),
             let domain = mfa["sh"] as? String
             else { return nil }
-        let source = Source(fromJSON: mfa["s"])
-        let location = Location(fromJSON: mfa["l"])
+        let source = AuthenticationSource(fromJSON: mfa["s"])
+        let location = AuthenticationLocation(fromJSON: mfa["l"])
 
         self.init(domain: domain, enrollmentId: enrollmentId, transactionToken: token, startedAt: startedAt, source: source, location: location)
     }
 }
 
-public struct Source {
+class AuthenticationSource: NSObject, Source {
 
-    let osName: String?
-    let osVersion: String?
-    let browserName: String?
-    let browserVersion: String?
+    class NamedSource: NSObject, OS, Browser {
+        let name: String
+        let version: String?
+
+        init(name: String, version: String?) {
+            self.name = name
+            self.version = version
+        }
+    }
+
+    let os: OS?
+    let browser: Browser?
 
     init?(fromJSON json: AnyObject?) {
         guard let source = json as? [String: AnyObject] else {
             return nil
         }
-        if let browser = source["b"] as? [String: AnyObject] {
-            browserName = browser["n"] as? String
-            browserVersion = browser["v"] as? String
+
+        let browser: Browser?
+        let os: OS?
+        if let data = source["b"] as? [String: AnyObject], let name = data["n"] as? String {
+            let version = data["v"] as? String
+            browser = NamedSource(name: name, version: version)
         } else {
-            browserName = nil
-            browserVersion = nil
+            browser = nil
         }
-        if let os = source["os"] as? [String: AnyObject] {
-            osName = os["n"] as? String
-            osVersion = os["v"] as? String
+        if let data = source["os"] as? [String: AnyObject], let name = data["n"] as? String {
+            let version = data["v"] as? String
+            os = NamedSource(name: name, version: version)
         } else {
-            osName = nil
-            osVersion = nil
+            os = nil
         }
 
-        if browserName == nil && osName == nil {
+        if os == nil && browser == nil {
             return nil
         }
-    }
-
-    public var browser: (name: String, version: String?)? {
-        guard let name = browserName else {
-            return nil
-        }
-        return (name: name, version: browserVersion)
-    }
-
-    public var os: (name: String, version: String?)? {
-        guard let name = osName else {
-            return nil
-        }
-        return (name: name, version: osVersion)
+        self.os = os
+        self.browser = browser
     }
 }
 
-public struct Location {
+class AuthenticationLocation: NSObject, Location {
 
-    public let name: String?
-    public let latitude: Double?
-    public let longitude: Double?
+    let name: String?
+    let latitude: NSNumber?
+    let longitude: NSNumber?
 
     init?(fromJSON json: AnyObject?) {
         guard let location = json as? [String: AnyObject] else {

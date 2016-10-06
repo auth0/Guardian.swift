@@ -22,11 +22,12 @@
 
 import Foundation
 
-public struct Enrollment {
+@objc(A0GEnrollment)
+public class Enrollment: NSObject {
     
     public let id: String
-    public var deviceToken: String
-    public var notificationToken: String
+    public let deviceToken: String
+    public let notificationToken: String
     
     public let base32Secret: String
     public let algorithm: String

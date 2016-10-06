@@ -45,6 +45,7 @@
 		23FE50801D947DF600407A1D /* ToggleTorchButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23FE50791D947DF600407A1D /* ToggleTorchButton.swift */; };
 		23FE50831D949EC400407A1D /* Guardian.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F2037CD1D5E1E3E0005D2E2 /* Guardian.framework */; };
 		23FE50841D949EC400407A1D /* Guardian.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5F2037CD1D5E1E3E0005D2E2 /* Guardian.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		5F1DB47D1DA5807D00264437 /* _ObjectiveGuardian.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1DB47C1DA5807D00264437 /* _ObjectiveGuardian.swift */; };
 		5F2037D11D5E1E3E0005D2E2 /* Guardian.h in Headers */ = {isa = PBXBuildFile; fileRef = 5F2037D01D5E1E3E0005D2E2 /* Guardian.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		5F2037D81D5E1E3E0005D2E2 /* Guardian.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F2037CD1D5E1E3E0005D2E2 /* Guardian.framework */; };
 		5F2037EE1D5E22590005D2E2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F2037ED1D5E22590005D2E2 /* AppDelegate.swift */; };
@@ -141,6 +142,7 @@
 		23FE50771D947DF600407A1D /* ReaderOverlayView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ReaderOverlayView.swift; path = QRCodeReader/ReaderOverlayView.swift; sourceTree = "<group>"; };
 		23FE50781D947DF600407A1D /* SwitchCameraButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SwitchCameraButton.swift; path = QRCodeReader/SwitchCameraButton.swift; sourceTree = "<group>"; };
 		23FE50791D947DF600407A1D /* ToggleTorchButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ToggleTorchButton.swift; path = QRCodeReader/ToggleTorchButton.swift; sourceTree = "<group>"; };
+		5F1DB47C1DA5807D00264437 /* _ObjectiveGuardian.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = _ObjectiveGuardian.swift; sourceTree = "<group>"; };
 		5F2037CD1D5E1E3E0005D2E2 /* Guardian.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Guardian.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F2037D01D5E1E3E0005D2E2 /* Guardian.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Guardian.h; sourceTree = "<group>"; };
 		5F2037D21D5E1E3E0005D2E2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -272,6 +274,14 @@
 			name = Enrollment;
 			sourceTree = "<group>";
 		};
+		5F1DB47B1DA5804600264437 /* ObjectiveC */ = {
+			isa = PBXGroup;
+			children = (
+				5F1DB47C1DA5807D00264437 /* _ObjectiveGuardian.swift */,
+			);
+			name = ObjectiveC;
+			sourceTree = "<group>";
+		};
 		5F2037C31D5E1E3E0005D2E2 = {
 			isa = PBXGroup;
 			children = (
@@ -300,6 +310,7 @@
 				5F1DB4591DA4648300264437 /* Authentication */,
 				5F1DB47A1DA57AB300264437 /* Enrollment */,
 				5F1DB4571DA41BD100264437 /* API */,
+				5F1DB47B1DA5804600264437 /* ObjectiveC */,
 				5F1DB4561DA41BBF00264437 /* Networking */,
 				5F2037D01D5E1E3E0005D2E2 /* Guardian.h */,
 				5F2037D21D5E1E3E0005D2E2 /* Info.plist */,
@@ -470,6 +481,7 @@
 								enabled = 1;
 							};
 						};
+						LastSwiftMigration = 0800;
 					};
 				};
 			};
@@ -530,6 +542,7 @@
 				234004EF1D909C91009AB77C /* Base32.swift in Sources */,
 				2374A9EF1D672ABD00737F2E /* Result.swift in Sources */,
 				2374A9ED1D672A8D00737F2E /* Requestable.swift in Sources */,
+				5F1DB47D1DA5807D00264437 /* _ObjectiveGuardian.swift in Sources */,
 				237246751D7DC63B00CCF635 /* Guardian.swift in Sources */,
 				2377A6411D806D9900D6FB04 /* DeviceAPI.swift in Sources */,
 				2374A9E61D670F5900737F2E /* Request.swift in Sources */,
@@ -727,7 +740,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.sdk.Guardian;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "";
+				SWIFT_INSTALL_OBJC_HEADER = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 2.3;
 			};
@@ -750,7 +763,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.sdk.Guardian;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "";
+				SWIFT_INSTALL_OBJC_HEADER = NO;
 				SWIFT_VERSION = 2.3;
 			};
 			name = Release;
@@ -798,6 +811,7 @@
 				CODE_SIGN_ENTITLEMENTS = GuardianApp/GuardianApp.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Mobile AuthZero (X5BFYSM6EU)";
 				DEVELOPMENT_TEAM = 86WQXF56BC;
+				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = GuardianApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -805,6 +819,8 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "32df3887-3767-4b67-84a6-144aaf2ef2f2";
 				PROVISIONING_PROFILE_SPECIFIER = "match Development com.auth0.guardian.sample";
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 2.3;
 			};
 			name = Debug;
@@ -817,6 +833,7 @@
 				CODE_SIGN_ENTITLEMENTS = GuardianApp/GuardianApp.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Mobile AuthZero (X5BFYSM6EU)";
 				DEVELOPMENT_TEAM = 86WQXF56BC;
+				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = GuardianApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -824,6 +841,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "32df3887-3767-4b67-84a6-144aaf2ef2f2";
 				PROVISIONING_PROFILE_SPECIFIER = "match Development com.auth0.guardian.sample";
+				SWIFT_INSTALL_OBJC_HEADER = NO;
 				SWIFT_VERSION = 2.3;
 			};
 			name = Release;
