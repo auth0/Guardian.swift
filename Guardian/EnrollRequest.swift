@@ -22,6 +22,12 @@
 
 import Foundation
 
+/**
+ A request to create a Guardian `Enrollment`
+ 
+ - seealso: Guardian.enroll
+ - seealso: Guardian.Enrollment
+ */
 public struct EnrollRequest: Requestable {
     
     private let api: API
@@ -35,7 +41,13 @@ public struct EnrollRequest: Requestable {
         self.enrollmentUri = enrollmentUri
         self.notificationToken = notificationToken
     }
-    
+
+    /**
+     Executes the request in a background thread
+
+     - parameter callback: the termination callback, where the result is
+     received
+     */
     public func start(callback: (Result<Enrollment>) -> ()) {
         guard
             let parameters = parameters(fromUri: enrollmentUri),
@@ -72,6 +84,7 @@ public struct EnrollRequest: Requestable {
         }
     }
 }
+
 func parameters(fromUri uri: String) -> [String: String]? {
     guard let components = NSURLComponents(string: uri), let otp = components.host?.lowercaseString
         where components.scheme == "otpauth" && otp == "totp" else {

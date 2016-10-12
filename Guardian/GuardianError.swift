@@ -29,6 +29,9 @@ private let invalidEnrollmentUriMessage = "a0.guardian.internal.invalid_enrollme
 private let invalidBase32SecretMessage = "a0.guardian.internal.invalid_base32_secret"
 private let invalidOTPAlgorithmMessage = "a0.guardian.internal.invalid_otp_algorithm"
 
+/**
+ An `ErrorType` that encapsulates server and other possible internal errors
+ */
 public class GuardianError: ErrorType, CustomStringConvertible, Equatable {
 
     let info: [String: AnyObject]?
@@ -45,7 +48,13 @@ public class GuardianError: ErrorType, CustomStringConvertible, Equatable {
         ]
         self.statusCode = statusCode
     }
-    
+
+    /**
+     The code of the error serves as an identifier for the cause of failure.
+
+     You may want to take certain actions based on this value, like displaying
+     different error messages to the user.
+     */
     public var errorCode: String {
         guard let errorCode = self.info?["errorCode"] as? String else {
             return failedRequestMessage

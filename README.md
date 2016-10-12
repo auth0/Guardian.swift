@@ -35,21 +35,11 @@ pod "GuardianSDK", "~> 0.1.0"
 import Guardian
 ```
 
-Then you'll need to create an instance of this class for your specific tenant/url:
+Then you'll need the domain for your specific tenant/url:
 
 ```swift
-let url = NSURL("https://tenant.guardian.auth0.com/")!;
-let guardian = Guardian(baseUrl: url)
+let domain = "tenant.guardian.auth0.com"
 ```
-
-You can also optionally provide the `NSURLSession` instance:
-
-```swift
-let session = NSURLSession.sharedSession()
-let guardian = Guardian(baseUrl: url, session: session)
-```
-
-That's all you need to setup your own instance of `Guardian`
 
 ### Enroll
 
@@ -57,16 +47,16 @@ An enrollment is a link between the second factor and an Auth0 account. When an 
 you'll need the enrollment data to provide the second factor required to verify the
 identity.
 
-You can create an enrolment using the guardian instance just created.
+You can create an enrolment using the `Guardian.enroll` function.
 First you'll need to obtain the enrollment info by scanning the Guardian QR code, and then you use
-the `enroll` method like this:
+it like this:
 
 ```swift
 let enrollmentUriFromQr: String = ... // the URI obtained from a Guardian QR code
 let apnsToken: String = ... // the APNS token of this device, where notifications will be sent
 
-guardian
-        .enroll(withURI: enrollmentUriFromQr, notificationToken: apnsToken)
+Guardian
+        .enroll(forDomain: domain, usingUri: enrollmentUriFromQr, notificationToken: apnsToken)
         .start { result in
             switch result {
             case .Success(let enrollment): 
@@ -88,8 +78,10 @@ If you want to delete an enrollment -for example if you want to disable MFA- you
 following request:
 
 ```swift
-guardian
-        .delete(enrollment: enrollment)
+Guardian
+        .api(forDomain: domain)
+        .device(forEnrollmentId: enrollment.id, token: enrollment.deviceToken)
+        .delete()
         .start { result in
             switch result {
             case .Success(let _): 
@@ -114,7 +106,7 @@ For example, your `AppDelegate` might have something like this:
 func application(application: UIApplication, didReceiveRemoteNotification userInfo: [NSObject : AnyObject]) {
     // when the app is open and we receive a push notification
 
-    if let notification = Notification(userInfo: userInfo) {
+    if let notification = Guardian.notification(from: userInfo) {
         // we have received a Guardian push notification
     }
 }
@@ -126,8 +118,9 @@ In case you have more than one enrollment, you'll have to find the one that has 
 notification (the `enrollmentId` property).
 
 ```swift
-guardian
-        .allow(notification: notification, enrollment: enrollment)
+Guardian
+        .authentication(forDomain: domain, andEnrollment: enrollment)
+        .allow(notification: notification)
         .start { result in
             switch result {
             case .Success(let _): 
@@ -144,8 +137,10 @@ To deny an authentication request just call `reject` instead. You can also send 
 you want. The reject reason will be available in the guardian logs.
 
 ```swift
-guardian
-        .reject(notification: notification, enrollment: enrollment) // or reject(notification: notification, enrollment: enrollment, reason: "hacked")
+Guardian
+        .authentication(forDomain: domain, andEnrollment: enrollment)
+        .reject(notification: notification)
+        // or reject(notification: notification, withReason: "hacked")
         .start { result in
             switch result {
             case .Success(let _): 
