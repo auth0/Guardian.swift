@@ -57,7 +57,7 @@ public protocol Authentication {
      
      - returns: a request to execute
      */
-    func allow(notification notification: Notification) -> GuardianRequest
+    func allow(notification: Notification) -> GuardianRequest
 
     /**
      Reject/denies the authentication request
@@ -85,11 +85,11 @@ public protocol Authentication {
 
      - returns: a request to execute
      */
-    func reject(notification notification: Notification, withReason reason: String?) -> GuardianRequest
+    func reject(notification: Notification, withReason reason: String?) -> GuardianRequest
 }
 
 public extension Authentication {
-    public func reject(notification notification: Notification, withReason reason: String? = nil) -> GuardianRequest {
+    public func reject(notification: Notification, withReason reason: String? = nil) -> GuardianRequest {
         return self.reject(notification: notification, withReason: reason)
     }
 }
@@ -99,19 +99,19 @@ struct TOTPAuthentication: Authentication {
     let api: API
     let enrollment: Enrollment
 
-    func allow(notification notification: Notification) -> GuardianRequest {
+    func allow(notification: Notification) -> GuardianRequest {
         return GuardianRequest {
             let code = try totp(from: self.enrollment)
-                .generate(digits: self.enrollment.digits, counter: Int(NSDate().timeIntervalSince1970))
+                .generate(digits: self.enrollment.digits, counter: Int(Date().timeIntervalSince1970))
             return self.api
                 .allow(transaction: notification.transactionToken, withCode: code)
         }
     }
 
-    func reject(notification notification: Notification, withReason reason: String? = nil) -> GuardianRequest {
+    func reject(notification: Notification, withReason reason: String? = nil) -> GuardianRequest {
         return GuardianRequest {
             let code = try totp(from: self.enrollment)
-                .generate(digits: self.enrollment.digits, counter: Int(NSDate().timeIntervalSince1970))
+                .generate(digits: self.enrollment.digits, counter: Int(Date().timeIntervalSince1970))
             return self.api
                 .reject(transaction: notification.transactionToken, withCode: code, reason: reason)
         }
@@ -133,9 +133,9 @@ public struct GuardianRequest: Requestable {
     typealias T = Void
     typealias RequestBuilder = () throws -> Request<Void>
 
-    private let buildRequest: RequestBuilder
+    fileprivate let buildRequest: RequestBuilder
 
-    init(builder: RequestBuilder) {
+    init(builder: @escaping RequestBuilder) {
         self.buildRequest = builder
     }
 
@@ -145,12 +145,12 @@ public struct GuardianRequest: Requestable {
      - parameter callback: the termination callback, where the result is
      received
      */
-    public func start(callback: (Result<Void>) -> ()) {
+    public func start(_ callback: @escaping (Result<()>) -> ()) {
         do {
             let request = try buildRequest()
             request.start(callback)
         } catch(let error) {
-            callback(.Failure(cause: error))
+            callback(.failure(cause: error))
         }
     }
 }

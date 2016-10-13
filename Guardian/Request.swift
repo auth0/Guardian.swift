@@ -24,13 +24,13 @@ import Foundation
 
 public struct Request<T>: Requestable {
 
-    let session: NSURLSession
+    let session: URLSession
     let method: String
-    let url: NSURL
-    let payload: [String: AnyObject]?
+    let url: URL
+    let payload: [String: Any]?
     let headers: [String: String]?
     
-    init(session: NSURLSession, method: String, url: NSURL, payload: [String: AnyObject]? = nil, headers: [String: String]? = nil) {
+    init(session: URLSession, method: String, url: URL, payload: [String: Any]? = nil, headers: [String: String]? = nil) {
         self.session = session
         self.method = method
         self.url = url
@@ -44,40 +44,40 @@ public struct Request<T>: Requestable {
      - parameter callback: the termination callback, where the result is
      received
      */
-    public func start(callback: (Result<T>) -> ()) {
-        let request = NSMutableURLRequest(URL: url)
-        request.HTTPMethod = method
+    public func start(_ callback: @escaping (Result<T>) -> ()) {
+        let request = NSMutableURLRequest(url: url)
+        request.httpMethod = method
         
         if let payload = payload {
-            guard let body = try? NSJSONSerialization.dataWithJSONObject(payload, options: []) else {
-                callback(.Failure(cause: GuardianError.invalidPayload))
+            guard let body = try? JSONSerialization.data(withJSONObject: payload, options: []) else {
+                callback(.failure(cause: GuardianError.invalidPayload))
                 return
             }
-            request.HTTPBody = body
+            request.httpBody = body
         }
         
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         headers?.forEach { request.setValue($1, forHTTPHeaderField: $0) }
         
-        let task = session.dataTaskWithRequest(request) { data, response, error in
-            if let error = error { return callback(.Failure(cause: error)) }
-            guard let httpResponse = response as? NSHTTPURLResponse else {
-                return callback(.Failure(cause: GuardianError.invalidResponse))
+        let task = session.dataTask(with: request as URLRequest) { data, response, error in
+            if let error = error { return callback(.failure(cause: error)) }
+            guard let httpResponse = response as? HTTPURLResponse else {
+                return callback(.failure(cause: GuardianError.invalidResponse))
             }
             guard (200..<300).contains(httpResponse.statusCode) else {
                 guard let info: [String: AnyObject] = json(data) else {
-                    return callback(.Failure(cause: GuardianError.invalidResponse(withStatus: httpResponse.statusCode)))
+                    return callback(.failure(cause: GuardianError.invalidResponse(withStatus: httpResponse.statusCode)))
                 }
-                return callback(.Failure(cause: GuardianError(info: info, statusCode: httpResponse.statusCode)))
+                return callback(.failure(cause: GuardianError(info: info, statusCode: httpResponse.statusCode)))
             }
-            callback(.Success(payload: json(data)))
+            callback(.success(payload: json(data)))
         }
         task.resume()
     }
 }
 
-func json<T>(data: NSData?) -> T? {
+func json<T>(_ data: Data?) -> T? {
     guard let data = data else { return nil }
-    let object = try? NSJSONSerialization.JSONObjectWithData(data, options: [])
+    let object = try? JSONSerialization.jsonObject(with: data, options: [])
     return object as? T
 }

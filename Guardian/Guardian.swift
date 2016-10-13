@@ -36,7 +36,7 @@ import Foundation
  
  - seealso: Guardian.API
  */
-public func api(forDomain domain: String, session: NSURLSession = .sharedSession()) -> API {
+public func api(forDomain domain: String, session: URLSession = .shared) -> API {
     return APIClient(baseUrl: url(from: domain)!, session: session)
 }
 
@@ -58,7 +58,7 @@ public func api(forDomain domain: String, session: NSURLSession = .sharedSession
  
  - seealso: Guardian.Authentication
  */
-public func authentication(forDomain domain: String, andEnrollment enrollment: Enrollment, session: NSURLSession = .sharedSession()) -> Authentication {
+public func authentication(forDomain domain: String, andEnrollment enrollment: Enrollment, session: URLSession = .shared) -> Authentication {
     let client = api(forDomain: domain, session: session)
     return TOTPAuthentication(api: client, enrollment: enrollment)
 }
@@ -90,7 +90,7 @@ public func authentication(forDomain domain: String, andEnrollment enrollment: E
  
  - returns: a request to create an enrollment
  */
-public func enroll(forDomain domain: String, session: NSURLSession = .sharedSession(), usingUri uri: String, notificationToken: String) -> EnrollRequest {
+public func enroll(forDomain domain: String, session: URLSession = .shared, usingUri uri: String, notificationToken: String) -> EnrollRequest {
     let client = api(forDomain: domain, session: session)
     return EnrollRequest(api: client, enrollmentUri: uri, notificationToken: notificationToken)
 }
@@ -118,11 +118,11 @@ public func enroll(forDomain domain: String, session: NSURLSession = .sharedSess
  
  - seealso: Guardian.Notification
  */
-public func notification(from userInfo: [NSObject: AnyObject]) -> Notification? {
-    return AuthenticationNotification(userInfo: userInfo)
+public func notification(from userInfo: [AnyHashable: Any]) -> Notification? {
+    return AuthenticationNotification(userInfo: userInfo as [NSObject : AnyObject])
 }
 
-func url(from domain: String) -> NSURL? {
-    guard domain.hasPrefix("http") else { return NSURL(string: "https://\(domain)") }
-    return NSURL(string: domain)
+func url(from domain: String) -> URL? {
+    guard domain.hasPrefix("http") else { return URL(string: "https://\(domain)") }
+    return URL(string: domain)
 }

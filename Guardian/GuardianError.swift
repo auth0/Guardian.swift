@@ -32,9 +32,9 @@ private let invalidOTPAlgorithmMessage = "a0.guardian.internal.invalid_otp_algor
 /**
  An `ErrorType` that encapsulates server and other possible internal errors
  */
-public class GuardianError: ErrorType, CustomStringConvertible, Equatable {
+open class GuardianError: Error, CustomStringConvertible, Equatable {
 
-    let info: [String: AnyObject]?
+    let info: [String: Any]?
     let statusCode: Int
     
     init(info: [String: AnyObject], statusCode: Int) {
@@ -55,14 +55,14 @@ public class GuardianError: ErrorType, CustomStringConvertible, Equatable {
      You may want to take certain actions based on this value, like displaying
      different error messages to the user.
      */
-    public var errorCode: String {
+    open var errorCode: String {
         guard let errorCode = self.info?["errorCode"] as? String else {
             return failedRequestMessage
         }
         return errorCode;
     }
     
-    public var description: String {
+    open var description: String {
         return "GuardianError(errorCode=\(errorCode), info=\(info ?? [:]))"
     }
 }

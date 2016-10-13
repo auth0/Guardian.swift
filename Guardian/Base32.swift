@@ -24,9 +24,9 @@ import Foundation
 
 class Base32 {
 
-    private static let paddingAdjustment: [Int] = [1, 1, 1, 2, 3, 3, 4, 5]
-    private static let __: UInt8 = 255
-    private static let defaultDecodingTable: [UInt8] = [
+    fileprivate static let paddingAdjustment: [Int] = [1, 1, 1, 2, 3, 3, 4, 5]
+    fileprivate static let __: UInt8 = 255
+    fileprivate static let defaultDecodingTable: [UInt8] = [
         __,__,__,__, __,__,__,__, __,__,__,__, __,__,__,__,  // 0x00 - 0x0F
         __,__,__,__, __,__,__,__, __,__,__,__, __,__,__,__,  // 0x10 - 0x1F
         __,__,__,__, __,__,__,__, __,__,__,__, __,__,__,__,  // 0x20 - 0x2F
@@ -45,19 +45,19 @@ class Base32 {
         __,__,__,__, __,__,__,__, __,__,__,__, __,__,__,__,  // 0xF0 - 0xFF
     ]
 
-    static func decode(value: String, decodingTable: [UInt8] = defaultDecodingTable) -> NSData? {
-        let encoding = value.stringByReplacingOccurrencesOfString("=", withString: "")
-        guard let encodedData = encoding.dataUsingEncoding(NSASCIIStringEncoding) else {
+    static func decode(_ value: String, decodingTable: [UInt8] = defaultDecodingTable) -> Data? {
+        let encoding = value.replacingOccurrences(of: "=", with: "")
+        guard let encodedData = encoding.data(using: String.Encoding.ascii) else {
             return nil
         }
-        let encodedBytes = UnsafePointer<UInt8>(encodedData.bytes)
-        let encodedLength = encodedData.length
+        let encodedLength = encodedData.count
+        let encodedBytes = (encodedData as NSData).bytes.bindMemory(to: UInt8.self, capacity: encodedLength)
         let encodedBlocks = Int( ceil( Double(encodedLength) / 8.0 ) )
         let expectedDataLength = encodedBlocks * 5
-        let decodedBytes = UnsafeMutablePointer<UInt8>.alloc(expectedDataLength)
+        let decodedBytes = UnsafeMutablePointer<UInt8>.allocate(capacity: expectedDataLength)
         defer { // will be executed after the current scope is exited, i.e. after the function returns
             // always free memory
-            decodedBytes.destroy()
+            decodedBytes.deinitialize()
         }
         var decodedBaseIndex = 0
         var encodedBlock: [UInt8] = [0, 0, 0, 0, 0, 0, 0, 0]
@@ -93,6 +93,6 @@ class Base32 {
             }
         }
 
-        return NSData(bytes: decodedBytes, length: decodedBaseIndex)
+        return Data(bytes: UnsafePointer<UInt8>(decodedBytes), count: decodedBaseIndex)
     }
 }

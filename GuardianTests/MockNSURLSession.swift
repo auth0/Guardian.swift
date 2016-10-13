@@ -22,21 +22,21 @@
 
 import Foundation
 
-class MockNSURLSession: NSURLSession {
+class MockNSURLSession: URLSession {
     
-    var a0_request: NSURLRequest?
-    let a0_data: NSData?
-    let a0_response: NSURLResponse?
+    var a0_request: URLRequest?
+    let a0_data: Data?
+    let a0_response: URLResponse?
     let a0_error: NSError?
     
-    init(data: NSData?, response: NSURLResponse?, error: NSError?) {
+    init(data: Data?, response: URLResponse?, error: NSError?) {
         self.a0_data = data
         self.a0_response = response
         self.a0_error = error
         self.a0_request = nil
     }
     
-    override func dataTaskWithRequest(request: NSURLRequest, completionHandler: (NSData?, NSURLResponse?, NSError?) -> Void) -> NSURLSessionDataTask {
+    override func dataTask(with request: URLRequest, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> URLSessionDataTask {
         self.a0_request = request
         let task: () -> Void = {
             completionHandler(self.a0_data, self.a0_response, self.a0_error)
@@ -45,11 +45,11 @@ class MockNSURLSession: NSURLSession {
     }
 }
 
-class MockTask: NSURLSessionDataTask {
+class MockTask: URLSessionDataTask {
     
     let a0_completionHandler: () -> Void
     
-    init(completionHandler: () -> Void) {
+    init(completionHandler: @escaping () -> Void) {
         self.a0_completionHandler = completionHandler
     }
     

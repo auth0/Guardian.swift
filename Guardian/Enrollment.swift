@@ -28,18 +28,18 @@ import Foundation
  - seealso: Guardian.enroll
  */
 @objc(A0GEnrollment)
-public class Enrollment: NSObject {
+open class Enrollment: NSObject {
 
     /**
      The enrollment id
      */
-    public let id: String
+    open let id: String
 
     /**
      The token used to authenticate when updating the device data or deleting 
      the enrollment
      */
-    public let deviceToken: String
+    open let deviceToken: String
 
     /**
      The APNs token for this physical device, required to check against the 
@@ -48,33 +48,33 @@ public class Enrollment: NSObject {
      - important: Needs to be kept up-to-date on the server for the push 
      notifications to work.
      */
-    public let notificationToken: String
+    open let notificationToken: String
 
     /**
      The TOTP secret, Base32 encoded
      */
-    public let base32Secret: String
+    open let base32Secret: String
 
     /**
      The TOTP algorithm
      */
-    public let algorithm: String
+    open let algorithm: String
 
     /**
      The TOTP digits, i.e. the code length
      */
-    public let digits: Int
+    open let digits: Int
 
     /**
      The TOTP period, in seconds
      */
-    public let period: Int
+    open let period: Int
 
     /**
      The identifier of the physical device, for debug/tracking purposes
      */
-    public var deviceIdentifier: String {
-        return UIDevice.currentDevice().identifierForVendor!.UUIDString
+    open var deviceIdentifier: String {
+        return UIDevice.current.identifierForVendor!.uuidString
     }
 
     /**
@@ -85,8 +85,8 @@ public class Enrollment: NSObject {
      notification, or at the admin interface if the user wants to delete an 
      enrollment from there
      */
-    public var deviceName: String {
-        return UIDevice.currentDevice().name
+    open var deviceName: String {
+        return UIDevice.current.name
     }
     
     init(
@@ -94,9 +94,9 @@ public class Enrollment: NSObject {
          deviceToken: String,
          notificationToken: String,
          base32Secret: String,
-         algorithm: String = "sha1",
-         digits: Int = 6,
-         period: Int = 30
+         algorithm: String? = nil,
+         digits: Int? = nil,
+         period: Int? = nil
         ) {
         self.id = id
         self.deviceToken = deviceToken

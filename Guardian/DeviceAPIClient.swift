@@ -24,12 +24,12 @@ import Foundation
 
 struct DeviceAPIClient: DeviceAPI {
     
-    let session: NSURLSession
-    let url: NSURL
+    let session: URLSession
+    let url: URL
     let token: String
     
-    init(baseUrl: NSURL, session: NSURLSession, id: String, token: String) {
-        self.url = baseUrl.URLByAppendingPathComponent("api/device-accounts/\(id)")!
+    init(baseUrl: URL, session: URLSession, id: String, token: String) {
+        self.url = baseUrl.appendingPathComponent("api/device-accounts/\(id)")
         self.session = session
         self.token = token
     }
@@ -43,7 +43,7 @@ struct DeviceAPIClient: DeviceAPI {
     }
     
     func update(deviceIdentifier identifier: String? = nil, name: String? = nil, notificationToken: String? = nil) -> Request<[String: AnyObject]> {
-        var payload = [String: AnyObject]()
+        var payload = [String: Any]()
         payload["identifier"] = identifier
         payload["name"] = name
         if let notificationToken = notificationToken {

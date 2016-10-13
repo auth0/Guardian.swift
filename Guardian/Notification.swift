@@ -72,7 +72,7 @@ public protocol Notification {
     /**
      The date/time when the authentication request was initiated
      */
-    var startedAt: NSDate { get }
+    var startedAt: Date { get }
 }
 
 /**
@@ -155,9 +155,9 @@ class AuthenticationNotification: NSObject, Notification {
     let transactionToken: String
     let source: Source?
     let location: Location?
-    let startedAt: NSDate
+    let startedAt: Date
 
-    init(domain: String, enrollmentId: String, transactionToken: String, startedAt: NSDate, source: Source?, location: Location?) {
+    init(domain: String, enrollmentId: String, transactionToken: String, startedAt: Date, source: Source?, location: Location?) {
         self.domain = domain
         self.enrollmentId = enrollmentId
         self.transactionToken = transactionToken
@@ -166,22 +166,22 @@ class AuthenticationNotification: NSObject, Notification {
         self.startedAt = startedAt
     }
 
-    convenience init?(userInfo: [NSObject: AnyObject]) {
+    convenience init?(userInfo: [AnyHashable: Any]) {
         guard
-            let json = userInfo as? [String: AnyObject],
-            let aps = json["aps"] as? [String: AnyObject],
-            let category = aps["category"] as? String where category == AuthenticationCategory
+            let json = userInfo as? [String: Any],
+            let aps = json["aps"] as? [String: Any],
+            let category = aps["category"] as? String, category == AuthenticationCategory
             else { return nil }
-        let locale = NSLocale(localeIdentifier: "en_US_POSIX")
-        let formatter = NSDateFormatter()
+        let locale = Locale(identifier: "en_US_POSIX")
+        let formatter = DateFormatter()
         formatter.locale = locale
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
         guard
-            let mfa = json["mfa"] as? [String: AnyObject],
+            let mfa = json["mfa"] as? [String: Any],
             let enrollmentId = mfa["dai"] as? String,
             let token = mfa["txtkn"] as? String,
             let when = mfa["d"] as? String,
-            let startedAt = formatter.dateFromString(when),
+            let startedAt = formatter.date(from: when),
             let domain = mfa["sh"] as? String
             else { return nil }
         let source = AuthenticationSource(fromJSON: mfa["s"])
@@ -206,20 +206,20 @@ class AuthenticationSource: NSObject, Source {
     let os: OS?
     let browser: Browser?
 
-    init?(fromJSON json: AnyObject?) {
-        guard let source = json as? [String: AnyObject] else {
+    init?(fromJSON json: Any?) {
+        guard let source = json as? [String: Any] else {
             return nil
         }
 
         let browser: Browser?
         let os: OS?
-        if let data = source["b"] as? [String: AnyObject], let name = data["n"] as? String {
+        if let data = source["b"] as? [String: Any], let name = data["n"] as? String {
             let version = data["v"] as? String
             browser = NamedSource(name: name, version: version)
         } else {
             browser = nil
         }
-        if let data = source["os"] as? [String: AnyObject], let name = data["n"] as? String {
+        if let data = source["os"] as? [String: Any], let name = data["n"] as? String {
             let version = data["v"] as? String
             os = NamedSource(name: name, version: version)
         } else {
@@ -240,8 +240,8 @@ class AuthenticationLocation: NSObject, Location {
     let latitude: NSNumber?
     let longitude: NSNumber?
 
-    init?(fromJSON json: AnyObject?) {
-        guard let location = json as? [String: AnyObject] else {
+    init?(fromJSON json: Any?) {
+        guard let location = json as? [String: Any] else {
             return nil
         }
 
@@ -250,11 +250,11 @@ class AuthenticationLocation: NSObject, Location {
         let longitudeValue = location["long"]
         if let latitudeString = latitudeValue as? String,
             let longitudeString = longitudeValue as? String {
-            latitude = Double(latitudeString)
-            longitude = Double(longitudeString)
+            latitude = Double(latitudeString) as NSNumber?
+            longitude = Double(longitudeString) as NSNumber?
         } else {
-            latitude = latitudeValue as? Double
-            longitude = longitudeValue as? Double
+            latitude = latitudeValue as? NSNumber
+            longitude = longitudeValue as? NSNumber
         }
     }
 }

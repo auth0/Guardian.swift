@@ -26,11 +26,11 @@ import Nimble
 
 @testable import Guardian
 
-func hasAtLeast(parameters: [String: String]) -> OHHTTPStubsTestBlock {
+func hasAtLeast(_ parameters: [String: String]) -> OHHTTPStubsTestBlock {
     return { request in
         guard let payload = request.a0_payload else { return false }
         let entries = parameters.filter { (key, _) in payload.contains { (name, _) in  key == name } }
-        return entries.count == parameters.count && entries.reduce(true, combine: { (initial, entry) -> Bool in
+        return entries.count == parameters.count && entries.reduce(true, { (initial, entry) -> Bool in
             return initial && payload[entry.0] as? String == entry.1
         })
     }
@@ -44,67 +44,67 @@ func hasOtpCode(inParameter name: String) -> OHHTTPStubsTestBlock {
     }
 }
 
-func hasNoneOf(names: [String]) -> OHHTTPStubsTestBlock {
+func hasNoneOf(_ names: [String]) -> OHHTTPStubsTestBlock {
     return { request in
         guard let payload = request.a0_payload else { return false }
         return payload.filter { names.contains($0.0) }.isEmpty
     }
 }
 
-func hasNoneOf(parameters: [String: String]) -> OHHTTPStubsTestBlock {
+func hasNoneOf(_ parameters: [String: String]) -> OHHTTPStubsTestBlock {
     return !hasAtLeast(parameters)
 }
 
-func hasBearerToken(token: String) -> OHHTTPStubsTestBlock {
+func hasBearerToken(_ token: String) -> OHHTTPStubsTestBlock {
     return { request in
-        return request.valueForHTTPHeaderField("Authorization") == "Bearer \(token)"
+        return request.value(forHTTPHeaderField: "Authorization") == "Bearer \(token)"
     }
 }
 
-func isPathStartingWith(path: String) -> OHHTTPStubsTestBlock {
+func isPathStartingWith(_ path: String) -> OHHTTPStubsTestBlock {
     return { req in
-        guard let path = req.URL?.path, let range = path.rangeOfString(path) else {
+        guard let path = req.url?.path, let range = path.range(of: path) else {
             return false
         }
-        return range.startIndex == path.startIndex
+        return range.lowerBound == path.startIndex
     }
 }
 
-func isEnrollmentInfo(domain domain: String) -> OHHTTPStubsTestBlock {
+func isEnrollmentInfo(domain: String) -> OHHTTPStubsTestBlock {
     return isScheme("https") && isHost(domain) && isMethodPOST() && isPath("/api/enrollment-info")
 }
 
-func isVerifyOTP(domain domain: String) -> OHHTTPStubsTestBlock {
+func isVerifyOTP(domain: String) -> OHHTTPStubsTestBlock {
     return isScheme("https") && isHost(domain) && isMethodPOST() && isPath("/api/verify-otp")
 }
 
-func isRejectLogin(domain domain: String) -> OHHTTPStubsTestBlock {
+func isRejectLogin(domain: String) -> OHHTTPStubsTestBlock {
     return isScheme("https") && isHost(domain) && isMethodPOST() && isPath("/api/reject-login")
 }
 
-func isEnrollment(domain domain: String, enrollmentId: String? = nil) -> OHHTTPStubsTestBlock {
+func isEnrollment(domain: String, enrollmentId: String? = nil) -> OHHTTPStubsTestBlock {
     if let enrollmentId = enrollmentId {
         return isHost(domain) && isPath("/api/device-accounts/\(enrollmentId)")
     }
     return isHost(domain) && isPathStartingWith("/api/device-accounts/")
 }
 
-func isDeleteEnrollment(domain domain: String, enrollmentId: String? = nil) -> OHHTTPStubsTestBlock {
+func isDeleteEnrollment(domain: String, enrollmentId: String? = nil) -> OHHTTPStubsTestBlock {
     return isMethodDELETE() && isEnrollment(domain: domain, enrollmentId: enrollmentId)
 }
 
-func isUpdateEnrollment(domain domain: String, enrollmentId: String? = nil) -> OHHTTPStubsTestBlock {
+func isUpdateEnrollment(domain: String, enrollmentId: String? = nil) -> OHHTTPStubsTestBlock {
     return isMethodPATCH() && isEnrollment(domain: domain, enrollmentId: enrollmentId)
 }
 
-func haveDeviceAccountToken(deviceAccountToken: String?) -> MatcherFunc<Result<[String: String]>> {
+func haveDeviceAccountToken(_ deviceAccountToken: String?) -> MatcherFunc<Result<[String: String]>> {
     return MatcherFunc { expression, failureMessage in
         var message = "be a successful enrollment info result with"
         if let deviceAccountToken = deviceAccountToken {
-            message = message.stringByAppendingString(" <device_account_token: \(deviceAccountToken)>")
+            message = message.appending(" <device_account_token: \(deviceAccountToken)>")
         }
         failureMessage.postfixMessage = message
-        if let actual = try expression.evaluate(), case .Success(let result) = actual {
+        if let actual = try expression.evaluate(), case .success(let result) = actual {
             if let token = result?["device_account_token"] {
                 return deviceAccountToken == token
             }
@@ -117,35 +117,35 @@ func haveEnrollment(withId enrollmentId: String?, deviceIdentifier: String?, dev
     return MatcherFunc { expression, failureMessage in
         var message = "be a successful enrollment info result with"
         if let enrollmentId = enrollmentId {
-            message = message.stringByAppendingString(" <id: \(enrollmentId)>")
+            message = message.appending(" <id: \(enrollmentId)>")
         }
         if let deviceIdentifier = deviceIdentifier {
-            message = message.stringByAppendingString(" <identifier: \(deviceIdentifier)>")
+            message = message.appending(" <identifier: \(deviceIdentifier)>")
         }
         if let deviceName = deviceName {
-            message = message.stringByAppendingString(" <name: \(deviceName)>")
+            message = message.appending(" <name: \(deviceName)>")
         }
         if let notificationService = notificationService {
-            message = message.stringByAppendingString(" <push_credentials.service: \(notificationService)>")
+            message = message.appending(" <push_credentials.service: \(notificationService)>")
         }
         if let notificationToken = notificationToken {
-            message = message.stringByAppendingString(" <push_credentials.token: \(notificationToken)>")
+            message = message.appending(" <push_credentials.token: \(notificationToken)>")
         }
         failureMessage.postfixMessage = message
-        if let actual = try expression.evaluate(), case .Success(let result) = actual {
+        if let actual = try expression.evaluate(), case .success(let result) = actual {
             if let result = result {
                 if let enrollmentId = enrollmentId {
-                    guard let id = result["id"] as? String where id == enrollmentId else {
+                    guard let id = result["id"] as? String , id == enrollmentId else {
                         return false
                     }
                 }
                 if let deviceIdentifier = deviceIdentifier {
-                    guard let identifier = result["identifier"] as? String where identifier == deviceIdentifier else {
+                    guard let identifier = result["identifier"] as? String , identifier == deviceIdentifier else {
                         return false
                     }
                 }
                 if let deviceName = deviceName {
-                    guard let name = result["name"] as? String where name == deviceName else {
+                    guard let name = result["name"] as? String , name == deviceName else {
                         return false
                     }
                 }
@@ -154,12 +154,12 @@ func haveEnrollment(withId enrollmentId: String?, deviceIdentifier: String?, dev
                         return false
                     }
                     if let notificationService = notificationService {
-                        guard let service = pushCredentials["service"] where service == notificationService else {
+                        guard let service = pushCredentials["service"] , service == notificationService else {
                             return false
                         }
                     }
                     if let notificationToken = notificationToken {
-                        guard let token = pushCredentials["token"] where token == notificationToken else {
+                        guard let token = pushCredentials["token"] , token == notificationToken else {
                             return false
                         }
                     }
@@ -171,7 +171,7 @@ func haveEnrollment(withId enrollmentId: String?, deviceIdentifier: String?, dev
     }
 }
 
-func haveEnrollment(withBaseUrl baseURL: NSURL, enrollmentId: String, deviceToken: String, notificationToken: String, issuer: String, user: String, base32Secret: String, algorithm: String, digits: Int, period: Int) -> MatcherFunc<Result<Enrollment>> {
+func haveEnrollment(withBaseUrl baseURL: URL, enrollmentId: String, deviceToken: String, notificationToken: String, issuer: String, user: String, base32Secret: String, algorithm: String, digits: Int, period: Int) -> MatcherFunc<Result<Enrollment>> {
     return MatcherFunc { expression, failureMessage in
         failureMessage.postfixMessage = "be an enrollment with" +
             " <baseUrl: \(baseURL)>" +
@@ -185,7 +185,7 @@ func haveEnrollment(withBaseUrl baseURL: NSURL, enrollmentId: String, deviceToke
             " <digits: \(digits)>" +
             " <period: \(period)>"
         
-        if let actual = try expression.evaluate(), case .Success(let result) = actual {
+        if let actual = try expression.evaluate(), case .success(let result) = actual {
             if let result = result {
                 return result.id == enrollmentId
                     && result.deviceToken == deviceToken
@@ -204,13 +204,13 @@ func haveGuardianError<T>(withErrorCode errorCode: String? = nil, andStatusCode 
     return MatcherFunc { expression, failureMessage in
         var message = "be a Guardian error response with"
         if let errorCode = errorCode {
-            message = message.stringByAppendingString(" <errorCode: \(errorCode)>")
+            message = message.appending(" <errorCode: \(errorCode)>")
         }
         if let statusCode = statusCode {
-            message = message.stringByAppendingString(" <statusCode: \(statusCode)>")
+            message = message.appending(" <statusCode: \(statusCode)>")
         }
         failureMessage.postfixMessage = message
-        if let actual = try expression.evaluate(), case .Failure(let cause) = actual {
+        if let actual = try expression.evaluate(), case .failure(let cause) = actual {
             if let error = cause as? GuardianError {
                 return (errorCode == nil || errorCode == error.errorCode) &&
                 (statusCode == nil || statusCode == error.statusCode)
@@ -224,10 +224,10 @@ func haveNSError<T>(withErrorCode errorCode: Int? = nil) -> MatcherFunc<Result<T
     return MatcherFunc { expression, failureMessage in
         var message = "be an NSError"
         if let errorCode = errorCode {
-            message = message.stringByAppendingString(" with <code: \(errorCode)>")
+            message = message.appending(" with <code: \(errorCode)>")
         }
         failureMessage.postfixMessage = message
-        if let actual = try expression.evaluate(), case .Failure(let cause) = actual {
+        if let actual = try expression.evaluate(), case .failure(let cause) = actual {
             let error = cause as NSError
             return errorCode == nil || errorCode == error.code
         }
@@ -235,11 +235,11 @@ func haveNSError<T>(withErrorCode errorCode: Int? = nil) -> MatcherFunc<Result<T
     }
 }
 
-func haveError<T, E where E: ErrorType, E: Equatable>(error: E) -> MatcherFunc<Result<T>> {
+func haveError<T, E>(_ error: E) -> MatcherFunc<Result<T>> where E: Error, E: Equatable {
     return MatcherFunc { expression, failureMessage in
         let message = "fail with <error: \(error)>"
         failureMessage.postfixMessage = message
-        if let actual = try expression.evaluate(), case .Failure(let cause) = actual {
+        if let actual = try expression.evaluate(), case .failure(let cause) = actual {
             if let cause = cause as? E {
                 return cause == error
             }
@@ -252,7 +252,7 @@ func beSuccess(withData data: [String: String]) -> MatcherFunc<Result<[String: S
     return MatcherFunc { expression, failureMessage in
         let message = "be a success response with <payload: \(data)>"
         failureMessage.postfixMessage = message
-        if let actual = try expression.evaluate(), case .Success(let payload) = actual {
+        if let actual = try expression.evaluate(), case .success(let payload) = actual {
             guard let payload = payload else {
                 return false
             }
@@ -266,17 +266,17 @@ func beSuccess<T>() -> MatcherFunc<Result<T>> {
     return MatcherFunc { expression, failureMessage in
         let message = "be an empty success response"
         failureMessage.postfixMessage = message
-        if let actual = try expression.evaluate(), case .Success(_) = actual {
+        if let actual = try expression.evaluate(), case .success(_) = actual {
             return true
         }
         return false
     }
 }
 
-extension NSURLRequest {
+extension URLRequest {
     var a0_payload: [String: AnyObject]? {
-        guard let data = OHHTTPStubs_HTTPBody() else { return nil }
-        let object = try? NSJSONSerialization.JSONObjectWithData(data, options: [])
+        guard let data = (self as NSURLRequest).ohhttpStubs_HTTPBody() else { return nil }
+        let object = try? JSONSerialization.jsonObject(with: data, options: [])
         return object as? [String: AnyObject]
     }
 }
