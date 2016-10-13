@@ -70,7 +70,7 @@ Guardian
 You must provide the `notificationToken`. It is the token required to send push notification to the device using the Apple Push Notification service (APNs). In case your app is not yet using push notifications or you're not familiar with it, you should check their
 [docs](https://developer.apple.com/go/?id=push-notifications).
 
-The notification token MUST be a String, and MUST NOT contain the spaces or brackets `<` and `>` that might be found on the NSData that is received on `application(:didRegisterForRemoteNotificationsWithDeviceToken)`
+The notification token MUST be a String containing the 64 bytes (expressed in hexadecimal format) that are received on `application(:didRegisterForRemoteNotificationsWithDeviceToken)`
 
 ### Unenroll
 

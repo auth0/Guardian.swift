@@ -46,11 +46,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         // when the registration for push notification succeeds
-        AppDelegate.pushToken = String(describing: deviceToken)
-            .replacingOccurrences(of: "<", with: "")
-            .replacingOccurrences(of: ">", with: "")
-            .replacingOccurrences(of: " ", with: "")
-        print("DEVICE TOKEN = \(deviceToken) => \(AppDelegate.pushToken)")
+        AppDelegate.pushToken = deviceToken.reduce(String(), {$0 + String(format: "%02X", $1)})
+        print("DEVICE TOKEN = \(AppDelegate.pushToken)")
     }
 
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
