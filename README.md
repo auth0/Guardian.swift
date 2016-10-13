@@ -11,7 +11,7 @@ well as enterprise identity providers such as Active Directory, LDAP, Google App
 
 ## Requirements
 
-iOS 9.3+ and Swift 2.3+ is required in order to use Guardian.
+iOS 9.3+ and Swift 3 is required in order to use Guardian.
 
 ## Before getting started
 
@@ -59,9 +59,9 @@ Guardian
         .enroll(forDomain: domain, usingUri: enrollmentUriFromQr, notificationToken: apnsToken)
         .start { result in
             switch result {
-            case .Success(let enrollment): 
+            case .success(let enrollment): 
                 // success, we have the enrollment data available
-            case .Failure(let cause):
+            case .failure(let cause):
                 // something failed, check cause to see what went wrong
             }
         }
@@ -84,9 +84,9 @@ Guardian
         .delete()
         .start { result in
             switch result {
-            case .Success(let _): 
+            case .success(let _): 
                 // success, the enrollment was deleted
-            case .Failure(let cause):
+            case .failure(let cause):
                 // something failed, check cause to see what went wrong
             }
         }
@@ -123,9 +123,9 @@ Guardian
         .allow(notification: notification)
         .start { result in
             switch result {
-            case .Success(let _): 
+            case .success(let _): 
                 // success, the enrollment was deleted
-            case .Failure(let cause):
+            case .failure(let cause):
                 // something failed, check cause to see what went wrong
             }
         }
@@ -143,9 +143,9 @@ Guardian
         // or reject(notification: notification, withReason: "hacked")
         .start { result in
             switch result {
-            case .Success(let _): 
+            case .success(let _): 
                 // success, the enrollment was deleted
-            case .Failure(let cause):
+            case .failure(let cause):
                 // something failed, check cause to see what went wrong
             }
         }
