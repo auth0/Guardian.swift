@@ -111,7 +111,7 @@ class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
                     switch result {
                     case .failure(let cause):
                         self.showError("Unenroll failed", cause)
-                    case .success(payload: _):
+                    case .success:
                         AppDelegate.enrollment = nil
                     }
                     self.updateView()

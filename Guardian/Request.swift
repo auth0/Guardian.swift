@@ -44,7 +44,7 @@ public struct Request<T>: Requestable {
      - parameter callback: the termination callback, where the result is
      received
      */
-    public func start(_ callback: @escaping (Result<T>) -> ()) {
+    public func start(callback: @escaping (Result<T>) -> ()) {
         let request = NSMutableURLRequest(url: url)
         request.httpMethod = method
         

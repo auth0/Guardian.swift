@@ -119,7 +119,7 @@ struct TOTPAuthentication: Authentication {
 }
 
 func totp(from enrollment: Enrollment) throws -> TOTP {
-    guard let key = Base32.decode(enrollment.base32Secret) else {
+    guard let key = Base32.decode(string: enrollment.base32Secret) else {
         throw GuardianError.invalidBase32Secret
     }
     guard let totp = TOTP(withKey: key, period: enrollment.period, algorithm: enrollment.algorithm) else {
@@ -133,7 +133,7 @@ public struct GuardianRequest: Requestable {
     typealias T = Void
     typealias RequestBuilder = () throws -> Request<Void>
 
-    fileprivate let buildRequest: RequestBuilder
+    private let buildRequest: RequestBuilder
 
     init(builder: @escaping RequestBuilder) {
         self.buildRequest = builder
@@ -145,10 +145,10 @@ public struct GuardianRequest: Requestable {
      - parameter callback: the termination callback, where the result is
      received
      */
-    public func start(_ callback: @escaping (Result<()>) -> ()) {
+    public func start(callback: @escaping (Result<()>) -> ()) {
         do {
             let request = try buildRequest()
-            request.start(callback)
+            request.start(callback: callback)
         } catch(let error) {
             callback(.failure(cause: error))
         }

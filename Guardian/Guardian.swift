@@ -119,7 +119,7 @@ public func enroll(forDomain domain: String, session: URLSession = .shared, usin
  - seealso: Guardian.Notification
  */
 public func notification(from userInfo: [AnyHashable: Any]) -> Notification? {
-    return AuthenticationNotification(userInfo: userInfo as [NSObject : AnyObject])
+    return AuthenticationNotification(userInfo: userInfo)
 }
 
 func url(from domain: String) -> URL? {

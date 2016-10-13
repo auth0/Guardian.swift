@@ -41,7 +41,7 @@ class NotificationController: UIViewController {
             .start { result in
                 print(result)
                 switch result {
-                case .success(_):
+                case .success:
                     DispatchQueue.main.async { [unowned self] in
                         self.dismiss(animated: true, completion: nil)
                     }
@@ -61,7 +61,7 @@ class NotificationController: UIViewController {
             .start { result in
                 print(result)
                 switch result {
-                case .success(_):
+                case .success:
                     DispatchQueue.main.async { [unowned self] in
                         self.dismiss(animated: true, completion: nil)
                     }

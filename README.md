@@ -84,7 +84,7 @@ Guardian
         .delete()
         .start { result in
             switch result {
-            case .success(let _): 
+            case .success: 
                 // success, the enrollment was deleted
             case .failure(let cause):
                 // something failed, check cause to see what went wrong
@@ -123,7 +123,7 @@ Guardian
         .allow(notification: notification)
         .start { result in
             switch result {
-            case .success(let _): 
+            case .success: 
                 // success, the enrollment was deleted
             case .failure(let cause):
                 // something failed, check cause to see what went wrong
@@ -143,7 +143,7 @@ Guardian
         // or reject(notification: notification, withReason: "hacked")
         .start { result in
             switch result {
-            case .success(let _): 
+            case .success: 
                 // success, the enrollment was deleted
             case .failure(let cause):
                 // something failed, check cause to see what went wrong

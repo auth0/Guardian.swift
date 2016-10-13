@@ -29,12 +29,12 @@ import Foundation
  - seealso: Guardian.Enrollment
  */
 public struct EnrollRequest: Requestable {
-    
-    fileprivate let api: API
-    fileprivate let enrollmentUri: String
-    fileprivate let notificationToken: String
 
     typealias T = Enrollment
+
+    private let api: API
+    private let enrollmentUri: String
+    private let notificationToken: String
 
     init(api: API, enrollmentUri: String, notificationToken: String) {
         self.api = api
@@ -48,7 +48,7 @@ public struct EnrollRequest: Requestable {
      - parameter callback: the termination callback, where the result is
      received
      */
-    public func start(_ callback: @escaping (Result<Enrollment>) -> ()) {
+    public func start(callback: @escaping (Result<Enrollment>) -> ()) {
         guard
             let parameters = parameters(fromUri: enrollmentUri),
             let enrollmentTxId = parameters["enrollment_tx_id"]
@@ -60,7 +60,7 @@ public struct EnrollRequest: Requestable {
                     switch result {
                     case .failure(let cause):
                         callback(.failure(cause: cause))
-                    case .success(_):
+                    case .success:
                         callback(.success(payload: enrollment))
                     }
             }

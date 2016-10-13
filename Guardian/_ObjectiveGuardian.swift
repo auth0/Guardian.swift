@@ -23,7 +23,7 @@
 import Foundation
 
 @objc(GA0Guardian)
-open class _ObjectiveGuardian: NSObject {
+public class _ObjectiveGuardian: NSObject {
 
     let domain: String
 
@@ -31,7 +31,7 @@ open class _ObjectiveGuardian: NSObject {
         self.domain = domain
     }
 
-    open func enroll(usingUri uri: String, notificationToken: String, callback: @escaping (Enrollment?, NSError?) -> ()) {
+    public func enroll(usingUri uri: String, notificationToken: String, callback: @escaping (Enrollment?, NSError?) -> ()) {
         Guardian.enroll(forDomain: domain, usingUri: uri, notificationToken: notificationToken).start {
             switch $0 {
             case .success(let enrollment):
@@ -42,7 +42,7 @@ open class _ObjectiveGuardian: NSObject {
         }
     }
 
-    open func allow(notification: Notification, enrollment: Enrollment, callback: @escaping (NSError?) -> ()) {
+    public func allow(notification: Notification, enrollment: Enrollment, callback: @escaping (NSError?) -> ()) {
         Guardian.authentication(forDomain: domain, andEnrollment: enrollment).allow(notification: notification).start {
             switch $0 {
             case .success:
@@ -53,7 +53,7 @@ open class _ObjectiveGuardian: NSObject {
         }
     }
 
-    open func reject(notification: Notification, andReason reason: String?, enrollment: Enrollment, callback: @escaping (NSError?) -> ()) {
+    public func reject(notification: Notification, andReason reason: String?, enrollment: Enrollment, callback: @escaping (NSError?) -> ()) {
         Guardian.authentication(forDomain: domain, andEnrollment: enrollment).reject(notification: notification, withReason: reason).start {
             switch $0 {
             case .success:
@@ -64,11 +64,11 @@ open class _ObjectiveGuardian: NSObject {
         }
     }
 
-    open func notification(with userInfo: [AnyHashable: Any]) -> Notification? {
+    public func notification(with userInfo: [AnyHashable: Any]) -> Notification? {
         return Guardian.notification(from: userInfo as [NSObject : AnyObject])
     }
 
-    open func removeEnrollment(_ enrollment: Enrollment, callback: @escaping (NSError?) -> ()) {
+    public func removeEnrollment(_ enrollment: Enrollment, callback: @escaping (NSError?) -> ()) {
         Guardian.api(forDomain: domain).device(forEnrollmentId: enrollment.id, token: enrollment.deviceToken).delete().start {
             switch $0 {
             case .success:

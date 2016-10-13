@@ -34,7 +34,7 @@ class Base32Spec: QuickSpec {
             describe("decode") {
 
                 it("should return nil for invalid input") {
-                    expect(Base32.decode("somethingNotBase32encoded!?")).to(beNil())
+                    expect(Base32.decode(string: "somethingNotBase32encoded!?")).to(beNil())
                 }
             }
 
@@ -48,7 +48,7 @@ class Base32Spec: QuickSpec {
                     let decoded = data["decoded"] as! Data
 
                     it("should return data '\(decoded)' for string '\(encoded)'") {
-                        expect(Base32.decode(encoded)).to(equal(decoded))
+                        expect(Base32.decode(string: encoded)).to(equal(decoded))
                     }
                 }
 

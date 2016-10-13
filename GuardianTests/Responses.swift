@@ -32,7 +32,7 @@ func enrollmentInfoResponse(withDeviceAccountToken deviceAccountToken: String) -
 }
 
 func enrollmentResponse(enrollmentId id: String?, deviceIdentifier: String?, name: String?, service: String?, notificationToken: String?) -> OHHTTPStubsResponse {
-    let json = [
+    let json: [String : Any] = [
         "id": id ?? "",
         "identifier": deviceIdentifier ?? "",
         "name": name ?? "",
@@ -40,7 +40,7 @@ func enrollmentResponse(enrollmentId id: String?, deviceIdentifier: String?, nam
             "service": service ?? "",
             "token": notificationToken ?? ""
         ]
-    ] as [String : Any]
+    ]
     
     return OHHTTPStubsResponse(jsonObject: json, statusCode: 200, headers: ["Content-Type": "application/json"])
 }

@@ -24,9 +24,9 @@ import Foundation
 
 class Base32 {
 
-    fileprivate static let paddingAdjustment: [Int] = [1, 1, 1, 2, 3, 3, 4, 5]
-    fileprivate static let __: UInt8 = 255
-    fileprivate static let defaultDecodingTable: [UInt8] = [
+    private static let paddingAdjustment: [Int] = [1, 1, 1, 2, 3, 3, 4, 5]
+    private static let __: UInt8 = 255
+    private static let defaultDecodingTable: [UInt8] = [
         __,__,__,__, __,__,__,__, __,__,__,__, __,__,__,__,  // 0x00 - 0x0F
         __,__,__,__, __,__,__,__, __,__,__,__, __,__,__,__,  // 0x10 - 0x1F
         __,__,__,__, __,__,__,__, __,__,__,__, __,__,__,__,  // 0x20 - 0x2F
@@ -45,9 +45,9 @@ class Base32 {
         __,__,__,__, __,__,__,__, __,__,__,__, __,__,__,__,  // 0xF0 - 0xFF
     ]
 
-    static func decode(_ value: String, decodingTable: [UInt8] = defaultDecodingTable) -> Data? {
-        let encoding = value.replacingOccurrences(of: "=", with: "")
-        guard let encodedData = encoding.data(using: String.Encoding.ascii) else {
+    static func decode(string: String, decodingTable: [UInt8] = defaultDecodingTable) -> Data? {
+        let encoding = string.replacingOccurrences(of: "=", with: "")
+        guard let encodedData = encoding.data(using: .ascii) else {
             return nil
         }
         let encodedLength = encodedData.count

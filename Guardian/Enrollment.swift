@@ -28,18 +28,18 @@ import Foundation
  - seealso: Guardian.enroll
  */
 @objc(A0GEnrollment)
-open class Enrollment: NSObject {
+public class Enrollment: NSObject {
 
     /**
      The enrollment id
      */
-    open let id: String
+    public let id: String
 
     /**
      The token used to authenticate when updating the device data or deleting 
      the enrollment
      */
-    open let deviceToken: String
+    public let deviceToken: String
 
     /**
      The APNs token for this physical device, required to check against the 
@@ -48,32 +48,32 @@ open class Enrollment: NSObject {
      - important: Needs to be kept up-to-date on the server for the push 
      notifications to work.
      */
-    open let notificationToken: String
+    public let notificationToken: String
 
     /**
      The TOTP secret, Base32 encoded
      */
-    open let base32Secret: String
+    public let base32Secret: String
 
     /**
      The TOTP algorithm
      */
-    open let algorithm: String
+    public let algorithm: String
 
     /**
      The TOTP digits, i.e. the code length
      */
-    open let digits: Int
+    public let digits: Int
 
     /**
      The TOTP period, in seconds
      */
-    open let period: Int
+    public let period: Int
 
     /**
      The identifier of the physical device, for debug/tracking purposes
      */
-    open var deviceIdentifier: String {
+    public var deviceIdentifier: String {
         return UIDevice.current.identifierForVendor!.uuidString
     }
 
@@ -85,7 +85,7 @@ open class Enrollment: NSObject {
      notification, or at the admin interface if the user wants to delete an 
      enrollment from there
      */
-    open var deviceName: String {
+    public var deviceName: String {
         return UIDevice.current.name
     }
     
