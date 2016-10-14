@@ -51,14 +51,10 @@ class Base32 {
             return nil
         }
         let encodedLength = encodedData.count
-        let encodedBytes = (encodedData as NSData).bytes.bindMemory(to: UInt8.self, capacity: encodedLength)
+        let encodedBytes = [UInt8](encodedData)
         let encodedBlocks = Int( ceil( Double(encodedLength) / 8.0 ) )
         let expectedDataLength = encodedBlocks * 5
-        let decodedBytes = UnsafeMutablePointer<UInt8>.allocate(capacity: expectedDataLength)
-        defer { // will be executed after the current scope is exited, i.e. after the function returns
-            // always free memory
-            decodedBytes.deinitialize()
-        }
+        var decodedBytes = [UInt8](repeating: 0, count: expectedDataLength)
         var decodedBaseIndex = 0
         var encodedBlock: [UInt8] = [0, 0, 0, 0, 0, 0, 0, 0]
         var encodedBlockIndex = 0
