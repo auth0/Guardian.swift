@@ -40,16 +40,16 @@ struct TOTP {
         var t = UInt64(counter / period).bigEndian
         let buffer = Data(bytes: &t, count: MemoryLayout<UInt64>.size);
         let digestData = hmac.sign(buffer)
-        var offset: UInt8 = 0
-        (digestData as NSData).getBytes(&offset, range: NSRange(location: hmac.digestLength - 1, length: MemoryLayout<UInt8>.size))
-        offset &= 0x0f
-
-        var binary: UInt32 = 0
-        (digestData as NSData).getBytes(&binary, range: NSRange(location: Int(offset), length: MemoryLayout<UInt32>.size))
-        var hash = UInt32(bigEndian: binary)
-        hash &= 0x7fffffff
-
-        hash = hash % UInt32(pow(10, Float(digits)))
+        let hash = digestData.withUnsafeBytes { (bytes: UnsafePointer<UInt8>) -> UInt32 in
+            let last = bytes.advanced(by: hmac.digestLength - 1)
+            let offset = last.pointee & 0x0f
+            let start = bytes.advanced(by: Int(offset))
+            let value = start.withMemoryRebound(to: UInt32.self, capacity: 1) { $0 }
+            var hash = UInt32(bigEndian: value.pointee)
+            hash &= 0x7fffffff
+            hash = hash % UInt32(pow(10, Float(digits)))
+            return hash
+        }
 
         return String(format: "%0\(digits)d", Int(hash))
     }
