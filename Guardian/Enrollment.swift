@@ -74,7 +74,7 @@ public class Enrollment: NSObject {
      The identifier of the physical device, for debug/tracking purposes
      */
     public var deviceIdentifier: String {
-        return UIDevice.currentDevice().identifierForVendor!.UUIDString
+        return UIDevice.current.identifierForVendor!.uuidString
     }
 
     /**
@@ -86,7 +86,7 @@ public class Enrollment: NSObject {
      enrollment from there
      */
     public var deviceName: String {
-        return UIDevice.currentDevice().name
+        return UIDevice.current.name
     }
     
     init(
@@ -94,9 +94,9 @@ public class Enrollment: NSObject {
          deviceToken: String,
          notificationToken: String,
          base32Secret: String,
-         algorithm: String = "sha1",
-         digits: Int = 6,
-         period: Int = 30
+         algorithm: String? = nil,
+         digits: Int? = nil,
+         period: Int? = nil
         ) {
         self.id = id
         self.deviceToken = deviceToken

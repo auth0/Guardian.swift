@@ -25,15 +25,15 @@ import Guardian
 
 class NotificationController: UIViewController {
 
-    var notification: Notification? = nil
+    var notification: Guardian.Notification? = nil
 
     @IBOutlet var browserLabel: UILabel!
     @IBOutlet var locationLabel: UILabel!
     @IBOutlet var dateLabel: UILabel!
 
-    @IBAction func allowAction(sender: AnyObject) {
-        guard let notification = notification, enrollment = AppDelegate.enrollment else {
-            return self.dismissViewControllerAnimated(true, completion: nil)
+    @IBAction func allowAction(_ sender: AnyObject) {
+        guard let notification = notification, let enrollment = AppDelegate.enrollment else {
+            return self.dismiss(animated: true, completion: nil)
         }
         Guardian
             .authentication(forDomain: AppDelegate.guardianDomain, andEnrollment: enrollment)
@@ -41,19 +41,19 @@ class NotificationController: UIViewController {
             .start { result in
                 print(result)
                 switch result {
-                case .Success(_):
-                    dispatch_async(dispatch_get_main_queue()) { [unowned self] in
-                        self.dismissViewControllerAnimated(true, completion: nil)
+                case .success:
+                    DispatchQueue.main.async { [unowned self] in
+                        self.dismiss(animated: true, completion: nil)
                     }
-                case .Failure(let cause):
+                case .failure(let cause):
                     self.showError("Allow failed", cause)
                 }
         }
     }
 
-    @IBAction func denyAction(sender: AnyObject) {
-        guard let notification = notification, enrollment = AppDelegate.enrollment else {
-            return self.dismissViewControllerAnimated(true, completion: nil)
+    @IBAction func denyAction(_ sender: AnyObject) {
+        guard let notification = notification, let enrollment = AppDelegate.enrollment else {
+            return self.dismiss(animated: true, completion: nil)
         }
         Guardian
             .authentication(forDomain: AppDelegate.guardianDomain, andEnrollment: enrollment)
@@ -61,11 +61,11 @@ class NotificationController: UIViewController {
             .start { result in
                 print(result)
                 switch result {
-                case .Success(_):
-                    dispatch_async(dispatch_get_main_queue()) { [unowned self] in
-                        self.dismissViewControllerAnimated(true, completion: nil)
+                case .success:
+                    DispatchQueue.main.async { [unowned self] in
+                        self.dismiss(animated: true, completion: nil)
                     }
-                case .Failure(let cause):
+                case .failure(let cause):
                     self.showError("Reject failed", cause)
                 }
         }
@@ -74,7 +74,7 @@ class NotificationController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        guard let notification = notification, _ = AppDelegate.enrollment else {
+        guard let notification = notification, let _ = AppDelegate.enrollment else {
             return
         }
 
@@ -83,8 +83,8 @@ class NotificationController: UIViewController {
         dateLabel.text = "\(notification.startedAt)"
     }
 
-    func showError(title: String, _ cause: ErrorType) {
-        dispatch_async(dispatch_get_main_queue()) { [unowned self] in
+    func showError(_ title: String, _ cause: Error) {
+        DispatchQueue.main.async { [unowned self] in
             var errorMessage = "Unknown error"
             if let cause = cause as? GuardianError {
                 errorMessage = cause.description
@@ -92,10 +92,10 @@ class NotificationController: UIViewController {
             let alert = UIAlertController(
                 title: title,
                 message: errorMessage,
-                preferredStyle: .Alert
+                preferredStyle: .alert
             )
-            alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
-            self.presentViewController(alert, animated: true, completion: nil)
+            alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+            self.present(alert, animated: true, completion: nil)
         }
     }
 }

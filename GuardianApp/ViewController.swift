@@ -45,11 +45,11 @@ class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
         // Dispose of any resources that can be recreated.
     }
 
-    @IBAction func scanAction(sender: AnyObject) {
+    @IBAction func scanAction(_ sender: AnyObject) {
         if let _ = AppDelegate.pushToken {
             if QRCodeReader.supportsMetadataObjectTypes() {
                 let reader = createReader()
-                reader.modalPresentationStyle = .FormSheet
+                reader.modalPresentationStyle = .formSheet
                 reader.delegate               = self
 
                 reader.completionBlock = { (result: QRCodeReaderResult?) in
@@ -58,27 +58,27 @@ class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
                     }
                 }
 
-                presentViewController(reader, animated: true, completion: nil)
+                present(reader, animated: true, completion: nil)
             } else {
-                let alert = UIAlertController(title: "Error", message: "Reader not supported by the current device", preferredStyle: .Alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
+                let alert = UIAlertController(title: "Error", message: "Reader not supported by the current device", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
                 
-                presentViewController(alert, animated: true, completion: nil)
+                present(alert, animated: true, completion: nil)
             }
         }
     }
 
     // MARK: - QRCodeReader Delegate Methods
-    func reader(reader: QRCodeReaderViewController, didScanResult result: QRCodeReaderResult) {
-        self.dismissViewControllerAnimated(true) { [unowned self] in
+    func reader(_ reader: QRCodeReaderViewController, didScanResult result: QRCodeReaderResult) {
+        self.dismiss(animated: true) { [unowned self] in
 
                 Guardian
                     .enroll(forDomain: AppDelegate.guardianDomain, usingUri: result.value, notificationToken: AppDelegate.pushToken!)
                     .start { result in
                         switch result {
-                        case .Failure(let cause):
+                        case .failure(let cause):
                             self.showError("Enroll failed", cause)
-                        case .Success(let enrollment):
+                        case .success(let enrollment):
                             AppDelegate.enrollment = enrollment
                         }
                         self.updateView()
@@ -86,12 +86,12 @@ class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
         }
     }
 
-    func readerDidCancel(reader: QRCodeReaderViewController) {
-        self.dismissViewControllerAnimated(true, completion: nil)
+    func readerDidCancel(_ reader: QRCodeReaderViewController) {
+        self.dismiss(animated: true, completion: nil)
     }
 
-    private func createReader() -> QRCodeReaderViewController {
-        let builder = QRCodeViewControllerBuilder { builder in
+    fileprivate func createReader() -> QRCodeReaderViewController {
+        let builder = QRCodeReaderViewControllerBuilder { builder in
             builder.reader = QRCodeReader(metadataObjectTypes: [AVMetadataObjectTypeQRCode])
             builder.showSwitchCameraButton = false
             builder.showTorchButton = false
@@ -101,7 +101,7 @@ class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
         return QRCodeReaderViewController(builder: builder)
     }
 
-    @IBAction func unenrollAction(sender: AnyObject) {
+    @IBAction func unenrollAction(_ sender: AnyObject) {
         if let enrollment = AppDelegate.enrollment {
             Guardian
                 .api(forDomain: AppDelegate.guardianDomain)
@@ -109,9 +109,9 @@ class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
                 .delete()
                 .start { [unowned self] result in
                     switch result {
-                    case .Failure(let cause):
+                    case .failure(let cause):
                         self.showError("Unenroll failed", cause)
-                    case .Success(payload: _):
+                    case .success:
                         AppDelegate.enrollment = nil
                     }
                     self.updateView()
@@ -120,20 +120,20 @@ class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
     }
 
     func updateView() {
-        dispatch_async(dispatch_get_main_queue()) { [unowned self] in
+        DispatchQueue.main.async { [unowned self] in
             let haveEnrollment = AppDelegate.enrollment != nil
             if let enrollment = AppDelegate.enrollment {
                 self.enrollmentLabel.text = enrollment.id
                 self.secretLabel.text = enrollment.base32Secret
             }
-            self.enrollButton.hidden = haveEnrollment
-            self.unenrollButton.hidden = !haveEnrollment
-            self.enrollmentView.hidden = !haveEnrollment
+            self.enrollButton.isHidden = haveEnrollment
+            self.unenrollButton.isHidden = !haveEnrollment
+            self.enrollmentView.isHidden = !haveEnrollment
         }
     }
 
-    func showError(title: String, _ cause: ErrorType) {
-        dispatch_async(dispatch_get_main_queue()) { [unowned self] in
+    func showError(_ title: String, _ cause: Error) {
+        DispatchQueue.main.async { [unowned self] in
             var errorMessage = "Unknown error"
             if let cause = cause as? GuardianError {
                 errorMessage = cause.description
@@ -141,10 +141,10 @@ class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
             let alert = UIAlertController(
                 title: title,
                 message: errorMessage,
-                preferredStyle: .Alert
+                preferredStyle: .alert
             )
-            alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
-            self.presentViewController(alert, animated: true, completion: nil)
+            alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+            self.present(alert, animated: true, completion: nil)
         }
     }
 }

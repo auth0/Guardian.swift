@@ -34,7 +34,7 @@ class Base32Spec: QuickSpec {
             describe("decode") {
 
                 it("should return nil for invalid input") {
-                    expect(Base32.decode("somethingNotBase32encoded!?")).to(beNil())
+                    expect(Base32.decode(string: "somethingNotBase32encoded!?")).to(beNil())
                 }
             }
 
@@ -45,10 +45,10 @@ class Base32Spec: QuickSpec {
                 sharedExamples(validBase32Encoding) { (context: SharedExampleContext) in
                     let data = context()
                     let encoded = data["encoded"] as! String
-                    let decoded = data["decoded"] as! NSData
+                    let decoded = data["decoded"] as! Data
 
                     it("should return data '\(decoded)' for string '\(encoded)'") {
-                        expect(Base32.decode(encoded)).to(equal(decoded))
+                        expect(Base32.decode(string: encoded)).to(equal(decoded))
                     }
                 }
 
@@ -59,13 +59,13 @@ class Base32Spec: QuickSpec {
                     let b: UInt8 = 0x62
                     let a: UInt8 = 0x61
                     let r: UInt8 = 0x72
-                    itBehavesLike(validBase32Encoding) { ["encoded": ""                , "decoded": NSData(bytes: [], length: 0)] }
-                    itBehavesLike(validBase32Encoding) { ["encoded": "MY======"        , "decoded": NSData(bytes: [f], length: 1)] }
-                    itBehavesLike(validBase32Encoding) { ["encoded": "MZXQ===="        , "decoded": NSData(bytes: [f,o], length: 2)] }
-                    itBehavesLike(validBase32Encoding) { ["encoded": "MZXW6==="        , "decoded": NSData(bytes: [f,o,o], length: 3)] }
-                    itBehavesLike(validBase32Encoding) { ["encoded": "MZXW6YQ="        , "decoded": NSData(bytes: [f,o,o,b], length: 4)] }
-                    itBehavesLike(validBase32Encoding) { ["encoded": "MZXW6YTB"        , "decoded": NSData(bytes: [f,o,o,b,a], length: 5)] }
-                    itBehavesLike(validBase32Encoding) { ["encoded": "MZXW6YTBOI======", "decoded": NSData(bytes: [f,o,o,b,a,r], length: 6)] }
+                    itBehavesLike(validBase32Encoding) { ["encoded": ""                , "decoded": Data(bytes: UnsafePointer<UInt8>([]), count: 0)] }
+                    itBehavesLike(validBase32Encoding) { ["encoded": "MY======"        , "decoded": Data(bytes: UnsafePointer<UInt8>([f]), count: 1)] }
+                    itBehavesLike(validBase32Encoding) { ["encoded": "MZXQ===="        , "decoded": Data(bytes: UnsafePointer<UInt8>([f,o]), count: 2)] }
+                    itBehavesLike(validBase32Encoding) { ["encoded": "MZXW6==="        , "decoded": Data(bytes: UnsafePointer<UInt8>([f,o,o]), count: 3)] }
+                    itBehavesLike(validBase32Encoding) { ["encoded": "MZXW6YQ="        , "decoded": Data(bytes: UnsafePointer<UInt8>([f,o,o,b]), count: 4)] }
+                    itBehavesLike(validBase32Encoding) { ["encoded": "MZXW6YTB"        , "decoded": Data(bytes: UnsafePointer<UInt8>([f,o,o,b,a]), count: 5)] }
+                    itBehavesLike(validBase32Encoding) { ["encoded": "MZXW6YTBOI======", "decoded": Data(bytes: UnsafePointer<UInt8>([f,o,o,b,a,r]), count: 6)] }
                 }
             }
         }

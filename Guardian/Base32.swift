@@ -45,20 +45,16 @@ class Base32 {
         __,__,__,__, __,__,__,__, __,__,__,__, __,__,__,__,  // 0xF0 - 0xFF
     ]
 
-    static func decode(value: String, decodingTable: [UInt8] = defaultDecodingTable) -> NSData? {
-        let encoding = value.stringByReplacingOccurrencesOfString("=", withString: "")
-        guard let encodedData = encoding.dataUsingEncoding(NSASCIIStringEncoding) else {
+    static func decode(string: String, decodingTable: [UInt8] = defaultDecodingTable) -> Data? {
+        let encoding = string.replacingOccurrences(of: "=", with: "")
+        guard let encodedData = encoding.data(using: .ascii) else {
             return nil
         }
-        let encodedBytes = UnsafePointer<UInt8>(encodedData.bytes)
-        let encodedLength = encodedData.length
+        let encodedLength = encodedData.count
+        let encodedBytes = [UInt8](encodedData)
         let encodedBlocks = Int( ceil( Double(encodedLength) / 8.0 ) )
         let expectedDataLength = encodedBlocks * 5
-        let decodedBytes = UnsafeMutablePointer<UInt8>.alloc(expectedDataLength)
-        defer { // will be executed after the current scope is exited, i.e. after the function returns
-            // always free memory
-            decodedBytes.destroy()
-        }
+        var decodedBytes = [UInt8](repeating: 0, count: expectedDataLength)
         var decodedBaseIndex = 0
         var encodedBlock: [UInt8] = [0, 0, 0, 0, 0, 0, 0, 0]
         var encodedBlockIndex = 0
@@ -93,6 +89,6 @@ class Base32 {
             }
         }
 
-        return NSData(bytes: decodedBytes, length: decodedBaseIndex)
+        return Data(bytes: UnsafePointer<UInt8>(decodedBytes), count: decodedBaseIndex)
     }
 }

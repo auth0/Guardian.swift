@@ -11,7 +11,7 @@ well as enterprise identity providers such as Active Directory, LDAP, Google App
 
 ## Requirements
 
-iOS 9.3+ and Swift 2.3+ is required in order to use Guardian.
+iOS 9.3+ and Swift 3 is required in order to use Guardian.
 
 ## Before getting started
 
@@ -59,9 +59,9 @@ Guardian
         .enroll(forDomain: domain, usingUri: enrollmentUriFromQr, notificationToken: apnsToken)
         .start { result in
             switch result {
-            case .Success(let enrollment): 
+            case .success(let enrollment): 
                 // success, we have the enrollment data available
-            case .Failure(let cause):
+            case .failure(let cause):
                 // something failed, check cause to see what went wrong
             }
         }
@@ -70,7 +70,7 @@ Guardian
 You must provide the `notificationToken`. It is the token required to send push notification to the device using the Apple Push Notification service (APNs). In case your app is not yet using push notifications or you're not familiar with it, you should check their
 [docs](https://developer.apple.com/go/?id=push-notifications).
 
-The notification token MUST be a String, and MUST NOT contain the spaces or brackets `<` and `>` that might be found on the NSData that is received on `application(:didRegisterForRemoteNotificationsWithDeviceToken)`
+The notification token MUST be a String containing the 64 bytes (expressed in hexadecimal format) that are received on `application(:didRegisterForRemoteNotificationsWithDeviceToken)`
 
 ### Unenroll
 
@@ -84,9 +84,9 @@ Guardian
         .delete()
         .start { result in
             switch result {
-            case .Success(let _): 
+            case .success: 
                 // success, the enrollment was deleted
-            case .Failure(let cause):
+            case .failure(let cause):
                 // something failed, check cause to see what went wrong
             }
         }
@@ -123,9 +123,9 @@ Guardian
         .allow(notification: notification)
         .start { result in
             switch result {
-            case .Success(let _): 
+            case .success: 
                 // success, the enrollment was deleted
-            case .Failure(let cause):
+            case .failure(let cause):
                 // something failed, check cause to see what went wrong
             }
         }
@@ -143,9 +143,9 @@ Guardian
         // or reject(notification: notification, withReason: "hacked")
         .start { result in
             switch result {
-            case .Success(let _): 
+            case .success: 
                 // success, the enrollment was deleted
-            case .Failure(let cause):
+            case .failure(let cause):
                 // something failed, check cause to see what went wrong
             }
         }

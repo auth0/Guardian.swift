@@ -70,7 +70,7 @@ class NotificationSpec: QuickSpec {
                 }
 
                 it("should have started at date") {
-                    expect(notification?.startedAt).to(equal(NSDate(timeIntervalSince1970: 1450382011)))
+                    expect(notification?.startedAt).to(equal(Date(timeIntervalSince1970: 1450382011)))
                 }
             }
 
@@ -78,7 +78,7 @@ class NotificationSpec: QuickSpec {
                 let browser = "Safari"
                 let os = "OS X El Capitán"
 
-                var notification: Notification!
+                var notification: Guardian.Notification!
 
                 it("should include full source") {
                     notification = AuthenticationNotification(userInfo: payload(browser: browser, os: os))
@@ -103,7 +103,7 @@ class NotificationSpec: QuickSpec {
 
             context("missing attributes") {
 
-                var notification: Notification!
+                var notification: Guardian.Notification!
 
                 it("should fail with empty payload") {
                     notification = AuthenticationNotification(userInfo: [:])
@@ -145,7 +145,7 @@ class NotificationSpec: QuickSpec {
 }
 
 func payload(
-    category category: String = "com.auth0.notification.authentication",
+             category: String = "com.auth0.notification.authentication",
              device: String? = "dev_VJGBI87d093cnl03",
              browser: String? = "Safari",
              browserVersion: String? = "9.0.3",
@@ -156,8 +156,8 @@ func payload(
              host: String? = "samples.auth0.com",
              latitude: String? = "-34.57115",
              longitude: String? = "-58.423297",
-             locationName: String? = "Palermo, BA, Argentina") -> [String: AnyObject] {
-    var payload: [String: [String: AnyObject]] = [
+             locationName: String? = "Palermo, BA, Argentina") -> [String: Any] {
+    var payload: [String: [String: Any]] = [
         "aps": [
             "alert" : [
                 "body" : "Login with p@p.xom in login0",

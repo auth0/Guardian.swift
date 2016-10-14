@@ -29,12 +29,12 @@ import Foundation
  - seealso: Guardian.Enrollment
  */
 public struct EnrollRequest: Requestable {
-    
+
+    typealias T = Enrollment
+
     private let api: API
     private let enrollmentUri: String
     private let notificationToken: String
-
-    typealias T = Enrollment
 
     init(api: API, enrollmentUri: String, notificationToken: String) {
         self.api = api
@@ -48,36 +48,36 @@ public struct EnrollRequest: Requestable {
      - parameter callback: the termination callback, where the result is
      received
      */
-    public func start(callback: (Result<Enrollment>) -> ()) {
+    public func start(callback: @escaping (Result<Enrollment>) -> ()) {
         guard
             let parameters = parameters(fromUri: enrollmentUri),
             let enrollmentTxId = parameters["enrollment_tx_id"]
-            else { return callback(.Failure(cause: GuardianError.invalidEnrollmentUri)) }
+            else { return callback(.failure(cause: GuardianError.invalidEnrollmentUri)) }
         let enroll = { (enrollment: Enrollment) in
             self.api.device(forEnrollmentId: enrollment.id, token: enrollment.deviceToken)
                 .create(withDeviceIdentifier: enrollment.deviceIdentifier, name: enrollment.deviceName, notificationToken: enrollment.notificationToken)
                 .start { result in
                     switch result {
-                    case .Failure(let cause):
-                        callback(.Failure(cause: cause))
-                    case .Success(_):
-                        callback(.Success(payload: enrollment))
+                    case .failure(let cause):
+                        callback(.failure(cause: cause))
+                    case .success:
+                        callback(.success(payload: enrollment))
                     }
             }
         }
         self.api.enrollment(forTransactionId: enrollmentTxId)
             .start { result in
                 switch result {
-                case .Failure(let cause):
-                    callback(.Failure(cause: cause))
-                case .Success(let payload):
+                case .failure(let cause):
+                    callback(.failure(cause: cause))
+                case .success(let payload):
                     guard
                         let payload = payload,
                         let deviceToken = payload["device_account_token"] else {
-                        return callback(.Failure(cause: GuardianError.invalidResponse))
+                        return callback(.failure(cause: GuardianError.invalidResponse))
                     }
                     guard let enrollment = enrollment(usingParameters: parameters, withNotificationToken: self.notificationToken, deviceToken: deviceToken) else {
-                        return callback(.Failure(cause: GuardianError.invalidEnrollmentUri))
+                        return callback(.failure(cause: GuardianError.invalidEnrollmentUri))
                     }
                     enroll(enrollment)
                 }
@@ -86,8 +86,8 @@ public struct EnrollRequest: Requestable {
 }
 
 func parameters(fromUri uri: String) -> [String: String]? {
-    guard let components = NSURLComponents(string: uri), let otp = components.host?.lowercaseString
-        where components.scheme == "otpauth" && otp == "totp" else {
+    guard let components = URLComponents(string: uri), let otp = components.host?.lowercased()
+        , components.scheme == "otpauth" && otp == "totp" else {
             return nil
     }
     guard let parameters = components.queryItems?.asDictionary() else {
@@ -102,9 +102,9 @@ func enrollment(usingParameters parameters: [String: String], withNotificationTo
         let secret = parameters["secret"]
         else { return nil }
 
-    let digits = Int(parameters["digits"]) ?? 6
-    let period = Int(parameters["period"]) ?? 30
-    let algorithm = parameters["algorithm"] ?? "sha1"
+    let digits = Int(parameters["digits"])
+    let period = Int(parameters["period"])
+    let algorithm = parameters["algorithm"]
     return Enrollment(id: id, deviceToken: deviceToken, notificationToken: notificationToken, base32Secret: secret, algorithm: algorithm, digits: digits, period: period)
 }
 
@@ -116,10 +116,10 @@ private extension Int {
     }
 }
 
-private extension Array where Element: NSURLQueryItem {
+private extension Collection where Iterator.Element == URLQueryItem {
 
     func asDictionary() -> [String: String] {
-        return self.reduce([:], combine: { (dict, item) in
+        return self.reduce([:], { (dict, item) in
             var values = dict
             if let value = item.value {
                 values[item.name] = value

@@ -31,49 +31,49 @@ public class _ObjectiveGuardian: NSObject {
         self.domain = domain
     }
 
-    public func enroll(usingUri uri: String, notificationToken: String, callback: (Enrollment?, NSError?) -> ()) {
+    public func enroll(usingUri uri: String, notificationToken: String, callback: @escaping (Enrollment?, NSError?) -> ()) {
         Guardian.enroll(forDomain: domain, usingUri: uri, notificationToken: notificationToken).start {
             switch $0 {
-            case .Success(let enrollment):
+            case .success(let enrollment):
                 callback(enrollment, nil)
-            case .Failure(let error):
+            case .failure(let error):
                 callback(nil, error as NSError)
             }
         }
     }
 
-    public func allow(notification notification: Notification, enrollment: Enrollment, callback: (NSError?) -> ()) {
+    public func allow(notification: Notification, enrollment: Enrollment, callback: @escaping (NSError?) -> ()) {
         Guardian.authentication(forDomain: domain, andEnrollment: enrollment).allow(notification: notification).start {
             switch $0 {
-            case .Success:
+            case .success:
                 callback(nil)
-            case .Failure(let error):
+            case .failure(let error):
                 callback(error as NSError)
             }
         }
     }
 
-    public func reject(notification notification: Notification, andReason reason: String?, enrollment: Enrollment, callback: (NSError?) -> ()) {
+    public func reject(notification: Notification, andReason reason: String?, enrollment: Enrollment, callback: @escaping (NSError?) -> ()) {
         Guardian.authentication(forDomain: domain, andEnrollment: enrollment).reject(notification: notification, withReason: reason).start {
             switch $0 {
-            case .Success:
+            case .success:
                 callback(nil)
-            case .Failure(let error):
+            case .failure(let error):
                 callback(error as NSError)
             }
         }
     }
 
-    public func notification(with userInfo: [NSObject: AnyObject]) -> Notification? {
-        return Guardian.notification(from: userInfo)
+    public func notification(with userInfo: [AnyHashable: Any]) -> Notification? {
+        return Guardian.notification(from: userInfo as [NSObject : AnyObject])
     }
 
-    public func removeEnrollment(enrollment: Enrollment, callback: (NSError?) -> ()) {
+    public func removeEnrollment(_ enrollment: Enrollment, callback: @escaping (NSError?) -> ()) {
         Guardian.api(forDomain: domain).device(forEnrollmentId: enrollment.id, token: enrollment.deviceToken).delete().start {
             switch $0 {
-            case .Success:
+            case .success:
                 callback(nil)
-            case .Failure(let error):
+            case .failure(let error):
                 callback(error as NSError)
             }
         }

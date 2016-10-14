@@ -32,9 +32,9 @@ private let invalidOTPAlgorithmMessage = "a0.guardian.internal.invalid_otp_algor
 /**
  An `ErrorType` that encapsulates server and other possible internal errors
  */
-public class GuardianError: ErrorType, CustomStringConvertible, Equatable {
+public class GuardianError: Error, CustomStringConvertible, Equatable {
 
-    let info: [String: AnyObject]?
+    let info: [String: Any]?
     let statusCode: Int
     
     init(info: [String: AnyObject], statusCode: Int) {

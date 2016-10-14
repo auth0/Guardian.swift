@@ -32,5 +32,5 @@ protocol Requestable {
      - parameter callback: the termination callback, where the result is 
                            received
      */
-    func start(callback: (Result<T>) -> ())
+    func start(callback: @escaping (Result<T>) -> ())
 }

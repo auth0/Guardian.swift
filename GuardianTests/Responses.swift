@@ -28,11 +28,11 @@ func enrollmentInfoResponse(withDeviceAccountToken deviceAccountToken: String) -
         "device_account_token": deviceAccountToken,
     ]
     
-    return OHHTTPStubsResponse(JSONObject: json, statusCode: 200, headers: ["Content-Type": "application/json"])
+    return OHHTTPStubsResponse(jsonObject: json, statusCode: 200, headers: ["Content-Type": "application/json"])
 }
 
 func enrollmentResponse(enrollmentId id: String?, deviceIdentifier: String?, name: String?, service: String?, notificationToken: String?) -> OHHTTPStubsResponse {
-    let json = [
+    let json: [String : Any] = [
         "id": id ?? "",
         "identifier": deviceIdentifier ?? "",
         "name": name ?? "",
@@ -42,13 +42,13 @@ func enrollmentResponse(enrollmentId id: String?, deviceIdentifier: String?, nam
         ]
     ]
     
-    return OHHTTPStubsResponse(JSONObject: json, statusCode: 200, headers: ["Content-Type": "application/json"])
+    return OHHTTPStubsResponse(jsonObject: json, statusCode: 200, headers: ["Content-Type": "application/json"])
 }
 
-func errorResponse(statusCode statusCode: Int32, errorCode: String, message: String, error: String? = nil) -> OHHTTPStubsResponse {
-    return OHHTTPStubsResponse(JSONObject: ["errorCode": errorCode, "message": message, "statusCode": "\(statusCode)", "error": error ?? message], statusCode: statusCode, headers: ["Content-Type": "application/json"])
+func errorResponse(statusCode: Int32, errorCode: String, message: String, error: String? = nil) -> OHHTTPStubsResponse {
+    return OHHTTPStubsResponse(jsonObject: ["errorCode": errorCode, "message": message, "statusCode": "\(statusCode)", "error": error ?? message], statusCode: statusCode, headers: ["Content-Type": "application/json"])
 }
 
-func successResponse(statusCode statusCode: Int32 = 200) -> OHHTTPStubsResponse {
-    return OHHTTPStubsResponse(JSONObject: [:], statusCode: statusCode, headers: ["Content-Type": "application/json"])
+func successResponse(statusCode: Int32 = 200) -> OHHTTPStubsResponse {
+    return OHHTTPStubsResponse(jsonObject: [:], statusCode: statusCode, headers: ["Content-Type": "application/json"])
 }

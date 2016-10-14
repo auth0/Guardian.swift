@@ -30,10 +30,10 @@ class APIClientSpec: QuickSpec {
     
     override func spec() {
         
-        let client = APIClient(baseUrl: NSURL(string: "https://\(Domain)/")!, session: NSURLSession.sharedSession())
+        let client = APIClient(baseUrl: URL(string: "https://\(Domain)/")!, session: URLSession.shared)
         
         beforeEach {
-            stub({ _ in return true }) { _ in
+            stub(condition: { _ in return true }) { _ in
                 return OHHTTPStubsResponse.init(error: NSError(domain: "com.auth0", code: -99999, userInfo: nil))
                 }.name = "YOU SHALL NOT PASS!"
         }
@@ -45,11 +45,11 @@ class APIClientSpec: QuickSpec {
         describe("enrollment info") {
             
             beforeEach {
-                stub(isEnrollmentInfo(domain: Domain)
+                stub(condition: isEnrollmentInfo(domain: Domain)
                     && hasNoneOf(["enrollment_tx_id": ValidTransactionId])) { _ in
                         return errorResponse(statusCode: 404, errorCode: "enrollment_transaction_not_found", message: "Not found")
                     }.name = "Enrollment transaction not found"
-                stub(isEnrollmentInfo(domain: Domain)
+                stub(condition: isEnrollmentInfo(domain: Domain)
                     && hasAtLeast(["enrollment_tx_id": ValidTransactionId])) { _ in
                         return enrollmentInfoResponse(withDeviceAccountToken: DeviceAccountToken)
                     }.name = "Valid enrollment info"
@@ -81,15 +81,15 @@ class APIClientSpec: QuickSpec {
         describe("allow authorization request") {
             
             beforeEach {
-                stub(isVerifyOTP(domain: Domain)) { _ in
+                stub(condition: isVerifyOTP(domain: Domain)) { _ in
                     return errorResponse(statusCode: 404, errorCode: "invalid_token", message: "Invalid transaction token")
                     }.name = "Missing authentication"
-                stub(isVerifyOTP(domain: Domain)
+                stub(condition: isVerifyOTP(domain: Domain)
                     && hasBearerToken(ValidTransactionToken)
                     && hasAtLeast(["type": "push_notification"])) { _ in
                         return errorResponse(statusCode: 404, errorCode: "invalid_otp", message: "Invalid OTP code")
                     }.name = "Invalid OTP code"
-                stub(isVerifyOTP(domain: Domain)
+                stub(condition: isVerifyOTP(domain: Domain)
                     && hasBearerToken(ValidTransactionToken)
                     && hasAtLeast(["code": ValidOTPCode, "type": "push_notification"])) { _ in
                         return successResponse()
@@ -133,19 +133,19 @@ class APIClientSpec: QuickSpec {
         describe("reject authorization request") {
             
             beforeEach {
-                stub(isRejectLogin(domain: Domain)) { _ in
+                stub(condition: isRejectLogin(domain: Domain)) { _ in
                     return errorResponse(statusCode: 404, errorCode: "invalid_token", message: "Invalid transaction token")
                     }.name = "Missing authentication"
-                stub(isRejectLogin(domain: Domain)
+                stub(condition: isRejectLogin(domain: Domain)
                     && hasBearerToken(ValidTransactionToken)) { _ in
                         return errorResponse(statusCode: 404, errorCode: "invalid_otp", message: "Invalid OTP code")
                     }.name = "Invalid OTP code"
-                stub(isRejectLogin(domain: Domain)
+                stub(condition: isRejectLogin(domain: Domain)
                     && hasBearerToken(ValidTransactionToken)
                     && hasAtLeast(["code": ValidOTPCode, "reason": RejectReason])) { _ in
                         return successResponse()
                     }.name = "Valid reject-login with reason"
-                stub(isRejectLogin(domain: Domain)
+                stub(condition: isRejectLogin(domain: Domain)
                     && hasBearerToken(ValidTransactionToken)
                     && hasAtLeast(["code": ValidOTPCode])
                     && hasNoneOf(["reason"])) { _ in
@@ -201,14 +201,14 @@ class APIClientSpec: QuickSpec {
         describe("delete enrollment") {
             
             beforeEach {
-                stub(isDeleteEnrollment(domain: Domain)) { _ in
+                stub(condition: isDeleteEnrollment(domain: Domain)) { _ in
                     return errorResponse(statusCode: 404, errorCode: "invalid_token", message: "Invalid transaction token")
                     }.name = "Missing authentication"
-                stub(isDeleteEnrollment(domain: Domain)
+                stub(condition: isDeleteEnrollment(domain: Domain)
                     && hasBearerToken(ValidEnrollmentToken)) { _ in
                         return errorResponse(statusCode: 404, errorCode: "enrollment_not_found", message: "Enrollment not found")
                     }.name = "Enrollment not found"
-                stub(isDeleteEnrollment(domain: Domain, enrollmentId: ValidEnrollmentId)
+                stub(condition: isDeleteEnrollment(domain: Domain, enrollmentId: ValidEnrollmentId)
                     && hasBearerToken(ValidEnrollmentToken)) { _ in
                         return successResponse()
                     }.name = "Valid delete enrollment"
@@ -254,14 +254,14 @@ class APIClientSpec: QuickSpec {
         describe("update enrollment") {
             
             beforeEach {
-                stub(isUpdateEnrollment(domain: Domain)) { _ in
+                stub(condition: isUpdateEnrollment(domain: Domain)) { _ in
                     return errorResponse(statusCode: 404, errorCode: "invalid_token", message: "Invalid transaction token")
                     }.name = "Missing authentication"
-                stub(isUpdateEnrollment(domain: Domain)
+                stub(condition: isUpdateEnrollment(domain: Domain)
                     && hasBearerToken(ValidEnrollmentToken)) { _ in
                         return errorResponse(statusCode: 404, errorCode: "enrollment_not_found", message: "Enrollment not found")
                     }.name = "Enrollment not found"
-                stub(isUpdateEnrollment(domain: Domain, enrollmentId: ValidEnrollmentId)
+                stub(condition: isUpdateEnrollment(domain: Domain, enrollmentId: ValidEnrollmentId)
                     && hasBearerToken(ValidEnrollmentToken)) { req in
                         let payload = req.a0_payload
                         let pushCredentials = payload?["push_credentials"] as? [String: String]

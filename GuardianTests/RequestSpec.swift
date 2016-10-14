@@ -41,7 +41,7 @@ class RequestSpec: QuickSpec {
                     Request<Void>(session: session, method: "PATCH", url: ValidURL)
                         .start { _ in
                             let request = session.a0_request!
-                            expect(request.URL).to(equal(ValidURL))
+                            expect(request.url).to(equal(ValidURL))
                             done()
                     }
                 }
@@ -53,7 +53,7 @@ class RequestSpec: QuickSpec {
                     Request<Void>(session: session, method: "PATCH", url: ValidURL)
                         .start { _ in
                             let request = session.a0_request!
-                            expect(request.HTTPMethod).to(equal("PATCH"))
+                            expect(request.httpMethod).to(equal("PATCH"))
                             done()
                     }
                 }
@@ -66,11 +66,11 @@ class RequestSpec: QuickSpec {
                         "someField": "someValue",
                         "someOtherField": "someOtherValue"
                     ]
-                    let serializedPayload = try? NSJSONSerialization.dataWithJSONObject(payload, options: [])
+                    let serializedPayload = try? JSONSerialization.data(withJSONObject: payload, options: [])
                     Request<Void>(session: session, method: "PATCH", url: ValidURL, payload: payload)
                         .start { _ in
                             let request = session.a0_request!
-                            expect(request.HTTPBody).to(equal(serializedPayload))
+                            expect(request.httpBody).to(equal(serializedPayload))
                             done()
                     }
                 }
@@ -82,7 +82,7 @@ class RequestSpec: QuickSpec {
                     Request<Void>(session: session, method: "PATCH", url: ValidURL)
                         .start { _ in
                             let request = session.a0_request!
-                            expect(request.valueForHTTPHeaderField("Content-Type")).to(equal("application/json"))
+                            expect(request.value(forHTTPHeaderField: "Content-Type")).to(equal("application/json"))
                             done()
                     }
                 }
@@ -94,7 +94,7 @@ class RequestSpec: QuickSpec {
                     Request<Void>(session: session, method: "PATCH", url: ValidURL, headers: ["SomeHeaderName": "SomeHeaderValue"])
                         .start { _ in
                             let request = session.a0_request!
-                            expect(request.valueForHTTPHeaderField("SomeHeaderName")).to(equal("SomeHeaderValue"))
+                            expect(request.value(forHTTPHeaderField: "SomeHeaderName")).to(equal("SomeHeaderValue"))
                             done()
                     }
                 }
@@ -116,7 +116,7 @@ class RequestSpec: QuickSpec {
             
             it("should fail with 'invalid response' when the response is not a NSHTTPURLResponse") {
                 waitUntil(timeout: Timeout) { done in
-                    let session = MockNSURLSession(data: nil, response: NSURLResponse(), error: nil)
+                    let session = MockNSURLSession(data: nil, response: URLResponse(), error: nil)
                     Request<Void>(session: session, method: ValidMethod, url: ValidURL)
                         .start { result in
                             expect(result).to(haveGuardianError(withErrorCode: GuardianError.invalidResponse.errorCode))
@@ -127,7 +127,7 @@ class RequestSpec: QuickSpec {
             
             it("should fail with 'invalid response' when the response status code is not in [200,300) and body is nil") {
                 waitUntil(timeout: Timeout) { done in
-                    let response = NSHTTPURLResponse(URL: ValidURL, statusCode: 404, HTTPVersion: nil, headerFields: nil)
+                    let response = HTTPURLResponse(url: ValidURL, statusCode: 404, httpVersion: nil, headerFields: nil)
                     let session = MockNSURLSession(data: nil, response: response, error: nil)
                     Request<Void>(session: session, method: ValidMethod, url: ValidURL)
                         .start { result in
@@ -139,8 +139,8 @@ class RequestSpec: QuickSpec {
             
             it("should fail with 'invalid response' when the response status code is not in [200,300) and body includes unparseable data") {
                 waitUntil(timeout: Timeout) { done in
-                    let response = NSHTTPURLResponse(URL: ValidURL, statusCode: 401, HTTPVersion: nil, headerFields: nil)
-                    let data = NSData(base64EncodedString: "SomeInvalidJSON", options: [])
+                    let response = HTTPURLResponse(url: ValidURL, statusCode: 401, httpVersion: nil, headerFields: nil)
+                    let data = Data(base64Encoded: "SomeInvalidJSON", options: [])
                     let session = MockNSURLSession(data: data, response: response, error: nil)
                     Request<Void>(session: session, method: ValidMethod, url: ValidURL)
                         .start { result in
@@ -152,8 +152,8 @@ class RequestSpec: QuickSpec {
             
             it("should fail with 'server error info' when the response status code is not in [200,300) and body includes error") {
                 waitUntil(timeout: Timeout) { done in
-                    let response = NSHTTPURLResponse(URL: ValidURL, statusCode: 401, HTTPVersion: nil, headerFields: nil)
-                    let data = try? NSJSONSerialization.dataWithJSONObject([
+                    let response = HTTPURLResponse(url: ValidURL, statusCode: 401, httpVersion: nil, headerFields: nil)
+                    let data = try? JSONSerialization.data(withJSONObject: [
                         "errorCode": "SomeErrorCode"
                         ], options: [])
                     let session = MockNSURLSession(data: data, response: response, error: nil)
@@ -167,7 +167,7 @@ class RequestSpec: QuickSpec {
             
             it("should succeed with empty payload") {
                 waitUntil(timeout: Timeout) { done in
-                    let response = NSHTTPURLResponse(URL: ValidURL, statusCode: 201, HTTPVersion: nil, headerFields: nil)
+                    let response = HTTPURLResponse(url: ValidURL, statusCode: 201, httpVersion: nil, headerFields: nil)
                     let session = MockNSURLSession(data: nil, response: response, error: nil)
                     Request<Void>(session: session, method: ValidMethod, url: ValidURL)
                         .start { result in
@@ -179,11 +179,11 @@ class RequestSpec: QuickSpec {
             
             it("should succeed with parsed payload") {
                 waitUntil(timeout: Timeout) { done in
-                    let response = NSHTTPURLResponse(URL: ValidURL, statusCode: 201, HTTPVersion: nil, headerFields: nil)
+                    let response = HTTPURLResponse(url: ValidURL, statusCode: 201, httpVersion: nil, headerFields: nil)
                     let payload: [String: String] = [
                         "someField": "someValue"
                     ]
-                    let data = try? NSJSONSerialization.dataWithJSONObject(payload, options: [])
+                    let data = try? JSONSerialization.data(withJSONObject: payload, options: [])
                     let session = MockNSURLSession(data: data, response: response, error: nil)
                     Request<[String: String]>(session: session, method: ValidMethod, url: ValidURL)
                         .start { result in

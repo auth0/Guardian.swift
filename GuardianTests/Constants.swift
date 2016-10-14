@@ -23,13 +23,13 @@
 import Foundation
 
 let Domain = "tenant.guardian.auth0.com"
-let Timeout: NSTimeInterval = 2
+let Timeout: TimeInterval = 2
 
-let ValidURL = NSURL(string: "https://\(Domain)/")!
-let ValidTransactionId = NSUUID().UUIDString
-let ValidEnrollmentId = NSUUID().UUIDString
-let ValidEnrollmentToken = NSUUID().UUIDString
-let ValidNotificationToken = NSUUID().UUIDString
+let ValidURL = URL(string: "https://\(Domain)/")!
+let ValidTransactionId = UUID().uuidString
+let ValidEnrollmentId = UUID().uuidString
+let ValidEnrollmentToken = UUID().uuidString
+let ValidNotificationToken = UUID().uuidString
 let ValidIssuer = "aValidIssuer"
 let ValidUser = "aValidUser"
 let ValidBase32Secret = "aValidBase32Secret"
@@ -45,4 +45,4 @@ let RejectReason = "aRejectReason"
 let ValidDeviceIdentifier = "aValidDeviceIdentifier"
 let ValidDeviceName = "aValidDeviceName"
 let ValidNotificationService = "APNS"
-let DeviceAccountToken = NSUUID().UUIDString
+let DeviceAccountToken = UUID().uuidString
