@@ -46,3 +46,10 @@ let ValidDeviceIdentifier = "aValidDeviceIdentifier"
 let ValidDeviceName = "aValidDeviceName"
 let ValidNotificationService = "APNS"
 let DeviceAccountToken = UUID().uuidString
+
+let RSAPublicKeyTag = UUID().uuidString
+let RSAPrivateKeyTag = UUID().uuidString
+let RSAKeySize = 2048
+
+let (ValidRSAPublicKey, ValidRSAPrivateKey) = generateKeyPair(publicTag: RSAPublicKeyTag, privateTag: RSAPrivateKeyTag, keyType: kSecAttrKeyTypeRSA, keySize: RSAKeySize)!
+let NonRSAPublicKey = generateKeyPair(publicTag: RSAPublicKeyTag + "-invalid", privateTag: RSAPrivateKeyTag + "-invalid", keyType: kSecAttrKeyTypeEC, keySize: 256)!.publicKey

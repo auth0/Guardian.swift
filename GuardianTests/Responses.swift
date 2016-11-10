@@ -31,7 +31,7 @@ func enrollmentInfoResponse(withDeviceAccountToken deviceAccountToken: String) -
     return OHHTTPStubsResponse(jsonObject: json, statusCode: 200, headers: ["Content-Type": "application/json"])
 }
 
-func enrollmentResponse(enrollmentId id: String?, deviceIdentifier: String?, name: String?, service: String?, notificationToken: String?) -> OHHTTPStubsResponse {
+func deviceResponse(enrollmentId id: String?, deviceIdentifier: String?, name: String?, service: String?, notificationToken: String?) -> OHHTTPStubsResponse {
     let json: [String : Any] = [
         "id": id ?? "",
         "identifier": deviceIdentifier ?? "",
@@ -42,6 +42,31 @@ func enrollmentResponse(enrollmentId id: String?, deviceIdentifier: String?, nam
         ]
     ]
     
+    return OHHTTPStubsResponse(jsonObject: json, statusCode: 200, headers: ["Content-Type": "application/json"])
+}
+
+func enrollResponse(enrollmentId id: String?, url: String?, user: String?, issuer: String?, token: String?, totpSecret: String? = nil, totpAlgorithm: String? = nil, totpDigits: Int? = nil, totpPeriod: Int? = nil, recoveryCode: String? = nil) -> OHHTTPStubsResponse {
+    var json: [String : Any] = [
+        "id": id ?? "",
+        "url": url ?? "",
+        "user": user ?? "",
+        "issuer": issuer ?? "",
+        "token": token ?? "",
+    ]
+
+    if let secret = totpSecret, let algorithm = totpAlgorithm, let digits = totpDigits, let period = totpPeriod {
+        json["totp"] = [
+            "secret": secret,
+            "algorithm": algorithm,
+            "digits": digits,
+            "period": period
+        ] as [String : Any]
+    }
+
+    if let recoveryCode = recoveryCode {
+        json["recovery_code"] = recoveryCode
+    }
+
     return OHHTTPStubsResponse(jsonObject: json, statusCode: 200, headers: ["Content-Type": "application/json"])
 }
 

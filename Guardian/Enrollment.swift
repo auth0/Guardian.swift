@@ -51,9 +51,16 @@ public class Enrollment: NSObject {
     public let notificationToken: String
 
     /**
-     The TOTP secret, Base32 encoded
+     The private key used to sign the requests to allow/reject an authentication
+     request.
      */
-    public let base32Secret: String
+    public let signingKey: SecKey
+
+    /**
+     The TOTP secret, Base32 encoded
+     Might be nil if TOTP mode is disabled
+     */
+    public let base32Secret: String?
 
     /**
      The TOTP algorithm
@@ -93,7 +100,8 @@ public class Enrollment: NSObject {
          id: String,
          deviceToken: String,
          notificationToken: String,
-         base32Secret: String,
+         signingKey: SecKey,
+         base32Secret: String?,
          algorithm: String? = nil,
          digits: Int? = nil,
          period: Int? = nil
@@ -101,9 +109,21 @@ public class Enrollment: NSObject {
         self.id = id
         self.deviceToken = deviceToken
         self.notificationToken = notificationToken
+        self.signingKey = signingKey
         self.base32Secret = base32Secret
         self.algorithm = algorithm ?? "sha1"
         self.digits = digits ?? 6
         self.period = period ?? 30
+    }
+}
+
+extension Enrollment {
+
+    class var defaultDeviceName: String {
+        return UIDevice.current.name
+    }
+
+    class var defaultDeviceIdentifier: String {
+        return UIDevice.current.identifierForVendor!.uuidString
     }
 }

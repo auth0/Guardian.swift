@@ -77,6 +77,60 @@ class APIClientSpec: QuickSpec {
                 }
             }
         }
+
+        describe("enroll") {
+
+            beforeEach {
+                stub(condition: isMobileEnroll(domain: Domain)
+                    && hasTicketAuth(ValidTransactionId)
+                    && hasAtLeast([
+                        "identifier": ValidDeviceIdentifier,
+                        "name": ValidDeviceName
+                        ])
+                    && hasField("push_credentials", withParameters: [
+                        "service": ValidNotificationService,
+                        "token": ValidNotificationToken
+                        ])
+                    && hasField("public_key", withParameters: [
+                        "alg": "RS256",
+                        "e": "AQAB",
+                        "use": "sig",
+                        "kty": "RSA"
+                        ])) { _ in
+                            return enrollResponse(enrollmentId: ValidEnrollmentId,
+                                                  url: ValidURL.host,
+                                                  user: ValidUser,
+                                                  issuer: ValidIssuer,
+                                                  token: ValidEnrollmentToken,
+                                                  totpSecret: ValidBase32Secret,
+                                                  totpAlgorithm: ValidAlgorithm,
+                                                  totpDigits: ValidDigits,
+                                                  totpPeriod: ValidPeriod)
+                    }.name = "Valid enrollment"
+            }
+
+            it("should return enroll data") {
+                waitUntil(timeout: Timeout) { done in
+                    client
+                        .enroll(withTicket: ValidTransactionId, identifier: ValidDeviceIdentifier, name: ValidDeviceName, notificationToken: ValidNotificationToken, publicKey: ValidRSAPublicKey)
+                        .start { result in
+                            expect(result).to(beSuccess())
+                            done()
+                    }
+                }
+            }
+
+            it("should fail when public key is invalid") {
+                waitUntil(timeout: Timeout) { done in
+                    client
+                        .enroll(withTicket: ValidTransactionId, identifier: ValidDeviceIdentifier, name: ValidDeviceName, notificationToken: ValidNotificationToken, publicKey: NonRSAPublicKey)
+                        .start { result in
+                            expect(result).to(haveGuardianError(withErrorCode: "a0.guardian.internal.invalid_public_key"))
+                            done()
+                    }
+                }
+            }
+        }
         
         describe("allow authorization request") {
             
@@ -265,7 +319,7 @@ class APIClientSpec: QuickSpec {
                     && hasBearerToken(ValidEnrollmentToken)) { req in
                         let payload = req.a0_payload
                         let pushCredentials = payload?["push_credentials"] as? [String: String]
-                        return enrollmentResponse(enrollmentId: ValidEnrollmentId, deviceIdentifier: payload?["identifier"] as? String, name: payload?["name"] as? String, service: pushCredentials?["service"], notificationToken: pushCredentials?["token"])
+                        return deviceResponse(enrollmentId: ValidEnrollmentId, deviceIdentifier: payload?["identifier"] as? String, name: payload?["name"] as? String, service: pushCredentials?["service"], notificationToken: pushCredentials?["token"])
                     }.name = "Valid updated enrollment"
             }
             

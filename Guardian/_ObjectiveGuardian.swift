@@ -31,8 +31,8 @@ public class _ObjectiveGuardian: NSObject {
         self.domain = domain
     }
 
-    public func enroll(usingUri uri: String, notificationToken: String, callback: @escaping (Enrollment?, NSError?) -> ()) {
-        Guardian.enroll(forDomain: domain, usingUri: uri, notificationToken: notificationToken).start {
+    public func enroll(usingUri uri: String, notificationToken: String, privateKey: SecKey, publicKey: SecKey, callback: @escaping (Enrollment?, NSError?) -> ()) {
+        Guardian.enroll(forDomain: domain, usingUri: uri, notificationToken: notificationToken, privateKey: privateKey, publicKey: publicKey).start {
             switch $0 {
             case .success(let enrollment):
                 callback(enrollment, nil)

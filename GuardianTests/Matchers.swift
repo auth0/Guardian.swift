@@ -36,6 +36,19 @@ func hasAtLeast(_ parameters: [String: String]) -> OHHTTPStubsTestBlock {
     }
 }
 
+func hasField(_ field: String, withParameters parameters: [String: String]) -> OHHTTPStubsTestBlock {
+    return { request in
+        guard
+            let payload = request.a0_payload,
+            let pushCredentials = payload[field] as? [String: AnyObject]
+            else { return false }
+        let entries = parameters.filter { (key, _) in pushCredentials.contains { (name, _) in  key == name } }
+        return entries.count == parameters.count && entries.reduce(true, { (initial, entry) -> Bool in
+            return initial && pushCredentials[entry.0] as? String == entry.1
+        })
+    }
+}
+
 func hasOtpCode(inParameter name: String) -> OHHTTPStubsTestBlock {
     return { request in
         guard let payload = request.a0_payload else { return false }
@@ -61,6 +74,12 @@ func hasBearerToken(_ token: String) -> OHHTTPStubsTestBlock {
     }
 }
 
+func hasTicketAuth(_ ticket: String) -> OHHTTPStubsTestBlock {
+    return { request in
+        return request.value(forHTTPHeaderField: "Authorization") == "Ticket id=\"\(ticket)\""
+    }
+}
+
 func isPathStartingWith(_ path: String) -> OHHTTPStubsTestBlock {
     return { req in
         guard let path = req.url?.path, let range = path.range(of: path) else {
@@ -72,6 +91,10 @@ func isPathStartingWith(_ path: String) -> OHHTTPStubsTestBlock {
 
 func isEnrollmentInfo(domain: String) -> OHHTTPStubsTestBlock {
     return isScheme("https") && isHost(domain) && isMethodPOST() && isPath("/api/enrollment-info")
+}
+
+func isMobileEnroll(domain: String) -> OHHTTPStubsTestBlock {
+    return isScheme("https") && isHost(domain) && isMethodPOST() && isPath("/api/enroll")
 }
 
 func isVerifyOTP(domain: String) -> OHHTTPStubsTestBlock {
@@ -171,7 +194,7 @@ func haveEnrollment(withId enrollmentId: String?, deviceIdentifier: String?, dev
     }
 }
 
-func haveEnrollment(withBaseUrl baseURL: URL, enrollmentId: String, deviceToken: String, notificationToken: String, issuer: String, user: String, base32Secret: String, algorithm: String, digits: Int, period: Int) -> MatcherFunc<Result<Enrollment>> {
+func haveEnrollment(withBaseUrl baseURL: URL, enrollmentId: String, deviceToken: String, notificationToken: String, issuer: String, user: String, signingKey: SecKey, base32Secret: String, algorithm: String, digits: Int, period: Int) -> MatcherFunc<Result<Enrollment>> {
     return MatcherFunc { expression, failureMessage in
         failureMessage.postfixMessage = "be an enrollment with" +
             " <baseUrl: \(baseURL)>" +
@@ -180,6 +203,7 @@ func haveEnrollment(withBaseUrl baseURL: URL, enrollmentId: String, deviceToken:
             " <notificationToken: \(notificationToken)>" +
             " <issuer: \(issuer)>" +
             " <user: \(user)>" +
+            " <signingKey: \(signingKey)>" +
             " <base32Secret: \(base32Secret)>" +
             " <algorithm: \(algorithm)>" +
             " <digits: \(digits)>" +
@@ -190,6 +214,7 @@ func haveEnrollment(withBaseUrl baseURL: URL, enrollmentId: String, deviceToken:
                 return result.id == enrollmentId
                     && result.deviceToken == deviceToken
                     && result.notificationToken == notificationToken
+                    && result.signingKey === signingKey
                     && result.base32Secret == base32Secret
                     && result.algorithm == algorithm
                     && result.digits == digits

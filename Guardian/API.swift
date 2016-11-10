@@ -62,6 +62,27 @@ public protocol API {
     func enrollment(forTransactionId transactionId: String) -> Request<[String: String]>
 
     /**
+     Request to create an enrollment. When successful, returns data about the 
+     new Enrollment, including the token that can be used to update the push 
+     notification settings and to un-enroll this device.
+     
+     This device will now be available as a Guardian second factor.
+
+     - parameter withTicket:        the enrollment ticket obtained from a 
+                                    Guardian QR code or enrollment email
+     - parameter identifier:        a unique identifier for this device, usually
+                                    the UUID
+     - parameter name:              the name to use for this device
+     - parameter notificationToken: the APNS token used to send push 
+                                    notifications to this device
+     - parameter publicKey:         the RSA public key to associate with the
+                                    enrollment
+
+     - returns: a request to execute or start
+     */
+    func enroll(withTicket enrollmentTicket: String, identifier: String, name: String, notificationToken: String, publicKey: SecKey) -> DictionaryRequest
+
+    /**
      Request to allow a Guardian authentication request
      
      ```
