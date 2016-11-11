@@ -58,7 +58,7 @@ func getPublicKey(fromSecCertificate cert: SecCertificate) -> SecKey? {
     return publicKey
 }
 
-func getKeys(fromPkcs12 p12Data: Data, passphrase : String) -> (publicKey: SecKey, privateKey: SecKey)? {
+func getKeys(fromPkcs12 p12Data: Data, passphrase: String) -> (publicKey: SecKey, privateKey: SecKey)? {
     var importResult: CFArray? = nil
     let importParam = [kSecImportExportPassphrase as String: passphrase]
 

@@ -66,7 +66,7 @@ let ValidRSAPrivateKey: SecKey = {
 }()
 
 let ValidRSAKeyPair: (publicKey: SecKey, privateKey: SecKey) = {
-    let path = Bundle(for: JWTSpec.self).path(forResource: "identity", ofType: "p12")!
+    let path = Bundle(for: GuardianSpec.self).path(forResource: "identity", ofType: "p12")!
     let p12Data = try! Data(contentsOf: URL(fileURLWithPath: path))
     let (publicKey, privateKey) = getKeys(fromPkcs12: p12Data, passphrase : "1234")!
     guard storeInKeychain(key: publicKey),
