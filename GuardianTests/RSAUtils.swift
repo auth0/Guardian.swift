@@ -35,16 +35,13 @@ func generateKeyPair(publicTag: String, privateTag: String, keyType: CFString, k
 
     var publicRef: SecKey?
     var privateRef: SecKey?
-    switch SecKeyGeneratePair(pairAttributes as CFDictionary, &publicRef, &privateRef) {
-    case noErr:
-        if let publicKey = publicRef, let privateKey = privateRef {
-            return (publicKey, privateKey)
-        }
-
-        return nil
-    default:
+    guard errSecSuccess == SecKeyGeneratePair(pairAttributes as CFDictionary, &publicRef, &privateRef),
+        let publicKey = publicRef, let privateKey = privateRef else
+    {
+        print("Unable to create keys!")
         return nil
     }
+    return (publicKey, privateKey)
 }
 
 func getPublicKey(fromSecCertificate cert: SecCertificate) -> SecKey? {
