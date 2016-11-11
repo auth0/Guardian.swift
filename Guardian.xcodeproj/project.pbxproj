@@ -774,7 +774,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 86WQXF56BC;
 				INFOPLIST_FILE = GuardianTestsApp/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.guardian.sdk.GuardianTestsApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -793,7 +793,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 86WQXF56BC;
 				INFOPLIST_FILE = GuardianTestsApp/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.guardian.sdk.GuardianTestsApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1032,6 +1032,7 @@
 				2331C02F1DD656570047F1D4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		5F2037C71D5E1E3E0005D2E2 /* Build configuration list for PBXProject "Guardian" */ = {
 			isa = XCConfigurationList;
