@@ -133,7 +133,7 @@ class APIClientSpec: QuickSpec {
             }
         }
         
-        describe("allow authorization request") {
+        describe("allow authorization request with OTP") {
             
             beforeEach {
                 stub(condition: isVerifyOTP(domain: Domain)) { _ in
@@ -185,7 +185,7 @@ class APIClientSpec: QuickSpec {
             }
         }
         
-        describe("reject authorization request") {
+        describe("reject authorization request with OTP") {
             
             beforeEach {
                 stub(condition: isRejectLogin(domain: Domain)) { _ in

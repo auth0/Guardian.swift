@@ -97,6 +97,10 @@ func isMobileEnroll(domain: String) -> OHHTTPStubsTestBlock {
     return isScheme("https") && isHost(domain) && isMethodPOST() && isPath("/api/enroll")
 }
 
+func isResolveTransaction(domain: String) -> OHHTTPStubsTestBlock {
+    return isScheme("https") && isHost(domain) && isMethodPOST() && isPath("/api/resolve-transaction")
+}
+
 func isVerifyOTP(domain: String) -> OHHTTPStubsTestBlock {
     return isScheme("https") && isHost(domain) && isMethodPOST() && isPath("/api/verify-otp")
 }

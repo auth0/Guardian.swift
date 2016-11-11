@@ -83,7 +83,7 @@ public protocol API {
     func enroll(withTicket enrollmentTicket: String, identifier: String, name: String, notificationToken: String, publicKey: SecKey) -> DictionaryRequest
 
     /**
-     Request to allow a Guardian authentication request
+     Request to allow a Guardian authentication request with OTP code
      
      ```
      Guardian
@@ -109,7 +109,38 @@ public protocol API {
     func allow(transaction transactionToken: String, withCode otpCode: String) -> Request<Void>
 
     /**
-     Request to reject a Guardian authentication request
+     Request to allow a Guardian authentication request with signed challenge
+
+     ```
+     Guardian
+        .api(forDomain: "tenant.guardian.auth0.com")
+        .allow(transaction: notification.transactionToken,
+               withChallenge: notification.challenge,
+               deviceIdentifier: enrollment.deviceIdentifier,
+               signingKey: enrollment.signingKey)
+        .start { result in
+            switch result {
+            case .Success(let response):
+                // auth request successfuly allowed
+            case .Failure(let cause):
+                // something failed
+                print(cause)
+            }
+     }
+     ```
+
+     - parameter transaction:       the Guardian authentication transaction
+     - parameter withChallenge:     the challenge received with the notification
+     - parameter deviceIdentifier:  the unique identifier for this device
+     - parameter signingKey:        the private key used to sign the response in
+                                    order to validate the second factor
+
+     - returns: a Request ready to execute
+     */
+    func allow(transaction transactionToken: String, withChallenge challenge: String, deviceIdentifier: String, signingKey: SecKey) -> VoidRequest
+
+    /**
+     Request to reject a Guardian authentication request with OTP code
 
      ```
      Guardian
@@ -137,8 +168,42 @@ public protocol API {
     func reject(transaction transactionToken: String, withCode otpCode: String, reason: String?) -> Request<Void>
 
     /**
+     Request to reject a Guardian authentication request with signed challenge
+
+     ```
+     Guardian
+        .api(forDomain: "tenant.guardian.auth0.com")
+        .allow(transaction: notification.transactionToken,
+               withChallenge: notification.challenge,
+               deviceIdentifier: enrollment.deviceIdentifier,
+               signingKey: enrollment.signingKey,
+               reason: "hack")
+        .start { result in
+            switch result {
+            case .Success(let response):
+                // auth request successfuly allowed
+            case .Failure(let cause):
+                // something failed
+                print(cause)
+            }
+     }
+     ```
+
+     - parameter transaction:       the Guardian authentication transaction
+     - parameter withChallenge:     the challenge received with the notification
+     - parameter signingKey:        the private key used to sign the response in
+                                    order to validate the second factor
+     - parameter deviceIdentifier:  the unique identifier for this device
+     - parameter reason:            an optional reason of rejection 
+                                    (example: "hack")
+
+     - returns: a Request ready to execute
+     */
+    func reject(transaction transactionToken: String, withChallenge challenge: String, deviceIdentifier: String, signingKey: SecKey, reason: String?) -> VoidRequest
+
+    /**
      Returns a DeviceAPI to manage the device data about an enrollment.
-     This allows to change the name of the device, to update the push 
+     This allows to change the name of the device, to update the push
      notification token or to delete the device, unenrolling/disabling this 
      device as a second factor.
      

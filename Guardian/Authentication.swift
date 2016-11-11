@@ -94,6 +94,20 @@ public extension Authentication {
     }
 }
 
+struct RSAAuthentication: Authentication {
+
+    let api: API
+    let enrollment: Enrollment
+
+    func allow(notification: Notification) -> VoidRequest {
+        return api.allow(transaction: notification.transactionToken, withChallenge: notification.challenge, deviceIdentifier: enrollment.deviceIdentifier, signingKey: enrollment.signingKey)
+    }
+
+    func reject(notification: Notification, withReason reason: String? = nil) -> VoidRequest {
+        return api.reject(transaction: notification.transactionToken, withChallenge: notification.challenge, deviceIdentifier: enrollment.deviceIdentifier, signingKey: enrollment.signingKey, reason: reason)
+    }
+}
+
 struct TOTPAuthentication: Authentication {
 
     let api: API
