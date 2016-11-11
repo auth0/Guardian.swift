@@ -46,9 +46,7 @@ struct APIClient: API {
                 throw GuardianError.invalidPublicKey
             }
 
-            let publicKeyModulusEncoded = publicKeyModulus.base64EncodedString()
-                .replacingOccurrences(of: "/", with: "_")
-                .replacingOccurrences(of: "+", with: "-")
+            let publicKeyModulusEncoded = publicKeyModulus.base64URLEncodedString()
 
             let payload: [String: Any] = [
                 "identifier": identifier,

@@ -15,6 +15,8 @@
 		230763D61DAED91000D497BD /* SwitchCameraButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 230763CF1DAED91000D497BD /* SwitchCameraButton.swift */; };
 		230763D71DAED91000D497BD /* ToggleTorchButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 230763D01DAED91000D497BD /* ToggleTorchButton.swift */; };
 		232A85DA1D6BDFCA00048DF7 /* DeviceAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 232A85D91D6BDFCA00048DF7 /* DeviceAPIClient.swift */; };
+		2331C0181DD563150047F1D4 /* identity.p12 in Resources */ = {isa = PBXBuildFile; fileRef = 2331C0171DD563150047F1D4 /* identity.p12 */; };
+		2331C01A1DD5FC6F0047F1D4 /* Data+Base64URL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2331C0191DD5FC6F0047F1D4 /* Data+Base64URL.swift */; };
 		233F75271D92F27000B8C15C /* Notification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 233F75261D92F27000B8C15C /* Notification.swift */; };
 		233F75291D93076600B8C15C /* NotificationSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 233F75281D93076600B8C15C /* NotificationSpec.swift */; };
 		234004DF1D8CA944009AB77C /* OneTimePassword.swift in Sources */ = {isa = PBXBuildFile; fileRef = 234004DE1D8CA944009AB77C /* OneTimePassword.swift */; };
@@ -114,6 +116,8 @@
 		230763CF1DAED91000D497BD /* SwitchCameraButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SwitchCameraButton.swift; path = QRCodeReader/SwitchCameraButton.swift; sourceTree = "<group>"; };
 		230763D01DAED91000D497BD /* ToggleTorchButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ToggleTorchButton.swift; path = QRCodeReader/ToggleTorchButton.swift; sourceTree = "<group>"; };
 		232A85D91D6BDFCA00048DF7 /* DeviceAPIClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = DeviceAPIClient.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		2331C0171DD563150047F1D4 /* identity.p12 */ = {isa = PBXFileReference; lastKnownFileType = file; name = identity.p12; path = Data/identity.p12; sourceTree = "<group>"; };
+		2331C0191DD5FC6F0047F1D4 /* Data+Base64URL.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+Base64URL.swift"; sourceTree = "<group>"; };
 		233F75261D92F27000B8C15C /* Notification.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Notification.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		233F75281D93076600B8C15C /* NotificationSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationSpec.swift; sourceTree = "<group>"; };
 		234004DE1D8CA944009AB77C /* OneTimePassword.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OneTimePassword.swift; sourceTree = "<group>"; };
@@ -218,6 +222,7 @@
 		2374A9F11D672E4200737F2E /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				2331C0171DD563150047F1D4 /* identity.p12 */,
 				2374A9F21D672E4F00737F2E /* Responses.swift */,
 				2374A9F41D67339E00737F2E /* Matchers.swift */,
 				23C67AEB1D81D6A400A38A2E /* MockNSURLSession.swift */,
@@ -255,6 +260,7 @@
 				235B4B211DA3F51D00CEB5DC /* A0HMAC.m */,
 				234004DE1D8CA944009AB77C /* OneTimePassword.swift */,
 				234004EE1D909C91009AB77C /* Base32.swift */,
+				2331C0191DD5FC6F0047F1D4 /* Data+Base64URL.swift */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
@@ -472,7 +478,7 @@
 					5F2037D61D5E1E3E0005D2E2 = {
 						CreatedOnToolsVersion = 7.3.1;
 						DevelopmentTeam = UR8G667HT6;
-						LastSwiftMigration = 0800;
+						LastSwiftMigration = 0810;
 					};
 					5F2037EA1D5E22590005D2E2 = {
 						CreatedOnToolsVersion = 7.3.1;
@@ -519,6 +525,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2331C0181DD563150047F1D4 /* identity.p12 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -554,6 +561,7 @@
 				233F75271D92F27000B8C15C /* Notification.swift in Sources */,
 				23C67AEE1D81EF5300A38A2E /* Enrollment.swift in Sources */,
 				235B4B221DA3F51D00CEB5DC /* A0HMAC.m in Sources */,
+				2331C01A1DD5FC6F0047F1D4 /* Data+Base64URL.swift in Sources */,
 				2377A6431D806DFA00D6FB04 /* API.swift in Sources */,
 				232A85DA1D6BDFCA00048DF7 /* DeviceAPIClient.swift in Sources */,
 			);

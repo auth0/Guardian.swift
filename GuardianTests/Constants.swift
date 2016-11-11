@@ -46,10 +46,38 @@ let ValidDeviceIdentifier = "aValidDeviceIdentifier"
 let ValidDeviceName = "aValidDeviceName"
 let ValidNotificationService = "APNS"
 let DeviceAccountToken = UUID().uuidString
+let ValidNotificationChallenge = "aValidNotificationChallenge"
 
 let RSAPublicKeyTag = UUID().uuidString
 let RSAPrivateKeyTag = UUID().uuidString
 let RSAKeySize = 2048
 
-let (ValidRSAPublicKey, ValidRSAPrivateKey) = generateKeyPair(publicTag: RSAPublicKeyTag, privateTag: RSAPrivateKeyTag, keyType: kSecAttrKeyTypeRSA, keySize: RSAKeySize)!
-let NonRSAPublicKey = generateKeyPair(publicTag: RSAPublicKeyTag + "-invalid", privateTag: RSAPrivateKeyTag + "-invalid", keyType: kSecAttrKeyTypeEC, keySize: 256)!.publicKey
+let NonRSAPublicKey = generateKeyPair(publicTag: RSAPublicKeyTag + "-invalid",
+                                      privateTag: RSAPrivateKeyTag + "-invalid",
+                                      keyType: kSecAttrKeyTypeEC,
+                                      keySize: 256)!.publicKey
+
+var ValidRSAPublicKey: SecKey = {
+    return ValidRSAKeyPair.publicKey
+}()
+
+let ValidRSAPrivateKey: SecKey = {
+    return ValidRSAKeyPair.privateKey
+}()
+
+let ValidRSAKeyPair: (publicKey: SecKey, privateKey: SecKey) = {
+    let path = Bundle(for: JWTSpec.self).path(forResource: "identity", ofType: "p12")!
+    let p12Data = try! Data(contentsOf: URL(fileURLWithPath: path))
+    let (publicKey, privateKey) = getKeys(fromPkcs12: p12Data, passphrase : "1234")!
+    guard storeInKeychain(key: publicKey),
+        storeInKeychain(key: privateKey) else {
+            return generateKeyPair(publicTag: RSAPublicKeyTag,
+                                   privateTag: RSAPrivateKeyTag,
+                                   keyType: kSecAttrKeyTypeRSA,
+                                   keySize: RSAKeySize)!
+    }
+    return (publicKey: publicKey, privateKey: privateKey)
+}()
+
+
+

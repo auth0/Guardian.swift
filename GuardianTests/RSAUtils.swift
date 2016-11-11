@@ -46,3 +46,58 @@ func generateKeyPair(publicTag: String, privateTag: String, keyType: CFString, k
         return nil
     }
 }
+
+func getPublicKey(fromSecCertificate cert: SecCertificate) -> SecKey? {
+    var trust: SecTrust? = nil
+    guard SecTrustCreateWithCertificates(cert, nil, &trust) == errSecSuccess,
+        trust != nil,
+        let publicKey = SecTrustCopyPublicKey(trust!) else
+    {
+        return nil
+    }
+    return publicKey
+}
+
+func getKeys(fromPkcs12 p12Data: Data, passphrase : String) -> (publicKey: SecKey, privateKey: SecKey)? {
+    var importResult: CFArray? = nil
+    let importParam = [kSecImportExportPassphrase as String: passphrase]
+
+    guard SecPKCS12Import(p12Data as CFData, importParam as CFDictionary, &importResult) == errSecSuccess else {
+        return nil
+    }
+
+    if let array = importResult.map({unsafeBitCast($0, to: NSArray.self)}),
+        let content = array.firstObject as? NSDictionary,
+        let identity = (content[kSecImportItemIdentity as String] as! SecIdentity?)
+    {
+        var privateKey : SecKey? = nil
+        var certificate : SecCertificate? = nil
+        guard SecIdentityCopyPrivateKey(identity, &privateKey) == errSecSuccess,
+            SecIdentityCopyCertificate(identity, &certificate) == errSecSuccess else
+        {
+            return nil
+        }
+        if let privateKey = privateKey,
+            let certificate = certificate,
+            let publicKey = getPublicKey(fromSecCertificate: certificate)
+        {
+            return (publicKey, privateKey)
+        } else {
+            return nil
+        }
+    } else {
+        return nil
+    }
+}
+
+func storeInKeychain(key: SecKey) -> Bool {
+    let attribute = [
+        String(kSecClass)              : kSecClassKey,
+        String(kSecAttrKeyType)        : kSecAttrKeyTypeRSA,
+        String(kSecValueRef)           : key,
+        String(kSecReturnPersistentRef): true
+    ] as [String: Any] as CFDictionary
+
+    let status = SecItemAdd(attribute, nil)
+    return status == errSecSuccess || status == errSecDuplicateItem
+}
