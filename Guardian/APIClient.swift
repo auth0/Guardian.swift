@@ -75,10 +75,6 @@ struct APIClient: API {
         ]
         return Request(session: session, method: "POST", url: url, payload: payload, headers: ["Authorization": "Bearer \(transactionToken)"])
     }
-
-    func allow(transaction transactionToken: String, withChallenge challenge: String, deviceIdentifier: String, signingKey: SecKey) -> VoidRequest {
-        return resolve(transaction: transactionToken, withChallenge: challenge, deviceIdentifier: deviceIdentifier, signingKey: signingKey, accepted: true)
-    }
     
     func reject(transaction transactionToken: String, withCode otpCode: String, reason: String? = nil) -> Request<Void> {
         let url = baseUrl.appendingPathComponent("api/reject-login")
@@ -91,37 +87,16 @@ struct APIClient: API {
         return Request(session: session, method: "POST", url: url, payload: payload, headers: ["Authorization": "Bearer \(transactionToken)"])
     }
 
-    func reject(transaction transactionToken: String, withChallenge challenge: String, deviceIdentifier: String, signingKey: SecKey, reason: String?) -> VoidRequest {
-        return resolve(transaction: transactionToken, withChallenge: challenge, deviceIdentifier: deviceIdentifier, signingKey: signingKey, accepted: false, reason: reason)
+    func resolve(transaction transactionToken: String, withChallengeResponse challengeResponse: String) -> Request<Void> {
+        let payload = [
+            "challengeResponse": challengeResponse
+        ]
+        let url = self.baseUrl.appendingPathComponent("api/resolve-transaction")
+        return Request(session: self.session, method: "POST", url: url, payload: payload, headers: ["Authorization": "Bearer \(transactionToken)"])
     }
 
     func device(forEnrollmentId id: String, token: String) -> DeviceAPI {
         return DeviceAPIClient(baseUrl: baseUrl, session: session, id: id, token: token)
-    }
-
-    func resolve(transaction transactionToken: String, withChallenge challenge: String, deviceIdentifier: String, signingKey: SecKey, accepted: Bool, reason: String? = nil) -> VoidRequest {
-        return VoidRequest {
-            let currentTime = Int(Date().timeIntervalSince1970)
-            var jwtPayload: [String: Any] = [
-                "iat": currentTime,
-                "exp": currentTime + 30,
-                "aud": self.baseUrl.absoluteString,
-                "iss": deviceIdentifier,
-                "sub": challenge,
-                "jti": randomBytes(length: 16).base64URLEncodedString(),
-                "auth0.guardian.method": "push",
-                "auth0.guardian.accepted": accepted
-            ]
-            if let reason = reason {
-                jwtPayload["auth0.guardian.reason"] = reason
-            }
-            let jwt = try JWT.encode(claims: jwtPayload, signingKey: signingKey)
-            let payload = [
-                "challengeResponse": jwt
-            ]
-            let url = self.baseUrl.appendingPathComponent("api/resolve-transaction")
-            return Request(session: self.session, method: "POST", url: url, payload: payload, headers: ["Authorization": "Bearer \(transactionToken)"])
-        }
     }
 }
 
@@ -259,16 +234,4 @@ public struct DictionaryRequest: Requestable {
             callback(.failure(cause: error))
         }
     }
-}
-
-private func randomBytes(length: Int) -> Data {
-
-    var randomBytes: [UInt8] = []
-
-    for _ in 0 ..< length {
-        let rand = arc4random_uniform(256)
-        randomBytes.append(UInt8(rand))
-    }
-
-    return Data(bytes: randomBytes, count: length)
 }

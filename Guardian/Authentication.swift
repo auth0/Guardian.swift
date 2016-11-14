@@ -96,15 +96,37 @@ public extension Authentication {
 
 struct RSAAuthentication: Authentication {
 
+    private static let challengeResponseExpiresInSecs = 30
+
     let api: API
     let enrollment: Enrollment
 
     func allow(notification: Notification) -> VoidRequest {
-        return api.allow(transaction: notification.transactionToken, withChallenge: notification.challenge, deviceIdentifier: enrollment.deviceIdentifier, signingKey: enrollment.signingKey)
+        return resolve(transaction: notification.transactionToken, withChallenge: notification.challenge, deviceIdentifier: enrollment.deviceIdentifier, signingKey: enrollment.signingKey, accepted: true)
     }
 
-    func reject(notification: Notification, withReason reason: String? = nil) -> VoidRequest {
-        return api.reject(transaction: notification.transactionToken, withChallenge: notification.challenge, deviceIdentifier: enrollment.deviceIdentifier, signingKey: enrollment.signingKey, reason: reason)
+    func reject(notification: Notification, withReason reason: String?) -> VoidRequest {
+        return resolve(transaction: notification.transactionToken, withChallenge: notification.challenge, deviceIdentifier: enrollment.deviceIdentifier, signingKey: enrollment.signingKey, accepted: false, reason: reason)
+    }
+
+    func resolve(transaction transactionToken: String, withChallenge challenge: String, deviceIdentifier: String, signingKey: SecKey, accepted: Bool, reason: String? = nil) -> VoidRequest {
+        return VoidRequest {
+            let currentTime = Int(Date().timeIntervalSince1970)
+            var jwtPayload: [String: Any] = [
+                "iat": currentTime,
+                "exp": currentTime + RSAAuthentication.challengeResponseExpiresInSecs,
+                "aud": self.api.baseUrl.absoluteString,
+                "iss": deviceIdentifier,
+                "sub": challenge,
+                "auth0.guardian.method": "push",
+                "auth0.guardian.accepted": accepted
+            ]
+            if let reason = reason {
+                jwtPayload["auth0.guardian.reason"] = reason
+            }
+            let jwt = try JWT.encode(claims: jwtPayload, signingKey: signingKey)
+            return self.api.resolve(transaction: transactionToken, withChallengeResponse: jwt)
+        }
     }
 }
 

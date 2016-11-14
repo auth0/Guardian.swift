@@ -35,6 +35,8 @@ import Foundation
  */
 public protocol API {
 
+    var baseUrl: URL { get }
+
     /**
      Request to obtain information about an enrollment
      The transaction id can be obtained from a Guardian QR code
@@ -45,10 +47,10 @@ public protocol API {
         .enrollment(forTransactionId: "myEnrollmentTransactionId")
         .start { result in
             switch result {
-            case .Success(let response):
+            case .success(let response):
                 // we have the data
                 print(response)
-            case .Failure(let cause):
+            case .failure(let cause):
                 // something failed
                 print(cause)
             }
@@ -92,9 +94,9 @@ public protocol API {
                withCode: "someOTPCode")
         .start { result in
             switch result {
-            case .Success(let response):
+            case .success(let response):
                 // auth request successfuly allowed
-            case .Failure(let cause):
+            case .failure(let cause):
                 // something failed
                 print(cause)
             }
@@ -109,37 +111,6 @@ public protocol API {
     func allow(transaction transactionToken: String, withCode otpCode: String) -> Request<Void>
 
     /**
-     Request to allow a Guardian authentication request with signed challenge
-
-     ```
-     Guardian
-        .api(forDomain: "tenant.guardian.auth0.com")
-        .allow(transaction: notification.transactionToken,
-               withChallenge: notification.challenge,
-               deviceIdentifier: enrollment.deviceIdentifier,
-               signingKey: enrollment.signingKey)
-        .start { result in
-            switch result {
-            case .Success(let response):
-                // auth request successfuly allowed
-            case .Failure(let cause):
-                // something failed
-                print(cause)
-            }
-     }
-     ```
-
-     - parameter transaction:       the Guardian authentication transaction
-     - parameter withChallenge:     the challenge received with the notification
-     - parameter deviceIdentifier:  the unique identifier for this device
-     - parameter signingKey:        the private key used to sign the response in
-                                    order to validate the second factor
-
-     - returns: a Request ready to execute
-     */
-    func allow(transaction transactionToken: String, withChallenge challenge: String, deviceIdentifier: String, signingKey: SecKey) -> VoidRequest
-
-    /**
      Request to reject a Guardian authentication request with OTP code
 
      ```
@@ -150,9 +121,9 @@ public protocol API {
                 reason: "hack")
         .start { result in
             switch result {
-            case .Success(let response):
+            case .success(let response):
                 // auth request successfuly rejected
-            case .Failure(let cause):
+            case .failure(let cause):
                 // something failed
                 print(cause)
             }
@@ -168,38 +139,32 @@ public protocol API {
     func reject(transaction transactionToken: String, withCode otpCode: String, reason: String?) -> Request<Void>
 
     /**
-     Request to reject a Guardian authentication request with signed challenge
-
+     Request to resolve a Guardian authentication request with a signed response
+     to the notification challenge
+     
      ```
      Guardian
         .api(forDomain: "tenant.guardian.auth0.com")
-        .allow(transaction: notification.transactionToken,
-               withChallenge: notification.challenge,
-               deviceIdentifier: enrollment.deviceIdentifier,
-               signingKey: enrollment.signingKey,
-               reason: "hack")
+        .resolve(transaction: notification.transactionToken,
+                 withChallengeResponse: signedToken)
         .start { result in
             switch result {
-            case .Success(let response):
-                // auth request successfuly allowed
-            case .Failure(let cause):
+            case .success(let response):
+                // auth request successfuly  resolved, either accepted or 
+                // rejected
+            case .failure(let cause):
                 // something failed
                 print(cause)
             }
      }
      ```
 
-     - parameter transaction:       the Guardian authentication transaction
-     - parameter withChallenge:     the challenge received with the notification
-     - parameter signingKey:        the private key used to sign the response in
-                                    order to validate the second factor
-     - parameter deviceIdentifier:  the unique identifier for this device
-     - parameter reason:            an optional reason of rejection 
-                                    (example: "hack")
+     - parameter transaction:           the Guardian authentication transaction
+     - parameter withChallengeResponse: the signed challenge response
 
      - returns: a Request ready to execute
      */
-    func reject(transaction transactionToken: String, withChallenge challenge: String, deviceIdentifier: String, signingKey: SecKey, reason: String?) -> VoidRequest
+    func resolve(transaction transactionToken: String, withChallengeResponse challengeResponse: String) -> Request<Void>
 
     /**
      Returns a DeviceAPI to manage the device data about an enrollment.
