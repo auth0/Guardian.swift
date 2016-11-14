@@ -42,15 +42,10 @@
     uint8_t signedHashBytes[signedHashBytesSize];
     memset(signedHashBytes, 0x0, signedHashBytesSize);
 
-    uint8_t hashBytes[CC_SHA256_DIGEST_LENGTH];
-    memset(hashBytes, 0x0, CC_SHA256_DIGEST_LENGTH);
-
-    CC_SHA256(plainData.bytes, (CC_LONG)plainData.length, hashBytes);
-
     OSStatus result = SecKeyRawSign(self.key,
                                     kSecPaddingPKCS1SHA256,
-                                    hashBytes,
-                                    CC_SHA256_DIGEST_LENGTH,
+                                    plainData.bytes,
+                                    plainData.length,
                                     signedHashBytes,
                                     &signedHashBytesSize);
 
@@ -64,17 +59,12 @@
 }
 
 - (Boolean)verify:(NSData *)plainData signature:(NSData *)signature {
-    uint8_t hashBytes[CC_SHA256_DIGEST_LENGTH];
-    memset(hashBytes, 0x0, CC_SHA256_DIGEST_LENGTH);
-
-    CC_SHA256(plainData.bytes, (CC_LONG)plainData.length, hashBytes);
-
     OSStatus result = SecKeyRawVerify(self.key,
                                       kSecPaddingPKCS1SHA256,
-                                      hashBytes,
-                                      CC_SHA256_DIGEST_LENGTH,
-                                      [signature bytes],
-                                      [signature length]);
+                                      plainData.bytes,
+                                      plainData.length,
+                                      signature.bytes,
+                                      signature.length);
     return result == errSecSuccess;
 }
 

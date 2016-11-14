@@ -70,31 +70,30 @@ class JWTSpec: QuickSpec {
 
                 describe("should verify successfuly with correct key") {
 
-                    let result = try? JWT.verify(string: jwt!, publicKey: publicKey)
+                    let claims = try? JWT.verify(string: jwt!, publicKey: publicKey)
 
                     it("should not be nil") {
-                        expect(result).toNot(beNil())
+                        expect(claims).toNot(beNil())
                     }
 
                     describe("should contain fields") {
-                        let claims = result! as [String: Any]
 
                         it("with string") {
-                            let value = claims["string"] as? String
+                            let value = claims?["string"] as? String
                             expect(value).toNot(beNil())
-                            expect(value!).to(equal("hello"))
+                            expect(value).to(equal("hello"))
                         }
 
                         it("with number") {
-                            let value = claims["number"] as? Double
+                            let value = claims?["number"] as? Double
                             expect(value).toNot(beNil())
-                            expect(value!).to(equal(7))
+                            expect(value).to(equal(7))
                         }
 
                         it("with boolean") {
-                            let value = claims["boolean"] as? Bool
+                            let value = claims?["boolean"] as? Bool
                             expect(value).toNot(beNil())
-                            expect(value!).to(equal(true))
+                            expect(value).to(equal(true))
                         }
                     }
                 }

@@ -34,13 +34,14 @@ struct JWT {
         let jsonPayload = try JSONSerialization.data(withJSONObject: claims, options: [])
         let message = jsonHeader.base64URLEncodedString() + "." + jsonPayload.base64URLEncodedString()
 
-        guard let rsa = A0RSA(key: signingKey) else {
-            throw GuardianError.invalidPrivateKey
-        }
         guard let data = message.data(using: .utf8) else {
             throw GuardianError.invalidPayload
         }
-        let signature = rsa.sign(data)
+        guard let sha256 = A0SHA(algorithm: "sha256"), let rsa = A0RSA(key: signingKey) else {
+            throw GuardianError.internalError
+        }
+        let hash = sha256.hash(data)
+        let signature = rsa.sign(hash)
         return message + "." + signature.base64URLEncodedString()
     }
 
@@ -58,14 +59,15 @@ struct JWT {
             else {
                 throw GuardianError.invalidPayload
         }
-        guard let rsa = A0RSA(key: publicKey) else {
-            throw GuardianError.invalidPublicKey
+        guard let sha256 = A0SHA(algorithm: "sha256"), let rsa = A0RSA(key: publicKey) else {
+            throw GuardianError.internalError
         }
         let message = components[0] + "." + components[1]
         guard let data = message.data(using: .utf8) else {
             throw GuardianError.invalidPayload
         }
-        guard true == rsa.verify(data, signature: signature) else {
+        let hash = sha256.hash(data)
+        guard true == rsa.verify(hash, signature: signature) else {
             throw GuardianError.invalidPayload
         }
         return claims

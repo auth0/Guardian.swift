@@ -14,6 +14,8 @@
 		230763D51DAED91000D497BD /* ReaderOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 230763CE1DAED91000D497BD /* ReaderOverlayView.swift */; };
 		230763D61DAED91000D497BD /* SwitchCameraButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 230763CF1DAED91000D497BD /* SwitchCameraButton.swift */; };
 		230763D71DAED91000D497BD /* ToggleTorchButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 230763D01DAED91000D497BD /* ToggleTorchButton.swift */; };
+		231687171DDA071A00B09526 /* A0SHA.h in Headers */ = {isa = PBXBuildFile; fileRef = 231687161DDA071A00B09526 /* A0SHA.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		231687191DDA07FD00B09526 /* A0SHA.m in Sources */ = {isa = PBXBuildFile; fileRef = 231687181DDA07FD00B09526 /* A0SHA.m */; };
 		232A85DA1D6BDFCA00048DF7 /* DeviceAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 232A85D91D6BDFCA00048DF7 /* DeviceAPIClient.swift */; };
 		2331BFEB1DD5260D0047F1D4 /* JWT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2331BFEA1DD5260D0047F1D4 /* JWT.swift */; };
 		2331BFED1DD52ED50047F1D4 /* JWTSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2331BFEC1DD52ED50047F1D4 /* JWTSpec.swift */; };
@@ -126,6 +128,8 @@
 		230763CE1DAED91000D497BD /* ReaderOverlayView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ReaderOverlayView.swift; path = QRCodeReader/ReaderOverlayView.swift; sourceTree = "<group>"; };
 		230763CF1DAED91000D497BD /* SwitchCameraButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SwitchCameraButton.swift; path = QRCodeReader/SwitchCameraButton.swift; sourceTree = "<group>"; };
 		230763D01DAED91000D497BD /* ToggleTorchButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ToggleTorchButton.swift; path = QRCodeReader/ToggleTorchButton.swift; sourceTree = "<group>"; };
+		231687161DDA071A00B09526 /* A0SHA.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = A0SHA.h; sourceTree = "<group>"; };
+		231687181DDA07FD00B09526 /* A0SHA.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = A0SHA.m; sourceTree = "<group>"; };
 		232A85D91D6BDFCA00048DF7 /* DeviceAPIClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = DeviceAPIClient.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		2331BFEA1DD5260D0047F1D4 /* JWT.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JWT.swift; sourceTree = "<group>"; };
 		2331BFEC1DD52ED50047F1D4 /* JWTSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JWTSpec.swift; sourceTree = "<group>"; };
@@ -275,6 +279,8 @@
 				235B4B211DA3F51D00CEB5DC /* A0HMAC.m */,
 				23B7A0481DD4E8300038124A /* A0RSA.h */,
 				23B7A0461DD4E7820038124A /* A0RSA.m */,
+				231687161DDA071A00B09526 /* A0SHA.h */,
+				231687181DDA07FD00B09526 /* A0SHA.m */,
 				234004DE1D8CA944009AB77C /* OneTimePassword.swift */,
 				234004EE1D909C91009AB77C /* Base32.swift */,
 				2331BFEA1DD5260D0047F1D4 /* JWT.swift */,
@@ -416,6 +422,7 @@
 			files = (
 				5F2037D11D5E1E3E0005D2E2 /* Guardian.h in Headers */,
 				23B7A0491DD4E8300038124A /* A0RSA.h in Headers */,
+				231687171DDA071A00B09526 /* A0SHA.h in Headers */,
 				235B4B261DA3F85A00CEB5DC /* A0HMAC.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -585,6 +592,7 @@
 				235B4B221DA3F51D00CEB5DC /* A0HMAC.m in Sources */,
 				2331C01A1DD5FC6F0047F1D4 /* Data+Base64URL.swift in Sources */,
 				2331BFEB1DD5260D0047F1D4 /* JWT.swift in Sources */,
+				231687191DDA07FD00B09526 /* A0SHA.m in Sources */,
 				2377A6431D806DFA00D6FB04 /* API.swift in Sources */,
 				232A85DA1D6BDFCA00048DF7 /* DeviceAPIClient.swift in Sources */,
 			);

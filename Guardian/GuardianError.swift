@@ -22,6 +22,7 @@
 
 import Foundation
 
+private let internalErrorMessage = "a0.guardian.internal.unknown_error"
 private let invalidPayloadMessage = "a0.guardian.internal.invalid_payload"
 private let invalidResponseMessage = "a0.guardian.internal.invalid_response"
 private let failedRequestMessage = "a0.guardian.internal.unknown_server_error"
@@ -74,6 +75,10 @@ public func ==(lhs: GuardianError, rhs: GuardianError) -> Bool {
 }
 
 internal extension GuardianError {
+    static var internalError: GuardianError {
+        return GuardianError(string: internalErrorMessage)
+    }
+
     static var failedRequest: GuardianError {
         return GuardianError(string: failedRequestMessage)
     }
