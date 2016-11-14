@@ -77,6 +77,61 @@ class APIClientSpec: QuickSpec {
                 }
             }
         }
+
+        describe("enroll") {
+
+            beforeEach {
+                stub(condition: isMobileEnroll(domain: Domain)
+                    && hasTicketAuth(ValidTransactionId)
+                    && hasAtLeast([
+                        "identifier": ValidDeviceIdentifier,
+                        "name": ValidDeviceName
+                        ])
+                    && hasField("push_credentials", withParameters: [
+                        "service": ValidNotificationService,
+                        "token": ValidNotificationToken
+                        ])
+                    && hasField("public_key", withParameters: [
+                        "alg": "RS256",
+                        "e": "AQAB",
+                        "use": "sig",
+                        "kty": "RSA",
+                        "n": "AKZpUNxEdyiAcvJEI-qxsGEm-96lcPh9Qtu0LWU9OY2oWhDIX_ZKsHYXbqpPyqXUYv4IcvK9X4XnuVvMqxGWxK3kARuAQgjOE-naOl5ed4FNCTTs58e7Jg32bILQqY2539MLomObKloFqAeyA5EMKv1f3pAT2dife5uN7QUz-ifaTGJlP6UCRjfY8TTbbpvFvOHfZmVptfSmq94typg4u2yUgMGRl0vTCkz35e-ox1Y7GfeIkBGQUzY6GFFXPxOct_71a6KtzXxOnYeI9HX0WYX8-hyULasv3RzTLteHIU70Bczfh7hUVGtLMBBLDY0KhZqkZAfrDA38NZm4z932-OqXJ1nVx0MiT9Kt73jy8Gp78CO7t9lJcml3vW1pW-p7swZan8Bs5u6E9Ntch1LUZitxq-f51FsCc478xDp-Yb51FFN-3MPVgW_orXfq_cuOvbQVtr2RciKHTUs4EOfxgj27X0Yzymfi33r9xtJIwUQyoXEhXN6GpKnFnQQvQtSiyhWMGTEbhN8Lu7EDJOD5E4OcZ51J_JveOtg5Y35InjQGcwcHSGzwhrbv3YUIWiXM_w6tBYCJMKC12Myb84D7mavDKhwP3iZ7LBC71kS6Fi53MkM9YIlIGb1OL_tMXDLjKkAPk7JyABITRvE_IbK1ag93UL5G2lrIAgkGNBJIx3mV"
+                        ])) { _ in
+                            return enrollResponse(enrollmentId: ValidEnrollmentId,
+                                                  url: ValidURL.host,
+                                                  user: ValidUser,
+                                                  issuer: ValidIssuer,
+                                                  token: ValidEnrollmentToken,
+                                                  totpSecret: ValidBase32Secret,
+                                                  totpAlgorithm: ValidAlgorithm,
+                                                  totpDigits: ValidDigits,
+                                                  totpPeriod: ValidPeriod)
+                    }.name = "Valid enrollment"
+            }
+
+            it("should return enroll data") {
+                waitUntil(timeout: Timeout) { done in
+                    client
+                        .enroll(withTicket: ValidTransactionId, identifier: ValidDeviceIdentifier, name: ValidDeviceName, notificationToken: ValidNotificationToken, publicKey: ValidRSAPublicKey)
+                        .start { result in
+                            expect(result).to(beSuccess())
+                            done()
+                    }
+                }
+            }
+
+            it("should fail when public key is invalid") {
+                waitUntil(timeout: Timeout) { done in
+                    client
+                        .enroll(withTicket: ValidTransactionId, identifier: ValidDeviceIdentifier, name: ValidDeviceName, notificationToken: ValidNotificationToken, publicKey: NonRSAPublicKey)
+                        .start { result in
+                            expect(result).to(haveGuardianError(withErrorCode: "a0.guardian.internal.invalid_public_key"))
+                            done()
+                    }
+                }
+            }
+        }
         
         describe("allow authorization request") {
             
@@ -265,7 +320,7 @@ class APIClientSpec: QuickSpec {
                     && hasBearerToken(ValidEnrollmentToken)) { req in
                         let payload = req.a0_payload
                         let pushCredentials = payload?["push_credentials"] as? [String: String]
-                        return enrollmentResponse(enrollmentId: ValidEnrollmentId, deviceIdentifier: payload?["identifier"] as? String, name: payload?["name"] as? String, service: pushCredentials?["service"], notificationToken: pushCredentials?["token"])
+                        return deviceResponse(enrollmentId: ValidEnrollmentId, deviceIdentifier: payload?["identifier"] as? String, name: payload?["name"] as? String, service: pushCredentials?["service"], notificationToken: pushCredentials?["token"])
                     }.name = "Valid updated enrollment"
             }
             

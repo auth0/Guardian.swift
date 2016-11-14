@@ -27,6 +27,7 @@ private let invalidResponseMessage = "a0.guardian.internal.invalid_response"
 private let failedRequestMessage = "a0.guardian.internal.unknown_server_error"
 private let invalidEnrollmentUriMessage = "a0.guardian.internal.invalid_enrollment_uri"
 private let invalidBase32SecretMessage = "a0.guardian.internal.invalid_base32_secret"
+private let invalidPublicKeyMessage = "a0.guardian.internal.invalid_public_key"
 private let invalidOTPAlgorithmMessage = "a0.guardian.internal.invalid_otp_algorithm"
 
 /**
@@ -37,7 +38,7 @@ public class GuardianError: Error, CustomStringConvertible, Equatable {
     let info: [String: Any]?
     let statusCode: Int
     
-    init(info: [String: AnyObject], statusCode: Int) {
+    init(info: [String: Any], statusCode: Int) {
         self.info = info
         self.statusCode = statusCode
     }
@@ -78,6 +79,10 @@ internal extension GuardianError {
 
     static var invalidBase32Secret: GuardianError {
         return GuardianError(string: invalidBase32SecretMessage)
+    }
+
+    static var invalidPublicKey: GuardianError {
+        return GuardianError(string: invalidPublicKeyMessage)
     }
 
     static var invalidOTPAlgorithm: GuardianError {

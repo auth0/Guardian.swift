@@ -65,7 +65,7 @@ public struct Request<T>: Requestable {
                 return callback(.failure(cause: GuardianError.invalidResponse))
             }
             guard (200..<300).contains(httpResponse.statusCode) else {
-                guard let info: [String: AnyObject] = json(data) else {
+                guard let info: [String: Any] = json(data) else {
                     return callback(.failure(cause: GuardianError.invalidResponse(withStatus: httpResponse.statusCode)))
                 }
                 return callback(.failure(cause: GuardianError(info: info, statusCode: httpResponse.statusCode)))

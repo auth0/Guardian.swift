@@ -33,13 +33,19 @@ public struct EnrollRequest: Requestable {
     typealias T = Enrollment
 
     private let api: API
-    private let enrollmentUri: String
+    private let enrollmentTicket: String?
+    private let enrollmentUri: String?
     private let notificationToken: String
+    private let privateKey: SecKey
+    private let publicKey: SecKey
 
-    init(api: API, enrollmentUri: String, notificationToken: String) {
+    init(api: API, enrollmentTicket: String? = nil, enrollmentUri: String? = nil, notificationToken: String, privateKey: SecKey, publicKey: SecKey) {
         self.api = api
+        self.enrollmentTicket = enrollmentTicket
         self.enrollmentUri = enrollmentUri
         self.notificationToken = notificationToken
+        self.privateKey = privateKey
+        self.publicKey = publicKey
     }
 
     /**
@@ -49,23 +55,16 @@ public struct EnrollRequest: Requestable {
      received
      */
     public func start(callback: @escaping (Result<Enrollment>) -> ()) {
-        guard
-            let parameters = parameters(fromUri: enrollmentUri),
-            let enrollmentTxId = parameters["enrollment_tx_id"]
-            else { return callback(.failure(cause: GuardianError.invalidEnrollmentUri)) }
-        let enroll = { (enrollment: Enrollment) in
-            self.api.device(forEnrollmentId: enrollment.id, token: enrollment.deviceToken)
-                .create(withDeviceIdentifier: enrollment.deviceIdentifier, name: enrollment.deviceName, notificationToken: enrollment.notificationToken)
-                .start { result in
-                    switch result {
-                    case .failure(let cause):
-                        callback(.failure(cause: cause))
-                    case .success:
-                        callback(.success(payload: enrollment))
-                    }
-            }
+        let ticket: String
+        if let enrollmentTicket = enrollmentTicket {
+            ticket = enrollmentTicket
+        } else if let enrollmentUri = enrollmentUri, let parameters = parameters(fromUri: enrollmentUri), let enrollmentTxId = parameters["enrollment_tx_id"] {
+            ticket = enrollmentTxId
+        } else {
+            return callback(.failure(cause: GuardianError.invalidEnrollmentUri))
         }
-        self.api.enrollment(forTransactionId: enrollmentTxId)
+
+        self.api.enroll(withTicket: ticket, identifier: Enrollment.defaultDeviceIdentifier, name: Enrollment.defaultDeviceName, notificationToken: notificationToken, publicKey: publicKey)
             .start { result in
                 switch result {
                 case .failure(let cause):
@@ -73,13 +72,22 @@ public struct EnrollRequest: Requestable {
                 case .success(let payload):
                     guard
                         let payload = payload,
-                        let deviceToken = payload["device_account_token"] else {
-                        return callback(.failure(cause: GuardianError.invalidResponse))
+                        let id = payload["id"] as? String,
+                        let token = payload["token"] as? String,
+                        let _ = payload["issuer"] as? String,
+                        let _ = payload["user"] as? String,
+                        let _ = payload["url"] as? String else {
+                            return callback(.failure(cause: GuardianError.invalidResponse))
                     }
-                    guard let enrollment = enrollment(usingParameters: parameters, withNotificationToken: self.notificationToken, deviceToken: deviceToken) else {
-                        return callback(.failure(cause: GuardianError.invalidEnrollmentUri))
-                    }
-                    enroll(enrollment)
+
+                    let totpData = payload["totp"] as? [String: Any]
+                    let totpSecret = totpData?["secret"] as? String
+                    let totpAlgorithm = totpData?["algorithm"] as? String
+                    let totpPeriod = totpData?["period"] as? Int
+                    let totpDigits = totpData?["digits"] as? Int
+
+                    let enrollment = Enrollment(id: id, deviceToken: token, notificationToken: self.notificationToken, signingKey: self.privateKey, base32Secret: totpSecret, algorithm: totpAlgorithm, digits: totpDigits, period: totpPeriod)
+                    callback(.success(payload: enrollment))
                 }
         }
     }
@@ -94,26 +102,6 @@ func parameters(fromUri uri: String) -> [String: String]? {
         return nil
     }
     return parameters
-}
-
-func enrollment(usingParameters parameters: [String: String], withNotificationToken notificationToken: String, deviceToken: String) -> Enrollment? {
-    guard
-        let id = parameters["id"],
-        let secret = parameters["secret"]
-        else { return nil }
-
-    let digits = Int(parameters["digits"])
-    let period = Int(parameters["period"])
-    let algorithm = parameters["algorithm"]
-    return Enrollment(id: id, deviceToken: deviceToken, notificationToken: notificationToken, base32Secret: secret, algorithm: algorithm, digits: digits, period: period)
-}
-
-private extension Int {
-
-    init?(_ value: String?) {
-        guard let value = value else { return nil }
-        self.init(value)
-    }
 }
 
 private extension Collection where Iterator.Element == URLQueryItem {

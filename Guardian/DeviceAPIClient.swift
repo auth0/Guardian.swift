@@ -38,12 +38,12 @@ struct DeviceAPIClient: DeviceAPI {
         return Request(session: session, method: "DELETE", url: url, headers: ["Authorization": "Bearer \(token)"])
     }
     
-    func create(withDeviceIdentifier identifier: String, name: String, notificationToken: String) -> Request<[String: AnyObject]> {
+    func create(withDeviceIdentifier identifier: String, name: String, notificationToken: String) -> Request<[String: Any]> {
         return update(deviceIdentifier: identifier, name: name, notificationToken: notificationToken)
     }
     
-    func update(deviceIdentifier identifier: String? = nil, name: String? = nil, notificationToken: String? = nil) -> Request<[String: AnyObject]> {
-        var payload = [String: Any]()
+    func update(deviceIdentifier identifier: String? = nil, name: String? = nil, notificationToken: String? = nil) -> Request<[String: Any]> {
+        var payload: [String: Any] = [:]
         payload["identifier"] = identifier
         payload["name"] = name
         if let notificationToken = notificationToken {
@@ -52,6 +52,6 @@ struct DeviceAPIClient: DeviceAPI {
                 "token": notificationToken
             ]
         }
-        return Request<[String: AnyObject]>(session: session, method: "PATCH", url: url, payload: payload, headers: ["Authorization": "Bearer \(token)"])
+        return Request(session: session, method: "PATCH", url: url, payload: payload, headers: ["Authorization": "Bearer \(token)"])
     }
 }

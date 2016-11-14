@@ -31,7 +31,7 @@ private let AuthenticationCategory = "com.auth0.notification.authentication"
  `AppDelegate` you should have something like this:
 
  ```
- func application(application: UIApplication, didReceiveRemoteNotification userInfo: [NSObject : AnyObject]) {
+ func application(application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any]) {
     if let notification = Guardian.notification(from: userInfo) {
         // the push notification is a Guardian authentication request
         // do something with it

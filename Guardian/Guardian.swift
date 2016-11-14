@@ -72,7 +72,9 @@ public func authentication(forDomain domain: String, andEnrollment enrollment: E
  Guardian
     .enroll(forDomain: "tenant.guardian.auth0.com",
             usingUri: enrollUri,
-            notificationToken: apnsToken)
+            notificationToken: apnsToken,
+            privateKey: rsaPrivateKey,
+            publicKey: rsaPublicKey)
     .start { result in
         switch result {
         case .Success(let enrollment):
@@ -87,22 +89,60 @@ public func authentication(forDomain domain: String, andEnrollment enrollment: E
  - parameter session:           session to use for network requests
  - parameter usingUri:          the enrollment URI
  - parameter notificationToken: the APNS token of the device
+ - parameter privateKey:        the RSA private key
+ - parameter publicKey:         the RSA public key
  
  - returns: a request to create an enrollment
  */
-public func enroll(forDomain domain: String, session: URLSession = .shared, usingUri uri: String, notificationToken: String) -> EnrollRequest {
+public func enroll(forDomain domain: String, session: URLSession = .shared, usingUri uri: String, notificationToken: String, privateKey: SecKey, publicKey: SecKey) -> EnrollRequest {
     let client = api(forDomain: domain, session: session)
-    return EnrollRequest(api: client, enrollmentUri: uri, notificationToken: notificationToken)
+    return EnrollRequest(api: client, enrollmentUri: uri, notificationToken: notificationToken, privateKey: privateKey, publicKey: publicKey)
 }
 
 /**
- Parses and returns the data about the push notification's authentication 
+ Creates a request to enroll from a Guardian enrollment ticket
+
+ ```
+ let enrollTicket: String = // obtained from a Guardian QR code or email
+ let apnsToken: String = // apple push notification service token for this device
+ Guardian
+    .enroll(forDomain: "tenant.guardian.auth0.com",
+            usingTicket: enrollTicket,
+            notificationToken: apnsToken,
+            privateKey: rsaPrivateKey,
+            publicKey: rsaPublicKey)
+    .start { result in
+        switch result {
+        case .Success(let enrollment):
+            // we have the enrollment data, save it for later usages
+        case .Failure(let cause):
+            // something failed
+        }
+ }
+ ```
+
+ - parameter forDomain:         domain or URL of your Guardian server
+ - parameter session:           session to use for network requests
+ - parameter usingTicket:       the enrollment ticket
+ - parameter notificationToken: the APNS token of the device
+ - parameter privateKey:        the RSA private key
+ - parameter publicKey:         the RSA public key
+
+ - returns: a request to create an enrollment
+ */
+public func enroll(forDomain domain: String, session: URLSession = .shared, usingTicket ticket: String, notificationToken: String, privateKey: SecKey, publicKey: SecKey) -> EnrollRequest {
+    let client = api(forDomain: domain, session: session)
+    return EnrollRequest(api: client, enrollmentTicket: ticket, notificationToken: notificationToken, privateKey: privateKey, publicKey: publicKey)
+}
+
+/**
+ Parses and returns the data about the push notification's authentication
  request.
  
  You should use this method in your `AppDelegate`, for example like this:
  
  ```
- func application(application: UIApplication, didReceiveRemoteNotification userInfo: [NSObject : AnyObject]) {
+ func application(application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any]) {
     if let notification = Guardian.notification(from: userInfo) {
         // the push notification is a Guardian authentication request
         // do something with it

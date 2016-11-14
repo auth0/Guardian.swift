@@ -57,7 +57,7 @@ public protocol Authentication {
      
      - returns: a request to execute
      */
-    func allow(notification: Notification) -> GuardianRequest
+    func allow(notification: Notification) -> VoidRequest
 
     /**
      Reject/denies the authentication request
@@ -85,11 +85,11 @@ public protocol Authentication {
 
      - returns: a request to execute
      */
-    func reject(notification: Notification, withReason reason: String?) -> GuardianRequest
+    func reject(notification: Notification, withReason reason: String?) -> VoidRequest
 }
 
 public extension Authentication {
-    public func reject(notification: Notification, withReason reason: String? = nil) -> GuardianRequest {
+    public func reject(notification: Notification, withReason reason: String? = nil) -> VoidRequest {
         return self.reject(notification: notification, withReason: reason)
     }
 }
@@ -99,8 +99,8 @@ struct TOTPAuthentication: Authentication {
     let api: API
     let enrollment: Enrollment
 
-    func allow(notification: Notification) -> GuardianRequest {
-        return GuardianRequest {
+    func allow(notification: Notification) -> VoidRequest {
+        return VoidRequest {
             let code = try totp(from: self.enrollment)
                 .generate(digits: self.enrollment.digits, counter: Int(Date().timeIntervalSince1970))
             return self.api
@@ -108,8 +108,8 @@ struct TOTPAuthentication: Authentication {
         }
     }
 
-    func reject(notification: Notification, withReason reason: String? = nil) -> GuardianRequest {
-        return GuardianRequest {
+    func reject(notification: Notification, withReason reason: String? = nil) -> VoidRequest {
+        return VoidRequest {
             let code = try totp(from: self.enrollment)
                 .generate(digits: self.enrollment.digits, counter: Int(Date().timeIntervalSince1970))
             return self.api
@@ -119,7 +119,7 @@ struct TOTPAuthentication: Authentication {
 }
 
 func totp(from enrollment: Enrollment) throws -> TOTP {
-    guard let key = Base32.decode(string: enrollment.base32Secret) else {
+    guard let base32Secret = enrollment.base32Secret, let key = Base32.decode(string: base32Secret) else {
         throw GuardianError.invalidBase32Secret
     }
     guard let totp = TOTP(withKey: key, period: enrollment.period, algorithm: enrollment.algorithm) else {
@@ -128,7 +128,7 @@ func totp(from enrollment: Enrollment) throws -> TOTP {
     return totp
 }
 
-public struct GuardianRequest: Requestable {
+public struct VoidRequest: Requestable {
 
     typealias T = Void
     typealias RequestBuilder = () throws -> Request<Void>
