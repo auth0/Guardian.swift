@@ -40,7 +40,7 @@ func hasField(_ field: String, withParameters parameters: [String: String]) -> O
     return { request in
         guard
             let payload = request.a0_payload,
-            let pushCredentials = payload[field] as? [String: AnyObject]
+            let pushCredentials = payload[field] as? [String: Any]
             else { return false }
         let entries = parameters.filter { (key, _) in pushCredentials.contains { (name, _) in  key == name } }
         return entries.count == parameters.count && entries.reduce(true, { (initial, entry) -> Bool in
@@ -136,7 +136,7 @@ func haveDeviceAccountToken(_ deviceAccountToken: String?) -> MatcherFunc<Result
     }
 }
 
-func haveEnrollment(withId enrollmentId: String?, deviceIdentifier: String?, deviceName: String?, notificationService: String?, notificationToken: String?) -> MatcherFunc<Result<[String: AnyObject]>> {
+func haveEnrollment(withId enrollmentId: String?, deviceIdentifier: String?, deviceName: String?, notificationService: String?, notificationToken: String?) -> MatcherFunc<Result<[String: Any]>> {
     return MatcherFunc { expression, failureMessage in
         var message = "be a successful enrollment info result with"
         if let enrollmentId = enrollmentId {
@@ -299,9 +299,9 @@ func beSuccess<T>() -> MatcherFunc<Result<T>> {
 }
 
 extension URLRequest {
-    var a0_payload: [String: AnyObject]? {
+    var a0_payload: [String: Any]? {
         guard let data = (self as NSURLRequest).ohhttpStubs_HTTPBody() else { return nil }
         let object = try? JSONSerialization.jsonObject(with: data, options: [])
-        return object as? [String: AnyObject]
+        return object as? [String: Any]
     }
 }

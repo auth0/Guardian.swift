@@ -38,7 +38,7 @@ public class GuardianError: Error, CustomStringConvertible, Equatable {
     let info: [String: Any]?
     let statusCode: Int
     
-    init(info: [String: AnyObject], statusCode: Int) {
+    init(info: [String: Any], statusCode: Int) {
         self.info = info
         self.statusCode = statusCode
     }

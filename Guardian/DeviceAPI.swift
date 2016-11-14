@@ -90,7 +90,7 @@ public protocol DeviceAPI {
 
      - returns: a Request ready to execute
      */
-    func create(withDeviceIdentifier identifier: String, name: String, notificationToken: String) -> Request<[String: AnyObject]>
+    func create(withDeviceIdentifier identifier: String, name: String, notificationToken: String) -> Request<[String: Any]>
 
     /**
      Request to update the data of the device.
@@ -123,5 +123,5 @@ public protocol DeviceAPI {
 
      - returns: a Request ready to execute
      */
-    func update(deviceIdentifier identifier: String?, name: String?, notificationToken: String?) -> Request<[String: AnyObject]>
+    func update(deviceIdentifier identifier: String?, name: String?, notificationToken: String?) -> Request<[String: Any]>
 }

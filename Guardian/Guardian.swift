@@ -142,7 +142,7 @@ public func enroll(forDomain domain: String, session: URLSession = .shared, usin
  You should use this method in your `AppDelegate`, for example like this:
  
  ```
- func application(application: UIApplication, didReceiveRemoteNotification userInfo: [NSObject : AnyObject]) {
+ func application(application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any]) {
     if let notification = Guardian.notification(from: userInfo) {
         // the push notification is a Guardian authentication request
         // do something with it

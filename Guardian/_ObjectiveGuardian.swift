@@ -65,7 +65,7 @@ public class _ObjectiveGuardian: NSObject {
     }
 
     public func notification(with userInfo: [AnyHashable: Any]) -> Notification? {
-        return Guardian.notification(from: userInfo as [NSObject : AnyObject])
+        return Guardian.notification(from: userInfo)
     }
 
     public func removeEnrollment(_ enrollment: Enrollment, callback: @escaping (NSError?) -> ()) {
