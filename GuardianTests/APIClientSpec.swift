@@ -132,7 +132,60 @@ class APIClientSpec: QuickSpec {
                 }
             }
         }
-        
+
+        describe("resolve-transaction") {
+
+            beforeEach {
+                stub(condition: isResolveTransaction(domain: Domain)) { _ in
+                    return errorResponse(statusCode: 404, errorCode: "invalid_token", message: "Invalid transaction token")
+                    }.name = "Missing authentication"
+                stub(condition: isResolveTransaction(domain: Domain)
+                    && hasBearerToken(ValidTransactionToken)) { req in
+                        return errorResponse(statusCode: 401, errorCode: "invalid_challenge", message: "Invalid challengeResponse")
+                    }.name = "Invalid challengeResponse"
+                stub(condition: isResolveTransaction(domain: Domain)
+                    && hasBearerToken(ValidTransactionToken)
+                    && hasAtLeast([
+                        "challengeResponse": ValidChallengeResponse
+                    ])) { req in
+                        return successResponse()
+                    }.name = "Valid resolve request"
+            }
+
+            it("should succeed with valid transaction and challenge response") {
+                waitUntil(timeout: Timeout) { done in
+                    client
+                        .resolve(transaction: ValidTransactionToken, withChallengeResponse: ValidChallengeResponse)
+                        .start { result in
+                            expect(result).to(beSuccess())
+                            done()
+                    }
+                }
+            }
+
+            it("should fail when transaction is invalid") {
+                waitUntil(timeout: Timeout) { done in
+                    client
+                        .resolve(transaction: "someInvalidTransactionToken", withChallengeResponse: ValidChallengeResponse)
+                        .start { result in
+                            expect(result).to(haveGuardianError(withErrorCode: "invalid_token"))
+                            done()
+                    }
+                }
+            }
+
+            it("should fail when challengeResponse is invalid") {
+                waitUntil(timeout: Timeout) { done in
+                    client
+                        .resolve(transaction: ValidTransactionToken, withChallengeResponse: "abcdefgh")
+                        .start { result in
+                            expect(result).to(haveGuardianError(withErrorCode: "invalid_challenge"))
+                            done()
+                    }
+                }
+            }
+        }
+
         describe("delete enrollment") {
             
             beforeEach {
