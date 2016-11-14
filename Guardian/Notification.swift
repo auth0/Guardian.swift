@@ -59,6 +59,12 @@ public protocol Notification {
     var transactionToken: String { get }
 
     /**
+     The challenge sent by the server. The same challenge, signed, should be 
+     sent back when trying to allow or reject an authentication request
+     */
+    var challenge: String { get }
+
+    /**
      The source (Browser & OS) where the authentication request was initiated,
      if available
      */
@@ -153,14 +159,16 @@ class AuthenticationNotification: NSObject, Notification {
     let domain: String
     let enrollmentId: String
     let transactionToken: String
+    let challenge: String
     let source: Source?
     let location: Location?
     let startedAt: Date
 
-    init(domain: String, enrollmentId: String, transactionToken: String, startedAt: Date, source: Source?, location: Location?) {
+    init(domain: String, enrollmentId: String, transactionToken: String, challenge: String, startedAt: Date, source: Source?, location: Location?) {
         self.domain = domain
         self.enrollmentId = enrollmentId
         self.transactionToken = transactionToken
+        self.challenge = challenge
         self.source = source
         self.location = location
         self.startedAt = startedAt
@@ -182,12 +190,13 @@ class AuthenticationNotification: NSObject, Notification {
             let token = mfa["txtkn"] as? String,
             let when = mfa["d"] as? String,
             let startedAt = formatter.date(from: when),
-            let domain = mfa["sh"] as? String
+            let domain = mfa["sh"] as? String,
+            let challenge = mfa["c"] as? String
             else { return nil }
         let source = AuthenticationSource(fromJSON: mfa["s"])
         let location = AuthenticationLocation(fromJSON: mfa["l"])
 
-        self.init(domain: domain, enrollmentId: enrollmentId, transactionToken: token, startedAt: startedAt, source: source, location: location)
+        self.init(domain: domain, enrollmentId: enrollmentId, transactionToken: token, challenge: challenge, startedAt: startedAt, source: source, location: location)
     }
 }
 

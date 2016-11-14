@@ -57,6 +57,10 @@ class NotificationSpec: QuickSpec {
                     expect(notification?.transactionToken).to(equal("random_tx_token"))
                 }
 
+                it("should have challenge") {
+                    expect(notification?.challenge).to(equal("random_challenge"))
+                }
+
                 it("should have location name") {
                     expect(notification?.location?.name).to(equal("Palermo, BA, Argentina"))
                 }
@@ -130,6 +134,11 @@ class NotificationSpec: QuickSpec {
                     expect(notification).to(beNil())
                 }
 
+                it("should fail without challenge") {
+                    notification = AuthenticationNotification(userInfo: payload(challenge: nil))
+                    expect(notification).to(beNil())
+                }
+
                 it("should fail without started at") {
                     notification = AuthenticationNotification(userInfo: payload(startedAt: nil))
                     expect(notification).to(beNil())
@@ -152,6 +161,7 @@ func payload(
              os: String? = "Mac OS",
              osVersion: String? = "10.11.3",
              token: String? = "random_tx_token",
+             challenge: String? = "random_challenge",
              startedAt: String? = "2015-12-17T19:53:31.000Z",
              host: String? = "samples.auth0.com",
              latitude: String? = "-34.57115",
@@ -173,6 +183,9 @@ func payload(
     }
     if token != nil {
         payload["mfa"]!["txtkn"] = token
+    }
+    if challenge != nil {
+        payload["mfa"]!["c"] = challenge
     }
     if startedAt != nil {
         payload["mfa"]!["d"] = startedAt
