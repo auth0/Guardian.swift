@@ -58,11 +58,8 @@ public func api(forDomain domain: String, session: URLSession = .shared) -> API 
  
  - seealso: Guardian.Authentication
  */
-public func authentication(forDomain domain: String, andEnrollment enrollment: Enrollment, session: URLSession = .shared, forceOTP: Bool = false) -> Authentication {
+public func authentication(forDomain domain: String, andEnrollment enrollment: Enrollment, session: URLSession = .shared) -> Authentication {
     let client = api(forDomain: domain, session: session)
-    if forceOTP {
-        return TOTPAuthentication(api: client, enrollment: enrollment)
-    }
     return RSAAuthentication(api: client, enrollment: enrollment)
 }
 

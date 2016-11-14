@@ -49,14 +49,6 @@ func hasField(_ field: String, withParameters parameters: [String: String]) -> O
     }
 }
 
-func hasOtpCode(inParameter name: String) -> OHHTTPStubsTestBlock {
-    return { request in
-        guard let payload = request.a0_payload else { return false }
-        let code = payload[name] as? String
-        return code != nil
-    }
-}
-
 func hasNoneOf(_ names: [String]) -> OHHTTPStubsTestBlock {
     return { request in
         guard let payload = request.a0_payload else { return false }
@@ -99,14 +91,6 @@ func isMobileEnroll(domain: String) -> OHHTTPStubsTestBlock {
 
 func isResolveTransaction(domain: String) -> OHHTTPStubsTestBlock {
     return isScheme("https") && isHost(domain) && isMethodPOST() && isPath("/api/resolve-transaction")
-}
-
-func isVerifyOTP(domain: String) -> OHHTTPStubsTestBlock {
-    return isScheme("https") && isHost(domain) && isMethodPOST() && isPath("/api/verify-otp")
-}
-
-func isRejectLogin(domain: String) -> OHHTTPStubsTestBlock {
-    return isScheme("https") && isHost(domain) && isMethodPOST() && isPath("/api/reject-login")
 }
 
 func isEnrollment(domain: String, enrollmentId: String? = nil) -> OHHTTPStubsTestBlock {

@@ -85,60 +85,6 @@ public protocol API {
     func enroll(withTicket enrollmentTicket: String, identifier: String, name: String, notificationToken: String, publicKey: SecKey) -> DictionaryRequest
 
     /**
-     Request to allow a Guardian authentication request with OTP code
-     
-     ```
-     Guardian
-        .api(forDomain: "tenant.guardian.auth0.com")
-        .allow(transaction: notification.transactionToken,
-               withCode: "someOTPCode")
-        .start { result in
-            switch result {
-            case .success(let response):
-                // auth request successfuly allowed
-            case .failure(let cause):
-                // something failed
-                print(cause)
-            }
-     }
-     ```
-
-     - parameter transaction: the Guardian authentication transaction
-     - parameter withCode:    the code to validate the second factor
-
-     - returns: a Request ready to execute
-     */
-    func allow(transaction transactionToken: String, withCode otpCode: String) -> Request<Void>
-
-    /**
-     Request to reject a Guardian authentication request with OTP code
-
-     ```
-     Guardian
-        .api(forDomain: "tenant.guardian.auth0.com")
-        .reject(transaction: notification.transactionToken, 
-                withCode: "someOTPCode", 
-                reason: "hack")
-        .start { result in
-            switch result {
-            case .success(let response):
-                // auth request successfuly rejected
-            case .failure(let cause):
-                // something failed
-                print(cause)
-            }
-     }
-     ```
-
-     - parameter transaction: the Guardian authentication transaction
-     - parameter withCode:    the code to validate the second factor
-     - parameter reason:      an optional reason of rejection (example: "hack")
-
-     - returns: a Request ready to execute
-     */
-    func reject(transaction transactionToken: String, withCode otpCode: String, reason: String?) -> Request<Void>
-
-    /**
      Request to resolve a Guardian authentication request with a signed response
      to the notification challenge
      
