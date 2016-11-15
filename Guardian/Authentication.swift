@@ -94,38 +94,45 @@ public extension Authentication {
     }
 }
 
-struct TOTPAuthentication: Authentication {
+struct RSAAuthentication: Authentication {
+
+    private static let challengeResponseExpiresInSecs = 30
 
     let api: API
     let enrollment: Enrollment
 
     func allow(notification: Notification) -> VoidRequest {
-        return VoidRequest {
-            let code = try totp(from: self.enrollment)
-                .generate(digits: self.enrollment.digits, counter: Int(Date().timeIntervalSince1970))
-            return self.api
-                .allow(transaction: notification.transactionToken, withCode: code)
-        }
+        return resolve(transaction: notification.transactionToken,
+                       withChallenge: notification.challenge,
+                       accepted: true)
     }
 
-    func reject(notification: Notification, withReason reason: String? = nil) -> VoidRequest {
+    func reject(notification: Notification, withReason reason: String?) -> VoidRequest {
+        return resolve(transaction: notification.transactionToken,
+                       withChallenge: notification.challenge,
+                       accepted: false,
+                       reason: reason)
+    }
+
+    func resolve(transaction transactionToken: String, withChallenge challenge: String, accepted: Bool, reason: String? = nil) -> VoidRequest {
         return VoidRequest {
-            let code = try totp(from: self.enrollment)
-                .generate(digits: self.enrollment.digits, counter: Int(Date().timeIntervalSince1970))
-            return self.api
-                .reject(transaction: notification.transactionToken, withCode: code, reason: reason)
+            let currentTime = Int(Date().timeIntervalSince1970)
+            var jwtPayload: [String: Any] = [
+                "iat": currentTime,
+                "exp": currentTime + RSAAuthentication.challengeResponseExpiresInSecs,
+                "aud": self.api.baseUrl.absoluteString,
+                "iss": self.enrollment.deviceIdentifier,
+                "sub": challenge,
+                "auth0.guardian.method": "push",
+                "auth0.guardian.accepted": accepted
+            ]
+            if let reason = reason {
+                jwtPayload["auth0.guardian.reason"] = reason
+            }
+            let jwt = try JWT.encode(claims: jwtPayload, signingKey: self.enrollment.signingKey)
+            return self.api.resolve(transaction: transactionToken, withChallengeResponse: jwt)
         }
     }
-}
-
-func totp(from enrollment: Enrollment) throws -> TOTP {
-    guard let base32Secret = enrollment.base32Secret, let key = Base32.decode(string: base32Secret) else {
-        throw GuardianError.invalidBase32Secret
-    }
-    guard let totp = TOTP(withKey: key, period: enrollment.period, algorithm: enrollment.algorithm) else {
-        throw GuardianError.invalidOTPAlgorithm
-    }
-    return totp
 }
 
 public struct VoidRequest: Requestable {

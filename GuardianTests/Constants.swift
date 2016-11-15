@@ -38,9 +38,8 @@ let ValidAlgorithm = "SHA1"
 let ValidDigits = 7
 let ValidPeriod = 29
 let ValidTransactionToken = "aValidTransactionToken"
-let ValidOTPCode = "aValidOTPCode"
-let ValidOTPCodeWithRejectReason = "aValidOTPCodeWithRejectReason"
 let RejectReason = "aRejectReason"
+let ValidChallengeResponse = "aValidChallengeResponse"
 
 let ValidDeviceIdentifier = "aValidDeviceIdentifier"
 let ValidDeviceName = "aValidDeviceName"

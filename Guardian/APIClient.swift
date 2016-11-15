@@ -66,27 +66,15 @@ struct APIClient: API {
             return Request(session: self.session, method: "POST", url: url, payload: payload, headers: ["Authorization": "Ticket id=\"\(enrollmentTicket)\""])
         }
     }
-    
-    func allow(transaction transactionToken: String, withCode otpCode: String) -> Request<Void> {
-        let url = baseUrl.appendingPathComponent("api/verify-otp")
+
+    func resolve(transaction transactionToken: String, withChallengeResponse challengeResponse: String) -> Request<Void> {
         let payload = [
-            "type": "push_notification",
-            "code": otpCode
+            "challengeResponse": challengeResponse
         ]
-        return Request(session: session, method: "POST", url: url, payload: payload, headers: ["Authorization": "Bearer \(transactionToken)"])
+        let url = self.baseUrl.appendingPathComponent("api/resolve-transaction")
+        return Request(session: self.session, method: "POST", url: url, payload: payload, headers: ["Authorization": "Bearer \(transactionToken)"])
     }
-    
-    func reject(transaction transactionToken: String, withCode otpCode: String, reason: String? = nil) -> Request<Void> {
-        let url = baseUrl.appendingPathComponent("api/reject-login")
-        var payload = [
-            "code": otpCode
-        ]
-        if let reason = reason {
-            payload["reason"] = reason
-        }
-        return Request(session: session, method: "POST", url: url, payload: payload, headers: ["Authorization": "Bearer \(transactionToken)"])
-    }
-    
+
     func device(forEnrollmentId id: String, token: String) -> DeviceAPI {
         return DeviceAPIClient(baseUrl: baseUrl, session: session, id: id, token: token)
     }

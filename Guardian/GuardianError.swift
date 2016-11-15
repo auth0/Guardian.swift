@@ -22,12 +22,14 @@
 
 import Foundation
 
+private let internalErrorMessage = "a0.guardian.internal.unknown_error"
 private let invalidPayloadMessage = "a0.guardian.internal.invalid_payload"
 private let invalidResponseMessage = "a0.guardian.internal.invalid_response"
 private let failedRequestMessage = "a0.guardian.internal.unknown_server_error"
 private let invalidEnrollmentUriMessage = "a0.guardian.internal.invalid_enrollment_uri"
 private let invalidBase32SecretMessage = "a0.guardian.internal.invalid_base32_secret"
 private let invalidPublicKeyMessage = "a0.guardian.internal.invalid_public_key"
+private let invalidPrivateKeyMessage = "a0.guardian.internal.invalid_private_key"
 private let invalidOTPAlgorithmMessage = "a0.guardian.internal.invalid_otp_algorithm"
 
 /**
@@ -73,6 +75,10 @@ public func ==(lhs: GuardianError, rhs: GuardianError) -> Bool {
 }
 
 internal extension GuardianError {
+    static var internalError: GuardianError {
+        return GuardianError(string: internalErrorMessage)
+    }
+
     static var failedRequest: GuardianError {
         return GuardianError(string: failedRequestMessage)
     }
@@ -83,6 +89,10 @@ internal extension GuardianError {
 
     static var invalidPublicKey: GuardianError {
         return GuardianError(string: invalidPublicKeyMessage)
+    }
+
+    static var invalidPrivateKey: GuardianError {
+        return GuardianError(string: invalidPrivateKeyMessage)
     }
 
     static var invalidOTPAlgorithm: GuardianError {

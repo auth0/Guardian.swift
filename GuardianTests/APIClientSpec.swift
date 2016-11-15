@@ -132,127 +132,60 @@ class APIClientSpec: QuickSpec {
                 }
             }
         }
-        
-        describe("allow authorization request") {
-            
+
+        describe("resolve-transaction") {
+
             beforeEach {
-                stub(condition: isVerifyOTP(domain: Domain)) { _ in
+                stub(condition: isResolveTransaction(domain: Domain)) { _ in
                     return errorResponse(statusCode: 404, errorCode: "invalid_token", message: "Invalid transaction token")
                     }.name = "Missing authentication"
-                stub(condition: isVerifyOTP(domain: Domain)
+                stub(condition: isResolveTransaction(domain: Domain)
+                    && hasBearerToken(ValidTransactionToken)) { req in
+                        return errorResponse(statusCode: 401, errorCode: "invalid_challenge", message: "Invalid challengeResponse")
+                    }.name = "Invalid challengeResponse"
+                stub(condition: isResolveTransaction(domain: Domain)
                     && hasBearerToken(ValidTransactionToken)
-                    && hasAtLeast(["type": "push_notification"])) { _ in
-                        return errorResponse(statusCode: 404, errorCode: "invalid_otp", message: "Invalid OTP code")
-                    }.name = "Invalid OTP code"
-                stub(condition: isVerifyOTP(domain: Domain)
-                    && hasBearerToken(ValidTransactionToken)
-                    && hasAtLeast(["code": ValidOTPCode, "type": "push_notification"])) { _ in
+                    && hasAtLeast([
+                        "challengeResponse": ValidChallengeResponse
+                    ])) { req in
                         return successResponse()
-                    }.name = "Valid verify-otp"
+                    }.name = "Valid resolve request"
             }
-            
-            it("should allow login") {
+
+            it("should succeed with valid transaction and challenge response") {
                 waitUntil(timeout: Timeout) { done in
                     client
-                        .allow(transaction: ValidTransactionToken, withCode: ValidOTPCode)
+                        .resolve(transaction: ValidTransactionToken, withChallengeResponse: ValidChallengeResponse)
                         .start { result in
                             expect(result).to(beSuccess())
                             done()
                     }
                 }
             }
-            
-            it("should fail with invalid_otp error") {
+
+            it("should fail when transaction is invalid") {
                 waitUntil(timeout: Timeout) { done in
                     client
-                        .allow(transaction: ValidTransactionToken, withCode: "someInvalidOTPCode")
-                        .start { result in
-                            expect(result).to(haveGuardianError(withErrorCode: "invalid_otp"))
-                            done()
-                    }
-                }
-            }
-            
-            it("should fail with invalid_token error") {
-                waitUntil(timeout: Timeout) { done in
-                    client
-                        .allow(transaction: "someInvalidTransactionToken", withCode: ValidOTPCode)
+                        .resolve(transaction: "someInvalidTransactionToken", withChallengeResponse: ValidChallengeResponse)
                         .start { result in
                             expect(result).to(haveGuardianError(withErrorCode: "invalid_token"))
                             done()
                     }
                 }
             }
-        }
-        
-        describe("reject authorization request") {
-            
-            beforeEach {
-                stub(condition: isRejectLogin(domain: Domain)) { _ in
-                    return errorResponse(statusCode: 404, errorCode: "invalid_token", message: "Invalid transaction token")
-                    }.name = "Missing authentication"
-                stub(condition: isRejectLogin(domain: Domain)
-                    && hasBearerToken(ValidTransactionToken)) { _ in
-                        return errorResponse(statusCode: 404, errorCode: "invalid_otp", message: "Invalid OTP code")
-                    }.name = "Invalid OTP code"
-                stub(condition: isRejectLogin(domain: Domain)
-                    && hasBearerToken(ValidTransactionToken)
-                    && hasAtLeast(["code": ValidOTPCode, "reason": RejectReason])) { _ in
-                        return successResponse()
-                    }.name = "Valid reject-login with reason"
-                stub(condition: isRejectLogin(domain: Domain)
-                    && hasBearerToken(ValidTransactionToken)
-                    && hasAtLeast(["code": ValidOTPCode])
-                    && hasNoneOf(["reason"])) { _ in
-                        return successResponse()
-                    }.name = "Valid reject-login without reason"
-            }
-            
-            it("should reject login without reason") {
+
+            it("should fail when challengeResponse is invalid") {
                 waitUntil(timeout: Timeout) { done in
                     client
-                        .reject(transaction: ValidTransactionToken, withCode: ValidOTPCode)
+                        .resolve(transaction: ValidTransactionToken, withChallengeResponse: "abcdefgh")
                         .start { result in
-                            expect(result).to(beSuccess())
-                            done()
-                    }
-                }
-            }
-            
-            it("should reject login with reason") {
-                waitUntil(timeout: Timeout) { done in
-                    client
-                        .reject(transaction: ValidTransactionToken, withCode: ValidOTPCode, reason: RejectReason)
-                        .start { result in
-                            expect(result).to(beSuccess())
-                            done()
-                    }
-                }
-            }
-            
-            it("should fail with invalid_otp error") {
-                waitUntil(timeout: Timeout) { done in
-                    client
-                        .reject(transaction: ValidTransactionToken, withCode: "someInvalidOTPCode")
-                        .start { result in
-                            expect(result).to(haveGuardianError(withErrorCode: "invalid_otp"))
-                            done()
-                    }
-                }
-            }
-            
-            it("should fail with invalid_token error") {
-                waitUntil(timeout: Timeout) { done in
-                    client
-                        .reject(transaction: "someInvalidTransactionToken", withCode: ValidOTPCode)
-                        .start { result in
-                            expect(result).to(haveGuardianError(withErrorCode: "invalid_token"))
+                            expect(result).to(haveGuardianError(withErrorCode: "invalid_challenge"))
                             done()
                     }
                 }
             }
         }
-        
+
         describe("delete enrollment") {
             
             beforeEach {

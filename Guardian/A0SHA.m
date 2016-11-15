@@ -1,4 +1,4 @@
-// Guardian.h
+// A0SHA.m
 //
 // Copyright (c) 2016 Auth0 (http://auth0.com)
 //
@@ -20,16 +20,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import <UIKit/UIKit.h>
+#import <A0SHA.h>
+#import <CommonCrypto/CommonHMAC.h>
 
-//! Project version number for Guardian.
-FOUNDATION_EXPORT double GuardianVersionNumber;
+@interface A0SHA ()
+@property (readonly, nonatomic) NSInteger digestLength;
+@end
 
-//! Project version string for Guardian.
-FOUNDATION_EXPORT const unsigned char GuardianVersionString[];
+@implementation A0SHA
 
-// In this header, you should import all the public headers of your framework using statements like #import <Guardian/PublicHeader.h>
+- (instancetype)initWithAlgorithm:(NSString *)algorithm {
+    self = [super init];
+    if (self) {
+        const NSString * alg = algorithm.lowercaseString;
+        if ([@"sha256"  isEqual: alg]) {
+            _digestLength = CC_SHA256_DIGEST_LENGTH;
+        } else {
+            return nil;
+        }
+    }
+    return self;
+}
 
-#include <Guardian/A0HMAC.h>
-#include <Guardian/A0RSA.h>
-#include <Guardian/A0SHA.h>
+- (NSData *)hash:(NSData *)data {
+    uint8_t hashBytes[self.digestLength];
+    memset(hashBytes, 0x0, self.digestLength);
+
+    CC_SHA256(data.bytes, (CC_LONG)data.length, hashBytes);
+
+    NSData *hash = [NSData dataWithBytes:hashBytes length:self.digestLength];
+    return hash;
+}
+
+@end
