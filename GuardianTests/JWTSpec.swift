@@ -38,7 +38,12 @@ class JWTSpec: QuickSpec {
 
             describe("encode with hardcoded key") {
 
-                let jwt = try? JWT.encode(claims: ["field": "value"], signingKey: ValidRSAPrivateKey)
+                var jwt: String?
+
+                beforeEach {
+                    jwt = try? JWT.encode(claims: ["field": "value"], signingKey: ValidRSAPrivateKey)
+                }
+
 
                 it("should not return nil") {
                     expect(jwt).toNot(beNil())

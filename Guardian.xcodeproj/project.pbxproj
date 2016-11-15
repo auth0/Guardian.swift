@@ -18,7 +18,6 @@
 		231687191DDA07FD00B09526 /* A0SHA.m in Sources */ = {isa = PBXBuildFile; fileRef = 231687181DDA07FD00B09526 /* A0SHA.m */; };
 		232A85DA1D6BDFCA00048DF7 /* DeviceAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 232A85D91D6BDFCA00048DF7 /* DeviceAPIClient.swift */; };
 		2331BFEB1DD5260D0047F1D4 /* JWT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2331BFEA1DD5260D0047F1D4 /* JWT.swift */; };
-		2331BFED1DD52ED50047F1D4 /* JWTSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2331BFEC1DD52ED50047F1D4 /* JWTSpec.swift */; };
 		2331C0181DD563150047F1D4 /* identity.p12 in Resources */ = {isa = PBXBuildFile; fileRef = 2331C0171DD563150047F1D4 /* identity.p12 */; };
 		2331C01A1DD5FC6F0047F1D4 /* Data+Base64URL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2331C0191DD5FC6F0047F1D4 /* Data+Base64URL.swift */; };
 		233F75271D92F27000B8C15C /* Notification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 233F75261D92F27000B8C15C /* Notification.swift */; };
@@ -52,7 +51,6 @@
 		23FE50831D949EC400407A1D /* Guardian.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F2037CD1D5E1E3E0005D2E2 /* Guardian.framework */; };
 		23FE50841D949EC400407A1D /* Guardian.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5F2037CD1D5E1E3E0005D2E2 /* Guardian.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5F1DB45B1DA4649600264437 /* Authentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1DB45A1DA4649600264437 /* Authentication.swift */; };
-		5F1DB45D1DA4750F00264437 /* AuthenticationSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1DB45C1DA4750F00264437 /* AuthenticationSpec.swift */; };
 		5F1DB45F1DA4757800264437 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1DB45E1DA4757800264437 /* Constants.swift */; };
 		5F1DB47D1DA5807D00264437 /* _ObjectiveGuardian.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1DB47C1DA5807D00264437 /* _ObjectiveGuardian.swift */; };
 		5F2037D11D5E1E3E0005D2E2 /* Guardian.h in Headers */ = {isa = PBXBuildFile; fileRef = 5F2037D01D5E1E3E0005D2E2 /* Guardian.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -68,6 +66,8 @@
 		5F2038081D5E40ED0005D2E2 /* Quick.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5F2037FE1D5E40C70005D2E2 /* Quick.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5F2038091D5E40EE0005D2E2 /* OHHTTPStubs.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5F2037FF1D5E40C70005D2E2 /* OHHTTPStubs.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5F20380A1D5E40EE0005D2E2 /* Nimble.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5F2038001D5E40C70005D2E2 /* Nimble.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		5F7969341DDABDDE006AC7BA /* AuthenticationSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1DB45C1DA4750F00264437 /* AuthenticationSpec.swift */; };
+		5F7969371DDAC074006AC7BA /* JWTSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2331BFEC1DD52ED50047F1D4 /* JWTSpec.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -241,6 +241,7 @@
 		2374A9F11D672E4200737F2E /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				5F1DB45E1DA4757800264437 /* Constants.swift */,
 				2331C0171DD563150047F1D4 /* identity.p12 */,
 				2374A9F21D672E4F00737F2E /* Responses.swift */,
 				2374A9F41D67339E00737F2E /* Matchers.swift */,
@@ -366,7 +367,6 @@
 				233F75281D93076600B8C15C /* NotificationSpec.swift */,
 				5F1DB45C1DA4750F00264437 /* AuthenticationSpec.swift */,
 				2331BFEC1DD52ED50047F1D4 /* JWTSpec.swift */,
-				5F1DB45E1DA4757800264437 /* Constants.swift */,
 			);
 			path = GuardianTests;
 			sourceTree = "<group>";
@@ -608,10 +608,10 @@
 				2356C8301D88A10600B6C84A /* GuardianSpec.swift in Sources */,
 				2374A9F51D67339E00737F2E /* Matchers.swift in Sources */,
 				23C67AEC1D81D6A400A38A2E /* MockNSURLSession.swift in Sources */,
-				5F1DB45D1DA4750F00264437 /* AuthenticationSpec.swift in Sources */,
+				5F7969341DDABDDE006AC7BA /* AuthenticationSpec.swift in Sources */,
 				2374A9F31D672E4F00737F2E /* Responses.swift in Sources */,
 				233F75291D93076600B8C15C /* NotificationSpec.swift in Sources */,
-				2331BFED1DD52ED50047F1D4 /* JWTSpec.swift in Sources */,
+				5F7969371DDAC074006AC7BA /* JWTSpec.swift in Sources */,
 				2374A9EB1D67175200737F2E /* APIClientSpec.swift in Sources */,
 				23D3E4401D91BEA200F3FDE2 /* Base32Spec.swift in Sources */,
 				234004E91D9084A0009AB77C /* OneTimePasswordSpec.swift in Sources */,
