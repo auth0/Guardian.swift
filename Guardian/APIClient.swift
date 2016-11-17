@@ -32,12 +32,6 @@ struct APIClient: API {
         self.session = session
     }
 
-    func enrollment(forTransactionId transactionId: String) -> Request<[String: String]> {
-        let url = baseUrl.appendingPathComponent("api/enrollment-info")
-        let payload = ["enrollment_tx_id": transactionId]
-        return Request(session: session, method: "POST", url: url, payload: payload)
-    }
-
     func enroll(withTicket enrollmentTicket: String, identifier: String, name: String, notificationToken: String, publicKey: SecKey) -> DictionaryRequest {
         return DictionaryRequest {
             let url = self.baseUrl.appendingPathComponent("api/enroll")

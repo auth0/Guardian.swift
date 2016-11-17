@@ -38,32 +38,6 @@ public protocol API {
     var baseUrl: URL { get }
 
     /**
-     Request to obtain information about an enrollment
-     The transaction id can be obtained from a Guardian QR code
-     
-     ```
-     Guardian
-        .api(forDomain: "tenant.guardian.auth0.com")
-        .enrollment(forTransactionId: "myEnrollmentTransactionId")
-        .start { result in
-            switch result {
-            case .success(let response):
-                // we have the data
-                print(response)
-            case .failure(let cause):
-                // something failed
-                print(cause)
-            }
-     }
-     ```
-     
-     - parameter forTransactionId: the enrollment transaction id
-     
-     - returns: a Request ready to execute
-     */
-    func enrollment(forTransactionId transactionId: String) -> Request<[String: String]>
-
-    /**
      Request to create an enrollment. When successful, returns data about the 
      new Enrollment, including the token that can be used to update the push 
      notification settings and to un-enroll this device.
