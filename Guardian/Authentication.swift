@@ -123,11 +123,11 @@ struct RSAAuthentication: Authentication {
                 "aud": self.api.baseUrl.absoluteString,
                 "iss": self.enrollment.deviceIdentifier,
                 "sub": challenge,
-                "auth0.guardian.method": "push",
-                "auth0.guardian.accepted": accepted
+                "auth0_guardian_method": "push",
+                "auth0_guardian_accepted": accepted
             ]
             if let reason = reason {
-                jwtPayload["auth0.guardian.reason"] = reason
+                jwtPayload["auth0_guardian_reason"] = reason
             }
             let jwt = try JWT.encode(claims: jwtPayload, signingKey: self.enrollment.signingKey)
             return self.api.resolve(transaction: transactionToken, withChallengeResponse: jwt)
