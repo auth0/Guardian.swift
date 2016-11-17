@@ -3,11 +3,15 @@
 [![CI Status](https://travis-ci.com/auth0/GuardianSDK.iOS.svg?token=R3xUbi1dnaoneyhnspcr&branch=master)](https://travis-ci.com/auth0/GuardianSDK.Android)
 [![License](http://img.shields.io/:license-mit-blue.svg?style=flat)](http://doge.mit-license.org)
 
-[Guardian](https://auth0.com/docs/multifactor-authentication/guardian) is Auth0's multifactor
+[Guardian](https://auth0.com/docs/multifactor-authentication/guardian) is Auth0's multi-factor
 authentication (MFA) service that provides a simple, safe way for you to implement MFA.
 
 [Auth0](https://auth0.com) is an authentication broker that supports social identity providers as
 well as enterprise identity providers such as Active Directory, LDAP, Google Apps and Salesforce.
+
+This SDK allows you to integrate Auth0's Guardian multi-factor service in your own app, transforming
+it in the second factor itself. Your users will get all the benefits of our frictionless
+multi-factor authentication from your app.
 
 ## Requirements
 
@@ -15,9 +19,9 @@ iOS 9.3+ and Swift 3 is required in order to use Guardian.
 
 ## Before getting started
 
-This SDK allows you to integrate Auth0's Guardian multifactor service in your own app, transforming it in the second factor itself.
-
-For this to work you have to configure your tenant's Guardian service with your push notification settings, otherwise you would not receive any push notifications. Please read the [docs](https://auth0.com/docs/multifactor-authentication/guardian) about how you can accomplish that.
+To use this SDK you have to configure your tenant's Guardian service with your own push notification
+credentials, otherwise you would not receive any push notifications. Please read the
+[docs](https://auth0.com/docs/multifactor-authentication/guardian) about how to accomplish that.
 
 ##Install
 
@@ -44,19 +48,35 @@ let domain = "tenant.guardian.auth0.com"
 ### Enroll
 
 An enrollment is a link between the second factor and an Auth0 account. When an account is enrolled
-you'll need the enrollment data to provide the second factor required to verify the
-identity.
+you'll need the enrollment data to provide the second factor required to verify the identity.
 
 You can create an enrolment using the `Guardian.enroll` function.
-First you'll need to obtain the enrollment info by scanning the Guardian QR code, and then you use
-it like this:
+
+First you'll need to obtain the enrollment info by scanning a Guardian QR code or obtaining an
+enrollment ticket by email for example.
+
+Next you'll have to create a new pair of RSA keys for the new enrollment. The private key will be
+used to sign the requests to allow or reject a login. The public key will be sent during the enroll
+process so the server can later verify the request's signature.
+The keys will be stored on the keychain, and we'll later access them by `tag`, so you should
+use a unique identifier every time you create them.
 
 ```swift
+let rsaKeyPair = RSAKeyPair.new(usingPublicTag: "someUniqueTagForThePublicKey",
+                                privateTag: "someUniqueTagForThePrivateKey")
+```
+
+You can then use the `Guardian.enroll` function, like this:
+
+```
 let enrollmentUriFromQr: String = ... // the URI obtained from a Guardian QR code
 let apnsToken: String = ... // the APNS token of this device, where notifications will be sent
 
 Guardian
-        .enroll(forDomain: domain, usingUri: enrollmentUriFromQr, notificationToken: apnsToken)
+        .enroll(forDomain: domain,
+                usingUri: enrollmentUriFromQr,
+                notificationToken: apnsToken,
+                keyPair: rsaKeyPair)
         .start { result in
             switch result {
             case .success(let enrollment): 
@@ -100,10 +120,10 @@ has to validate his identity with MFA.
 Guardian provides a method to parse the data received from APNs and return a `Notification`
 instance ready to be used.
 
-For example, your `AppDelegate` might have something like this:
+For example, in your `AppDelegate` you might have something like this:
 
 ```swift
-func application(application: UIApplication, didReceiveRemoteNotification userInfo: [NSObject : AnyObject]) {
+func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any]) {
     // when the app is open and we receive a push notification
 
     if let notification = Guardian.notification(from: userInfo) {

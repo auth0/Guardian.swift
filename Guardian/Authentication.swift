@@ -44,9 +44,9 @@ public protocol Authentication {
         .allow(notification: notification)
         .start { result in
             switch result {
-            case .Success(_):
+            case .success(_):
                 // auth request allowed successfuly
-            case .Failure(let cause):
+            case .sailure(let cause):
                 // failed to allow auth request
             }
      }
@@ -70,9 +70,9 @@ public protocol Authentication {
         .reject(notification: notification, withReason: "mistake")
         .start { result in
             switch result {
-            case .Success(_):
+            case .success(_):
                 // auth request rejected successfuly
-            case .Failure(let cause):
+            case .failure(let cause):
                 // failed to reject auth request
             }
      }

@@ -79,9 +79,9 @@ public func authentication(forDomain domain: String, andEnrollment enrollment: E
             keyPair: rsaKeyPair)
     .start { result in
         switch result {
-        case .Success(let enrollment):
+        case .success(let enrollment):
             // we have the enrollment data, save it for later usages
-        case .Failure(let cause):
+        case .failure(let cause):
             // something failed
         }
  }
@@ -116,9 +116,9 @@ public func enroll(forDomain domain: String, session: URLSession = .shared, usin
             keyPair: rsaKeyPair)
     .start { result in
         switch result {
-        case .Success(let enrollment):
+        case .success(let enrollment):
             // we have the enrollment data, save it for later usages
-        case .Failure(let cause):
+        case .failure(let cause):
             // something failed
         }
  }

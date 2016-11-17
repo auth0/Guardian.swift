@@ -45,9 +45,9 @@ public protocol DeviceAPI {
         .delete()
         .start { result in
             switch result {
-            case .Success(let response):
+            case .success(let response):
                 // device/enrollment deleted successfuly
-            case .Failure(let cause):
+            case .failure(let cause):
                 // something failed
                 print(cause)
             }
@@ -75,9 +75,9 @@ public protocol DeviceAPI {
                 notificationToken: enrollment.notificationToken)
         .start { result in
             switch result {
-            case .Success(let response):
+            case .success(let response):
                 // device data udpated successfuly
-            case .Failure(let cause):
+            case .failure(let cause):
                 // something failed
                 print(cause)
             }

@@ -41,8 +41,7 @@ class JWTSpec: QuickSpec {
                 var jwt: String?
 
                 beforeEach {
-                    let secKey = ValidRSAPrivateKey.ref
-                    jwt = try? JWT.encode(claims: ["field": "value"], signingKey: secKey!)
+                    jwt = try? JWT.encode(claims: ["field": "value"], signingKey: ValidRSAPrivateKey.ref!)
                 }
 
                 it("should not return nil") {
