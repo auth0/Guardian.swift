@@ -141,12 +141,12 @@ class APIClientSpec: QuickSpec {
                     }.name = "Missing authentication"
                 stub(condition: isResolveTransaction(domain: Domain)
                     && hasBearerToken(ValidTransactionToken)) { req in
-                        return errorResponse(statusCode: 401, errorCode: "invalid_challenge", message: "Invalid challengeResponse")
-                    }.name = "Invalid challengeResponse"
+                        return errorResponse(statusCode: 401, errorCode: "invalid_challenge", message: "Invalid challenge_response")
+                    }.name = "Invalid challenge_response"
                 stub(condition: isResolveTransaction(domain: Domain)
                     && hasBearerToken(ValidTransactionToken)
                     && hasAtLeast([
-                        "challengeResponse": ValidChallengeResponse
+                        "challenge_response": ValidChallengeResponse
                     ])) { req in
                         return successResponse()
                     }.name = "Valid resolve request"
@@ -174,7 +174,7 @@ class APIClientSpec: QuickSpec {
                 }
             }
 
-            it("should fail when challengeResponse is invalid") {
+            it("should fail when challenge_response is invalid") {
                 waitUntil(timeout: Timeout) { done in
                     client
                         .resolve(transaction: ValidTransactionToken, withChallengeResponse: "abcdefgh")

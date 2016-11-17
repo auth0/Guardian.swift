@@ -56,8 +56,8 @@ class AuthenticationSpec: QuickSpec {
                         if checkJWT(request: req, accepted: true) {
                             return successResponse()
                         }
-                        return errorResponse(statusCode: 401, errorCode: "invalid_token", message: "Invalid challengeResponse")
-                    }.name = "Checking challengeResponse"
+                        return errorResponse(statusCode: 401, errorCode: "invalid_token", message: "Invalid challenge_response")
+                    }.name = "Checking challenge_response"
             }
 
             it("should succeed when notification and enrollment is valid") {
@@ -124,8 +124,8 @@ class AuthenticationSpec: QuickSpec {
                         if checkJWT(request: req, accepted: false, reason: RejectReason) {
                             return successResponse()
                         }
-                        return errorResponse(statusCode: 401, errorCode: "invalid_token", message: "Invalid challengeResponse")
-                    }.name = "Checking challengeResponse"
+                        return errorResponse(statusCode: 401, errorCode: "invalid_token", message: "Invalid challenge_response")
+                    }.name = "Checking challenge_response"
             }
 
             it("without reason should succeed when notification and enrollment is valid") {
@@ -134,8 +134,8 @@ class AuthenticationSpec: QuickSpec {
                         if checkJWT(request: req, accepted: false) {
                             return successResponse()
                         }
-                        return errorResponse(statusCode: 401, errorCode: "invalid_token", message: "Invalid challengeResponse")
-                    }.name = "Checking challengeResponse"
+                        return errorResponse(statusCode: 401, errorCode: "invalid_token", message: "Invalid challenge_response")
+                    }.name = "Checking challenge_response"
 
                 let enrollment = Enrollment(id: ValidEnrollmentId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, signingKey: ValidRSAPrivateKey, base32Secret: ValidBase32Secret)
                 let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, challenge: ValidNotificationChallenge, startedAt: Date(), source: nil, location: nil)
@@ -207,7 +207,7 @@ class AuthenticationSpec: QuickSpec {
 func checkJWT(request: URLRequest, accepted: Bool, reason: String? = nil, challenge: String = ValidNotificationChallenge) -> Bool {
     let currentTime = Int(Date().timeIntervalSince1970)
     if let payload = request.a0_payload,
-        let challengeResponse = payload["challengeResponse"] as? String,
+        let challengeResponse = payload["challenge_response"] as? String,
         let claims = try? JWT.verify(string: challengeResponse, publicKey: ValidRSAPublicKey),
         let aud = claims["aud"] as? String,
         aud == "https://\(Domain)",

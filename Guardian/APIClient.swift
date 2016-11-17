@@ -69,7 +69,7 @@ struct APIClient: API {
 
     func resolve(transaction transactionToken: String, withChallengeResponse challengeResponse: String) -> Request<Void> {
         let payload = [
-            "challengeResponse": challengeResponse
+            "challenge_response": challengeResponse
         ]
         let url = self.baseUrl.appendingPathComponent("api/resolve-transaction")
         return Request(session: self.session, method: "POST", url: url, payload: payload, headers: ["Authorization": "Bearer \(transactionToken)"])
