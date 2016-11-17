@@ -30,10 +30,7 @@ class AuthenticationSpec: QuickSpec {
 
     override func spec() {
 
-        let (_, privateKey) = generateKeyPair(publicTag: UUID().uuidString,
-                                                      privateTag: UUID().uuidString,
-                                                      keyType: kSecAttrKeyTypeRSA,
-                                                      keySize: RSAKeySize)!
+        let privateKey = RSAKeyPair.new(usingPublicTag: UUID().uuidString, privateTag: UUID().uuidString)!.privateKey
 
         beforeEach {
             stub(condition: { _ in return true }) { _ in
@@ -208,7 +205,7 @@ func checkJWT(request: URLRequest, accepted: Bool, reason: String? = nil, challe
     let currentTime = Int(Date().timeIntervalSince1970)
     if let payload = request.a0_payload,
         let challengeResponse = payload["challenge_response"] as? String,
-        let claims = try? JWT.verify(string: challengeResponse, publicKey: ValidRSAPublicKey),
+        let claims = try? JWT.verify(string: challengeResponse, publicKey: ValidRSAPublicKey.ref!),
         let aud = claims["aud"] as? String,
         aud == "https://\(Domain)",
         let sub = claims["sub"] as? String,

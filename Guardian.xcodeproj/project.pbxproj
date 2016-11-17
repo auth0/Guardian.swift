@@ -16,6 +16,7 @@
 		230763D71DAED91000D497BD /* ToggleTorchButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 230763D01DAED91000D497BD /* ToggleTorchButton.swift */; };
 		231687171DDA071A00B09526 /* A0SHA.h in Headers */ = {isa = PBXBuildFile; fileRef = 231687161DDA071A00B09526 /* A0SHA.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		231687191DDA07FD00B09526 /* A0SHA.m in Sources */ = {isa = PBXBuildFile; fileRef = 231687181DDA07FD00B09526 /* A0SHA.m */; };
+		2316871B1DDB867300B09526 /* RSAKeyPair.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2316871A1DDB867300B09526 /* RSAKeyPair.swift */; };
 		232A85DA1D6BDFCA00048DF7 /* DeviceAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 232A85D91D6BDFCA00048DF7 /* DeviceAPIClient.swift */; };
 		2331BFEB1DD5260D0047F1D4 /* JWT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2331BFEA1DD5260D0047F1D4 /* JWT.swift */; };
 		2331C0181DD563150047F1D4 /* identity.p12 in Resources */ = {isa = PBXBuildFile; fileRef = 2331C0171DD563150047F1D4 /* identity.p12 */; };
@@ -130,6 +131,7 @@
 		230763D01DAED91000D497BD /* ToggleTorchButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ToggleTorchButton.swift; path = QRCodeReader/ToggleTorchButton.swift; sourceTree = "<group>"; };
 		231687161DDA071A00B09526 /* A0SHA.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = A0SHA.h; sourceTree = "<group>"; };
 		231687181DDA07FD00B09526 /* A0SHA.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = A0SHA.m; sourceTree = "<group>"; };
+		2316871A1DDB867300B09526 /* RSAKeyPair.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RSAKeyPair.swift; sourceTree = "<group>"; };
 		232A85D91D6BDFCA00048DF7 /* DeviceAPIClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = DeviceAPIClient.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		2331BFEA1DD5260D0047F1D4 /* JWT.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JWT.swift; sourceTree = "<group>"; };
 		2331BFEC1DD52ED50047F1D4 /* JWTSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JWTSpec.swift; sourceTree = "<group>"; };
@@ -286,6 +288,7 @@
 				234004EE1D909C91009AB77C /* Base32.swift */,
 				2331BFEA1DD5260D0047F1D4 /* JWT.swift */,
 				2331C0191DD5FC6F0047F1D4 /* Data+Base64URL.swift */,
+				2316871A1DDB867300B09526 /* RSAKeyPair.swift */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
@@ -574,6 +577,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2316871B1DDB867300B09526 /* RSAKeyPair.swift in Sources */,
 				234004DF1D8CA944009AB77C /* OneTimePassword.swift in Sources */,
 				2374A9E41D670F5900737F2E /* APIClient.swift in Sources */,
 				234004EF1D909C91009AB77C /* Base32.swift in Sources */,

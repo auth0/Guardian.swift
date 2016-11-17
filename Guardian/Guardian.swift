@@ -69,12 +69,14 @@ public func authentication(forDomain domain: String, andEnrollment enrollment: E
  ```
  let enrollUri: String = // obtained from a Guardian QR code
  let apnsToken: String = // apple push notification service token for this device
+ let rsaKeyPair = RSAKeyPair.new(usingPublicTag: "someTagForThePublicKey",
+                                 privateTag: "someTagForThePrivateKey")
+
  Guardian
     .enroll(forDomain: "tenant.guardian.auth0.com",
             usingUri: enrollUri,
             notificationToken: apnsToken,
-            privateKey: rsaPrivateKey,
-            publicKey: rsaPublicKey)
+            keyPair: rsaKeyPair)
     .start { result in
         switch result {
         case .Success(let enrollment):
@@ -89,14 +91,13 @@ public func authentication(forDomain domain: String, andEnrollment enrollment: E
  - parameter session:           session to use for network requests
  - parameter usingUri:          the enrollment URI
  - parameter notificationToken: the APNS token of the device
- - parameter privateKey:        the RSA private key
- - parameter publicKey:         the RSA public key
+ - parameter keyPair:           the RSA key pair
  
  - returns: a request to create an enrollment
  */
-public func enroll(forDomain domain: String, session: URLSession = .shared, usingUri uri: String, notificationToken: String, privateKey: SecKey, publicKey: SecKey) -> EnrollRequest {
+public func enroll(forDomain domain: String, session: URLSession = .shared, usingUri uri: String, notificationToken: String, keyPair: RSAKeyPair) -> EnrollRequest {
     let client = api(forDomain: domain, session: session)
-    return EnrollRequest(api: client, enrollmentUri: uri, notificationToken: notificationToken, privateKey: privateKey, publicKey: publicKey)
+    return EnrollRequest(api: client, enrollmentUri: uri, notificationToken: notificationToken, keyPair: keyPair)
 }
 
 /**
@@ -105,12 +106,14 @@ public func enroll(forDomain domain: String, session: URLSession = .shared, usin
  ```
  let enrollTicket: String = // obtained from a Guardian QR code or email
  let apnsToken: String = // apple push notification service token for this device
+ let rsaKeyPair = RSAKeyPair.new(usingPublicTag: "someTagForThePublicKey",
+                                 privateTag: "someTagForThePrivateKey")
+
  Guardian
     .enroll(forDomain: "tenant.guardian.auth0.com",
             usingTicket: enrollTicket,
             notificationToken: apnsToken,
-            privateKey: rsaPrivateKey,
-            publicKey: rsaPublicKey)
+            keyPair: rsaKeyPair)
     .start { result in
         switch result {
         case .Success(let enrollment):
@@ -125,14 +128,13 @@ public func enroll(forDomain domain: String, session: URLSession = .shared, usin
  - parameter session:           session to use for network requests
  - parameter usingTicket:       the enrollment ticket
  - parameter notificationToken: the APNS token of the device
- - parameter privateKey:        the RSA private key
- - parameter publicKey:         the RSA public key
+ - parameter keyPair:           the RSA key pair
 
  - returns: a request to create an enrollment
  */
-public func enroll(forDomain domain: String, session: URLSession = .shared, usingTicket ticket: String, notificationToken: String, privateKey: SecKey, publicKey: SecKey) -> EnrollRequest {
+public func enroll(forDomain domain: String, session: URLSession = .shared, usingTicket ticket: String, notificationToken: String, keyPair: RSAKeyPair) -> EnrollRequest {
     let client = api(forDomain: domain, session: session)
-    return EnrollRequest(api: client, enrollmentTicket: ticket, notificationToken: notificationToken, privateKey: privateKey, publicKey: publicKey)
+    return EnrollRequest(api: client, enrollmentTicket: ticket, notificationToken: notificationToken, keyPair: keyPair)
 }
 
 /**

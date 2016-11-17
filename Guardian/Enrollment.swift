@@ -54,7 +54,7 @@ public class Enrollment: NSObject {
      The private key used to sign the requests to allow/reject an authentication
      request.
      */
-    public let signingKey: SecKey
+    public let signingKey: RSAPrivateKey
 
     /**
      The TOTP secret, Base32 encoded
@@ -100,7 +100,7 @@ public class Enrollment: NSObject {
          id: String,
          deviceToken: String,
          notificationToken: String,
-         signingKey: SecKey,
+         signingKey: RSAPrivateKey,
          base32Secret: String?,
          algorithm: String? = nil,
          digits: Int? = nil,

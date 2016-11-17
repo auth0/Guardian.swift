@@ -28,7 +28,6 @@ class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
 
     private static let RSA_KEY_PUBLIC_TAG = "PUBLIC_TAG"
     private static let RSA_KEY_PRIVATE_TAG = "PRIVATE_TAG"
-    private static let RSA_KEY_SIZE = 2048
 
     @IBOutlet var enrollButton: UIButton!
     @IBOutlet var unenrollButton: UIButton!
@@ -76,21 +75,21 @@ class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
     func reader(_ reader: QRCodeReaderViewController, didScanResult result: QRCodeReaderResult) {
         self.dismiss(animated: true) { [unowned self] in
 
-            guard let (publicKey, privateKey) = ViewController.generateKeyPair(publicTag: ViewController.RSA_KEY_PUBLIC_TAG, privateTag: ViewController.RSA_KEY_PRIVATE_TAG, keySize: ViewController.RSA_KEY_SIZE) else {
+            guard let keyPair = RSAKeyPair.new(usingPublicTag: ViewController.RSA_KEY_PUBLIC_TAG, privateTag: ViewController.RSA_KEY_PRIVATE_TAG) else {
                 return
             }
 
-                Guardian
-                    .enroll(forDomain: AppDelegate.guardianDomain, usingUri: result.value, notificationToken: AppDelegate.pushToken!, privateKey: privateKey, publicKey: publicKey)
-                    .start { result in
-                        switch result {
-                        case .failure(let cause):
-                            self.showError("Enroll failed", cause)
-                        case .success(let enrollment):
-                            AppDelegate.enrollment = enrollment
-                        }
-                        self.updateView()
-                }
+            Guardian
+                .enroll(forDomain: AppDelegate.guardianDomain, usingUri: result.value, notificationToken: AppDelegate.pushToken!, keyPair: keyPair)
+                .start { result in
+                    switch result {
+                    case .failure(let cause):
+                        self.showError("Enroll failed", cause)
+                    case .success(let enrollment):
+                        AppDelegate.enrollment = enrollment
+                    }
+                    self.updateView()
+            }
         }
     }
 
@@ -153,31 +152,6 @@ class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
             )
             alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
             self.present(alert, animated: true, completion: nil)
-        }
-    }
-
-    private class func generateKeyPair(publicTag: String, privateTag: String, keySize: Int) -> (publicKey: SecKey, privateKey: SecKey)? {
-        let privateAttributes = [String(kSecAttrIsPermanent): true,
-                                 String(kSecAttrApplicationTag): privateTag] as [String : Any]
-        let publicAttributes = [String(kSecAttrIsPermanent): true,
-                                String(kSecAttrApplicationTag): publicTag] as [String : Any]
-
-        let pairAttributes = [String(kSecAttrKeyType): kSecAttrKeyTypeRSA,
-                              String(kSecAttrKeySizeInBits): keySize,
-                              String(kSecPublicKeyAttrs): publicAttributes,
-                              String(kSecPrivateKeyAttrs): privateAttributes] as [String : Any]
-
-        var publicRef: SecKey?
-        var privateRef: SecKey?
-        switch SecKeyGeneratePair(pairAttributes as CFDictionary, &publicRef, &privateRef) {
-        case noErr:
-            if let publicKey = publicRef, let privateKey = privateRef {
-                return (publicKey, privateKey)
-            }
-
-            return nil
-        default:
-            return nil
         }
     }
 }

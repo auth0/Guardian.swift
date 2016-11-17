@@ -129,7 +129,10 @@ struct RSAAuthentication: Authentication {
             if let reason = reason {
                 jwtPayload["auth0_guardian_reason"] = reason
             }
-            let jwt = try JWT.encode(claims: jwtPayload, signingKey: self.enrollment.signingKey)
+            guard let signingKey = self.enrollment.signingKey.ref else {
+                throw GuardianError.invalidPrivateKey
+            }
+            let jwt = try JWT.encode(claims: jwtPayload, signingKey: signingKey)
             return self.api.resolve(transaction: transactionToken, withChallengeResponse: jwt)
         }
     }
