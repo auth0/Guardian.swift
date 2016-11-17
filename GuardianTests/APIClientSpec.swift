@@ -41,42 +41,6 @@ class APIClientSpec: QuickSpec {
         afterEach {
             OHHTTPStubs.removeAllStubs()
         }
-        
-        describe("enrollment info") {
-            
-            beforeEach {
-                stub(condition: isEnrollmentInfo(domain: Domain)
-                    && hasNoneOf(["enrollment_tx_id": ValidTransactionId])) { _ in
-                        return errorResponse(statusCode: 404, errorCode: "enrollment_transaction_not_found", message: "Not found")
-                    }.name = "Enrollment transaction not found"
-                stub(condition: isEnrollmentInfo(domain: Domain)
-                    && hasAtLeast(["enrollment_tx_id": ValidTransactionId])) { _ in
-                        return enrollmentInfoResponse(withDeviceAccountToken: DeviceAccountToken)
-                    }.name = "Valid enrollment info"
-            }
-            
-            it("should return enrollment token") {
-                waitUntil(timeout: Timeout) { done in
-                    client
-                        .enrollment(forTransactionId: ValidTransactionId)
-                        .start { result in
-                            expect(result).to(haveDeviceAccountToken(DeviceAccountToken))
-                            done()
-                    }
-                }
-            }
-            
-            it("should return enrollment_transaction_not_found error") {
-                waitUntil(timeout: Timeout) { done in
-                    client
-                        .enrollment(forTransactionId: "someInvalidTransactionID")
-                        .start { result in
-                            expect(result).to(haveGuardianError(withErrorCode: "enrollment_transaction_not_found"))
-                            done()
-                    }
-                }
-            }
-        }
 
         describe("enroll") {
 
@@ -255,18 +219,6 @@ class APIClientSpec: QuickSpec {
                         let pushCredentials = payload?["push_credentials"] as? [String: String]
                         return deviceResponse(enrollmentId: ValidEnrollmentId, deviceIdentifier: payload?["identifier"] as? String, name: payload?["name"] as? String, service: pushCredentials?["service"], notificationToken: pushCredentials?["token"])
                     }.name = "Valid updated enrollment"
-            }
-            
-            it("should create enrollment") {
-                waitUntil(timeout: Timeout) { done in
-                    client
-                        .device(forEnrollmentId: ValidEnrollmentId, token: ValidEnrollmentToken)
-                        .create(withDeviceIdentifier: ValidDeviceIdentifier, name: ValidDeviceName, notificationToken: ValidNotificationToken)
-                        .start { result in
-                            expect(result).to(haveEnrollment(withId: ValidEnrollmentId, deviceIdentifier: ValidDeviceIdentifier, deviceName: ValidDeviceName, notificationService: ValidNotificationService, notificationToken: ValidNotificationToken))
-                            done()
-                    }
-                }
             }
             
             it("should update enrollment") {

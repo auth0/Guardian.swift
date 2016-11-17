@@ -38,10 +38,6 @@ struct DeviceAPIClient: DeviceAPI {
         return Request(session: session, method: "DELETE", url: url, headers: ["Authorization": "Bearer \(token)"])
     }
     
-    func create(withDeviceIdentifier identifier: String, name: String, notificationToken: String) -> Request<[String: Any]> {
-        return update(deviceIdentifier: identifier, name: name, notificationToken: notificationToken)
-    }
-    
     func update(deviceIdentifier identifier: String? = nil, name: String? = nil, notificationToken: String? = nil) -> Request<[String: Any]> {
         var payload: [String: Any] = [:]
         payload["identifier"] = identifier
