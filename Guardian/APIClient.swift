@@ -32,7 +32,7 @@ struct APIClient: API {
         self.session = session
     }
 
-    func enroll(withTicket enrollmentTicket: String, identifier: String, name: String, notificationToken: String, publicKey: RSAPublicKey) -> DictionaryRequest {
+    func enroll(withTicket enrollmentTicket: String, identifier: String, name: String, notificationToken: String, publicKey: JWKConvertable) -> DictionaryRequest {
         return DictionaryRequest {
             let url = self.baseUrl.appendingPathComponent("api/enroll")
 

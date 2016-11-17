@@ -66,11 +66,23 @@ public func authentication(forDomain domain: String, andEnrollment enrollment: E
 /**
  Creates a request to enroll from a Guardian enrollment URI
  
+ You'll have to create a new pair of RSA keys for the enrollment.
+ The keys will be stored on the keychain, and we'll later access them by `tag`,
+ so you should use a unique identifier every time you create them.
+
+ ```
+ let rsaKeyPair = RSAKeyPair.new(usingPublicTag: "com.auth0.guardian.enroll.public",
+                                 privateTag: "com.auth0.guardian.enroll.private")
+ ```
+
+ You will also need an enroll uri (from a Guardian QR code for example) and the 
+ APNS token for the device.
+
+ Finally, to create an enrollment you just use it like this:
+
  ```
  let enrollUri: String = // obtained from a Guardian QR code
  let apnsToken: String = // apple push notification service token for this device
- let rsaKeyPair = RSAKeyPair.new(usingPublicTag: "someTagForThePublicKey",
-                                 privateTag: "someTagForThePrivateKey")
 
  Guardian
     .enroll(forDomain: "tenant.guardian.auth0.com",
@@ -103,11 +115,22 @@ public func enroll(forDomain domain: String, session: URLSession = .shared, usin
 /**
  Creates a request to enroll from a Guardian enrollment ticket
 
+ You'll have to create a new pair of RSA keys for the enrollment.
+ The keys will be stored on the keychain, and we'll later access them by `tag`, 
+ so you should use a unique identifier every time you create them.
+
+ ```
+ let rsaKeyPair = RSAKeyPair.new(usingPublicTag: "com.auth0.guardian.enroll.public",
+                                 privateTag: "com.auth0.guardian.enroll.private")
+ ```
+
+ You will also need an enroll ticket and the APNS token for the device.
+
+ Finally, to create an enrollment you just use it like this:
+
  ```
  let enrollTicket: String = // obtained from a Guardian QR code or email
  let apnsToken: String = // apple push notification service token for this device
- let rsaKeyPair = RSAKeyPair.new(usingPublicTag: "someTagForThePublicKey",
-                                 privateTag: "someTagForThePrivateKey")
 
  Guardian
     .enroll(forDomain: "tenant.guardian.auth0.com",

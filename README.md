@@ -62,8 +62,8 @@ The keys will be stored on the keychain, and we'll later access them by `tag`, s
 use a unique identifier every time you create them.
 
 ```swift
-let rsaKeyPair = RSAKeyPair.new(usingPublicTag: "someUniqueTagForThePublicKey",
-                                privateTag: "someUniqueTagForThePrivateKey")
+let rsaKeyPair = RSAKeyPair.new(usingPublicTag: "com.auth0.guardian.enroll.public",
+                                privateTag: "com.auth0.guardian.enroll.private")
 ```
 
 You can then use the `Guardian.enroll` function, like this:
