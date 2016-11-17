@@ -221,13 +221,13 @@ func checkJWT(request: URLRequest, accepted: Bool, reason: String? = nil, challe
         let exp = claims["exp"] as? Int,
         exp <= currentTime + 30,
         exp >= currentTime + 25,
-        let method = claims["auth0.guardian.method"] as? String,
+        let method = claims["auth0_guardian_method"] as? String,
         method == "push",
-        let isAccepted = claims["auth0.guardian.accepted"] as? Bool,
+        let isAccepted = claims["auth0_guardian_accepted"] as? Bool,
         isAccepted == accepted
     {
         if let reason = reason {
-            if let actualReason = claims["auth0.guardian.reason"] as? String {
+            if let actualReason = claims["auth0_guardian_reason"] as? String {
                 return actualReason == reason
             }
         } else {
