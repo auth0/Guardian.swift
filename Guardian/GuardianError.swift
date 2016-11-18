@@ -33,7 +33,7 @@ private let invalidPrivateKeyMessage = "a0.guardian.internal.invalid_private_key
 private let invalidOTPAlgorithmMessage = "a0.guardian.internal.invalid_otp_algorithm"
 
 /**
- An `ErrorType` that encapsulates server and other possible internal errors
+ An `Error` that encapsulates server and other possible internal errors
  */
 public class GuardianError: Error, CustomStringConvertible, Equatable {
 
@@ -64,12 +64,20 @@ public class GuardianError: Error, CustomStringConvertible, Equatable {
         }
         return errorCode;
     }
-    
+
+    /**
+     The representation to be used when converting an instance to a string, 
+     conforming to the `CustomStringConvertible` protocol.
+     */
     public var description: String {
         return "GuardianError(errorCode=\(errorCode), info=\(info ?? [:]))"
     }
 }
 
+/**
+ The operator `==` to allow comparing `GuardianError` equality.
+ Required to conform to the `Equatable` protocol
+ */
 public func ==(lhs: GuardianError, rhs: GuardianError) -> Bool {
     return lhs.errorCode == rhs.errorCode && lhs.statusCode == rhs.statusCode
 }

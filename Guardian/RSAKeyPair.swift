@@ -22,9 +22,24 @@
 
 import Foundation
 
+/**
+ A RSA key pair.
+ 
+ Contains the public and private keys of an RSA key pair.
+ 
+ Includes static methods for the creation of a new key pair, and to obtain a
+ public or private key from a tag.
+ */
 public class RSAKeyPair {
 
+    /**
+     The public key
+     */
     public let publicKey: RSAPublicKey
+
+    /**
+     The private key
+     */
     public let privateKey: RSAPrivateKey
 
     init(publicKey: RSAPublicKey, privateKey: RSAPrivateKey) {
@@ -37,6 +52,22 @@ public class RSAKeyPair {
                   privateKey: RSAKeyPair.privateKey(withTag: privateKeyTag))
     }
 
+    /**
+     Creates a new pair of RSA keys using the provided tags.
+     
+     The keys are automatically saved in the keychain, and we'll later access 
+     them by tag, so you must use appropriate unique identifiers for every pair
+     of keys you create.
+     
+     You must also use keys of at least 2048 bits.
+     
+     - parameter usingPublicTag: the tag for the public key
+     - parameter privateTag:     the tag for the private key
+     - parameter keySize:        the size of the keys, in bits
+     
+     - returns: an instance of RSAKeyPair, or nil if the keys couldn't be 
+                generated
+     */
     public static func new(usingPublicTag publicTag: String, privateTag: String, keySize: Int = 2048) -> RSAKeyPair? {
         var query: [String: Any] = [
             String(kSecAttrKeyType)       : kSecAttrKeyTypeRSA,
@@ -59,26 +90,78 @@ public class RSAKeyPair {
         return RSAKeyPair(publicKeyTag: publicTag, privateKeyTag: privateTag)
     }
 
+    /**
+     Returns a public key using the tag.
+     
+     - parameter withTag: the tag of the key
+     
+     - returns: an instance of RSAPublicKey
+     
+     - important: an instance is always returned, this method doesn't actually
+                  verify that the key is present in the keychain and that the
+                  type of the key is appropriate.
+     */
     public static func publicKey(withTag tag: String) -> RSAPublicKey {
         return ASNPublicKey(tag: tag)
     }
 
+    /**
+     Returns a private key using the tag.
+
+     - parameter withTag: the tag of the key
+
+     - returns: an instance of RSAPrivateKey
+
+     - important: an instance is always returned, this method doesn't actually
+                  verify that the key is present in the keychain and that the
+                  type of the key is appropriate.
+     */
     public static func privateKey(withTag tag: String) -> RSAPrivateKey {
         return SimpleRSAPrivateKey(tag: tag)
     }
 }
 
+/**
+ A protocol that represents an RSA private key.
+ 
+ The key is saved in the keychain under certain tag, so it's enough if you only
+ store the tag. You can later use `RSAKeyPair.privateKey(withTag:)` to obtain it
+ again, assuming you used unique tags.
+ */
 public protocol RSAPrivateKey: KeychainRSAKey {
 }
 
+/**
+ A protocol that represents an RSA public key.
+ 
+ The key is saved in the keychain under certain tag, so it's enough if you only 
+ store the tag. You can later use `RSAKeyPair.publicKey(withTag:)` to obtain it
+ again, assuming you used unique tags.
+ */
 public protocol RSAPublicKey: KeychainRSAKey, JWKConvertable {
 }
 
+/**
+ A protocol that represents a key saved in the keychain under certain tag
+ */
 public protocol KeychainRSAKey {
+
+    /**
+     The tag of the key
+     */
     var tag: String { get }
 }
 
+/**
+ A protocol that represents a key that can be converted to JWK format
+ */
 public protocol JWKConvertable {
+
+    /**
+     The binary data of the key.
+
+     The format of the data depends on the type of key.
+     */
     var data: Data? { get }
 }
 
@@ -104,7 +187,7 @@ extension JWKConvertable {
         return (pointer, data)
     }
 
-    public var jwk: [String : Any]? {
+    var jwk: [String : Any]? {
         let asn = { (bytes: UnsafePointer<UInt8>) -> (Data, Data)? in
             guard bytes.pointee == 0x30 else { return nil }
             let (modulusBytes, totalLength) = self.length(from: bytes + 1)
@@ -124,7 +207,7 @@ extension JWKConvertable {
     }
 }
 
-public extension KeychainRSAKey {
+extension KeychainRSAKey {
     var ref: SecKey? {
         let query: [String: Any] = [
             String(kSecClass)              : kSecClassKey,

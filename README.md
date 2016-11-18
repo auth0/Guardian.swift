@@ -90,7 +90,7 @@ Guardian
 You must provide the `notificationToken`. It is the token required to send push notification to the device using the Apple Push Notification service (APNs). In case your app is not yet using push notifications or you're not familiar with it, you should check their
 [docs](https://developer.apple.com/go/?id=push-notifications).
 
-The notification token MUST be a String containing the 64 bytes (expressed in hexadecimal format) that are received on `application(:didRegisterForRemoteNotificationsWithDeviceToken)`
+The notification token MUST be a String containing the 64 bytes (expressed in hexadecimal format) as received on `application(:didRegisterForRemoteNotificationsWithDeviceToken)`
 
 ### Unenroll
 
@@ -144,7 +144,7 @@ Guardian
         .start { result in
             switch result {
             case .success: 
-                // success, the enrollment was deleted
+                // the auth request was successfuly allowed
             case .failure(let cause):
                 // something failed, check cause to see what went wrong
             }
@@ -164,7 +164,7 @@ Guardian
         .start { result in
             switch result {
             case .success: 
-                // success, the enrollment was deleted
+                // the auth request was successfuly rejected
             case .failure(let cause):
                 // something failed, check cause to see what went wrong
             }

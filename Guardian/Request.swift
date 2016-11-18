@@ -22,6 +22,9 @@
 
 import Foundation
 
+/**
+ An asynchronous HTTP request
+ */
 public struct Request<T>: Requestable {
 
     let session: URLSession
@@ -41,8 +44,8 @@ public struct Request<T>: Requestable {
     /**
      Executes the request in a background thread
 
-     - parameter callback: the termination callback, where the result is
-     received
+     - parameter callback: the termination callback, where the result is 
+                           received
      */
     public func start(callback: @escaping (Result<T>) -> ()) {
         let request = NSMutableURLRequest(url: url)

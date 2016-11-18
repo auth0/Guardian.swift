@@ -46,7 +46,7 @@ public class Enrollment: NSObject {
      current token and update the server in case it's not the same.
 
      - important: Needs to be kept up-to-date on the server for the push 
-     notifications to work.
+                  notifications to work.
      */
     public let notificationToken: String
 
@@ -58,7 +58,8 @@ public class Enrollment: NSObject {
 
     /**
      The TOTP secret, Base32 encoded
-     Might be nil if TOTP mode is disabled
+
+     - important: Might be nil if TOTP mode is disabled
      */
     public let base32Secret: String?
 
@@ -81,7 +82,7 @@ public class Enrollment: NSObject {
      The identifier of the physical device, for debug/tracking purposes
      */
     public var deviceIdentifier: String {
-        return UIDevice.current.identifierForVendor!.uuidString
+        return Enrollment.defaultDeviceIdentifier
     }
 
     /**
@@ -93,9 +94,22 @@ public class Enrollment: NSObject {
      enrollment from there
      */
     public var deviceName: String {
-        return UIDevice.current.name
+        return Enrollment.defaultDeviceName
     }
-    
+
+    /**
+     Creates a new `Enrollment` instance.
+     
+     - parameter id:                the enrollment id
+     - parameter deviceToken:       the token used to authenticate when updating
+                                    the device data or deleting the enrollment
+     - parameter notificationToken: the APNs token for this physical device
+     - parameter signingKey:        the private key used to sign the requests
+     - parameter base32Secret:      the TOTP secret, Base32 encoded
+     - parameter algorithm:         the TOTP algorithm
+     - parameter digits:            the TOTP digits, i.e. the code length
+     - parameter period:            the TOTP period, in seconds
+     */
     public init(
          id: String,
          deviceToken: String,

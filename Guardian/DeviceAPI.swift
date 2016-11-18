@@ -76,7 +76,7 @@ public protocol DeviceAPI {
         .start { result in
             switch result {
             case .success(let response):
-                // device data udpated successfuly
+                // device data updated successfuly
             case .failure(let cause):
                 // something failed
                 print(cause)
