@@ -96,7 +96,7 @@ public class Enrollment: NSObject {
         return UIDevice.current.name
     }
     
-    init(
+    public init(
          id: String,
          deviceToken: String,
          notificationToken: String,

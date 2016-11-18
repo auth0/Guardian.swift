@@ -68,7 +68,7 @@ let rsaKeyPair = RSAKeyPair.new(usingPublicTag: "com.auth0.guardian.enroll.publi
 
 You can then use the `Guardian.enroll` function, like this:
 
-```
+```swift
 let enrollmentUriFromQr: String = ... // the URI obtained from a Guardian QR code
 let apnsToken: String = ... // the APNS token of this device, where notifications will be sent
 
