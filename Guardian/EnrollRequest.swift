@@ -36,16 +36,14 @@ public struct EnrollRequest: Requestable {
     private let enrollmentTicket: String?
     private let enrollmentUri: String?
     private let notificationToken: String
-    private let privateKey: SecKey
-    private let publicKey: SecKey
+    private let keyPair: RSAKeyPair
 
-    init(api: API, enrollmentTicket: String? = nil, enrollmentUri: String? = nil, notificationToken: String, privateKey: SecKey, publicKey: SecKey) {
+    init(api: API, enrollmentTicket: String? = nil, enrollmentUri: String? = nil, notificationToken: String, keyPair: RSAKeyPair) {
         self.api = api
         self.enrollmentTicket = enrollmentTicket
         self.enrollmentUri = enrollmentUri
         self.notificationToken = notificationToken
-        self.privateKey = privateKey
-        self.publicKey = publicKey
+        self.keyPair = keyPair
     }
 
     /**
@@ -64,7 +62,7 @@ public struct EnrollRequest: Requestable {
             return callback(.failure(cause: GuardianError.invalidEnrollmentUri))
         }
 
-        self.api.enroll(withTicket: ticket, identifier: Enrollment.defaultDeviceIdentifier, name: Enrollment.defaultDeviceName, notificationToken: notificationToken, publicKey: publicKey)
+        api.enroll(withTicket: ticket, identifier: Enrollment.defaultDeviceIdentifier, name: Enrollment.defaultDeviceName, notificationToken: notificationToken, publicKey: keyPair.publicKey)
             .start { result in
                 switch result {
                 case .failure(let cause):
@@ -75,7 +73,7 @@ public struct EnrollRequest: Requestable {
                         let id = payload["id"] as? String,
                         let token = payload["token"] as? String,
                         let _ = payload["issuer"] as? String,
-                        let _ = payload["user"] as? String,
+                        let _ = payload["user_id"] as? String,
                         let _ = payload["url"] as? String else {
                             return callback(.failure(cause: GuardianError.invalidResponse))
                     }
@@ -86,7 +84,7 @@ public struct EnrollRequest: Requestable {
                     let totpPeriod = totpData?["period"] as? Int
                     let totpDigits = totpData?["digits"] as? Int
 
-                    let enrollment = Enrollment(id: id, deviceToken: token, notificationToken: self.notificationToken, signingKey: self.privateKey, base32Secret: totpSecret, algorithm: totpAlgorithm, digits: totpDigits, period: totpPeriod)
+                    let enrollment = Enrollment(id: id, deviceToken: token, notificationToken: self.notificationToken, signingKey: self.keyPair.privateKey, base32Secret: totpSecret, algorithm: totpAlgorithm, digits: totpDigits, period: totpPeriod)
                     callback(.success(payload: enrollment))
                 }
         }

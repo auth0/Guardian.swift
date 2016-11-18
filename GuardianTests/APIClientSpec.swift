@@ -64,7 +64,7 @@ class APIClientSpec: QuickSpec {
                         ])) { _ in
                             return enrollResponse(enrollmentId: ValidEnrollmentId,
                                                   url: ValidURL.host,
-                                                  user: ValidUser,
+                                                  userId: ValidUserId,
                                                   issuer: ValidIssuer,
                                                   token: ValidEnrollmentToken,
                                                   totpSecret: ValidBase32Secret,

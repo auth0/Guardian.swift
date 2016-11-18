@@ -41,9 +41,8 @@ class JWTSpec: QuickSpec {
                 var jwt: String?
 
                 beforeEach {
-                    jwt = try? JWT.encode(claims: ["field": "value"], signingKey: ValidRSAPrivateKey)
+                    jwt = try? JWT.encode(claims: ["field": "value"], signingKey: ValidRSAPrivateKey.ref!)
                 }
-
 
                 it("should not return nil") {
                     expect(jwt).toNot(beNil())
@@ -54,7 +53,7 @@ class JWTSpec: QuickSpec {
                 }
 
                 it("should verify successfuly with correct key") {
-                    let claims = try? JWT.verify(string: jwt!, publicKey: ValidRSAPublicKey)
+                    let claims = try? JWT.verify(string: jwt!, publicKey: ValidRSAPublicKey.ref!)
                     expect(claims).toNot(beNil())
                 }
 
@@ -104,7 +103,7 @@ class JWTSpec: QuickSpec {
                 }
 
                 it("should fail verify with incorrect key") {
-                    let claims = try? JWT.verify(string: jwt!, publicKey: ValidRSAPublicKey)
+                    let claims = try? JWT.verify(string: jwt!, publicKey: ValidRSAPublicKey.ref!)
                     expect(claims).to(beNil())
                 }
             }

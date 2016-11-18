@@ -56,7 +56,7 @@ public protocol API {
 
      - returns: a request to execute or start
      */
-    func enroll(withTicket enrollmentTicket: String, identifier: String, name: String, notificationToken: String, publicKey: SecKey) -> DictionaryRequest
+    func enroll(withTicket enrollmentTicket: String, identifier: String, name: String, notificationToken: String, publicKey: JWKConvertable) -> DictionaryRequest
 
     /**
      Request to resolve a Guardian authentication request with a signed response

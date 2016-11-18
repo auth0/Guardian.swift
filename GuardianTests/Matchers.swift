@@ -182,7 +182,7 @@ func haveEnrollment(withId enrollmentId: String?, deviceIdentifier: String?, dev
     }
 }
 
-func haveEnrollment(withBaseUrl baseURL: URL, enrollmentId: String, deviceToken: String, notificationToken: String, issuer: String, user: String, signingKey: SecKey, base32Secret: String, algorithm: String, digits: Int, period: Int) -> MatcherFunc<Result<Enrollment>> {
+func haveEnrollment(withBaseUrl baseURL: URL, enrollmentId: String, deviceToken: String, notificationToken: String, issuer: String, userId: String, signingKey: RSAPrivateKey, base32Secret: String, algorithm: String, digits: Int, period: Int) -> MatcherFunc<Result<Enrollment>> {
     return MatcherFunc { expression, failureMessage in
         failureMessage.postfixMessage = "be an enrollment with" +
             " <baseUrl: \(baseURL)>" +
@@ -190,7 +190,7 @@ func haveEnrollment(withBaseUrl baseURL: URL, enrollmentId: String, deviceToken:
             " <deviceToken: \(deviceToken)>" +
             " <notificationToken: \(notificationToken)>" +
             " <issuer: \(issuer)>" +
-            " <user: \(user)>" +
+            " <userId: \(userId)>" +
             " <signingKey: \(signingKey)>" +
             " <base32Secret: \(base32Secret)>" +
             " <algorithm: \(algorithm)>" +
@@ -202,7 +202,7 @@ func haveEnrollment(withBaseUrl baseURL: URL, enrollmentId: String, deviceToken:
                 return result.id == enrollmentId
                     && result.deviceToken == deviceToken
                     && result.notificationToken == notificationToken
-                    && result.signingKey === signingKey
+                    && result.signingKey.tag == signingKey.tag
                     && result.base32Secret == base32Secret
                     && result.algorithm == algorithm
                     && result.digits == digits

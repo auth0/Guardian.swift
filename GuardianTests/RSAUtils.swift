@@ -87,11 +87,12 @@ func getKeys(fromPkcs12 p12Data: Data, passphrase: String) -> (publicKey: SecKey
     }
 }
 
-func storeInKeychain(key: SecKey) -> Bool {
+func storeInKeychain(_ key: SecKey, withTag tag: String) -> Bool {
     let attribute = [
         String(kSecClass)              : kSecClassKey,
         String(kSecAttrKeyType)        : kSecAttrKeyTypeRSA,
         String(kSecValueRef)           : key,
+        String(kSecAttrApplicationTag) : tag,
         String(kSecReturnPersistentRef): true
     ] as [String: Any] as CFDictionary
 

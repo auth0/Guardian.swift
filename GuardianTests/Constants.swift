@@ -22,6 +22,8 @@
 
 import Foundation
 
+@testable import Guardian
+
 let Domain = "tenant.guardian.auth0.com"
 let Timeout: TimeInterval = 2
 
@@ -32,6 +34,7 @@ let ValidEnrollmentToken = UUID().uuidString
 let ValidNotificationToken = UUID().uuidString
 let ValidIssuer = "aValidIssuer"
 let ValidUser = "aValidUser"
+let ValidUserId = "aValidUserId"
 let ValidBase32Secret = "aValidBase32Secret"
 let InvalidBase32Secret = "anInvalidBase32Secret!?"
 let ValidAlgorithm = "SHA1"
@@ -47,35 +50,38 @@ let ValidNotificationService = "APNS"
 let DeviceAccountToken = UUID().uuidString
 let ValidNotificationChallenge = "aValidNotificationChallenge"
 
-let RSAPublicKeyTag = UUID().uuidString
-let RSAPrivateKeyTag = UUID().uuidString
+let RSAPublicKeyTag = "\(UUID().uuidString)-public"
+let RSAPrivateKeyTag = "\(UUID().uuidString)-private"
 let RSAKeySize = 2048
 
-let NonRSAPublicKey = generateKeyPair(publicTag: RSAPublicKeyTag + "-invalid",
+let NonRSAPublicKey: RSAPublicKey = {
+    let ecPublicKeyTag = RSAPublicKeyTag + "-invalid"
+    let ecPublicKey = generateKeyPair(publicTag: ecPublicKeyTag,
                                       privateTag: RSAPrivateKeyTag + "-invalid",
                                       keyType: kSecAttrKeyTypeEC,
                                       keySize: 256)!.publicKey
+    return RSAKeyPair.publicKey(withTag: ecPublicKeyTag)
+}()
 
-var ValidRSAPublicKey: SecKey = {
+let ValidRSAPublicKey: RSAPublicKey = {
     return ValidRSAKeyPair.publicKey
 }()
 
-let ValidRSAPrivateKey: SecKey = {
+let ValidRSAPrivateKey: RSAPrivateKey = {
     return ValidRSAKeyPair.privateKey
 }()
 
-let ValidRSAKeyPair: (publicKey: SecKey, privateKey: SecKey) = {
+let ValidRSAKeyPair: RSAKeyPair = {
     let path = Bundle(for: GuardianSpec.self).path(forResource: "identity", ofType: "p12")!
     let p12Data = try! Data(contentsOf: URL(fileURLWithPath: path))
     let (publicKey, privateKey) = getKeys(fromPkcs12: p12Data, passphrase : "1234")!
-    guard storeInKeychain(key: publicKey),
-        storeInKeychain(key: privateKey) else {
-            return generateKeyPair(publicTag: RSAPublicKeyTag,
-                                   privateTag: RSAPrivateKeyTag,
-                                   keyType: kSecAttrKeyTypeRSA,
-                                   keySize: RSAKeySize)!
+    guard storeInKeychain(publicKey, withTag: RSAPublicKeyTag),
+        storeInKeychain(privateKey, withTag: RSAPrivateKeyTag) else {
+            return RSAKeyPair.new(usingPublicTag: RSAPublicKeyTag,
+                                  privateTag: RSAPrivateKeyTag,
+                                  keySize: RSAKeySize)!
     }
-    return (publicKey: publicKey, privateKey: privateKey)
+    return RSAKeyPair(publicKeyTag: RSAPublicKeyTag, privateKeyTag: RSAPrivateKeyTag)
 }()
 
 
