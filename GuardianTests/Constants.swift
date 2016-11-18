@@ -34,6 +34,7 @@ let ValidEnrollmentToken = UUID().uuidString
 let ValidNotificationToken = UUID().uuidString
 let ValidIssuer = "aValidIssuer"
 let ValidUser = "aValidUser"
+let ValidUserId = "aValidUserId"
 let ValidBase32Secret = "aValidBase32Secret"
 let InvalidBase32Secret = "anInvalidBase32Secret!?"
 let ValidAlgorithm = "SHA1"

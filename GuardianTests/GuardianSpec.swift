@@ -98,7 +98,7 @@ class GuardianSpec: QuickSpec {
                         ])) { _ in
                             return enrollResponse(enrollmentId: ValidEnrollmentId,
                                                   url: ValidURL.host,
-                                                  user: ValidUser,
+                                                  userId: ValidUserId,
                                                   issuer: ValidIssuer,
                                                   token: ValidEnrollmentToken,
                                                   totpSecret: ValidBase32Secret,
@@ -114,7 +114,7 @@ class GuardianSpec: QuickSpec {
                     Guardian
                         .enroll(forDomain: Domain, usingUri: uri, notificationToken: ValidNotificationToken, keyPair: ValidRSAKeyPair)
                         .start { result in
-                            expect(result).to(haveEnrollment(withBaseUrl: ValidURL, enrollmentId: ValidEnrollmentId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, issuer: ValidIssuer, user: ValidUser, signingKey: ValidRSAPrivateKey, base32Secret: ValidBase32Secret, algorithm: ValidAlgorithm, digits: ValidDigits, period: ValidPeriod))
+                            expect(result).to(haveEnrollment(withBaseUrl: ValidURL, enrollmentId: ValidEnrollmentId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, issuer: ValidIssuer, userId: ValidUserId, signingKey: ValidRSAPrivateKey, base32Secret: ValidBase32Secret, algorithm: ValidAlgorithm, digits: ValidDigits, period: ValidPeriod))
                             done()
                     }
                 }
@@ -125,7 +125,7 @@ class GuardianSpec: QuickSpec {
                     Guardian
                         .enroll(forDomain: Domain, usingTicket: ValidTransactionId, notificationToken: ValidNotificationToken, keyPair: ValidRSAKeyPair)
                         .start { result in
-                            expect(result).to(haveEnrollment(withBaseUrl: ValidURL, enrollmentId: ValidEnrollmentId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, issuer: ValidIssuer, user: ValidUser, signingKey: ValidRSAPrivateKey, base32Secret: ValidBase32Secret, algorithm: ValidAlgorithm, digits: ValidDigits, period: ValidPeriod))
+                            expect(result).to(haveEnrollment(withBaseUrl: ValidURL, enrollmentId: ValidEnrollmentId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, issuer: ValidIssuer, userId: ValidUserId, signingKey: ValidRSAPrivateKey, base32Secret: ValidBase32Secret, algorithm: ValidAlgorithm, digits: ValidDigits, period: ValidPeriod))
                             done()
                     }
                 }
@@ -145,9 +145,8 @@ class GuardianSpec: QuickSpec {
 
             it("should fail when public key is invalid") {
                 waitUntil(timeout: Timeout) { done in
-                    let uri = enrollmentUri(withTransactionId: ValidTransactionId, baseUrl: ValidURL.absoluteString, enrollmentId: ValidEnrollmentId, issuer: ValidIssuer, user: ValidUser, secret: ValidBase32Secret, algorithm: ValidAlgorithm, digits: ValidDigits, period: ValidPeriod)
                     Guardian
-                        .enroll(forDomain: Domain, usingUri: uri, notificationToken: ValidNotificationToken, keyPair: RSAKeyPair(publicKey: NonRSAPublicKey, privateKey: ValidRSAPrivateKey))
+                        .enroll(forDomain: Domain, usingTicket: ValidTransactionId, notificationToken: ValidNotificationToken, keyPair: RSAKeyPair(publicKey: NonRSAPublicKey, privateKey: ValidRSAPrivateKey))
                         .start { result in
                             expect(result).to(haveGuardianError(withErrorCode: "a0.guardian.internal.invalid_public_key"))
                             done()
@@ -161,9 +160,8 @@ class GuardianSpec: QuickSpec {
                         return errorResponse(statusCode: 404, errorCode: "enrollment_transaction_not_found", message: "Not found")
                     }.name = "Enrollment transaction not found"
                 waitUntil(timeout: Timeout) { done in
-                    let uri = enrollmentUri(withTransactionId: "someInvalidTransactionId", baseUrl: ValidURL.absoluteString, enrollmentId: ValidEnrollmentId, issuer: ValidIssuer, user: ValidUser, secret: ValidBase32Secret, algorithm: ValidAlgorithm, digits: ValidDigits, period: ValidPeriod)
                     Guardian
-                        .enroll(forDomain: Domain, usingUri: uri, notificationToken: ValidNotificationToken, keyPair: ValidRSAKeyPair)
+                        .enroll(forDomain: Domain, usingTicket: "someInvalidTransactionId", notificationToken: ValidNotificationToken, keyPair: ValidRSAKeyPair)
                         .start { result in
                             expect(result).to(haveGuardianError(withErrorCode: "enrollment_transaction_not_found"))
                             done()
@@ -180,9 +178,8 @@ class GuardianSpec: QuickSpec {
                         return OHHTTPStubsResponse(jsonObject: json, statusCode: 200, headers: ["Content-Type": "application/json"])
                     }.name = "Invalid enroll response"
                 waitUntil(timeout: Timeout) { done in
-                    let uri = enrollmentUri(withTransactionId: ValidTransactionId, baseUrl: ValidURL.absoluteString, enrollmentId: ValidEnrollmentId, issuer: ValidIssuer, user: ValidUser, secret: ValidBase32Secret, algorithm: ValidAlgorithm, digits: ValidDigits, period: ValidPeriod)
                     Guardian
-                        .enroll(forDomain: Domain, usingUri: uri, notificationToken: ValidNotificationToken, keyPair: ValidRSAKeyPair)
+                        .enroll(forDomain: Domain, usingTicket: ValidTransactionId, notificationToken: ValidNotificationToken, keyPair: ValidRSAKeyPair)
                         .start { result in
                             expect(result).to(haveGuardianError(withErrorCode: "a0.guardian.internal.invalid_response"))
                             done()

@@ -73,7 +73,7 @@ public struct EnrollRequest: Requestable {
                         let id = payload["id"] as? String,
                         let token = payload["token"] as? String,
                         let _ = payload["issuer"] as? String,
-                        let _ = payload["user"] as? String,
+                        let _ = payload["user_id"] as? String,
                         let _ = payload["url"] as? String else {
                             return callback(.failure(cause: GuardianError.invalidResponse))
                     }

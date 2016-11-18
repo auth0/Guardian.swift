@@ -45,11 +45,11 @@ func deviceResponse(enrollmentId id: String?, deviceIdentifier: String?, name: S
     return OHHTTPStubsResponse(jsonObject: json, statusCode: 200, headers: ["Content-Type": "application/json"])
 }
 
-func enrollResponse(enrollmentId id: String?, url: String?, user: String?, issuer: String?, token: String?, totpSecret: String? = nil, totpAlgorithm: String? = nil, totpDigits: Int? = nil, totpPeriod: Int? = nil, recoveryCode: String? = nil) -> OHHTTPStubsResponse {
+func enrollResponse(enrollmentId id: String?, url: String?, userId: String?, issuer: String?, token: String?, totpSecret: String? = nil, totpAlgorithm: String? = nil, totpDigits: Int? = nil, totpPeriod: Int? = nil, recoveryCode: String? = nil) -> OHHTTPStubsResponse {
     var json: [String : Any] = [
         "id": id ?? "",
         "url": url ?? "",
-        "user": user ?? "",
+        "user_id": userId ?? "",
         "issuer": issuer ?? "",
         "token": token ?? "",
     ]
