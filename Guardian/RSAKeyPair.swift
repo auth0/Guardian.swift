@@ -207,7 +207,15 @@ extension JWKConvertable {
     }
 }
 
-extension KeychainRSAKey {
+public extension KeychainRSAKey {
+
+    /**
+     Returns the `SecKey` instance
+     
+     - important: This method might return nil if a key with this tag is not 
+                  present in the keychain or if the type of the key is not 
+                  appropriate.
+     */
     var ref: SecKey? {
         let query: [String: Any] = [
             String(kSecClass)              : kSecClassKey,
