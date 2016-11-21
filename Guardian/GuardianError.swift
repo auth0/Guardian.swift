@@ -35,7 +35,7 @@ private let invalidOTPAlgorithmMessage = "a0.guardian.internal.invalid_otp_algor
 /**
  An `Error` that encapsulates server and other possible internal errors
  */
-public class GuardianError: Error, CustomStringConvertible, Equatable {
+public class GuardianError: Error, CustomStringConvertible {
 
     let info: [String: Any]?
     let statusCode: Int
@@ -72,14 +72,6 @@ public class GuardianError: Error, CustomStringConvertible, Equatable {
     public var description: String {
         return "GuardianError(errorCode=\(errorCode), info=\(info ?? [:]))"
     }
-}
-
-/**
- The operator `==` to allow comparing `GuardianError` equality.
- Required to conform to the `Equatable` protocol
- */
-public func ==(lhs: GuardianError, rhs: GuardianError) -> Bool {
-    return lhs.errorCode == rhs.errorCode && lhs.statusCode == rhs.statusCode
 }
 
 internal extension GuardianError {
