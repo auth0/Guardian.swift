@@ -58,7 +58,17 @@ public struct Request<T>: Requestable {
             }
             request.httpBody = body
         }
-        
+
+        if let bundle = Bundle(identifier: "com.auth0.sdk.Guardian"),
+            let version = bundle.infoDictionary?["CFBundleShortVersionString"] as? String,
+            let clientInfo = try? JSONSerialization.data(withJSONObject: [
+                "name": "GuardianSDK.iOS",
+                "version": version
+                ])
+        {
+            request.setValue(clientInfo.base64URLEncodedString(), forHTTPHeaderField: "Auth0-Client")
+        }
+
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         headers?.forEach { request.setValue($1, forHTTPHeaderField: $0) }
         

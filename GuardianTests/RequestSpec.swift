@@ -75,19 +75,43 @@ class RequestSpec: QuickSpec {
                     }
                 }
             }
-            
-            it("should set default headers") {
-                waitUntil(timeout: Timeout) { done in
-                    let session = MockNSURLSession(data: nil, response: nil, error: nil)
-                    Request<Void>(session: session, method: "PATCH", url: ValidURL)
-                        .start { _ in
-                            let request = session.a0_request!
-                            expect(request.value(forHTTPHeaderField: "Content-Type")).to(equal("application/json"))
-                            done()
+
+            describe("should set default headers") {
+
+                it("for Content-Type") {
+                    waitUntil(timeout: Timeout) { done in
+                        let session = MockNSURLSession(data: nil, response: nil, error: nil)
+                        Request<Void>(session: session, method: "PATCH", url: ValidURL)
+                            .start { _ in
+                                let request = session.a0_request!
+                                expect(request.value(forHTTPHeaderField: "Content-Type")).to(equal("application/json"))
+                                done()
+                        }
+                    }
+                }
+
+                it("for Auth0-Client") {
+                    waitUntil(timeout: Timeout) { done in
+                        let session = MockNSURLSession(data: nil, response: nil, error: nil)
+                        Request<Void>(session: session, method: "PATCH", url: ValidURL)
+                            .start { _ in
+                                let request = session.a0_request!
+                                let encodedLibInfo = request.value(forHTTPHeaderField: "Auth0-Client")
+                                expect(encodedLibInfo).toNot(beNil())
+
+                                let decodedLibInfo = Data(base64URLEncoded: encodedLibInfo!)
+                                expect(decodedLibInfo).toNot(beNil())
+
+                                let libInfo = try? JSONSerialization.jsonObject(with: decodedLibInfo!, options: []) as! [String: String]
+                                expect(libInfo?.count).to(equal(2))
+                                expect(libInfo?["name"]).to(equal("GuardianSDK.iOS"))
+                                expect(libInfo?["version"]).to(equal("0.1.0"))
+                                done()
+                        }
                     }
                 }
             }
-            
+
             it("should set custom headers") {
                 waitUntil(timeout: Timeout) { done in
                     let session = MockNSURLSession(data: nil, response: nil, error: nil)
