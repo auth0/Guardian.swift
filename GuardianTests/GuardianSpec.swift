@@ -59,7 +59,7 @@ class GuardianSpec: QuickSpec {
 
         describe("authentication(forDomain:, session:)") {
 
-            let enrollment = Enrollment(id: "ID", deviceToken: "TOKEN", notificationToken: "TOKEN", signingKey: ValidRSAPrivateKey, base32Secret: "SECRET")
+            let enrollment = Enrollment(id: "ID", userId: "USER_ID", deviceToken: "TOKEN", notificationToken: "TOKEN", signingKey: ValidRSAPrivateKey, base32Secret: "SECRET")
 
             it("should return authentication with domain only") {
                 expect(Guardian.authentication(forDomain: "samples.guardian.auth0.com", andEnrollment: enrollment)).toNot(beNil())

@@ -200,6 +200,7 @@ func haveEnrollment(withBaseUrl baseURL: URL, enrollmentId: String, deviceToken:
         if let actual = try expression.evaluate(), case .success(let result) = actual {
             if let result = result {
                 return result.id == enrollmentId
+                    && result.userId == userId
                     && result.deviceToken == deviceToken
                     && result.notificationToken == notificationToken
                     && result.signingKey.tag == signingKey.tag
