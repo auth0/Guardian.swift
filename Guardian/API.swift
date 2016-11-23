@@ -35,6 +35,9 @@ import Foundation
  */
 public protocol API {
 
+    /**
+     The url of the Guardian service
+     */
     var baseUrl: URL { get }
 
     /**

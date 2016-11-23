@@ -138,6 +138,9 @@ struct RSAAuthentication: Authentication {
     }
 }
 
+/**
+ An asynchronous HTTP request
+ */
 public struct VoidRequest: Requestable {
 
     typealias T = Void
