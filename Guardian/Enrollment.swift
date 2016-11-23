@@ -36,6 +36,11 @@ public class Enrollment: NSObject {
     public let id: String
 
     /**
+     The id of this enrollment's user
+     */
+    public let userId: String
+
+    /**
      The token used to authenticate when updating the device data or deleting 
      the enrollment
      */
@@ -112,6 +117,7 @@ public class Enrollment: NSObject {
      */
     public init(
          id: String,
+         userId: String,
          deviceToken: String,
          notificationToken: String,
          signingKey: RSAPrivateKey,
@@ -121,6 +127,7 @@ public class Enrollment: NSObject {
          period: Int? = nil
         ) {
         self.id = id
+        self.userId = userId
         self.deviceToken = deviceToken
         self.notificationToken = notificationToken
         self.signingKey = signingKey

@@ -72,8 +72,8 @@ public struct EnrollRequest: Requestable {
                         let payload = payload,
                         let id = payload["id"] as? String,
                         let token = payload["token"] as? String,
+                        let userId = payload["user_id"] as? String,
                         let _ = payload["issuer"] as? String,
-                        let _ = payload["user_id"] as? String,
                         let _ = payload["url"] as? String else {
                             return callback(.failure(cause: GuardianError.invalidResponse))
                     }
@@ -84,7 +84,7 @@ public struct EnrollRequest: Requestable {
                     let totpPeriod = totpData?["period"] as? Int
                     let totpDigits = totpData?["digits"] as? Int
 
-                    let enrollment = Enrollment(id: id, deviceToken: token, notificationToken: self.notificationToken, signingKey: self.keyPair.privateKey, base32Secret: totpSecret, algorithm: totpAlgorithm, digits: totpDigits, period: totpPeriod)
+                    let enrollment = Enrollment(id: id, userId: userId, deviceToken: token, notificationToken: self.notificationToken, signingKey: self.keyPair.privateKey, base32Secret: totpSecret, algorithm: totpAlgorithm, digits: totpDigits, period: totpPeriod)
                     callback(.success(payload: enrollment))
                 }
         }
