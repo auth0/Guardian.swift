@@ -31,7 +31,7 @@ Guardian.swift is available through [CocoaPods](http://cocoapods.org).
 To install it, simply add the following line to your Podfile:
 
 ```ruby
-pod "Guardian", '~> 0.1.0'
+pod "Guardian"
 ```
 
 #### Carthage
@@ -39,7 +39,7 @@ pod "Guardian", '~> 0.1.0'
 In your Cartfile add this line
 
 ```
-github "auth0/Guardian.swift" ~> 0.1.0
+github "auth0/Guardian.swift"
 ```
 
 ## Usage
@@ -50,44 +50,33 @@ github "auth0/Guardian.swift" ~> 0.1.0
 import Guardian
 ```
 
-Then you'll need the domain for your specific tenant/url:
+Then you'll need the Auth0 Guarduan domain for your account:
 
 ```swift
-let domain = "tenant.guardian.auth0.com"
+let domain = "{YOUR_ACCOUNT_NAME}.guardian.auth0.com"
 ```
 
 ### Enroll
 
 An enrollment is a link between the second factor and an Auth0 account. When an account is enrolled
-you'll need the enrollment data to provide the second factor required to verify the identity.
+you'll need it to provide the second factor required to verify the identity.
 
-You can create an enrolment using the `Guardian.enroll` function.
+For an enrollment you need the following things, besides your Guardian Domain:
 
-First you'll need to obtain the enrollment info by scanning a Guardian QR code or obtaining an
-enrollment ticket by email for example.
+- Enrollment Uri: The value encoded in the QR Code scanned from Guardian Web Widget or in your enrollment ticket sent to you, e.g. by email.
+- APNS Token: Apple APNS token for the device and **MUST** be a `String`containing the 64 bytes (expressed in hexadecimal format)
+- Key Pair: A RSA (Private/Public) key pair used to assert your identity with Auth0 Guardian
 
-Next you'll have to create a new pair of RSA keys for the new enrollment. The private key will be
-used to sign the requests to allow or reject a login. The public key will be sent during the enroll
-process so the server can later verify the request's signature.
-The keys will be stored on the keychain, and we'll later access them by `tag`, so you should
-use a unique identifier every time you create them.
+> In case your app is not yet using push notifications or you're not familiar with it, you should check their [docs](https://developer.apple.com/go/?id=push-notifications).
 
-```swift
-let rsaKeyPair = RSAKeyPair.new(usingPublicTag: "com.auth0.guardian.enroll.public",
-                                privateTag: "com.auth0.guardian.enroll.private")
-```
-
-You can then use the `Guardian.enroll` function, like this:
+after your have all of them, you can enroll your device
 
 ```swift
-let enrollmentUriFromQr: String = ... // the URI obtained from a Guardian QR code
-let apnsToken: String = ... // the APNS token of this device, where notifications will be sent
-
 Guardian
-        .enroll(forDomain: domain,
-                usingUri: enrollmentUriFromQr,
-                notificationToken: apnsToken,
-                keyPair: rsaKeyPair)
+        .enroll(forDomain: "{YOUR_GUARDIAN_DOMAIN}",
+                usingUri: "{ENROLLMENT_URI}",
+                notificationToken: "{APNS_TOKEN}",
+                keyPair: keyPair)
         .start { result in
             switch result {
             case .success(let enrollment): 
@@ -98,48 +87,32 @@ Guardian
         }
 ```
 
-You must provide the `notificationToken`. It is the token required to send push notification to the device using the Apple Push Notification service (APNs). In case your app is not yet using push notifications or you're not familiar with it, you should check their
-[docs](https://developer.apple.com/go/?id=push-notifications).
+On success you'll obtain the enrollment information, that should be secured stored in your application. This information includes the enrollment identifier, and the token for Guardian API associated to your device for updating or deleting your enrollment.
 
-The notification token MUST be a String containing the 64 bytes (expressed in hexadecimal format) as received on `application(:didRegisterForRemoteNotificationsWithDeviceToken)`
+#### RSA key pair
 
-### Unenroll
-
-If you want to delete an enrollment -for example if you want to disable MFA- you can make the
-following request:
+Guardian.swift provides a convenience class to generate an RSA key pair and store it in iOS Keychain.
 
 ```swift
-Guardian
-        .api(forDomain: domain)
-        .device(forEnrollmentId: enrollment.id, token: enrollment.deviceToken)
-        .delete()
-        .start { result in
-            switch result {
-            case .success: 
-                // success, the enrollment was deleted
-            case .failure(let cause):
-                // something failed, check cause to see what went wrong
-            }
-        }
+let rsaKeyPair = RSAKeyPair.new(
+    usingPublicTag: "com.auth0.guardian.enroll.public",
+    privateTag: "com.auth0.guardian.enroll.private"
+    )
 ```
+
+> The tags should be unique since it's the identifier of each key inside iOS Keychain. 
+
+> Since the keys are already secured stored inside iOS Keychain, you olny need to store the identifiers
 
 ### Allow a login request
 
-Once you have the enrollment in place, you will receive a push notification every time the user
-has to validate his identity with MFA.
+Once you have the enrollment in place, you will receive a push notification every time the user has to validate his identity with MFA.
 
-Guardian provides a method to parse the data received from APNs and return a `Notification`
-instance ready to be used.
-
-For example, in your `AppDelegate` you might have something like this:
+Guardian provides a method to parse the data received from APNs and return a `Notification` instance ready to be used.
 
 ```swift
-func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any]) {
-    // when the app is open and we receive a push notification
-
-    if let notification = Guardian.notification(from: userInfo) {
-        // we have received a Guardian push notification
-    }
+if let notification = Guardian.notification(from: userInfo) {
+    // we have received a Guardian push notification
 }
 ```
 
@@ -150,7 +123,7 @@ notification (the `enrollmentId` property).
 
 ```swift
 Guardian
-        .authentication(forDomain: domain, andEnrollment: enrollment)
+        .authentication(forDomain: "{YOUR_GUARDIAN_DOMAIN}", andEnrollment: enrollment)
         .allow(notification: notification)
         .start { result in
             switch result {
@@ -169,13 +142,33 @@ you want. The reject reason will be available in the guardian logs.
 
 ```swift
 Guardian
-        .authentication(forDomain: domain, andEnrollment: enrollment)
+        .authentication(forDomain: "{YOUR_GUARDIAN_DOMAIN}", andEnrollment: enrollment)
         .reject(notification: notification)
         // or reject(notification: notification, withReason: "hacked")
         .start { result in
             switch result {
             case .success: 
                 // the auth request was successfuly rejected
+            case .failure(let cause):
+                // something failed, check cause to see what went wrong
+            }
+        }
+```
+
+### Unenroll
+
+If you want to delete an enrollment -for example if you want to disable MFA- you can make the
+following request:
+
+```swift
+Guardian
+        .api(forDomain: "{YOUR_GUARDIAN_DOMAIN}")
+        .device(forEnrollmentId: "{USER_ENROLLMENT_ID}", token: "{ENROLLMENT_DEVICE_TOKEN}")
+        .delete()
+        .start { result in
+            switch result {
+            case .success: 
+                // success, the enrollment was deleted
             case .failure(let cause):
                 // something failed, check cause to see what went wrong
             }
