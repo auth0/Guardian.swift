@@ -59,10 +59,10 @@ public struct Request<T>: Requestable {
             request.httpBody = body
         }
 
-        if let bundle = Bundle(identifier: "com.auth0.sdk.Guardian"),
-            let version = bundle.infoDictionary?["CFBundleShortVersionString"] as? String,
+        let bundle = Bundle(for: _ObjectiveGuardian.classForCoder())
+        if let version = bundle.infoDictionary?["CFBundleShortVersionString"] as? String,
             let clientInfo = try? JSONSerialization.data(withJSONObject: [
-                "name": "GuardianSDK.iOS",
+                "name": "Guardian.swift",
                 "version": version
                 ])
         {
