@@ -1,6 +1,6 @@
 # Guardian SDK for iOS
 ============
-[![CI Status](https://travis-ci.com/auth0/GuardianSDK.iOS.svg?token=R3xUbi1dnaoneyhnspcr&branch=master)](https://travis-ci.com/auth0/GuardianSDK.Android)
+[![CI Status](https://travis-ci.com/auth0/Guardian.swift.svg?token=R3xUbi1dnaoneyhnspcr&branch=master)](https://travis-ci.com/auth0/Guardian.swift)
 [![License](http://img.shields.io/:license-mit-blue.svg?style=flat)](http://doge.mit-license.org)
 
 [Guardian](https://auth0.com/docs/multifactor-authentication/guardian) is Auth0's multi-factor
@@ -25,10 +25,21 @@ credentials, otherwise you would not receive any push notifications. Please read
 
 ##Install
 
-GuardianSDK is available through CocoaPods. To install it, simply add the following line to your Podfile:
+#### CocoaPods
+
+Guardian.swift is available through [CocoaPods](http://cocoapods.org). 
+To install it, simply add the following line to your Podfile:
+
+```ruby
+pod "Guardian", '~> 0.1.0'
+```
+
+#### Carthage
+
+In your Cartfile add this line
 
 ```
-pod "GuardianSDK", "~> 0.1.0"
+github "auth0/Guardian.swift" ~> 0.1.0
 ```
 
 ## Usage
