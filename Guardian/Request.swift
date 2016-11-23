@@ -58,7 +58,17 @@ public struct Request<T>: Requestable {
             }
             request.httpBody = body
         }
-        
+
+        let bundle = Bundle(for: _ObjectiveGuardian.classForCoder())
+        if let version = bundle.infoDictionary?["CFBundleShortVersionString"] as? String,
+            let clientInfo = try? JSONSerialization.data(withJSONObject: [
+                "name": "Guardian.swift",
+                "version": version
+                ])
+        {
+            request.setValue(clientInfo.base64URLEncodedString(), forHTTPHeaderField: "Auth0-Client")
+        }
+
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         headers?.forEach { request.setValue($1, forHTTPHeaderField: $0) }
         
