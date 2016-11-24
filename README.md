@@ -1,6 +1,6 @@
 # Guardian.swift (iOS)
 
-[![CI Status](https://travis-ci.org/auth0/Guardian.swift.svg?style=flat-square)](https://travis-ci.org/auth0/Guardian.swift)
+[![CI Status](http://img.shields.io/travis/auth0/Guardian.swift.svg?style=flat-square)](https://travis-ci.org/auth0/Guardian.swift)
 [![Coverage Status](https://img.shields.io/codecov/c/github/auth0/Guardian.swift/master.svg?style=flat-square)](https://codecov.io/github/auth0/Guardian.swift)
 [![Version](https://img.shields.io/cocoapods/v/Guardian.svg?style=flat-square)](http://cocoadocs.org/docsets/Guardian)
 [![License](https://img.shields.io/cocoapods/l/Guardian.svg?style=flat-square)](http://cocoadocs.org/docsets/Guardian)
