@@ -1,7 +1,12 @@
-# Guardian SDK for iOS
+# Guardian.swift (iOS)
 
-[![CI Status](https://travis-ci.org/auth0/Guardian.swift.svg?branch=master)](https://travis-ci.org/auth0/Guardian.swift)
-[![License](http://img.shields.io/:license-mit-blue.svg?style=flat)](http://doge.mit-license.org)
+[![CI Status](https://travis-ci.org/auth0/Guardian.swift.svg?style=flat-square)](https://travis-ci.org/auth0/Guardian.swift)
+[![Coverage Status](https://img.shields.io/codecov/c/github/auth0/Guardian.swift/master.svg?style=flat-square)](https://codecov.io/github/auth0/Guardian.swift)
+[![Version](https://img.shields.io/cocoapods/v/Guardian.svg?style=flat-square)](http://cocoadocs.org/docsets/Guardian)
+[![License](https://img.shields.io/cocoapods/l/Guardian.svg?style=flat-square)](http://cocoadocs.org/docsets/Guardian)
+[![Platform](https://img.shields.io/cocoapods/p/Guardian.svg?style=flat-square)](http://cocoadocs.org/docsets/Guardian)
+[![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat-square)](https://github.com/Carthage/Carthage)
+![Swift 3.0](https://img.shields.io/badge/Swift-3.0-orange.svg?style=flat-square)
 
 [Guardian](https://auth0.com/docs/multifactor-authentication/guardian) is Auth0's multi-factor
 authentication (MFA) service that provides a simple, safe way for you to implement MFA.
