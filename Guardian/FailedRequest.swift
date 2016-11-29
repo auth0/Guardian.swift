@@ -1,4 +1,4 @@
-// Result.swift
+// FailedRequest.swift
 //
 // Copyright (c) 2016 Auth0 (http://auth0.com)
 //
@@ -22,32 +22,16 @@
 
 import Foundation
 
-/**
- The end result of any `Requestable`.
- 
- An instance of this enum is always sent to the callback of `Requestable.start`
- 
- ```
- let request: Requestable = // any Guardian request
- request.start { result in
-    switch result {
-    case .success(let response):
-        // the request finished successfuly
-    case .failure(let cause):
-        // something failed, check `cause`
+class FailedRequest<T>: Request<T> {
+
+    let error: Error
+
+    init(error: Error) {
+        self.error = error
+        super.init(session: URLSession.shared, method: "GET", url: URL(string: "auth0.com")!)
     }
- }
- ```
- */
-public enum Result<T> {
 
-    /**
-     The action finished successfuly, the result can be accessed at `payload`
-     */
-    case success(payload: T)
-
-    /**
-     The action failed, the cause can be accessed at `cause`
-     */
-    case failure(cause: Error)
+    override func start(callback: @escaping (Result<T>) -> ()) {
+        callback(.failure(cause: error))
+    }
 }

@@ -44,6 +44,7 @@
 		2377A6411D806D9900D6FB04 /* DeviceAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2377A6401D806D9900D6FB04 /* DeviceAPI.swift */; };
 		2377A6431D806DFA00D6FB04 /* API.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2377A6421D806DFA00D6FB04 /* API.swift */; };
 		239CE2641D80CCE5008DCAE4 /* RequestSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 239CE2631D80CCE5008DCAE4 /* RequestSpec.swift */; };
+		23AD869F1DEE10B500051F41 /* FailedRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23AD869E1DEE10B500051F41 /* FailedRequest.swift */; };
 		23B7A0471DD4E7820038124A /* A0RSA.m in Sources */ = {isa = PBXBuildFile; fileRef = 23B7A0461DD4E7820038124A /* A0RSA.m */; };
 		23B7A0491DD4E8300038124A /* A0RSA.h in Headers */ = {isa = PBXBuildFile; fileRef = 23B7A0481DD4E8300038124A /* A0RSA.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		23C67AEC1D81D6A400A38A2E /* MockNSURLSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23C67AEB1D81D6A400A38A2E /* MockNSURLSession.swift */; };
@@ -161,6 +162,7 @@
 		2377A6401D806D9900D6FB04 /* DeviceAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceAPI.swift; sourceTree = "<group>"; };
 		2377A6421D806DFA00D6FB04 /* API.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = API.swift; sourceTree = "<group>"; };
 		239CE2631D80CCE5008DCAE4 /* RequestSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestSpec.swift; sourceTree = "<group>"; };
+		23AD869E1DEE10B500051F41 /* FailedRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FailedRequest.swift; sourceTree = "<group>"; };
 		23B7A0461DD4E7820038124A /* A0RSA.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = A0RSA.m; sourceTree = "<group>"; };
 		23B7A0481DD4E8300038124A /* A0RSA.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = A0RSA.h; sourceTree = "<group>"; };
 		23C67AEB1D81D6A400A38A2E /* MockNSURLSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockNSURLSession.swift; sourceTree = "<group>"; };
@@ -260,6 +262,7 @@
 				2374A9EC1D672A8D00737F2E /* Requestable.swift */,
 				2374A9E21D670F5900737F2E /* Request.swift */,
 				2374A9EE1D672ABD00737F2E /* Result.swift */,
+				23AD869E1DEE10B500051F41 /* FailedRequest.swift */,
 			);
 			name = Networking;
 			sourceTree = "<group>";
@@ -582,6 +585,7 @@
 				2374A9E41D670F5900737F2E /* APIClient.swift in Sources */,
 				234004EF1D909C91009AB77C /* Base32.swift in Sources */,
 				2374A9EF1D672ABD00737F2E /* Result.swift in Sources */,
+				23AD869F1DEE10B500051F41 /* FailedRequest.swift in Sources */,
 				2374A9ED1D672A8D00737F2E /* Requestable.swift in Sources */,
 				5F1DB47D1DA5807D00264437 /* _ObjectiveGuardian.swift in Sources */,
 				237246751D7DC63B00CCF635 /* Guardian.swift in Sources */,

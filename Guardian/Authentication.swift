@@ -57,7 +57,7 @@ public protocol Authentication {
      
      - returns: a request to execute
      */
-    func allow(notification: Notification) -> VoidRequest
+    func allow(notification: Notification) -> Request<Void>
 
     /**
      Reject/denies the authentication request
@@ -85,11 +85,11 @@ public protocol Authentication {
 
      - returns: a request to execute
      */
-    func reject(notification: Notification, withReason reason: String?) -> VoidRequest
+    func reject(notification: Notification, withReason reason: String?) -> Request<Void>
 }
 
 public extension Authentication {
-    public func reject(notification: Notification, withReason reason: String? = nil) -> VoidRequest {
+    public func reject(notification: Notification, withReason reason: String? = nil) -> Request<Void> {
         return self.reject(notification: notification, withReason: reason)
     }
 }
@@ -101,21 +101,21 @@ struct RSAAuthentication: Authentication {
     let api: API
     let enrollment: Enrollment
 
-    func allow(notification: Notification) -> VoidRequest {
+    func allow(notification: Notification) -> Request<Void> {
         return resolve(transaction: notification.transactionToken,
                        withChallenge: notification.challenge,
                        accepted: true)
     }
 
-    func reject(notification: Notification, withReason reason: String?) -> VoidRequest {
+    func reject(notification: Notification, withReason reason: String?) -> Request<Void> {
         return resolve(transaction: notification.transactionToken,
                        withChallenge: notification.challenge,
                        accepted: false,
                        reason: reason)
     }
 
-    func resolve(transaction transactionToken: String, withChallenge challenge: String, accepted: Bool, reason: String? = nil) -> VoidRequest {
-        return VoidRequest {
+    func resolve(transaction transactionToken: String, withChallenge challenge: String, accepted: Bool, reason: String? = nil) -> Request<Void> {
+        do {
             let currentTime = Int(Date().timeIntervalSince1970)
             var jwtPayload: [String: Any] = [
                 "iat": currentTime,
@@ -134,36 +134,8 @@ struct RSAAuthentication: Authentication {
             }
             let jwt = try JWT.encode(claims: jwtPayload, signingKey: signingKey)
             return self.api.resolve(transaction: transactionToken, withChallengeResponse: jwt)
-        }
-    }
-}
-
-/**
- An asynchronous HTTP request
- */
-public struct VoidRequest: Requestable {
-
-    typealias T = Void
-    typealias RequestBuilder = () throws -> Request<Void>
-
-    private let buildRequest: RequestBuilder
-
-    init(builder: @escaping RequestBuilder) {
-        self.buildRequest = builder
-    }
-
-    /**
-     Executes the request in a background thread
-
-     - parameter callback: the termination callback, where the result is
-     received
-     */
-    public func start(callback: @escaping (Result<()>) -> ()) {
-        do {
-            let request = try buildRequest()
-            request.start(callback: callback)
         } catch(let error) {
-            callback(.failure(cause: error))
+            return FailedRequest(error: error)
         }
     }
 }
