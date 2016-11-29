@@ -83,7 +83,13 @@ public struct Request<T>: Requestable {
                 }
                 return callback(.failure(cause: GuardianError(info: info, statusCode: httpResponse.statusCode)))
             }
-            callback(.success(payload: json(data)))
+            if let payload: T = json(data) {
+                callback(.success(payload: payload))
+            } else if T.self is Void.Type {
+                callback(.success(payload: Void() as! T))
+            } else {
+                callback(.failure(cause: GuardianError.invalidResponse(withStatus: httpResponse.statusCode)))
+            }
         }
         task.resume()
     }

@@ -188,31 +188,73 @@ class RequestSpec: QuickSpec {
                     }
                 }
             }
-            
-            it("should succeed with empty payload") {
-                waitUntil(timeout: Timeout) { done in
-                    let response = HTTPURLResponse(url: ValidURL, statusCode: 201, httpVersion: nil, headerFields: nil)
-                    let session = MockNSURLSession(data: nil, response: response, error: nil)
-                    Request<Void>(session: session, method: ValidMethod, url: ValidURL)
-                        .start { result in
-                            expect(result).to(beSuccess())
-                            done()
+
+            describe("when type is Void") {
+
+                it("should succeed with empty payload") {
+                    waitUntil(timeout: Timeout) { done in
+                        let response = HTTPURLResponse(url: ValidURL, statusCode: 201, httpVersion: nil, headerFields: nil)
+                        let session = MockNSURLSession(data: nil, response: response, error: nil)
+                        Request<Void>(session: session, method: ValidMethod, url: ValidURL)
+                            .start { result in
+                                expect(result).to(beSuccess())
+                                done()
+                        }
+                    }
+                }
+
+                it("should succeed without caring about the payload") {
+                    waitUntil(timeout: Timeout) { done in
+                        let response = HTTPURLResponse(url: ValidURL, statusCode: 201, httpVersion: nil, headerFields: nil)
+                        let payload: [String: String] = [
+                            "someField": "someValue"
+                        ]
+                        let data = try? JSONSerialization.data(withJSONObject: payload, options: [])
+                        let session = MockNSURLSession(data: data, response: response, error: nil)
+                        Request<Void>(session: session, method: ValidMethod, url: ValidURL)
+                            .start { result in
+                                expect(result).to(beSuccess())
+                                done()
+                        }
                     }
                 }
             }
+
+            describe("when a response is required") {
             
-            it("should succeed with parsed payload") {
-                waitUntil(timeout: Timeout) { done in
-                    let response = HTTPURLResponse(url: ValidURL, statusCode: 201, httpVersion: nil, headerFields: nil)
-                    let payload: [String: String] = [
-                        "someField": "someValue"
-                    ]
-                    let data = try? JSONSerialization.data(withJSONObject: payload, options: [])
-                    let session = MockNSURLSession(data: data, response: response, error: nil)
-                    Request<[String: String]>(session: session, method: ValidMethod, url: ValidURL)
-                        .start { result in
-                            expect(result).to(beSuccess(withData: ["someField": "someValue"]))
-                            done()
+                it("should succeed with parsed payload") {
+                    waitUntil(timeout: Timeout) { done in
+                        let response = HTTPURLResponse(url: ValidURL, statusCode: 201, httpVersion: nil, headerFields: nil)
+                        let payload: [String: String] = [
+                            "someField": "someValue"
+                        ]
+                        let data = try? JSONSerialization.data(withJSONObject: payload, options: [])
+                        let session = MockNSURLSession(data: data, response: response, error: nil)
+                        Request<[String: String]>(session: session, method: ValidMethod, url: ValidURL)
+                            .start { result in
+                                expect(result).to(beSuccess(withData: ["someField": "someValue"]))
+                                done()
+                        }
+                    }
+                }
+
+                it("should fail if payload cannot be parsed") {
+                    waitUntil(timeout: Timeout) { done in
+                        let response = HTTPURLResponse(url: ValidURL, statusCode: 201, httpVersion: nil, headerFields: nil)
+                        let payload: [String: Any] = [
+                            "someNumber": 1234,
+                            "someObject": [
+                                "anotherNumber": 5678,
+                                "someString": "HelloWorld"
+                            ]
+                        ]
+                        let data = try? JSONSerialization.data(withJSONObject: payload, options: [])
+                        let session = MockNSURLSession(data: data, response: response, error: nil)
+                        Request<[String: String]>(session: session, method: ValidMethod, url: ValidURL)
+                            .start { result in
+                                expect(result).to(haveGuardianError(withErrorCode: GuardianError.invalidResponse.errorCode, andStatusCode: 201))
+                                done()
+                        }
                     }
                 }
             }

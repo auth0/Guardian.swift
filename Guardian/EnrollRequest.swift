@@ -69,7 +69,6 @@ public struct EnrollRequest: Requestable {
                     callback(.failure(cause: cause))
                 case .success(let payload):
                     guard
-                        let payload = payload,
                         let id = payload["id"] as? String,
                         let token = payload["token"] as? String,
                         let userId = payload["user_id"] as? String,
