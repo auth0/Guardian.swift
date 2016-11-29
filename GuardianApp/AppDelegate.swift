@@ -36,10 +36,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
 
         // Set up push notifications
-        let notificationTypes: UIUserNotificationType = [UIUserNotificationType.alert, UIUserNotificationType.badge, UIUserNotificationType.sound]
-        let pushNotificationSettings = UIUserNotificationSettings(types: notificationTypes, categories: nil)
-        application.registerUserNotificationSettings(pushNotificationSettings)
-        application.registerForRemoteNotifications()
+        Guardian.registerForRemoteNotifications(application)
 
         return true
     }
@@ -65,6 +62,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             let notificationController = rootController?.storyboard?.instantiateViewController(withIdentifier: "NotificationView") as! NotificationController
             notificationController.notification = notification
             rootController?.present(notificationController, animated: true, completion: nil)
+        }
+    }
+
+    func application(_ application: UIApplication, handleActionWithIdentifier identifier: String?, forRemoteNotification userInfo: [AnyHashable : Any], withResponseInfo responseInfo: [AnyHashable : Any], completionHandler: @escaping () -> Void) {
+        // when the app has been activated by the user selecting an action from a remote notification
+        print("identifier: \(identifier), userInfo: \(userInfo)")
+
+        if let notification = Guardian.notification(from: userInfo),
+            let enrollment = AppDelegate.enrollment,
+            let identifier = identifier
+        {
+            Guardian
+                .authentication(forDomain: AppDelegate.guardianDomain, andEnrollment: enrollment)
+                .handleAction(withIdentifier: identifier, andNotification: notification)
+                .start { _ in
+                    completionHandler()
+            }
+        } else {
+            completionHandler()
         }
     }
 
