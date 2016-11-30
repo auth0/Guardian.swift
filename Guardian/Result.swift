@@ -44,7 +44,7 @@ public enum Result<T> {
     /**
      The action finished successfuly, the result can be accessed at `payload`
      */
-    case success(payload: T?)
+    case success(payload: T)
 
     /**
      The action failed, the cause can be accessed at `cause`

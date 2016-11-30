@@ -116,7 +116,7 @@ func haveDeviceAccountToken(_ deviceAccountToken: String?) -> MatcherFunc<Result
         }
         failureMessage.postfixMessage = message
         if let actual = try expression.evaluate(), case .success(let result) = actual {
-            if let token = result?["device_account_token"] {
+            if let token = result["device_account_token"] {
                 return deviceAccountToken == token
             }
         }
@@ -144,39 +144,37 @@ func haveEnrollment(withId enrollmentId: String?, deviceIdentifier: String?, dev
         }
         failureMessage.postfixMessage = message
         if let actual = try expression.evaluate(), case .success(let result) = actual {
-            if let result = result {
-                if let enrollmentId = enrollmentId {
-                    guard let id = result["id"] as? String , id == enrollmentId else {
-                        return false
-                    }
+            if let enrollmentId = enrollmentId {
+                guard let id = result["id"] as? String , id == enrollmentId else {
+                    return false
                 }
-                if let deviceIdentifier = deviceIdentifier {
-                    guard let identifier = result["identifier"] as? String , identifier == deviceIdentifier else {
-                        return false
-                    }
-                }
-                if let deviceName = deviceName {
-                    guard let name = result["name"] as? String , name == deviceName else {
-                        return false
-                    }
-                }
-                if notificationService != nil || notificationToken != nil {
-                    guard let pushCredentials = result["push_credentials"] as? [String: String] else {
-                        return false
-                    }
-                    if let notificationService = notificationService {
-                        guard let service = pushCredentials["service"] , service == notificationService else {
-                            return false
-                        }
-                    }
-                    if let notificationToken = notificationToken {
-                        guard let token = pushCredentials["token"] , token == notificationToken else {
-                            return false
-                        }
-                    }
-                }
-                return true
             }
+            if let deviceIdentifier = deviceIdentifier {
+                guard let identifier = result["identifier"] as? String , identifier == deviceIdentifier else {
+                    return false
+                }
+            }
+            if let deviceName = deviceName {
+                guard let name = result["name"] as? String , name == deviceName else {
+                    return false
+                }
+            }
+            if notificationService != nil || notificationToken != nil {
+                guard let pushCredentials = result["push_credentials"] as? [String: String] else {
+                    return false
+                }
+                if let notificationService = notificationService {
+                    guard let service = pushCredentials["service"] , service == notificationService else {
+                        return false
+                    }
+                }
+                if let notificationToken = notificationToken {
+                    guard let token = pushCredentials["token"] , token == notificationToken else {
+                        return false
+                    }
+                }
+            }
+            return true
         }
         return false
     }
@@ -198,17 +196,15 @@ func haveEnrollment(withBaseUrl baseURL: URL, enrollmentId: String, deviceToken:
             " <period: \(period)>"
         
         if let actual = try expression.evaluate(), case .success(let result) = actual {
-            if let result = result {
-                return result.id == enrollmentId
-                    && result.userId == userId
-                    && result.deviceToken == deviceToken
-                    && result.notificationToken == notificationToken
-                    && result.signingKey.tag == signingKey.tag
-                    && result.base32Secret == base32Secret
-                    && result.algorithm == algorithm
-                    && result.digits == digits
-                    && result.period == period
-            }
+            return result.id == enrollmentId
+                && result.userId == userId
+                && result.deviceToken == deviceToken
+                && result.notificationToken == notificationToken
+                && result.signingKey.tag == signingKey.tag
+                && result.base32Secret == base32Secret
+                && result.algorithm == algorithm
+                && result.digits == digits
+                && result.period == period
         }
         return false
     }
@@ -267,9 +263,6 @@ func beSuccess(withData data: [String: String]) -> MatcherFunc<Result<[String: S
         let message = "be a success response with <payload: \(data)>"
         failureMessage.postfixMessage = message
         if let actual = try expression.evaluate(), case .success(let payload) = actual {
-            guard let payload = payload else {
-                return false
-            }
             return data == payload
         }
         return false
