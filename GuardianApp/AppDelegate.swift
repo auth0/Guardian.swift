@@ -36,7 +36,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
 
         // Set up push notifications
-        Guardian.registerForRemoteNotifications(application)
+        let category = Guardian.categoryForNotification(withAcceptTitle: NSLocalizedString("Allow", comment: "Accept Guardian authentication request"),
+                                                        rejectTitle: NSLocalizedString("Deny", comment: "Reject Guardian authentication request"))
+        let notificationTypes: UIUserNotificationType = [.badge, .sound]
+        let pushNotificationSettings = UIUserNotificationSettings(types: notificationTypes, categories: [category])
+        application.registerUserNotificationSettings(pushNotificationSettings)
+        application.registerForRemoteNotifications()
 
         return true
     }

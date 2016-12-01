@@ -22,7 +22,9 @@
 
 import Foundation
 
-private let AuthenticationCategory = "com.auth0.notification.authentication"
+public let AuthenticationCategory = "com.auth0.notification.authentication"
+let acceptActionIdentifier: String = "\(AuthenticationCategory).accept"
+let rejectActionIdentifier: String = "\(AuthenticationCategory).reject"
 
 /**
  A Guardian Notification contains data about an authentication request.
