@@ -25,7 +25,7 @@ import Foundation
 /**
  An asynchronous HTTP request
  */
-public struct Request<T>: Requestable {
+public class Request<T>: Requestable {
 
     let session: URLSession
     let method: String

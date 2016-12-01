@@ -32,8 +32,8 @@ struct APIClient: API {
         self.session = session
     }
 
-    func enroll(withTicket enrollmentTicket: String, identifier: String, name: String, notificationToken: String, publicKey: JWKConvertable) -> DictionaryRequest {
-        return DictionaryRequest {
+    func enroll(withTicket enrollmentTicket: String, identifier: String, name: String, notificationToken: String, publicKey: JWKConvertable) -> Request<[String: Any]> {
+        do {
             let url = self.baseUrl.appendingPathComponent("api/enroll")
 
             guard let jwk = publicKey.jwk else {
@@ -50,6 +50,8 @@ struct APIClient: API {
                 "public_key": jwk
             ]
             return Request(session: self.session, method: "POST", url: url, payload: payload, headers: ["Authorization": "Ticket id=\"\(enrollmentTicket)\""])
+        } catch(let error) {
+            return FailedRequest(error: error)
         }
     }
 
@@ -63,32 +65,5 @@ struct APIClient: API {
 
     func device(forEnrollmentId id: String, token: String) -> DeviceAPI {
         return DeviceAPIClient(baseUrl: baseUrl, session: session, id: id, token: token)
-    }
-}
-
-public struct DictionaryRequest: Requestable {
-
-    typealias T = [String: Any]
-    typealias RequestBuilder = () throws -> Request<[String: Any]>
-
-    private let buildRequest: RequestBuilder
-
-    init(builder: @escaping RequestBuilder) {
-        self.buildRequest = builder
-    }
-
-    /**
-     Executes the request in a background thread
-
-     - parameter callback: the termination callback, where the result is
-     received
-     */
-    public func start(callback: @escaping (Result<[String: Any]>) -> ()) {
-        do {
-            let request = try buildRequest()
-            request.start(callback: callback)
-        } catch(let error) {
-            callback(.failure(cause: error))
-        }
     }
 }
