@@ -75,7 +75,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         {
             Guardian
                 .authentication(forDomain: AppDelegate.guardianDomain, andEnrollment: enrollment)
-                .handleAction(withIdentifier: identifier, andNotification: notification)
+                .handleAction(withIdentifier: identifier, notification: notification)
                 .start { _ in
                     completionHandler()
             }

@@ -31,6 +31,7 @@ private let invalidBase32SecretMessage = "a0.guardian.internal.invalid_base32_se
 private let invalidPublicKeyMessage = "a0.guardian.internal.invalid_public_key"
 private let invalidPrivateKeyMessage = "a0.guardian.internal.invalid_private_key"
 private let invalidOTPAlgorithmMessage = "a0.guardian.internal.invalid_otp_algorithm"
+private let invalidNotificationActionIdentifierMessage = "a0.guardian.internal.invalid_notification_action_identifier"
 
 /**
  An `Error` that encapsulates server and other possible internal errors
@@ -113,5 +114,9 @@ internal extension GuardianError {
 
     static var invalidEnrollmentUri: GuardianError {
         return GuardianError(string: invalidEnrollmentUriMessage)
+    }
+
+    static var invalidNotificationActionIdentifier: GuardianError {
+        return GuardianError(string: invalidNotificationActionIdentifierMessage)
     }
 }

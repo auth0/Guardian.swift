@@ -101,7 +101,7 @@ public protocol Authentication {
             let enrollment: Enrollment = ...
             Guardian
                 .authentication(forDomain: "tenant.guardian.auth0.com", andEnrollment: enrollment)
-                .handleAction(withIdentifier: identifier, andNotification: notification)
+                .handleAction(withIdentifier: identifier, notification: notification)
                 .start { result in
                     completionHandler()
             }
@@ -109,7 +109,7 @@ public protocol Authentication {
      }
      ```
      */
-    func handleAction(withIdentifier identifier: String, andNotification notification: Notification) -> Request<Void>
+    func handleAction(withIdentifier identifier: String, notification: Notification) -> Request<Void>
 }
 
 public extension Authentication {
@@ -163,12 +163,14 @@ struct RSAAuthentication: Authentication {
         }
     }
 
-    func handleAction(withIdentifier identifier: String, andNotification notification: Notification) -> Request<Void> {
+    func handleAction(withIdentifier identifier: String, notification: Notification) -> Request<Void> {
         switch identifier {
         case acceptActionIdentifier:
             return allow(notification: notification)
-        default:
+        case rejectActionIdentifier:
             return reject(notification: notification)
+        default:
+            return FailedRequest(error: GuardianError.invalidNotificationActionIdentifier)
         }
     }
 }
