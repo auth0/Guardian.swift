@@ -187,6 +187,76 @@ public func notification(from userInfo: [AnyHashable: Any]) -> Notification? {
     return AuthenticationNotification(userInfo: userInfo)
 }
 
+/**
+ Creates the `UIUserNotificationCategory` for Guardian using the provided action
+ titles.
+
+ Use this method to set up your application to receive and handle Guardian push 
+ notifications.
+ 
+ Should be called in your AppDelegate's `application(:didFinishLaunchingWithOptions)` method:
+ 
+ ```
+ func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+    /* ... */
+
+    // Set up push notifications
+    let category = Guardian.categoryForNotification(withAcceptTitle: NSLocalizedString("Allow", comment: "Accept Guardian authentication request"),
+                                                    rejectTitle: NSLocalizedString("Deny", comment: "Reject Guardian authentication request"))
+    let notificationTypes: UIUserNotificationType = [.badge, .sound]
+    let pushNotificationSettings = UIUserNotificationSettings(types: notificationTypes, categories: [category])
+    application.registerUserNotificationSettings(pushNotificationSettings)
+    application.registerForRemoteNotifications()
+ 
+    /* ... */
+    return true
+ }
+ ```
+
+ Remember that you should also override your `application(:handleActionWithIdentifier:forRemoteNotification:withResponseInfo:completionHandler)`
+ method to automatically handle the notification actions:
+ 
+ ```
+ func application(_ application: UIApplication, handleActionWithIdentifier identifier: String?, forRemoteNotification userInfo: [AnyHashable : Any], withResponseInfo responseInfo: [AnyHashable : Any], completionHandler: @escaping () -> Void) {
+    if let notification = Guardian.notification(from: userInfo) {
+        /* Get the enrollment that matches the notification ... */
+        let enrollment: Enrollment = ...
+        Guardian
+            .authentication(forDomain: "tenant.guardian.auth0.com", andEnrollment: enrollment)
+            .handleAction(withIdentifier: identifier, notification: notification)
+            .start { result in
+                completionHandler()
+        }
+    }
+ }
+ ```
+ 
+ - parameter withAcceptTitle: the title for the "Accept" notification action
+ - parameter rejectTitle:     the title for the "Reject" notification action
+ */
+public func categoryForNotification(withAcceptTitle acceptTitle: String, rejectTitle: String) -> UIUserNotificationCategory {
+    let acceptAction = UIMutableUserNotificationAction()
+    acceptAction.identifier = acceptActionIdentifier
+    acceptAction.title = acceptTitle
+    acceptAction.isAuthenticationRequired = true
+    acceptAction.activationMode = .background
+    acceptAction.isDestructive = false
+
+    let rejectAction = UIMutableUserNotificationAction()
+    rejectAction.identifier = rejectActionIdentifier
+    rejectAction.title = rejectTitle
+    rejectAction.isAuthenticationRequired = true
+    rejectAction.activationMode = .background
+    rejectAction.isDestructive = true
+
+    let category = UIMutableUserNotificationCategory()
+    category.identifier = AuthenticationCategory
+    category.setActions([acceptAction, rejectAction], for: .default)
+    category.setActions([acceptAction, rejectAction], for: .minimal)
+
+    return category
+}
+
 func url(from domain: String) -> URL? {
     guard domain.hasPrefix("http") else { return URL(string: "https://\(domain)") }
     return URL(string: domain)

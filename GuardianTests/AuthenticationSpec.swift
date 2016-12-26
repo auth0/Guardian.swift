@@ -198,6 +198,62 @@ class AuthenticationSpec: QuickSpec {
                 }
             }
         }
+
+        describe("handleAction") {
+
+            it("should allow when identifier is com.auth0.notification.authentication.accept") {
+                stub(condition: isResolveTransaction(domain: Domain)
+                    && hasBearerToken(ValidTransactionToken)) { req in
+                        if checkJWT(request: req, accepted: true) {
+                            return successResponse()
+                        }
+                        return errorResponse(statusCode: 401, errorCode: "invalid_token", message: "Invalid challenge_response")
+                    }.name = "Checking challenge_response"
+                let enrollment = Enrollment(id: ValidEnrollmentId, userId: ValidUserId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, signingKey: ValidRSAPrivateKey, base32Secret: ValidBase32Secret)
+                let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, challenge: ValidNotificationChallenge, startedAt: Date(), source: nil, location: nil)
+                waitUntil(timeout: Timeout) { done in
+                    Guardian.authentication(forDomain: Domain, andEnrollment: enrollment)
+                        .handleAction(withIdentifier: "com.auth0.notification.authentication.accept", notification: notification)
+                        .start { result in
+                            expect(result).to(beSuccess())
+                            done()
+                    }
+                }
+            }
+
+            it("should reject when identifier is com.auth0.notification.authentication.reject") {
+                stub(condition: isResolveTransaction(domain: Domain)
+                    && hasBearerToken(ValidTransactionToken)) { req in
+                        if checkJWT(request: req, accepted: false) {
+                            return successResponse()
+                        }
+                        return errorResponse(statusCode: 401, errorCode: "invalid_token", message: "Invalid challenge_response")
+                    }.name = "Checking challenge_response"
+                let enrollment = Enrollment(id: ValidEnrollmentId, userId: ValidUserId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, signingKey: ValidRSAPrivateKey, base32Secret: ValidBase32Secret)
+                let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, challenge: ValidNotificationChallenge, startedAt: Date(), source: nil, location: nil)
+                waitUntil(timeout: Timeout) { done in
+                    Guardian.authentication(forDomain: Domain, andEnrollment: enrollment)
+                        .handleAction(withIdentifier: "com.auth0.notification.authentication.reject", notification: notification)
+                        .start { result in
+                            expect(result).to(beSuccess())
+                            done()
+                    }
+                }
+            }
+
+            it("should fail when identifier is not valid") {
+                let enrollment = Enrollment(id: ValidEnrollmentId, userId: ValidUserId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, signingKey: ValidRSAPrivateKey, base32Secret: ValidBase32Secret)
+                let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, challenge: ValidNotificationChallenge, startedAt: Date(), source: nil, location: nil)
+                waitUntil(timeout: Timeout) { done in
+                    Guardian.authentication(forDomain: Domain, andEnrollment: enrollment)
+                        .handleAction(withIdentifier: "com.auth0.notification.authentication.something", notification: notification)
+                        .start { result in
+                            expect(result).to(haveGuardianError(withErrorCode: "a0.guardian.internal.invalid_notification_action_identifier"))
+                            done()
+                    }
+                }
+            }
+        }
     }
 }
 

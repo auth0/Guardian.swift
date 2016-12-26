@@ -86,6 +86,30 @@ public protocol Authentication {
      - returns: a request to execute
      */
     func reject(notification: Notification, withReason reason: String?) -> Request<Void>
+
+    /**
+     Handles the Guardian remote notification action matching the supplied 
+     identifier.
+
+     You could use this method in your AppDelegate's `application(:handleActionWithIdentifier:forRemoteNotification:withResponseInfo:completionHandler)`
+     method to automatically handle the notification actions:
+
+     ```
+     func application(_ application: UIApplication, handleActionWithIdentifier identifier: String?, forRemoteNotification userInfo: [AnyHashable : Any], withResponseInfo responseInfo: [AnyHashable : Any], completionHandler: @escaping () -> Void) {
+        if let notification = Guardian.notification(from: userInfo) {
+            /* Get the enrollment that matches the notification ... */
+            let enrollment: Enrollment = ...
+            Guardian
+                .authentication(forDomain: "tenant.guardian.auth0.com", andEnrollment: enrollment)
+                .handleAction(withIdentifier: identifier, notification: notification)
+                .start { result in
+                    completionHandler()
+            }
+        }
+     }
+     ```
+     */
+    func handleAction(withIdentifier identifier: String, notification: Notification) -> Request<Void>
 }
 
 public extension Authentication {
@@ -136,6 +160,17 @@ struct RSAAuthentication: Authentication {
             return self.api.resolve(transaction: transactionToken, withChallengeResponse: jwt)
         } catch(let error) {
             return FailedRequest(error: error)
+        }
+    }
+
+    func handleAction(withIdentifier identifier: String, notification: Notification) -> Request<Void> {
+        switch identifier {
+        case acceptActionIdentifier:
+            return allow(notification: notification)
+        case rejectActionIdentifier:
+            return reject(notification: notification)
+        default:
+            return FailedRequest(error: GuardianError.invalidNotificationActionIdentifier)
         }
     }
 }
