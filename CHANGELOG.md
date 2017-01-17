@@ -1,3 +1,12 @@
+# Change Log
+
+## [0.2.0](https://github.com/auth0/Guardian.swift/tree/0.2.0) (2017-01-16)
+[Full Changelog](https://github.com/auth0/Guardian.swift/compare/0.1.0...0.2.0)
+
+**Added**
+- Make jwk conversion property public [\#47](https://github.com/auth0/Guardian.swift/pull/47) ([hzalaz](https://github.com/hzalaz))
+- Add methods to register and handle remote notifications [\#45](https://github.com/auth0/Guardian.swift/pull/45) ([nikolaseu](https://github.com/nikolaseu))
+
 ## [0.1.0](https://github.com/auth0/Guardian.swift/tree/0.1.0) (2016-11-23)
 
 First release of Guardian for iOS
