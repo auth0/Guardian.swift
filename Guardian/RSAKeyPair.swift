@@ -163,6 +163,13 @@ public protocol JWKConvertable {
      The format of the data depends on the type of key.
      */
     var data: Data? { get }
+
+    /**
+     Key as JSON Web Key format (JWK).
+
+     If key is invalid it will return nil.
+    */
+    var jwk: [String: Any]? { get }
 }
 
 extension JWKConvertable {
