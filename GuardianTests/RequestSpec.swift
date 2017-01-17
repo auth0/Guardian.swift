@@ -105,7 +105,8 @@ class RequestSpec: QuickSpec {
                                 let libInfo = try? JSONSerialization.jsonObject(with: decodedLibInfo!, options: []) as! [String: String]
                                 expect(libInfo?.count).to(equal(2))
                                 expect(libInfo?["name"]).to(equal("Guardian.swift"))
-                                expect(libInfo?["version"]).to(equal("0.1.0"))
+                                let version = Bundle.main.infoDictionary!["CFBundleShortVersionString"] as! String
+                                expect(libInfo?["version"]).to(equal(version))
                                 done()
                         }
                     }
