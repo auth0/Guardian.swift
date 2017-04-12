@@ -28,7 +28,7 @@ To use this SDK you have to configure your tenant's Guardian service with your o
 credentials, otherwise you would not receive any push notifications. Please read the
 [docs](https://auth0.com/docs/multifactor-authentication/guardian) about how to accomplish that.
 
-##Install
+## Install
 
 #### CocoaPods
 
