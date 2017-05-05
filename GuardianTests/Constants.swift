@@ -24,10 +24,10 @@ import Foundation
 
 @testable import Guardian
 
-let Domain = "tenant.guardian.auth0.com"
+let Domain = "tenant.guardian.auth0.com/also/works/in/appliance/"
 let Timeout: TimeInterval = 2
 
-let ValidURL = URL(string: "https://\(Domain)/")!
+let ValidURL = URL(string: "https://\(Domain)")!
 let ValidTransactionId = UUID().uuidString
 let ValidEnrollmentId = UUID().uuidString
 let ValidEnrollmentToken = UUID().uuidString

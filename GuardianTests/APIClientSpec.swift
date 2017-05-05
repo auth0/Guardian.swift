@@ -30,7 +30,7 @@ class APIClientSpec: QuickSpec {
     
     override func spec() {
         
-        let client = APIClient(baseUrl: URL(string: "https://\(Domain)/")!, session: URLSession.shared)
+        let client = APIClient(baseUrl: ValidURL, session: URLSession.shared)
         
         beforeEach {
             stub(condition: { _ in return true }) { _ in
@@ -45,7 +45,7 @@ class APIClientSpec: QuickSpec {
         describe("enroll") {
 
             beforeEach {
-                stub(condition: isMobileEnroll(domain: Domain)
+                stub(condition: isMobileEnroll(baseUrl: ValidURL)
                     && hasTicketAuth(ValidTransactionId)
                     && hasAtLeast([
                         "identifier": ValidDeviceIdentifier,
@@ -100,14 +100,14 @@ class APIClientSpec: QuickSpec {
         describe("resolve-transaction") {
 
             beforeEach {
-                stub(condition: isResolveTransaction(domain: Domain)) { _ in
+                stub(condition: isResolveTransaction(baseUrl: ValidURL)) { _ in
                     return errorResponse(statusCode: 404, errorCode: "invalid_token", message: "Invalid transaction token")
                     }.name = "Missing authentication"
-                stub(condition: isResolveTransaction(domain: Domain)
+                stub(condition: isResolveTransaction(baseUrl: ValidURL)
                     && hasBearerToken(ValidTransactionToken)) { req in
                         return errorResponse(statusCode: 401, errorCode: "invalid_challenge", message: "Invalid challenge_response")
                     }.name = "Invalid challenge_response"
-                stub(condition: isResolveTransaction(domain: Domain)
+                stub(condition: isResolveTransaction(baseUrl: ValidURL)
                     && hasBearerToken(ValidTransactionToken)
                     && hasAtLeast([
                         "challenge_response": ValidChallengeResponse
@@ -153,14 +153,14 @@ class APIClientSpec: QuickSpec {
         describe("delete enrollment") {
             
             beforeEach {
-                stub(condition: isDeleteEnrollment(domain: Domain)) { _ in
+                stub(condition: isDeleteEnrollment(baseUrl: ValidURL)) { _ in
                     return errorResponse(statusCode: 404, errorCode: "invalid_token", message: "Invalid transaction token")
                     }.name = "Missing authentication"
-                stub(condition: isDeleteEnrollment(domain: Domain)
+                stub(condition: isDeleteEnrollment(baseUrl: ValidURL)
                     && hasBearerToken(ValidEnrollmentToken)) { _ in
                         return errorResponse(statusCode: 404, errorCode: "enrollment_not_found", message: "Enrollment not found")
                     }.name = "Enrollment not found"
-                stub(condition: isDeleteEnrollment(domain: Domain, enrollmentId: ValidEnrollmentId)
+                stub(condition: isDeleteEnrollment(baseUrl: ValidURL, enrollmentId: ValidEnrollmentId)
                     && hasBearerToken(ValidEnrollmentToken)) { _ in
                         return successResponse()
                     }.name = "Valid delete enrollment"
@@ -206,14 +206,14 @@ class APIClientSpec: QuickSpec {
         describe("update enrollment") {
             
             beforeEach {
-                stub(condition: isUpdateEnrollment(domain: Domain)) { _ in
+                stub(condition: isUpdateEnrollment(baseUrl: ValidURL)) { _ in
                     return errorResponse(statusCode: 404, errorCode: "invalid_token", message: "Invalid transaction token")
                     }.name = "Missing authentication"
-                stub(condition: isUpdateEnrollment(domain: Domain)
+                stub(condition: isUpdateEnrollment(baseUrl: ValidURL)
                     && hasBearerToken(ValidEnrollmentToken)) { _ in
                         return errorResponse(statusCode: 404, errorCode: "enrollment_not_found", message: "Enrollment not found")
                     }.name = "Enrollment not found"
-                stub(condition: isUpdateEnrollment(domain: Domain, enrollmentId: ValidEnrollmentId)
+                stub(condition: isUpdateEnrollment(baseUrl: ValidURL, enrollmentId: ValidEnrollmentId)
                     && hasBearerToken(ValidEnrollmentToken)) { req in
                         let payload = req.a0_payload
                         let pushCredentials = payload?["push_credentials"] as? [String: String]

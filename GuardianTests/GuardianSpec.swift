@@ -79,7 +79,7 @@ class GuardianSpec: QuickSpec {
         describe("enroll(forDomain:, session:, withUri:, notificationToken:)") {
 
             beforeEach {
-                stub(condition: isMobileEnroll(domain: Domain)
+                stub(condition: isMobileEnroll(baseUrl: ValidURL)
                     && hasTicketAuth(ValidTransactionId)
                     && hasAtLeast([
                         "identifier": Enrollment.defaultDeviceIdentifier,
@@ -97,7 +97,7 @@ class GuardianSpec: QuickSpec {
                         "n": "AKZpUNxEdyiAcvJEI-qxsGEm-96lcPh9Qtu0LWU9OY2oWhDIX_ZKsHYXbqpPyqXUYv4IcvK9X4XnuVvMqxGWxK3kARuAQgjOE-naOl5ed4FNCTTs58e7Jg32bILQqY2539MLomObKloFqAeyA5EMKv1f3pAT2dife5uN7QUz-ifaTGJlP6UCRjfY8TTbbpvFvOHfZmVptfSmq94typg4u2yUgMGRl0vTCkz35e-ox1Y7GfeIkBGQUzY6GFFXPxOct_71a6KtzXxOnYeI9HX0WYX8-hyULasv3RzTLteHIU70Bczfh7hUVGtLMBBLDY0KhZqkZAfrDA38NZm4z932-OqXJ1nVx0MiT9Kt73jy8Gp78CO7t9lJcml3vW1pW-p7swZan8Bs5u6E9Ntch1LUZitxq-f51FsCc478xDp-Yb51FFN-3MPVgW_orXfq_cuOvbQVtr2RciKHTUs4EOfxgj27X0Yzymfi33r9xtJIwUQyoXEhXN6GpKnFnQQvQtSiyhWMGTEbhN8Lu7EDJOD5E4OcZ51J_JveOtg5Y35InjQGcwcHSGzwhrbv3YUIWiXM_w6tBYCJMKC12Myb84D7mavDKhwP3iZ7LBC71kS6Fi53MkM9YIlIGb1OL_tMXDLjKkAPk7JyABITRvE_IbK1ag93UL5G2lrIAgkGNBJIx3mV"
                         ])) { _ in
                             return enrollResponse(enrollmentId: ValidEnrollmentId,
-                                                  url: ValidURL.host,
+                                                  url: ValidURL.absoluteString,
                                                   userId: ValidUserId,
                                                   issuer: ValidIssuer,
                                                   token: ValidEnrollmentToken,
@@ -155,7 +155,7 @@ class GuardianSpec: QuickSpec {
             }
 
             it("should fail when enrollment transaction is invalid") {
-                stub(condition: isMobileEnroll(domain: Domain)
+                stub(condition: isMobileEnroll(baseUrl: ValidURL)
                     && !hasTicketAuth(ValidTransactionId)) { _ in
                         return errorResponse(statusCode: 404, errorCode: "enrollment_transaction_not_found", message: "Not found")
                     }.name = "Enrollment transaction not found"
@@ -170,7 +170,7 @@ class GuardianSpec: QuickSpec {
             }
 
             it("should fail when enrollment transaction is valid but response is invalid") {
-                stub(condition: isMobileEnroll(domain: Domain)
+                stub(condition: isMobileEnroll(baseUrl: ValidURL)
                     && hasTicketAuth(ValidTransactionId)) { _ in
                         let json = [
                             "notTheRequiredField": "someValue",

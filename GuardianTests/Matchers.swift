@@ -72,40 +72,49 @@ func hasTicketAuth(_ ticket: String) -> OHHTTPStubsTestBlock {
     }
 }
 
-func isPathStartingWith(_ path: String) -> OHHTTPStubsTestBlock {
+func isUrl(from baseUrl: URL, containingPathStartingWith path: String) -> OHHTTPStubsTestBlock {
     return { req in
-        guard let path = req.url?.path, let range = path.range(of: path) else {
+        let partialUrl = baseUrl.appendingPathComponent(path).absoluteString
+        guard let url = req.url?.absoluteString
+            , let range = url.range(of: partialUrl) else {
             return false
         }
         return range.lowerBound == path.startIndex
     }
 }
 
-func isEnrollmentInfo(domain: String) -> OHHTTPStubsTestBlock {
-    return isScheme("https") && isHost(domain) && isMethodPOST() && isPath("/api/enrollment-info")
-}
-
-func isMobileEnroll(domain: String) -> OHHTTPStubsTestBlock {
-    return isScheme("https") && isHost(domain) && isMethodPOST() && isPath("/api/enroll")
-}
-
-func isResolveTransaction(domain: String) -> OHHTTPStubsTestBlock {
-    return isScheme("https") && isHost(domain) && isMethodPOST() && isPath("/api/resolve-transaction")
-}
-
-func isEnrollment(domain: String, enrollmentId: String? = nil) -> OHHTTPStubsTestBlock {
-    if let enrollmentId = enrollmentId {
-        return isHost(domain) && isPath("/api/device-accounts/\(enrollmentId)")
+func isUrl(from baseUrl: URL, endingWithPathComponent pathComponent: String) -> OHHTTPStubsTestBlock {
+    return { req in
+        return req.url == baseUrl.appendingPathComponent(pathComponent)
     }
-    return isHost(domain) && isPathStartingWith("/api/device-accounts/")
 }
 
-func isDeleteEnrollment(domain: String, enrollmentId: String? = nil) -> OHHTTPStubsTestBlock {
-    return isMethodDELETE() && isEnrollment(domain: domain, enrollmentId: enrollmentId)
+
+func isEnrollmentInfo(baseUrl: URL) -> OHHTTPStubsTestBlock {
+    return isScheme("https") && isMethodPOST() && isUrl(from: baseUrl, endingWithPathComponent: "api/enrollment-info")
 }
 
-func isUpdateEnrollment(domain: String, enrollmentId: String? = nil) -> OHHTTPStubsTestBlock {
-    return isMethodPATCH() && isEnrollment(domain: domain, enrollmentId: enrollmentId)
+func isMobileEnroll(baseUrl: URL) -> OHHTTPStubsTestBlock {
+    return isScheme("https") && isMethodPOST() && isUrl(from: baseUrl, endingWithPathComponent: "api/enroll")
+}
+
+func isResolveTransaction(baseUrl: URL) -> OHHTTPStubsTestBlock {
+    return isScheme("https") && isMethodPOST() && isUrl(from: baseUrl, endingWithPathComponent: "api/resolve-transaction")
+}
+
+func isEnrollment(baseUrl: URL, enrollmentId: String? = nil) -> OHHTTPStubsTestBlock {
+    if let enrollmentId = enrollmentId {
+        return isUrl(from: baseUrl, endingWithPathComponent: "api/device-accounts/\(enrollmentId)")
+    }
+    return isUrl(from: baseUrl, containingPathStartingWith: "api/device-accounts/")
+}
+
+func isDeleteEnrollment(baseUrl: URL, enrollmentId: String? = nil) -> OHHTTPStubsTestBlock {
+    return isMethodDELETE() && isEnrollment(baseUrl: baseUrl, enrollmentId: enrollmentId)
+}
+
+func isUpdateEnrollment(baseUrl: URL, enrollmentId: String? = nil) -> OHHTTPStubsTestBlock {
+    return isMethodPATCH() && isEnrollment(baseUrl: baseUrl, enrollmentId: enrollmentId)
 }
 
 func haveDeviceAccountToken(_ deviceAccountToken: String?) -> MatcherFunc<Result<[String: String]>> {
