@@ -37,7 +37,25 @@ import Foundation
  - seealso: Guardian.API
  */
 public func api(forDomain domain: String, session: URLSession = .shared) -> API {
-    return APIClient(baseUrl: url(from: domain)!, session: session)
+    return api(url: url(from: domain)!, session: session)
+}
+
+/**
+ Creates a low level API client for Guardian MFA server
+
+ ```
+ let api = Guardian.api(url: URL(string: "https://tenant.guardian.auth0.com/")!)
+ ```
+
+ - parameter url:       URL of your Guardian server
+ - parameter session:   session to use for network requests
+
+ - returns: an Guardian API client
+
+ - seealso: Guardian.API
+ */
+public func api(url: URL, session: URLSession = .shared) -> API {
+    return APIClient(baseUrl: url, session: session)
 }
 
 /**
@@ -60,6 +78,30 @@ public func api(forDomain domain: String, session: URLSession = .shared) -> API 
  */
 public func authentication(forDomain domain: String, andEnrollment enrollment: Enrollment, session: URLSession = .shared) -> Authentication {
     let client = api(forDomain: domain, session: session)
+    return RSAAuthentication(api: client, enrollment: enrollment)
+}
+
+/**
+ Creates an authentication manager for a Guardian enrollment
+
+ ```
+ let enrollment: Enrollment = // the object you obtained when enrolling
+ let authenticator = Guardian
+    .authentication(url: URL(string: "https://tenant.guardian.auth0.com/")!,
+                    andEnrollment: enrollment)
+ ```
+
+ - parameter url:           URL of your Guardian server
+ - parameter andEnrollment: the enrollment that will be used to handle
+ authentication
+ - parameter session:       session to use for network requests
+
+ - returns: an `Authentication` instance
+
+ - seealso: Guardian.Authentication
+ */
+public func authentication(url: URL, andEnrollment enrollment: Enrollment, session: URLSession = .shared) -> Authentication {
+    let client = api(url: url, session: session)
     return RSAAuthentication(api: client, enrollment: enrollment)
 }
 
@@ -113,6 +155,55 @@ public func enroll(forDomain domain: String, session: URLSession = .shared, usin
 }
 
 /**
+ Creates a request to enroll from a Guardian enrollment URI
+
+ You'll have to create a new pair of RSA keys for the enrollment.
+ The keys will be stored on the keychain, and we'll later access them by `tag`,
+ so you should use a unique identifier every time you create them.
+
+ ```
+ let rsaKeyPair = RSAKeyPair.new(usingPublicTag: "com.auth0.guardian.enroll.public",
+                                 privateTag: "com.auth0.guardian.enroll.private")
+ ```
+
+ You will also need an enroll uri (from a Guardian QR code for example) and the
+ APNS token for the device.
+
+ Finally, to create an enrollment you just use it like this:
+
+ ```
+ let enrollUri: String = // obtained from a Guardian QR code
+ let apnsToken: String = // apple push notification service token for this device
+
+ Guardian
+    .enroll(url: URL(string: "https://tenant.guardian.auth0.com/")!,
+            usingUri: enrollUri,
+            notificationToken: apnsToken,
+            keyPair: rsaKeyPair)
+    .start { result in
+        switch result {
+        case .success(let enrollment):
+            // we have the enrollment data, save it for later usages
+        case .failure(let cause):
+            // something failed
+        }
+ }
+ ```
+
+ - parameter url:               URL of your Guardian server
+ - parameter session:           session to use for network requests
+ - parameter usingUri:          the enrollment URI
+ - parameter notificationToken: the APNS token of the device
+ - parameter keyPair:           the RSA key pair
+
+ - returns: a request to create an enrollment
+ */
+public func enroll(url: URL, session: URLSession = .shared, usingUri uri: String, notificationToken: String, keyPair: RSAKeyPair) -> EnrollRequest {
+    let client = api(url: url, session: session)
+    return EnrollRequest(api: client, enrollmentUri: uri, notificationToken: notificationToken, keyPair: keyPair)
+}
+
+/**
  Creates a request to enroll from a Guardian enrollment ticket
 
  You'll have to create a new pair of RSA keys for the enrollment.
@@ -157,6 +248,54 @@ public func enroll(forDomain domain: String, session: URLSession = .shared, usin
  */
 public func enroll(forDomain domain: String, session: URLSession = .shared, usingTicket ticket: String, notificationToken: String, keyPair: RSAKeyPair) -> EnrollRequest {
     let client = api(forDomain: domain, session: session)
+    return EnrollRequest(api: client, enrollmentTicket: ticket, notificationToken: notificationToken, keyPair: keyPair)
+}
+
+/**
+ Creates a request to enroll from a Guardian enrollment ticket
+
+ You'll have to create a new pair of RSA keys for the enrollment.
+ The keys will be stored on the keychain, and we'll later access them by `tag`,
+ so you should use a unique identifier every time you create them.
+
+ ```
+ let rsaKeyPair = RSAKeyPair.new(usingPublicTag: "com.auth0.guardian.enroll.public",
+                                 privateTag: "com.auth0.guardian.enroll.private")
+ ```
+
+ You will also need an enroll ticket and the APNS token for the device.
+
+ Finally, to create an enrollment you just use it like this:
+
+ ```
+ let enrollTicket: String = // obtained from a Guardian QR code or email
+ let apnsToken: String = // apple push notification service token for this device
+
+ Guardian
+    .enroll(url: URL(string: "https://tenant.guardian.auth0.com/")!,
+            usingTicket: enrollTicket,
+            notificationToken: apnsToken,
+            keyPair: rsaKeyPair)
+    .start { result in
+        switch result {
+        case .success(let enrollment):
+            // we have the enrollment data, save it for later usages
+        case .failure(let cause):
+            // something failed
+        }
+ }
+ ```
+
+ - parameter url:               URL of your Guardian server
+ - parameter session:           session to use for network requests
+ - parameter usingTicket:       the enrollment ticket
+ - parameter notificationToken: the APNS token of the device
+ - parameter keyPair:           the RSA key pair
+
+ - returns: a request to create an enrollment
+ */
+public func enroll(url: URL, session: URLSession = .shared, usingTicket ticket: String, notificationToken: String, keyPair: RSAKeyPair) -> EnrollRequest {
+    let client = api(url: url, session: session)
     return EnrollRequest(api: client, enrollmentTicket: ticket, notificationToken: notificationToken, keyPair: keyPair)
 }
 
