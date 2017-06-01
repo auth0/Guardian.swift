@@ -144,7 +144,7 @@ struct RSAAuthentication: Authentication {
             var jwtPayload: [String: Any] = [
                 "iat": currentTime,
                 "exp": currentTime + RSAAuthentication.challengeResponseExpiresInSecs,
-                "aud": self.api.baseUrl.absoluteString,
+                "aud": self.api.baseUrl.appendingPathComponent("api/resolve-transaction").absoluteString,
                 "iss": self.enrollment.deviceIdentifier,
                 "sub": challenge,
                 "auth0_guardian_method": "push",
