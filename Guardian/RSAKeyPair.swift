@@ -47,7 +47,7 @@ public class RSAKeyPair {
         self.privateKey = privateKey
     }
 
-    convenience init(publicKeyTag: String, privateKeyTag: String) {
+    public convenience init(publicKeyTag: String, privateKeyTag: String) {
         self.init(publicKey: RSAKeyPair.publicKey(withTag: publicKeyTag),
                   privateKey: RSAKeyPair.privateKey(withTag: privateKeyTag))
     }
