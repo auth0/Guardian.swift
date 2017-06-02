@@ -1,5 +1,12 @@
 # Change Log
 
+## [0.3.0](https://github.com/auth0/Guardian.swift/tree/0.3.0) (2017-06-02)
+[Full Changelog](https://github.com/auth0/Guardian.swift/compare/0.2.0...0.3.0)
+
+**Added**
+- Make RSAKeyPair(publicKeyTag:privateKeyTag) constructor public [\#49](https://github.com/auth0/Guardian.swift/pull/49) ([nikolaseu](https://github.com/nikolaseu))
+- Add support for appliance [\#48](https://github.com/auth0/Guardian.swift/pull/48) ([nikolaseu](https://github.com/nikolaseu))
+
 ## [0.2.0](https://github.com/auth0/Guardian.swift/tree/0.2.0) (2017-01-16)
 [Full Changelog](https://github.com/auth0/Guardian.swift/compare/0.1.0...0.2.0)
 
