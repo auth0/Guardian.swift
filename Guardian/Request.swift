@@ -59,6 +59,15 @@ public class Request<T>: Requestable {
             request.httpBody = body
         }
 
+        print(">>>> \(method) \(url.absoluteString)")
+        if let body = request.httpBody {
+            print("⬇ body ⬇")
+            print("\(String(data: body, encoding: .utf8)!)")
+            print("⬆ body ⬆")
+        } else {
+            print("---- empty body ----")
+        }
+
         let bundle = Bundle(for: _ObjectiveGuardian.classForCoder())
         if let version = bundle.infoDictionary?["CFBundleShortVersionString"] as? String,
             let clientInfo = try? JSONSerialization.data(withJSONObject: [
@@ -71,17 +80,25 @@ public class Request<T>: Requestable {
 
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         headers?.forEach { request.setValue($1, forHTTPHeaderField: $0) }
-        
+
         let task = session.dataTask(with: request as URLRequest) { data, response, error in
             if let error = error { return callback(.failure(cause: error)) }
             guard let httpResponse = response as? HTTPURLResponse else {
                 return callback(.failure(cause: GuardianError.invalidResponse))
             }
+            print("<<<< \(httpResponse.statusCode) \(self.method) \(self.url.absoluteString)")
             guard (200..<300).contains(httpResponse.statusCode) else {
                 guard let info: [String: Any] = json(data) else {
                     return callback(.failure(cause: GuardianError.invalidResponse(withStatus: httpResponse.statusCode)))
                 }
                 return callback(.failure(cause: GuardianError(info: info, statusCode: httpResponse.statusCode)))
+            }
+            if let data = data {
+                print("⬇ response ⬇")
+                print("\(String(data: data, encoding: .utf8)!)")
+                print("⬆ response ⬆")
+            } else {
+                print("---- empty response ----")
             }
             if let payload: T = json(data) {
                 callback(.success(payload: payload))
