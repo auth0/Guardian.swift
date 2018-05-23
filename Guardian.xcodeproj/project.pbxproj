@@ -191,7 +191,6 @@
 		5F20380D1D5E421F0005D2E2 /* Cartfile.private */ = {isa = PBXFileReference; lastKnownFileType = text; path = Cartfile.private; sourceTree = "<group>"; };
 		5F20380E1D5E421F0005D2E2 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		5F20380F1D5E421F0005D2E2 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		5F2038101D5E42AD0005D2E2 /* .carthage_cache.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .carthage_cache.yml; sourceTree = "<group>"; };
 		5F2038111D5E42AD0005D2E2 /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		5F2038141D5E43CD0005D2E2 /* .travis.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .travis.yml; sourceTree = "<group>"; };
 		5F2038161D5E43DD0005D2E2 /* .env */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = .env; path = script/.env; sourceTree = "<group>"; };
@@ -409,7 +408,6 @@
 				5F2038181D5E46210005D2E2 /* Gemfile */,
 				5F2038161D5E43DD0005D2E2 /* .env */,
 				5F2038141D5E43CD0005D2E2 /* .travis.yml */,
-				5F2038101D5E42AD0005D2E2 /* .carthage_cache.yml */,
 				5F2038111D5E42AD0005D2E2 /* .gitignore */,
 				5F20380C1D5E421F0005D2E2 /* Cartfile.resolved */,
 				5F20380D1D5E421F0005D2E2 /* Cartfile.private */,
