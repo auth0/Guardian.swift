@@ -1,0 +1,59 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:ios)
+
+platform :ios do
+
+  before_all do
+    setup_circle_ci
+  end
+
+  private_lane :certificates do |options|
+    match(git_url: "git@github.com:auth0/apple-certificates.git", type: "development", readonly: options[:read_only])
+  end
+
+  private_lane :dependencies do
+    carthage(platform: "iOS", use_binaries: false, cache_builds: true)
+  end
+
+  lane :bootstrap do |options|
+    read_only = !(options[:generate_certs] || false)
+    skip_certificates = options[:skip_certificates] || false
+    dependencies()
+    certificates(read_only: read_only) unless skip_certificates
+  end
+
+  lane :test do
+    scan(
+      scheme: "Guardian",
+      skip_slack: true,
+      clean: true
+    )
+  end
+
+  lane :ci do
+    bootstrap(skip_certificates: true)
+    test()
+  end
+
+  lane :apns do
+    get_push_certificate(
+      development: true,
+      save_private_key: true,
+      generate_p12: true
+    )
+  end
+end

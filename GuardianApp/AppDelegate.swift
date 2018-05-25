@@ -26,7 +26,7 @@ import Guardian
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-    static let guardianDomain = "nikolaseu-test.guardian.auth0.com"
+    static let guardianDomain = "guardian-demo.guardian.auth0.com"
     static var enrollment: Enrollment? = nil
     static var pushToken: String? = nil
 
