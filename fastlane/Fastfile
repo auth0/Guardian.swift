@@ -17,6 +17,10 @@ default_platform(:ios)
 
 platform :ios do
 
+  before_all do
+    setup_circle_ci
+  end
+
   private_lane :certificates do |options|
     match(git_url: "git@github.com:auth0/apple-certificates.git", type: "development", readonly: options[:read_only])
   end
