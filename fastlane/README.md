@@ -26,6 +26,16 @@ fastlane ios bootstrap
 fastlane ios test
 ```
 
+### ios ci
+```
+fastlane ios ci
+```
+
+### ios apns
+```
+fastlane ios apns
+```
+
 
 ----
 

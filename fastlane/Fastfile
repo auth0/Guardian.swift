@@ -45,4 +45,11 @@ platform :ios do
     test()
   end
 
+  lane :apns do
+    get_push_certificate(
+      development: true,
+      save_private_key: true,
+      generate_p12: true
+    )
+  end
 end
