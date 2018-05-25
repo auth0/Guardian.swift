@@ -22,6 +22,14 @@
 
 import Foundation
 
+let nonCachedSession: URLSession =  {
+    let config = URLSessionConfiguration.default
+    config.requestCachePolicy = .reloadIgnoringLocalCacheData
+    config.urlCache = nil
+
+    return URLSession.init(configuration: config)
+}()
+
 /**
  Creates a low level API client for Guardian MFA server
 
@@ -36,7 +44,7 @@ import Foundation
  
  - seealso: Guardian.API
  */
-public func api(forDomain domain: String, session: URLSession = .shared) -> API {
+public func api(forDomain domain: String, session: URLSession = nonCachedSession) -> API {
     return api(url: url(from: domain)!, session: session)
 }
 
@@ -54,7 +62,7 @@ public func api(forDomain domain: String, session: URLSession = .shared) -> API 
 
  - seealso: Guardian.API
  */
-public func api(url: URL, session: URLSession = .shared) -> API {
+public func api(url: URL, session: URLSession = nonCachedSession) -> API {
     return APIClient(baseUrl: url, session: session)
 }
 
@@ -76,7 +84,7 @@ public func api(url: URL, session: URLSession = .shared) -> API {
  
  - seealso: Guardian.Authentication
  */
-public func authentication(forDomain domain: String, andEnrollment enrollment: Enrollment, session: URLSession = .shared) -> Authentication {
+public func authentication(forDomain domain: String, andEnrollment enrollment: Enrollment, session: URLSession = nonCachedSession) -> Authentication {
     let client = api(forDomain: domain, session: session)
     return RSAAuthentication(api: client, enrollment: enrollment)
 }
@@ -100,7 +108,7 @@ public func authentication(forDomain domain: String, andEnrollment enrollment: E
 
  - seealso: Guardian.Authentication
  */
-public func authentication(url: URL, andEnrollment enrollment: Enrollment, session: URLSession = .shared) -> Authentication {
+public func authentication(url: URL, andEnrollment enrollment: Enrollment, session: URLSession = nonCachedSession) -> Authentication {
     let client = api(url: url, session: session)
     return RSAAuthentication(api: client, enrollment: enrollment)
 }
@@ -149,7 +157,7 @@ public func authentication(url: URL, andEnrollment enrollment: Enrollment, sessi
  
  - returns: a request to create an enrollment
  */
-public func enroll(forDomain domain: String, session: URLSession = .shared, usingUri uri: String, notificationToken: String, keyPair: RSAKeyPair) -> EnrollRequest {
+public func enroll(forDomain domain: String, session: URLSession = nonCachedSession, usingUri uri: String, notificationToken: String, keyPair: RSAKeyPair) -> EnrollRequest {
     let client = api(forDomain: domain, session: session)
     return EnrollRequest(api: client, enrollmentUri: uri, notificationToken: notificationToken, keyPair: keyPair)
 }
@@ -198,7 +206,7 @@ public func enroll(forDomain domain: String, session: URLSession = .shared, usin
 
  - returns: a request to create an enrollment
  */
-public func enroll(url: URL, session: URLSession = .shared, usingUri uri: String, notificationToken: String, keyPair: RSAKeyPair) -> EnrollRequest {
+public func enroll(url: URL, session: URLSession = nonCachedSession, usingUri uri: String, notificationToken: String, keyPair: RSAKeyPair) -> EnrollRequest {
     let client = api(url: url, session: session)
     return EnrollRequest(api: client, enrollmentUri: uri, notificationToken: notificationToken, keyPair: keyPair)
 }
@@ -246,7 +254,7 @@ public func enroll(url: URL, session: URLSession = .shared, usingUri uri: String
 
  - returns: a request to create an enrollment
  */
-public func enroll(forDomain domain: String, session: URLSession = .shared, usingTicket ticket: String, notificationToken: String, keyPair: RSAKeyPair) -> EnrollRequest {
+public func enroll(forDomain domain: String, session: URLSession = nonCachedSession, usingTicket ticket: String, notificationToken: String, keyPair: RSAKeyPair) -> EnrollRequest {
     let client = api(forDomain: domain, session: session)
     return EnrollRequest(api: client, enrollmentTicket: ticket, notificationToken: notificationToken, keyPair: keyPair)
 }
@@ -294,7 +302,7 @@ public func enroll(forDomain domain: String, session: URLSession = .shared, usin
 
  - returns: a request to create an enrollment
  */
-public func enroll(url: URL, session: URLSession = .shared, usingTicket ticket: String, notificationToken: String, keyPair: RSAKeyPair) -> EnrollRequest {
+public func enroll(url: URL, session: URLSession = nonCachedSession, usingTicket ticket: String, notificationToken: String, keyPair: RSAKeyPair) -> EnrollRequest {
     let client = api(url: url, session: session)
     return EnrollRequest(api: client, enrollmentTicket: ticket, notificationToken: notificationToken, keyPair: keyPair)
 }
