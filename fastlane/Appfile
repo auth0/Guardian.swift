@@ -1,0 +1,6 @@
+app_identifier("com.auth0.guardian.sample") # The bundle identifier of your app
+apple_id("mobile@auth0.com") # Your Apple email address
+
+
+# For more information about the Appfile, see:
+#     https://docs.fastlane.tools/advanced/#appfile

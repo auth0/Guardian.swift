@@ -1,0 +1,70 @@
+# .circleci/config.yml
+
+# Specify the config version - version 2 is latest.
+version: 2
+
+# Define the jobs for the current project.
+jobs:
+  build-and-test:
+
+    # Specify the Xcode version to use.
+    macos:
+      xcode: "9.3.0"
+    working_directory: /Users/distiller/project
+    environment:
+      - LC_ALL: en_US.UTF-8
+      - LANG: en_US.UTF-8
+      - FL_OUTPUT_DIR: output
+      - FASTLANE_EXPLICIT_OPEN_SIMULATOR: 2
+
+    # Define the steps required to build the project.
+    steps:
+
+      # Get the code from the VCS provider.
+      - checkout
+
+      - restore_cache:
+          keys:
+          - guardian.swift-ruby-v1-{{ checksum "Gemfile.lock" }}
+          # Fall back to using the latest cache if no exact match is found.
+          - guardian.swift-ruby-v1-
+
+      # Install gems.
+      - run:
+          name: Bundle install
+          command: bundle check || bundle install --without=development
+          environment:
+            BUNDLE_JOBS: 4
+            BUNDLE_RETRY: 3
+
+      - save_cache:
+          key: guardian.swift-ruby-v1-{{ checksum "Gemfile.lock" }}
+          paths:
+            - vendor/bundle
+
+      # Download iOS Dependencies
+      - restore_cache:
+          keys:
+            - guardian.swift-carthage-v1-{{ checksum "Cartfile.resolved" }}
+            - guardian.swift-carthage-v1-
+
+      # Run tests.
+      - run:
+          name: Run tests
+          command: bundle exec fastlane ios ci
+
+      - save_cache:
+          key: guardian.swift-carthage-v1-{{ checksum "Cartfile.resolved" }}
+          paths:
+            - Carthage/Build
+
+      - store_test_results:
+          path: output/scan
+      - store_artifacts:
+          path: output
+
+workflows:
+  version: 2
+  build-and-test:
+    jobs:
+      - build-and-test
