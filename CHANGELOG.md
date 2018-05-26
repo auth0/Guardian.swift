@@ -1,5 +1,17 @@
 # Change Log
 
+## [0.3.1](https://github.com/auth0/Guardian.swift/tree/0.3.1) (2018-05-25)
+[Full Changelog](https://github.com/auth0/Guardian.swift/compare/0.3.0...0.3.1)
+
+**Closed issues**
+- Turn off iOS HTTP cache [\#51](https://github.com/auth0/Guardian.swift/issues/51)
+
+**Changed**
+- Update project to latests tools and Xcode 9.3 [\#52](https://github.com/auth0/Guardian.swift/pull/52) ([hzalaz](https://github.com/hzalaz))
+
+**Fixed**
+- Disable NSURLSession cache [\#53](https://github.com/auth0/Guardian.swift/pull/53) ([hzalaz](https://github.com/hzalaz))
+
 ## [0.3.0](https://github.com/auth0/Guardian.swift/tree/0.3.0) (2017-06-02)
 [Full Changelog](https://github.com/auth0/Guardian.swift/compare/0.2.0...0.3.0)
 
@@ -18,11 +30,11 @@
 
 First release of Guardian for iOS
 
-##Install
+## Install
 
 #### CocoaPods
 
-Guardian.swift is available through [CocoaPods](http://cocoapods.org). 
+Guardian.swift is available through [CocoaPods](http://cocoapods.org).
 To install it, simply add the following line to your Podfile:
 
 ```ruby
@@ -74,7 +86,7 @@ Guardian
                 keyPair: keyPair)
         .start { result in
             switch result {
-            case .success(let enrollment): 
+            case .success(let enrollment):
                 // success, we have the enrollment data available
             case .failure(let cause):
                 // something failed, check cause to see what went wrong
@@ -95,7 +107,7 @@ let rsaKeyPair = RSAKeyPair.new(
     )
 ```
 
-> The tags should be unique since it's the identifier of each key inside iOS Keychain. 
+> The tags should be unique since it's the identifier of each key inside iOS Keychain.
 
 > Since the keys are already secured stored inside iOS Keychain, you olny need to store the identifiers
 
@@ -122,7 +134,7 @@ Guardian
         .allow(notification: notification)
         .start { result in
             switch result {
-            case .success: 
+            case .success:
                 // the auth request was successfuly allowed
             case .failure(let cause):
                 // something failed, check cause to see what went wrong
