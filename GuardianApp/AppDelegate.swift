@@ -48,8 +48,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         // when the registration for push notification succeeds
-        AppDelegate.pushToken = deviceToken.reduce(String(), {$0 + String(format: "%02X", $1)})
-        print("DEVICE TOKEN = \(AppDelegate.pushToken)")
+        let token = deviceToken.reduce(String(), {$0 + String(format: "%02X", $1)})
+        AppDelegate.pushToken = token
+        print("DEVICE TOKEN = \(token)")
     }
 
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
@@ -72,7 +73,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, handleActionWithIdentifier identifier: String?, forRemoteNotification userInfo: [AnyHashable : Any], withResponseInfo responseInfo: [AnyHashable : Any], completionHandler: @escaping () -> Void) {
         // when the app has been activated by the user selecting an action from a remote notification
-        print("identifier: \(identifier), userInfo: \(userInfo)")
+        print("identifier: \(String(describing: identifier)), userInfo: \(String(describing: userInfo))")
 
         if let notification = Guardian.notification(from: userInfo),
             let enrollment = AppDelegate.enrollment,

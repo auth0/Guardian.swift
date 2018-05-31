@@ -62,14 +62,14 @@ import UIKit
     //Circle
     let circlePath = UIBezierPath()
     let center     = CGPoint(x: centerX, y: centerY)
-    circlePath.addArc(withCenter: center, radius: circleRadius, startAngle: 0.0, endAngle: CGFloat(M_PI), clockwise: true)
-    circlePath.addArc(withCenter: center, radius: circleRadius, startAngle: CGFloat(M_PI), endAngle: CGFloat(M_PI * 2), clockwise: true)
+    circlePath.addArc(withCenter: center, radius: circleRadius, startAngle: 0.0, endAngle: CGFloat.pi, clockwise: true)
+    circlePath.addArc(withCenter: center, radius: circleRadius, startAngle: CGFloat.pi, endAngle: CGFloat.pi * 2, clockwise: true)
 
     // Draw beams
     paintColor.setFill()
 
     for i in 0 ..< 8 {
-      let angle = ((2 * CGFloat(M_PI)) / 8) * CGFloat(i);
+      let angle = ((2 * CGFloat.pi) / 8) * CGFloat(i);
 
       let startPoint = CGPoint(x: centerX + cos(angle) * lineOriginFromCenter, y: centerY + sin(angle) * lineOriginFromCenter);
       let endPoint   = CGPoint(x: centerX + cos(angle) * (lineOriginFromCenter + lineLength), y: centerY + sin(angle) * (lineOriginFromCenter + lineLength));
