@@ -117,82 +117,78 @@ func isUpdateEnrollment(baseUrl: URL, enrollmentId: String? = nil) -> OHHTTPStub
     return isMethodPATCH() && isEnrollment(baseUrl: baseUrl, enrollmentId: enrollmentId)
 }
 
-func haveDeviceAccountToken(_ deviceAccountToken: String?) -> MatcherFunc<Result<[String: String]>> {
-    return MatcherFunc { expression, failureMessage in
-        var message = "be a successful enrollment info result with"
-        if let deviceAccountToken = deviceAccountToken {
-            message = message.appending(" <device_account_token: \(deviceAccountToken)>")
-        }
-        failureMessage.postfixMessage = message
-        if let actual = try expression.evaluate(), case .success(let result) = actual {
+func haveDeviceAccountToken(_ deviceAccountToken: String?) -> Predicate<Result<[String: String]>> {
+    return Predicate.define("be a successful enrollment info result with") { actualExpression, msg -> PredicateResult in
+        let message = msg.appended(details: String(describing: deviceAccountToken))
+        if let actual = try actualExpression.evaluate(), case .success(let result) = actual {
             if let token = result["device_account_token"] {
-                return deviceAccountToken == token
+                return PredicateResult(status: PredicateStatus(bool: deviceAccountToken == token), message: message)
             }
         }
-        return false
+        return PredicateResult(status: .fail, message: message)
     }
 }
 
-func haveEnrollment(withId enrollmentId: String?, deviceIdentifier: String?, deviceName: String?, notificationService: String?, notificationToken: String?) -> MatcherFunc<Result<[String: Any]>> {
-    return MatcherFunc { expression, failureMessage in
-        var message = "be a successful enrollment info result with"
+func haveEnrollment(withId enrollmentId: String?, deviceIdentifier: String?, deviceName: String?, notificationService: String?, notificationToken: String?) -> Predicate<Result<[String: Any]>> {
+    return Predicate.define("be a successful enrollment info result with") { expression, msg -> PredicateResult in
+        var message = msg
         if let enrollmentId = enrollmentId {
-            message = message.appending(" <id: \(enrollmentId)>")
+            message = message.appended(details: " <id: \(enrollmentId)>")
         }
         if let deviceIdentifier = deviceIdentifier {
-            message = message.appending(" <identifier: \(deviceIdentifier)>")
+            message = message.appended(details: " <identifier: \(deviceIdentifier)>")
         }
         if let deviceName = deviceName {
-            message = message.appending(" <name: \(deviceName)>")
+            message = message.appended(details: " <name: \(deviceName)>")
         }
         if let notificationService = notificationService {
-            message = message.appending(" <push_credentials.service: \(notificationService)>")
+            message = message.appended(details: " <push_credentials.service: \(notificationService)>")
         }
         if let notificationToken = notificationToken {
-            message = message.appending(" <push_credentials.token: \(notificationToken)>")
+            message = message.appended(details: " <push_credentials.token: \(notificationToken)>")
         }
-        failureMessage.postfixMessage = message
+
         if let actual = try expression.evaluate(), case .success(let result) = actual {
             if let enrollmentId = enrollmentId {
                 guard let id = result["id"] as? String , id == enrollmentId else {
-                    return false
+                    return PredicateResult(status: .fail, message: message)
                 }
             }
             if let deviceIdentifier = deviceIdentifier {
                 guard let identifier = result["identifier"] as? String , identifier == deviceIdentifier else {
-                    return false
+                    return PredicateResult(status: .fail, message: message)
                 }
             }
             if let deviceName = deviceName {
                 guard let name = result["name"] as? String , name == deviceName else {
-                    return false
+                    return PredicateResult(status: .fail, message: message)
                 }
             }
             if notificationService != nil || notificationToken != nil {
                 guard let pushCredentials = result["push_credentials"] as? [String: String] else {
-                    return false
+                    return PredicateResult(status: .fail, message: message)
                 }
                 if let notificationService = notificationService {
                     guard let service = pushCredentials["service"] , service == notificationService else {
-                        return false
+                        return PredicateResult(status: .fail, message: message)
                     }
                 }
                 if let notificationToken = notificationToken {
                     guard let token = pushCredentials["token"] , token == notificationToken else {
-                        return false
+                        return PredicateResult(status: .fail, message: message)
                     }
                 }
             }
-            return true
+            return PredicateResult(status: PredicateStatus(bool: true), message: message)
         }
-        return false
+        return PredicateResult(status: .fail, message: message)
+
     }
 }
 
-func haveEnrollment(withBaseUrl baseURL: URL, enrollmentId: String, deviceToken: String, notificationToken: String, issuer: String, userId: String, signingKey: RSAPrivateKey, base32Secret: String, algorithm: String, digits: Int, period: Int) -> MatcherFunc<Result<Enrollment>> {
-    return MatcherFunc { expression, failureMessage in
-        failureMessage.postfixMessage = "be an enrollment with" +
-            " <baseUrl: \(baseURL)>" +
+func haveEnrollment(withBaseUrl baseURL: URL, enrollmentId: String, deviceToken: String, notificationToken: String, issuer: String, userId: String, signingKey: RSAPrivateKey, base32Secret: String, algorithm: String, digits: Int, period: Int) -> Predicate<Result<Enrollment>> {
+    return Predicate.define("be an enrollment with") { expression, msg -> PredicateResult in
+        let message = msg.appended(details: " <baseUrl: \(baseURL)>" +
             " <id: \(enrollmentId)>" +
             " <deviceToken: \(deviceToken)>" +
             " <notificationToken: \(notificationToken)>" +
@@ -202,10 +198,9 @@ func haveEnrollment(withBaseUrl baseURL: URL, enrollmentId: String, deviceToken:
             " <base32Secret: \(base32Secret)>" +
             " <algorithm: \(algorithm)>" +
             " <digits: \(digits)>" +
-            " <period: \(period)>"
-        
+            " <period: \(period)>")
         if let actual = try expression.evaluate(), case .success(let result) = actual {
-            return result.id == enrollmentId
+            let status = result.id == enrollmentId
                 && result.userId == userId
                 && result.deviceToken == deviceToken
                 && result.notificationToken == notificationToken
@@ -214,78 +209,73 @@ func haveEnrollment(withBaseUrl baseURL: URL, enrollmentId: String, deviceToken:
                 && result.algorithm == algorithm
                 && result.digits == digits
                 && result.period == period
+            return PredicateResult(bool: status, message: message)
         }
-        return false
+        return PredicateResult(status: .fail, message: message)
     }
 }
 
-func haveGuardianError<T>(withErrorCode errorCode: String? = nil, andStatusCode statusCode: Int? = nil) -> MatcherFunc<Result<T>> {
-    return MatcherFunc { expression, failureMessage in
-        var message = "be a Guardian error response with"
+func haveGuardianError<T>(withErrorCode errorCode: String? = nil, andStatusCode statusCode: Int? = nil) -> Predicate<Result<T>> {
+    return Predicate.define("be a Guardian error response with") { expression, msg -> PredicateResult in
+        var message = msg
         if let errorCode = errorCode {
-            message = message.appending(" <errorCode: \(errorCode)>")
+            message = message.appended(details: " <errorCode: \(errorCode)>")
         }
         if let statusCode = statusCode {
-            message = message.appending(" <statusCode: \(statusCode)>")
+            message = message.appended(details: " <statusCode: \(statusCode)>")
         }
-        failureMessage.postfixMessage = message
         if let actual = try expression.evaluate(), case .failure(let cause) = actual {
             if let error = cause as? GuardianError {
-                return (errorCode == nil || errorCode == error.errorCode) &&
-                (statusCode == nil || statusCode == error.statusCode)
+                let status = (errorCode == nil || errorCode == error.errorCode) &&
+                    (statusCode == nil || statusCode == error.statusCode)
+                return PredicateResult(bool: status, message: message)
             }
         }
-        return false
+        return PredicateResult(status: .fail, message: message)
     }
 }
 
-func haveNSError<T>(withErrorCode errorCode: Int? = nil) -> MatcherFunc<Result<T>> {
-    return MatcherFunc { expression, failureMessage in
-        var message = "be an NSError"
+func haveNSError<T>(withErrorCode errorCode: Int? = nil) -> Predicate<Result<T>> {
+    return Predicate.define("be an NSError") { expression, msg -> PredicateResult in
+        var message = msg
         if let errorCode = errorCode {
-            message = message.appending(" with <code: \(errorCode)>")
+            message = message.appended(details: " with <code: \(errorCode)>")
         }
-        failureMessage.postfixMessage = message
         if let actual = try expression.evaluate(), case .failure(let cause) = actual {
             let error = cause as NSError
-            return errorCode == nil || errorCode == error.code
+            let status = errorCode == nil || errorCode == error.code
+            return PredicateResult(bool: status, message: message)
         }
-        return false
+        return PredicateResult(status: .fail, message: message)
     }
 }
 
-func haveError<T, E>(_ error: E) -> MatcherFunc<Result<T>> where E: Error, E: Equatable {
-    return MatcherFunc { expression, failureMessage in
-        let message = "fail with <error: \(error)>"
-        failureMessage.postfixMessage = message
+func haveError<T, E>(_ error: E) -> Predicate<Result<T>> where E: Error, E: Equatable {
+    return Predicate.define("fail with <error: \(error)>") { expression, msg -> PredicateResult in
         if let actual = try expression.evaluate(), case .failure(let cause) = actual {
             if let cause = cause as? E {
-                return cause == error
+                return PredicateResult(bool: cause == error, message: msg)
             }
         }
-        return false
+        return PredicateResult(status: .fail, message: msg)
     }
 }
 
-func beSuccess(withData data: [String: String]) -> MatcherFunc<Result<[String: String]>> {
-    return MatcherFunc { expression, failureMessage in
-        let message = "be a success response with <payload: \(data)>"
-        failureMessage.postfixMessage = message
+func beSuccess(withData data: [String: String]) -> Predicate<Result<[String: String]>> {
+    return Predicate.define("be a success response with <payload: \(data)>") { expression, msg -> PredicateResult in
         if let actual = try expression.evaluate(), case .success(let payload) = actual {
-            return data == payload
+            return PredicateResult(bool: data == payload, message: msg)
         }
-        return false
+        return PredicateResult(status: .fail, message: msg)
     }
 }
 
-func beSuccess<T>() -> MatcherFunc<Result<T>> {
-    return MatcherFunc { expression, failureMessage in
-        let message = "be an empty success response"
-        failureMessage.postfixMessage = message
+func beSuccess<T>() -> Predicate<Result<T>> {
+    return Predicate.define("be an empty success response") { expression, msg -> PredicateResult in
         if let actual = try expression.evaluate(), case .success(_) = actual {
-            return true
+            return PredicateResult(bool: true, message: msg)
         }
-        return false
+        return PredicateResult(status: .fail, message: msg)
     }
 }
 
