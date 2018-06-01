@@ -28,7 +28,7 @@ import Foundation
  - seealso: Guardian.enroll
  - seealso: Guardian.Enrollment
  */
-public struct EnrollRequest: Requestable {
+public class EnrollRequest: Requestable {
 
     typealias T = Enrollment
 
@@ -37,6 +37,7 @@ public struct EnrollRequest: Requestable {
     private let enrollmentUri: String?
     private let notificationToken: String
     private let keyPair: RSAKeyPair
+    private var logger: Logger? = nil
 
     init(api: API, enrollmentTicket: String? = nil, enrollmentUri: String? = nil, notificationToken: String, keyPair: RSAKeyPair) {
         self.api = api
@@ -44,6 +45,11 @@ public struct EnrollRequest: Requestable {
         self.enrollmentUri = enrollmentUri
         self.notificationToken = notificationToken
         self.keyPair = keyPair
+    }
+
+    public func log(into logger: @escaping Logger = defaultLogger) -> EnrollRequest {
+        self.logger = logger
+        return self
     }
 
     /**
@@ -62,8 +68,12 @@ public struct EnrollRequest: Requestable {
             return callback(.failure(cause: GuardianError.invalidEnrollmentUri))
         }
 
-        api.enroll(withTicket: ticket, identifier: Enrollment.defaultDeviceIdentifier, name: Enrollment.defaultDeviceName, notificationToken: notificationToken, publicKey: keyPair.publicKey)
-            .start { result in
+        var request = api.enroll(withTicket: ticket, identifier: Enrollment.defaultDeviceIdentifier, name: Enrollment.defaultDeviceName, notificationToken: notificationToken, publicKey: keyPair.publicKey)
+
+        if let logger = self.logger {
+            request = request.log(into: logger)
+        }
+        request.start { result in
                 switch result {
                 case .failure(let cause):
                     callback(.failure(cause: cause))

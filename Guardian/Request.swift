@@ -22,6 +22,12 @@
 
 import Foundation
 
+/// Definition of function to log a string
+public typealias Logger = (String) -> ()
+
+/// Default logger using Swift print function
+let defaultLogger: Logger = { (line: String) in print(line) }
+
 /**
  An asynchronous HTTP request
  */
@@ -31,14 +37,38 @@ public class Request<T>: Requestable {
     let method: String
     let url: URL
     let payload: [String: Any]?
-    let headers: [String: String]?
+    let headers: [String: String]
+    var logger: Logger? = nil
     
     init(session: URLSession, method: String, url: URL, payload: [String: Any]? = nil, headers: [String: String]? = nil) {
         self.session = session
         self.method = method
         self.url = url
         self.payload = payload
+        let bundle = Bundle(for: _ObjectiveGuardian.classForCoder())
+        var headers = headers ?? [:]
+        if let version = bundle.infoDictionary?["CFBundleShortVersionString"] as? String,
+            let clientInfo = try? JSONSerialization.data(withJSONObject: [
+                "name": "Guardian.swift",
+                "version": version
+                ])
+        {
+            headers["Auth0-Client"] = clientInfo.base64URLEncodedString()
+        }
+
+        if payload != nil {
+            headers["Content-Type"] = "application/json"
+        }
         self.headers = headers
+    }
+
+    /// Makes the operation logs the request payload. By default it will log to console
+    ///
+    /// - Parameter logger: function that will log the information provided
+    /// - Returns: the request itself for chaining
+    public func log(into logger: @escaping Logger = defaultLogger) -> Request<T> {
+        self.logger = logger
+        return self
     }
 
     /**
@@ -49,8 +79,9 @@ public class Request<T>: Requestable {
      */
     public func start(callback: @escaping (Result<T>) -> ()) {
         let request = NSMutableURLRequest(url: url)
-        request.httpMethod = method
-        
+        request.httpMethod = self.method
+        self.headers.forEach { request.setValue($1, forHTTPHeaderField: $0) }
+
         if let payload = payload {
             guard let body = try? JSONSerialization.data(withJSONObject: payload, options: []) else {
                 callback(.failure(cause: GuardianError.invalidPayload))
@@ -59,20 +90,20 @@ public class Request<T>: Requestable {
             request.httpBody = body
         }
 
-        let bundle = Bundle(for: _ObjectiveGuardian.classForCoder())
-        if let version = bundle.infoDictionary?["CFBundleShortVersionString"] as? String,
-            let clientInfo = try? JSONSerialization.data(withJSONObject: [
-                "name": "Guardian.swift",
-                "version": version
-                ])
-        {
-            request.setValue(clientInfo.base64URLEncodedString(), forHTTPHeaderField: "Auth0-Client")
+        #if DEBUG
+        if let logger = self.logger {
+            logger("\(self.method) \(self.url)")
+            request.allHTTPHeaderFields?.forEach { logger("\($0): \($1)") }
+            logger("")
+            if let payload = self.payload,
+                let body = try? JSONSerialization.data(withJSONObject: payload, options: .prettyPrinted),
+                let json = String(data: body, encoding: .utf8) {
+                    logger(json.replacingOccurrences(of: "\\n", with: "\n"))
+                }
         }
+        #endif
 
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        headers?.forEach { request.setValue($1, forHTTPHeaderField: $0) }
-        
-        let task = session.dataTask(with: request as URLRequest) { data, response, error in
+        let task = self.session.dataTask(with: request as URLRequest) { data, response, error in
             if let error = error { return callback(.failure(cause: error)) }
             guard let httpResponse = response as? HTTPURLResponse else {
                 return callback(.failure(cause: GuardianError.invalidResponse))

@@ -81,6 +81,7 @@ class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
 
             Guardian
                 .enroll(forDomain: AppDelegate.guardianDomain, usingUri: result.value, notificationToken: AppDelegate.pushToken!, keyPair: keyPair)
+                .log()
                 .start { result in
                     switch result {
                     case .failure(let cause):
@@ -114,6 +115,7 @@ class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
                 .api(forDomain: AppDelegate.guardianDomain)
                 .device(forEnrollmentId: enrollment.id, token: enrollment.deviceToken)
                 .delete()
+                .log()
                 .start { [unowned self] result in
                     switch result {
                     case .failure(let cause):

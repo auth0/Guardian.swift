@@ -38,6 +38,7 @@ class NotificationController: UIViewController {
         Guardian
             .authentication(forDomain: AppDelegate.guardianDomain, andEnrollment: enrollment)
             .allow(notification: notification)
+            .log()
             .start { result in
                 print(result)
                 switch result {
@@ -58,6 +59,7 @@ class NotificationController: UIViewController {
         Guardian
             .authentication(forDomain: AppDelegate.guardianDomain, andEnrollment: enrollment)
             .reject(notification: notification)
+            .log()
             .start { result in
                 print(result)
                 switch result {
