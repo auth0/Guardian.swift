@@ -70,6 +70,7 @@
 		5F20380A1D5E40EE0005D2E2 /* Nimble.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5F2038001D5E40C70005D2E2 /* Nimble.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5F7969341DDABDDE006AC7BA /* AuthenticationSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1DB45C1DA4750F00264437 /* AuthenticationSpec.swift */; };
 		5F7969371DDAC074006AC7BA /* JWTSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2331BFEC1DD52ED50047F1D4 /* JWTSpec.swift */; };
+		5FB4ECBC20C9A5050050B275 /* Hooks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FB4ECBB20C9A5050050B275 /* Hooks.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -193,6 +194,7 @@
 		5F20380F1D5E421F0005D2E2 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		5F2038111D5E42AD0005D2E2 /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		5F2038181D5E46210005D2E2 /* Gemfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Gemfile; sourceTree = "<group>"; };
+		5FB4ECBB20C9A5050050B275 /* Hooks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Hooks.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -260,6 +262,7 @@
 				2374A9E21D670F5900737F2E /* Request.swift */,
 				2374A9EE1D672ABD00737F2E /* Result.swift */,
 				23AD869E1DEE10B500051F41 /* FailedRequest.swift */,
+				5FB4ECBB20C9A5050050B275 /* Hooks.swift */,
 			);
 			name = Networking;
 			sourceTree = "<group>";
@@ -592,6 +595,7 @@
 				233F75271D92F27000B8C15C /* Notification.swift in Sources */,
 				23C67AEE1D81EF5300A38A2E /* Enrollment.swift in Sources */,
 				235B4B221DA3F51D00CEB5DC /* A0HMAC.m in Sources */,
+				5FB4ECBC20C9A5050050B275 /* Hooks.swift in Sources */,
 				2331C01A1DD5FC6F0047F1D4 /* Data+Base64URL.swift in Sources */,
 				2331BFEB1DD5260D0047F1D4 /* JWT.swift in Sources */,
 				231687191DDA07FD00B09526 /* A0SHA.m in Sources */,

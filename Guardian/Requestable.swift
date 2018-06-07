@@ -22,7 +22,7 @@
 
 import Foundation
 
-protocol Requestable {
+protocol Requestable: CustomDebugStringConvertible, CustomStringConvertible {
 
     associatedtype T
 

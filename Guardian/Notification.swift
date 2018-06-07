@@ -200,6 +200,14 @@ class AuthenticationNotification: NSObject, Notification {
 
         self.init(domain: domain, enrollmentId: enrollmentId, transactionToken: token, challenge: challenge, startedAt: startedAt, source: source, location: location)
     }
+
+    override var description: String {
+        return "enrollmentId: <\(self.enrollmentId)> txToken: <\(self.transactionToken)> challenge: <\(self.challenge)> startedAt: \(self.startedAt)"
+    }
+
+    override var debugDescription: String {
+        return "domain: <\(self.domain)> enrollmentId: <\(self.enrollmentId)> txToken: <\(self.transactionToken)> challenge: <\(self.challenge)> source: <\(String(describing: self.source))> location: <\(String(describing: self.location))> startedAt: \(self.startedAt)"
+    }
 }
 
 class AuthenticationSource: NSObject, Source {
@@ -243,6 +251,18 @@ class AuthenticationSource: NSObject, Source {
         self.os = os
         self.browser = browser
     }
+
+    override var description: String {
+        let osName = self.os?.name ?? "Unknown OS"
+        let osVersion = self.os?.version != nil ? "(\(String(describing: self.os?.version))" : ""
+        let browserName = self.browser?.name ?? "Unknown Browser"
+        let browserVersion = self.browser?.version != nil ? "(\(String(describing: self.browser?.version))" : ""
+        return "\(osName) \(osVersion)".trimmingCharacters(in: .whitespaces) + " \(browserName) \(browserVersion)".trimmingCharacters(in: .whitespaces)
+    }
+
+    override var debugDescription: String {
+        return self.description
+    }
 }
 
 class AuthenticationLocation: NSObject, Location {
@@ -268,4 +288,13 @@ class AuthenticationLocation: NSObject, Location {
             longitude = longitudeValue as? NSNumber
         }
     }
+
+    override var description: String {
+        return "\(self.name ?? "Unknown") (\(String(describing: self.latitude)), \(String(describing: self.longitude)))"
+    }
+
+    override var debugDescription: String {
+        return self.description
+    }
+
 }

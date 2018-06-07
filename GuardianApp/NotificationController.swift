@@ -35,10 +35,11 @@ class NotificationController: UIViewController {
         guard let notification = notification, let enrollment = AppDelegate.enrollment else {
             return self.dismiss(animated: true, completion: nil)
         }
-        Guardian
+        let request = Guardian
             .authentication(forDomain: AppDelegate.guardianDomain, andEnrollment: enrollment)
             .allow(notification: notification)
-            .start { result in
+        debugPrint(request)
+        request.start { result in
                 print(result)
                 switch result {
                 case .success:
@@ -55,10 +56,11 @@ class NotificationController: UIViewController {
         guard let notification = notification, let enrollment = AppDelegate.enrollment else {
             return self.dismiss(animated: true, completion: nil)
         }
-        Guardian
+        let request = Guardian
             .authentication(forDomain: AppDelegate.guardianDomain, andEnrollment: enrollment)
             .reject(notification: notification)
-            .start { result in
+        debugPrint(request)
+        request.start { result in
                 print(result)
                 switch result {
                 case .success:

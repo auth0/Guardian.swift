@@ -28,7 +28,7 @@ import Foundation
  - seealso: Guardian.enroll
  - seealso: Guardian.Enrollment
  */
-public struct EnrollRequest: Requestable {
+public class EnrollRequest: Requestable {
 
     typealias T = Enrollment
 
@@ -37,6 +37,7 @@ public struct EnrollRequest: Requestable {
     private let enrollmentUri: String?
     private let notificationToken: String
     private let keyPair: RSAKeyPair
+    private var request: Request<[String: Any]>
 
     init(api: API, enrollmentTicket: String? = nil, enrollmentUri: String? = nil, notificationToken: String, keyPair: RSAKeyPair) {
         self.api = api
@@ -44,6 +45,40 @@ public struct EnrollRequest: Requestable {
         self.enrollmentUri = enrollmentUri
         self.notificationToken = notificationToken
         self.keyPair = keyPair
+        let ticket: String
+        if let enrollmentTicket = enrollmentTicket {
+            ticket = enrollmentTicket
+        } else if let enrollmentUri = enrollmentUri, let parameters = parameters(fromUri: enrollmentUri), let enrollmentTxId = parameters["enrollment_tx_id"] {
+            ticket = enrollmentTxId
+        } else {
+            self.request = FailedRequest(error: GuardianError.invalidEnrollmentUri)
+            return
+        }
+
+        self.request = api.enroll(withTicket: ticket, identifier: Enrollment.defaultDeviceIdentifier, name: Enrollment.defaultDeviceName, notificationToken: notificationToken, publicKey: keyPair.publicKey)
+    }
+
+    /// Registers hooks to be called on specific events:
+    ///  * on request being sent
+    ///  * on response recieved (successful or not)
+    ///  * on network error
+    ///
+    /// - Parameters:
+    ///   - request: closure called with request information
+    ///   - response: closure called with response and data
+    ///   - error: closure called with network error
+    /// - Returns: itself for chaining
+    public func on(request: RequestHook? = nil, response: ResponseHook? = nil, error: ErrorHook? = nil) -> EnrollRequest {
+        let _ = self.request.on(request: request, response: response, error: error)
+        return self
+    }
+
+    public var description: String {
+        return self.request.description
+    }
+
+    public var debugDescription: String {
+        return self.request.debugDescription
     }
 
     /**
@@ -53,17 +88,7 @@ public struct EnrollRequest: Requestable {
      received
      */
     public func start(callback: @escaping (Result<Enrollment>) -> ()) {
-        let ticket: String
-        if let enrollmentTicket = enrollmentTicket {
-            ticket = enrollmentTicket
-        } else if let enrollmentUri = enrollmentUri, let parameters = parameters(fromUri: enrollmentUri), let enrollmentTxId = parameters["enrollment_tx_id"] {
-            ticket = enrollmentTxId
-        } else {
-            return callback(.failure(cause: GuardianError.invalidEnrollmentUri))
-        }
-
-        api.enroll(withTicket: ticket, identifier: Enrollment.defaultDeviceIdentifier, name: Enrollment.defaultDeviceName, notificationToken: notificationToken, publicKey: keyPair.publicKey)
-            .start { result in
+        self.request.start { result in
                 switch result {
                 case .failure(let cause):
                     callback(.failure(cause: cause))

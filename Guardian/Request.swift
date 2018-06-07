@@ -31,14 +31,61 @@ public class Request<T>: Requestable {
     let method: String
     let url: URL
     let payload: [String: Any]?
-    let headers: [String: String]?
+    let headers: [String: String]
+    var hooks: Hooks
     
     init(session: URLSession, method: String, url: URL, payload: [String: Any]? = nil, headers: [String: String]? = nil) {
         self.session = session
         self.method = method
         self.url = url
         self.payload = payload
+        self.hooks = Hooks()
+        let bundle = Bundle(for: _ObjectiveGuardian.classForCoder())
+        var headers = headers ?? [:]
+        if let version = bundle.infoDictionary?["CFBundleShortVersionString"] as? String,
+            let clientInfo = try? JSONSerialization.data(withJSONObject: [
+                "name": "Guardian.swift",
+                "version": version
+                ])
+        {
+            headers["Auth0-Client"] = clientInfo.base64URLEncodedString()
+        }
+
+        if payload != nil {
+            headers["Content-Type"] = "application/json"
+        }
         self.headers = headers
+    }
+
+    public var description: String {
+        return "\(self.method) \(self.url)"
+    }
+
+    public var debugDescription: String {
+        var description = "\(self.method) \(self.url)\n"
+        self.headers.forEach { description.append("\($0): \($1)") }
+        description.append("\n")
+        if let payload = self.payload,
+            let body = try? JSONSerialization.data(withJSONObject: payload, options: .prettyPrinted),
+            let json = String(data: body, encoding: .utf8) {
+            description.append(json.replacingOccurrences(of: "\\n", with: "\n"))
+        }
+        return description
+    }
+
+    /// Registers hooks to be called on specific events:
+    ///  * on request being sent
+    ///  * on response recieved (successful or not)
+    ///  * on network error
+    ///
+    /// - Parameters:
+    ///   - request: closure called with request information
+    ///   - response: closure called with response and data
+    ///   - error: closure called with network error
+    /// - Returns: itself for chaining
+    public func on(request: RequestHook? = nil, response: ResponseHook? = nil, error: ErrorHook? = nil) -> Request {
+        self.hooks = Hooks(request: request ?? self.hooks.request, response: response ?? self.hooks.response, error: error ?? self.hooks.error)
+        return self
     }
 
     /**
@@ -48,9 +95,10 @@ public class Request<T>: Requestable {
                            received
      */
     public func start(callback: @escaping (Result<T>) -> ()) {
-        let request = NSMutableURLRequest(url: url)
-        request.httpMethod = method
-        
+        var request = URLRequest(url: url)
+        request.httpMethod = self.method
+        self.headers.forEach { request.setValue($1, forHTTPHeaderField: $0) }
+
         if let payload = payload {
             guard let body = try? JSONSerialization.data(withJSONObject: payload, options: []) else {
                 callback(.failure(cause: GuardianError.invalidPayload))
@@ -59,24 +107,19 @@ public class Request<T>: Requestable {
             request.httpBody = body
         }
 
-        let bundle = Bundle(for: _ObjectiveGuardian.classForCoder())
-        if let version = bundle.infoDictionary?["CFBundleShortVersionString"] as? String,
-            let clientInfo = try? JSONSerialization.data(withJSONObject: [
-                "name": "Guardian.swift",
-                "version": version
-                ])
-        {
-            request.setValue(clientInfo.base64URLEncodedString(), forHTTPHeaderField: "Auth0-Client")
-        }
+        self.hooks.request?(request)
 
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        headers?.forEach { request.setValue($1, forHTTPHeaderField: $0) }
-        
-        let task = session.dataTask(with: request as URLRequest) { data, response, error in
-            if let error = error { return callback(.failure(cause: error)) }
-            guard let httpResponse = response as? HTTPURLResponse else {
-                return callback(.failure(cause: GuardianError.invalidResponse))
+        let task = self.session.dataTask(with: request as URLRequest) { data, response, error in
+            if let error = error {
+                self.hooks.error?(error)
+                return callback(.failure(cause: error))
             }
+            guard let httpResponse = response as? HTTPURLResponse else {
+                let cause = GuardianError.invalidResponse
+                self.hooks.error?(cause)
+                return callback(.failure(cause: cause))
+            }
+            self.hooks.response?(httpResponse, data)
             guard (200..<300).contains(httpResponse.statusCode) else {
                 guard let info: [String: Any] = json(data) else {
                     return callback(.failure(cause: GuardianError.invalidResponse(withStatus: httpResponse.statusCode)))
