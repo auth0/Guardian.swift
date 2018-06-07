@@ -79,6 +79,16 @@ public class Request<T>: Requestable {
         return description
     }
 
+    /// Registers hooks to be called on specific events:
+    ///  * on request being sent
+    ///  * on response recieved (successful or not)
+    ///  * on network error
+    ///
+    /// - Parameters:
+    ///   - request: closure called with request information
+    ///   - response: closure called with response and data
+    ///   - error: closure called with network error
+    /// - Returns: itself for chaining
     public func on(request: RequestHook? = nil, response: ResponseHook? = nil, error: ErrorHook? = nil) -> Request {
         self.hooks = Hooks(request: request ?? self.hooks.request, response: response ?? self.hooks.response, error: error ?? self.hooks.error)
         return self

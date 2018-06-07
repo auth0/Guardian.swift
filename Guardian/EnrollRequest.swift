@@ -59,6 +59,16 @@ public class EnrollRequest: Requestable {
         self.request = api.enroll(withTicket: ticket, identifier: Enrollment.defaultDeviceIdentifier, name: Enrollment.defaultDeviceName, notificationToken: notificationToken, publicKey: keyPair.publicKey)
     }
 
+    /// Registers hooks to be called on specific events:
+    ///  * on request being sent
+    ///  * on response recieved (successful or not)
+    ///  * on network error
+    ///
+    /// - Parameters:
+    ///   - request: closure called with request information
+    ///   - response: closure called with response and data
+    ///   - error: closure called with network error
+    /// - Returns: itself for chaining
     public func on(request: RequestHook? = nil, response: ResponseHook? = nil, error: ErrorHook? = nil) -> EnrollRequest {
         let _ = self.request.on(request: request, response: response, error: error)
         return self
