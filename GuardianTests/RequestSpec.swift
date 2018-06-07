@@ -81,7 +81,7 @@ class RequestSpec: QuickSpec {
                 it("for Content-Type") {
                     waitUntil(timeout: Timeout) { done in
                         let session = MockNSURLSession(data: nil, response: nil, error: nil)
-                        Request<Void>(session: session, method: "PATCH", url: ValidURL)
+                        Request<Void>(session: session, method: "PATCH", url: ValidURL, payload: ["key": "value"])
                             .start { _ in
                                 let request = session.a0_request!
                                 expect(request.value(forHTTPHeaderField: "Content-Type")).to(equal("application/json"))
@@ -125,7 +125,46 @@ class RequestSpec: QuickSpec {
                 }
             }
         }
-        
+
+        describe("hooks") {
+
+            it("should call request hook") {
+                waitUntil(timeout: Timeout) { done in
+                    let session = MockNSURLSession(data: nil, response: nil, error: NSError(domain: "auth0.com", code: ErrorCode, userInfo: nil))
+                    Request<Void>(session: session, method: ValidMethod, url: ValidURL)
+                        .on(request: { request in
+                            done()
+                        })
+                        .start { _ in }
+                }
+            }
+
+            it("should call response hook") {
+                waitUntil(timeout: Timeout) { done in
+                    let messageData = "Success!!".data(using: .utf8)
+                    let httpResponse = HTTPURLResponse(url: ValidURL, statusCode: 200, httpVersion: nil, headerFields: nil)
+                    let session = MockNSURLSession(data: messageData, response: httpResponse, error: nil)
+                    Request<String>(session: session, method: ValidMethod, url: ValidURL)
+                        .on(response: { response, data in
+                            expect(response).to(be(httpResponse))
+                            done()
+                        })
+                        .start { _ in }
+                }
+            }
+
+            it("should call error hook") {
+                waitUntil(timeout: Timeout) { done in
+                    let session = MockNSURLSession(data: nil, response: nil, error: NSError(domain: "auth0.com", code: ErrorCode, userInfo: nil))
+                    Request<Void>(session: session, method: ValidMethod, url: ValidURL)
+                        .on(error: { error in
+                            done()
+                        })
+                        .start { _ in }
+                }
+            }
+        }
+
         describe("callback") {
             
             it("should fail with forwarded error when there is an NSError") {

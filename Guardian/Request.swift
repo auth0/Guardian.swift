@@ -31,20 +31,21 @@ let defaultLogger: Logger = { (line: String) in print(line) }
 /**
  An asynchronous HTTP request
  */
-public class Request<T>: Requestable, CustomDebugStringConvertible {
+public class Request<T>: Requestable {
 
     let session: URLSession
     let method: String
     let url: URL
     let payload: [String: Any]?
     let headers: [String: String]
-    var logger: Logger? = nil
+    var hooks: Hooks
     
     init(session: URLSession, method: String, url: URL, payload: [String: Any]? = nil, headers: [String: String]? = nil) {
         self.session = session
         self.method = method
         self.url = url
         self.payload = payload
+        self.hooks = Hooks()
         let bundle = Bundle(for: _ObjectiveGuardian.classForCoder())
         var headers = headers ?? [:]
         if let version = bundle.infoDictionary?["CFBundleShortVersionString"] as? String,
@@ -62,6 +63,10 @@ public class Request<T>: Requestable, CustomDebugStringConvertible {
         self.headers = headers
     }
 
+    public var description: String {
+        return "\(self.method) \(self.url)"
+    }
+
     public var debugDescription: String {
         var description = "\(self.method) \(self.url)\n"
         self.headers.forEach { description.append("\($0): \($1)") }
@@ -74,12 +79,8 @@ public class Request<T>: Requestable, CustomDebugStringConvertible {
         return description
     }
 
-    /// Makes the operation logs the request payload. By default it will log to console
-    ///
-    /// - Parameter logger: function that will log the information provided
-    /// - Returns: the request itself for chaining
-    public func log(into logger: @escaping Logger = defaultLogger) -> Request<T> {
-        self.logger = logger
+    public func on(request: RequestHook? = nil, response: ResponseHook? = nil, error: ErrorHook? = nil) -> Request {
+        self.hooks = Hooks(request: request ?? self.hooks.request, response: response ?? self.hooks.response, error: error ?? self.hooks.error)
         return self
     }
 
@@ -90,7 +91,7 @@ public class Request<T>: Requestable, CustomDebugStringConvertible {
                            received
      */
     public func start(callback: @escaping (Result<T>) -> ()) {
-        let request = NSMutableURLRequest(url: url)
+        var request = URLRequest(url: url)
         request.httpMethod = self.method
         self.headers.forEach { request.setValue($1, forHTTPHeaderField: $0) }
 
@@ -102,13 +103,19 @@ public class Request<T>: Requestable, CustomDebugStringConvertible {
             request.httpBody = body
         }
 
-        self.logger?(self.debugDescription)
+        self.hooks.request?(request)
 
         let task = self.session.dataTask(with: request as URLRequest) { data, response, error in
-            if let error = error { return callback(.failure(cause: error)) }
-            guard let httpResponse = response as? HTTPURLResponse else {
-                return callback(.failure(cause: GuardianError.invalidResponse))
+            if let error = error {
+                self.hooks.error?(error)
+                return callback(.failure(cause: error))
             }
+            guard let httpResponse = response as? HTTPURLResponse else {
+                let cause = GuardianError.invalidResponse
+                self.hooks.error?(cause)
+                return callback(.failure(cause: cause))
+            }
+            self.hooks.response?(httpResponse, data)
             guard (200..<300).contains(httpResponse.statusCode) else {
                 guard let info: [String: Any] = json(data) else {
                     return callback(.failure(cause: GuardianError.invalidResponse(withStatus: httpResponse.statusCode)))

@@ -79,10 +79,10 @@ class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
                 return
             }
 
-            Guardian
+            let request = Guardian
                 .enroll(forDomain: AppDelegate.guardianDomain, usingUri: result.value, notificationToken: AppDelegate.pushToken!, keyPair: keyPair)
-                .log()
-                .start { result in
+            debugPrint(request)
+            request.start { result in
                     switch result {
                     case .failure(let cause):
                         self.showError("Enroll failed", cause)
@@ -111,12 +111,12 @@ class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
 
     @IBAction func unenrollAction(_ sender: AnyObject) {
         if let enrollment = AppDelegate.enrollment {
-            Guardian
+            let request = Guardian
                 .api(forDomain: AppDelegate.guardianDomain)
                 .device(forEnrollmentId: enrollment.id, token: enrollment.deviceToken)
                 .delete()
-                .log()
-                .start { [unowned self] result in
+            debugPrint(request)
+            request.start { [unowned self] result in
                     switch result {
                     case .failure(let cause):
                         self.showError("Unenroll failed", cause)

@@ -38,6 +38,7 @@ public class EnrollRequest: Requestable {
     private let notificationToken: String
     private let keyPair: RSAKeyPair
     private var logger: Logger? = nil
+    private var request: Request<[String: Any]>
 
     init(api: API, enrollmentTicket: String? = nil, enrollmentUri: String? = nil, notificationToken: String, keyPair: RSAKeyPair) {
         self.api = api
@@ -45,11 +46,30 @@ public class EnrollRequest: Requestable {
         self.enrollmentUri = enrollmentUri
         self.notificationToken = notificationToken
         self.keyPair = keyPair
+        let ticket: String
+        if let enrollmentTicket = enrollmentTicket {
+            ticket = enrollmentTicket
+        } else if let enrollmentUri = enrollmentUri, let parameters = parameters(fromUri: enrollmentUri), let enrollmentTxId = parameters["enrollment_tx_id"] {
+            ticket = enrollmentTxId
+        } else {
+            self.request = FailedRequest(error: GuardianError.invalidEnrollmentUri)
+            return
+        }
+
+        self.request = api.enroll(withTicket: ticket, identifier: Enrollment.defaultDeviceIdentifier, name: Enrollment.defaultDeviceName, notificationToken: notificationToken, publicKey: keyPair.publicKey)
     }
 
-    public func log(into logger: @escaping Logger = defaultLogger) -> EnrollRequest {
-        self.logger = logger
+    public func on(request: RequestHook? = nil, response: ResponseHook? = nil, error: ErrorHook? = nil) -> EnrollRequest {
+        let _ = self.request.on(request: request, response: response, error: error)
         return self
+    }
+
+    public var description: String {
+        return self.request.description
+    }
+
+    public var debugDescription: String {
+        return self.request.debugDescription
     }
 
     /**
@@ -59,21 +79,7 @@ public class EnrollRequest: Requestable {
      received
      */
     public func start(callback: @escaping (Result<Enrollment>) -> ()) {
-        let ticket: String
-        if let enrollmentTicket = enrollmentTicket {
-            ticket = enrollmentTicket
-        } else if let enrollmentUri = enrollmentUri, let parameters = parameters(fromUri: enrollmentUri), let enrollmentTxId = parameters["enrollment_tx_id"] {
-            ticket = enrollmentTxId
-        } else {
-            return callback(.failure(cause: GuardianError.invalidEnrollmentUri))
-        }
-
-        var request = api.enroll(withTicket: ticket, identifier: Enrollment.defaultDeviceIdentifier, name: Enrollment.defaultDeviceName, notificationToken: notificationToken, publicKey: keyPair.publicKey)
-
-        if let logger = self.logger {
-            request = request.log(into: logger)
-        }
-        request.start { result in
+        self.request.start { result in
                 switch result {
                 case .failure(let cause):
                     callback(.failure(cause: cause))
