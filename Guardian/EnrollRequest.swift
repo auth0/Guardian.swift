@@ -37,7 +37,6 @@ public class EnrollRequest: Requestable {
     private let enrollmentUri: String?
     private let notificationToken: String
     private let keyPair: RSAKeyPair
-    private var logger: Logger? = nil
     private var request: Request<[String: Any]>
 
     init(api: API, enrollmentTicket: String? = nil, enrollmentUri: String? = nil, notificationToken: String, keyPair: RSAKeyPair) {

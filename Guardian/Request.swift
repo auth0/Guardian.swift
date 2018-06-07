@@ -22,12 +22,6 @@
 
 import Foundation
 
-/// Definition of function to log a string
-public typealias Logger = (String) -> ()
-
-/// Default logger using Swift print function
-let defaultLogger: Logger = { (line: String) in print(line) }
-
 /**
  An asynchronous HTTP request
  */
