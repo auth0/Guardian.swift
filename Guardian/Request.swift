@@ -31,7 +31,7 @@ let defaultLogger: Logger = { (line: String) in print(line) }
 /**
  An asynchronous HTTP request
  */
-public class Request<T>: Requestable {
+public class Request<T>: Requestable, CustomDebugStringConvertible {
 
     let session: URLSession
     let method: String
@@ -62,6 +62,18 @@ public class Request<T>: Requestable {
         self.headers = headers
     }
 
+    public var debugDescription: String {
+        var description = "\(self.method) \(self.url)\n"
+        self.headers.forEach { description.append("\($0): \($1)") }
+        description.append("\n")
+        if let payload = self.payload,
+            let body = try? JSONSerialization.data(withJSONObject: payload, options: .prettyPrinted),
+            let json = String(data: body, encoding: .utf8) {
+            description.append(json.replacingOccurrences(of: "\\n", with: "\n"))
+        }
+        return description
+    }
+
     /// Makes the operation logs the request payload. By default it will log to console
     ///
     /// - Parameter logger: function that will log the information provided
@@ -90,18 +102,7 @@ public class Request<T>: Requestable {
             request.httpBody = body
         }
 
-        #if DEBUG
-        if let logger = self.logger {
-            logger("\(self.method) \(self.url)")
-            request.allHTTPHeaderFields?.forEach { logger("\($0): \($1)") }
-            logger("")
-            if let payload = self.payload,
-                let body = try? JSONSerialization.data(withJSONObject: payload, options: .prettyPrinted),
-                let json = String(data: body, encoding: .utf8) {
-                    logger(json.replacingOccurrences(of: "\\n", with: "\n"))
-                }
-        }
-        #endif
+        self.logger?(self.debugDescription)
 
         let task = self.session.dataTask(with: request as URLRequest) { data, response, error in
             if let error = error { return callback(.failure(cause: error)) }
