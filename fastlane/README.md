@@ -36,6 +36,13 @@ fastlane ios ci
 fastlane ios apns
 ```
 
+### ios library_release
+```
+fastlane ios library_release
+```
+Releases the library to Cocoapods & Github Releases and updates README/CHANGELOG
+
+You need to specify the type of release with the `bump` parameter with the values [major|minor|patch]
 
 ----
 

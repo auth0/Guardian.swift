@@ -74,3 +74,8 @@ fastlane/test_output
 *.p12
 *.pem
 *.pkey
+
+# Env file
+#
+.env
+.env.default

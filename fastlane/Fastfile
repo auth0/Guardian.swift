@@ -56,4 +56,12 @@ platform :ios do
       generate_p12: true
     )
   end
+
+  desc "Releases the library to Cocoapods & Github Releases and updates README/CHANGELOG"
+  desc "You need to specify the type of release with the `bump` parameter with the values [major|minor|patch]"
+  lane :library_release do |options|
+    release_options = {repository: 'Guardian.swift', xcodeproj: 'Guardian.xcodeproj', target: 'Guardian'}.merge(options)
+    prepare_release release_options
+    # publish_release
+  end
 end
