@@ -57,11 +57,20 @@ platform :ios do
     )
   end
 
-  desc "Releases the library to Cocoapods & Github Releases and updates README/CHANGELOG"
+  desc "Prepares the library for release by updating versions and creating release pull request"
   desc "You need to specify the type of release with the `bump` parameter with the values [major|minor|patch]"
-  lane :library_release do |options|
+  lane :release_prepare do |options|
     release_options = {repository: 'Guardian.swift', xcodeproj: 'Guardian.xcodeproj', target: 'Guardian'}.merge(options)
     prepare_release release_options
-    # publish_release
+  end
+
+  desc "Performs the prepared release by creating a tag and pusing to remote"
+  lane :release_perform do
+    perform_release target: 'Guardian'
+  end
+
+  desc "Releases the library to CocoaPods trunk & Github Releases"
+  lane :release_publish do
+    publish_release repository: 'Guardian.swift'
   end
 end
