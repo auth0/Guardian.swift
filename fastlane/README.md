@@ -36,6 +36,23 @@ fastlane ios ci
 fastlane ios apns
 ```
 
+### ios release_prepare
+```
+fastlane ios release_prepare
+```
+Prepares the library for release by updating versions and creating release pull request
+
+You need to specify the type of release with the `bump` parameter with the values [major|minor|patch]
+### ios release_perform
+```
+fastlane ios release_perform
+```
+Performs the prepared release by creating a tag and pusing to remote
+### ios release_publish
+```
+fastlane ios release_publish
+```
+Releases the library to CocoaPods trunk & Github Releases
 
 ----
 

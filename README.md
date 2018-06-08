@@ -32,11 +32,11 @@ credentials, otherwise you would not receive any push notifications. Please read
 
 #### CocoaPods
 
-Guardian.swift is available through [CocoaPods](http://cocoapods.org). 
+Guardian.swift is available through [CocoaPods](http://cocoapods.org).
 To install it, simply add the following line to your Podfile:
 
 ```ruby
-pod "Guardian"
+pod 'Guardian', '~> 0.3.0'
 ```
 
 #### Carthage
@@ -44,7 +44,7 @@ pod "Guardian"
 In your Cartfile add this line
 
 ```
-github "auth0/Guardian.swift"
+github "auth0/Guardian.swift" ~> 0.3.0
 ```
 
 ## Usage
@@ -84,7 +84,7 @@ Guardian
                 keyPair: keyPair)
         .start { result in
             switch result {
-            case .success(let enrollment): 
+            case .success(let enrollment):
                 // success, we have the enrollment data available
             case .failure(let cause):
                 // something failed, check cause to see what went wrong
@@ -105,7 +105,7 @@ let rsaKeyPair = RSAKeyPair.new(
     )
 ```
 
-> The tags should be unique since it's the identifier of each key inside iOS Keychain. 
+> The tags should be unique since it's the identifier of each key inside iOS Keychain.
 
 > Since the keys are already secured stored inside iOS Keychain, you olny need to store the identifiers
 
@@ -132,7 +132,7 @@ Guardian
         .allow(notification: notification)
         .start { result in
             switch result {
-            case .success: 
+            case .success:
                 // the auth request was successfuly allowed
             case .failure(let cause):
                 // something failed, check cause to see what went wrong
@@ -152,7 +152,7 @@ Guardian
         // or reject(notification: notification, withReason: "hacked")
         .start { result in
             switch result {
-            case .success: 
+            case .success:
                 // the auth request was successfuly rejected
             case .failure(let cause):
                 // something failed, check cause to see what went wrong
@@ -172,7 +172,7 @@ Guardian
         .delete()
         .start { result in
             switch result {
-            case .success: 
+            case .success:
                 // success, the enrollment was deleted
             case .failure(let cause):
                 // something failed, check cause to see what went wrong
