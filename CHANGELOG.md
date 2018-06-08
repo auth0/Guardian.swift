@@ -1,5 +1,16 @@
 # Change Log
 
+## [0.4.0](https://github.com/auth0/Guardian.swift/tree/0.4.0) (2018-06-08)
+[Full Changelog](https://github.com/auth0/Guardian.swift/compare/0.3.1...0.4.0)
+
+**Added**
+- Add fastlane release plugin [\#59](https://github.com/auth0/Guardian.swift/pull/59) ([hzalaz](https://github.com/hzalaz))
+- Add ability to log requests or add hooks on request/response/error [\#57](https://github.com/auth0/Guardian.swift/pull/57) ([hzalaz](https://github.com/hzalaz))
+
+**Changed**
+- Remove warnings from deprecated methods [\#56](https://github.com/auth0/Guardian.swift/pull/56) ([hzalaz](https://github.com/hzalaz))
+- Update to Xcode 9.3 [\#55](https://github.com/auth0/Guardian.swift/pull/55) ([hzalaz](https://github.com/hzalaz))
+
 ## [0.3.1](https://github.com/auth0/Guardian.swift/tree/0.3.1) (2018-05-25)
 [Full Changelog](https://github.com/auth0/Guardian.swift/compare/0.3.0...0.3.1)
 
