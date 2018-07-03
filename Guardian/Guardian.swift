@@ -22,7 +22,7 @@
 
 import Foundation
 
-let nonCachedSession: URLSession =  {
+public let nonCachedSession: URLSession =  {
     let config = URLSessionConfiguration.default
     config.requestCachePolicy = .reloadIgnoringLocalCacheData
     config.urlCache = nil
