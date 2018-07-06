@@ -30,7 +30,7 @@ class APIClientSpec: QuickSpec {
     
     override func spec() {
         
-        let client = APIClient(baseUrl: ValidURL, session: Guardian.nonCachedSession)
+        let client = APIClient(baseUrl: ValidURL, session: Guardian.defaultURLSession)
         
         beforeEach {
             stub(condition: { _ in return true }) { _ in

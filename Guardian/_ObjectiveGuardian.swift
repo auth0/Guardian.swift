@@ -25,9 +25,9 @@ import Foundation
 @objc(GA0Guardian)
 public class _ObjectiveGuardian: NSObject {
 
-    let domain: String
+    @objc let domain: String
 
-    public init(domain: String) {
+    @objc public init(domain: String) {
         self.domain = domain
     }
 
@@ -42,7 +42,7 @@ public class _ObjectiveGuardian: NSObject {
         }
     }
 
-    public func allow(notification: Notification, enrollment: Enrollment, callback: @escaping (NSError?) -> ()) {
+    @objc public func allow(notification: Notification, enrollment: Enrollment, callback: @escaping (NSError?) -> ()) {
         Guardian.authentication(forDomain: domain, andEnrollment: enrollment).allow(notification: notification).start {
             switch $0 {
             case .success:
@@ -53,7 +53,7 @@ public class _ObjectiveGuardian: NSObject {
         }
     }
 
-    public func reject(notification: Notification, andReason reason: String?, enrollment: Enrollment, callback: @escaping (NSError?) -> ()) {
+    @objc public func reject(notification: Notification, andReason reason: String?, enrollment: Enrollment, callback: @escaping (NSError?) -> ()) {
         Guardian.authentication(forDomain: domain, andEnrollment: enrollment).reject(notification: notification, withReason: reason).start {
             switch $0 {
             case .success:
@@ -64,11 +64,11 @@ public class _ObjectiveGuardian: NSObject {
         }
     }
 
-    public func notification(with userInfo: [AnyHashable: Any]) -> Notification? {
+    @objc public func notification(with userInfo: [AnyHashable: Any]) -> Notification? {
         return Guardian.notification(from: userInfo)
     }
 
-    public func removeEnrollment(_ enrollment: Enrollment, callback: @escaping (NSError?) -> ()) {
+    @objc public func removeEnrollment(_ enrollment: Enrollment, callback: @escaping (NSError?) -> ()) {
         Guardian.api(forDomain: domain).device(forEnrollmentId: enrollment.id, token: enrollment.deviceToken).delete().start {
             switch $0 {
             case .success:

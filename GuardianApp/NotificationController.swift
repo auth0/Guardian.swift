@@ -25,7 +25,7 @@ import Guardian
 
 class NotificationController: UIViewController {
 
-    var notification: Guardian.Notification? = nil
+    @objc var notification: Guardian.Notification? = nil
 
     @IBOutlet var browserLabel: UILabel!
     @IBOutlet var locationLabel: UILabel!
@@ -85,7 +85,7 @@ class NotificationController: UIViewController {
         dateLabel.text = "\(notification.startedAt)"
     }
 
-    func showError(_ title: String, _ cause: Error) {
+    @objc func showError(_ title: String, _ cause: Error) {
         DispatchQueue.main.async { [unowned self] in
             var errorMessage = "Unknown error"
             if let cause = cause as? GuardianError {

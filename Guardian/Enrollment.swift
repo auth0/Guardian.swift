@@ -33,18 +33,18 @@ public class Enrollment: NSObject {
     /**
      The enrollment id
      */
-    public let id: String
+    @objc public let id: String
 
     /**
      The id of this enrollment's user
      */
-    public let userId: String
+    @objc public let userId: String
 
     /**
      The token used to authenticate when updating the device data or deleting 
      the enrollment
      */
-    public let deviceToken: String
+    @objc public let deviceToken: String
 
     /**
      The APNs token for this physical device, required to check against the 
@@ -53,7 +53,7 @@ public class Enrollment: NSObject {
      - important: Needs to be kept up-to-date on the server for the push 
                   notifications to work.
      */
-    public let notificationToken: String
+    @objc public let notificationToken: String
 
     /**
      The private key used to sign the requests to allow/reject an authentication
@@ -66,27 +66,27 @@ public class Enrollment: NSObject {
 
      - important: Might be nil if TOTP mode is disabled
      */
-    public let base32Secret: String?
+    @objc public let base32Secret: String?
 
     /**
      The TOTP algorithm
      */
-    public let algorithm: String
+    @objc public let algorithm: String
 
     /**
      The TOTP digits, i.e. the code length
      */
-    public let digits: Int
+    @objc public let digits: Int
 
     /**
      The TOTP period, in seconds
      */
-    public let period: Int
+    @objc public let period: Int
 
     /**
      The identifier of the physical device, for debug/tracking purposes
      */
-    public var deviceIdentifier: String {
+    @objc public var deviceIdentifier: String {
         return Enrollment.defaultDeviceIdentifier
     }
 
@@ -98,7 +98,7 @@ public class Enrollment: NSObject {
      notification, or at the admin interface if the user wants to delete an 
      enrollment from there
      */
-    public var deviceName: String {
+    @objc public var deviceName: String {
         return Enrollment.defaultDeviceName
     }
 
@@ -140,11 +140,11 @@ public class Enrollment: NSObject {
 
 extension Enrollment {
 
-    class var defaultDeviceName: String {
+    @objc class var defaultDeviceName: String {
         return UIDevice.current.name
     }
 
-    class var defaultDeviceIdentifier: String {
+    @objc class var defaultDeviceIdentifier: String {
         return UIDevice.current.identifierForVendor!.uuidString
     }
 }
