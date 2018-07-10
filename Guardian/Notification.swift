@@ -166,7 +166,7 @@ class AuthenticationNotification: NSObject, Notification {
     let location: Location?
     let startedAt: Date
 
-    init(domain: String, enrollmentId: String, transactionToken: String, challenge: String, startedAt: Date, source: Source?, location: Location?) {
+    @objc init(domain: String, enrollmentId: String, transactionToken: String, challenge: String, startedAt: Date, source: Source?, location: Location?) {
         self.domain = domain
         self.enrollmentId = enrollmentId
         self.transactionToken = transactionToken
@@ -176,7 +176,7 @@ class AuthenticationNotification: NSObject, Notification {
         self.startedAt = startedAt
     }
 
-    convenience init?(userInfo: [AnyHashable: Any]) {
+    @objc convenience init?(userInfo: [AnyHashable: Any]) {
         guard
             let json = userInfo as? [String: Any],
             let aps = json["aps"] as? [String: Any],
@@ -216,7 +216,7 @@ class AuthenticationSource: NSObject, Source {
         let name: String
         let version: String?
 
-        init(name: String, version: String?) {
+        @objc init(name: String, version: String?) {
             self.name = name
             self.version = version
         }
@@ -225,7 +225,7 @@ class AuthenticationSource: NSObject, Source {
     let os: OS?
     let browser: Browser?
 
-    init?(fromJSON json: Any?) {
+    @objc init?(fromJSON json: Any?) {
         guard let source = json as? [String: Any] else {
             return nil
         }
@@ -271,7 +271,7 @@ class AuthenticationLocation: NSObject, Location {
     let latitude: NSNumber?
     let longitude: NSNumber?
 
-    init?(fromJSON json: Any?) {
+    @objc init?(fromJSON json: Any?) {
         guard let location = json as? [String: Any] else {
             return nil
         }

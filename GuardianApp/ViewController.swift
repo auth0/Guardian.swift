@@ -23,6 +23,7 @@
 import UIKit
 import AVFoundation
 import Guardian
+import QRCodeReader
 
 class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
 
@@ -50,7 +51,7 @@ class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
 
     @IBAction func scanAction(_ sender: AnyObject) {
         if let _ = AppDelegate.pushToken {
-            if QRCodeReader.supportsMetadataObjectTypes() {
+            if let supports = try? QRCodeReader.supportsMetadataObjectTypes(), supports {
                 let reader = createReader()
                 reader.modalPresentationStyle = .formSheet
                 reader.delegate               = self
@@ -94,13 +95,13 @@ class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
         }
     }
 
-    func readerDidCancel(_ reader: QRCodeReaderViewController) {
+    @objc func readerDidCancel(_ reader: QRCodeReaderViewController) {
         self.dismiss(animated: true, completion: nil)
     }
 
     fileprivate func createReader() -> QRCodeReaderViewController {
         let builder = QRCodeReaderViewControllerBuilder { builder in
-            builder.reader = QRCodeReader(metadataObjectTypes: [AVMetadataObjectTypeQRCode])
+            builder.reader = QRCodeReader(metadataObjectTypes: [AVMetadataObject.ObjectType.qr])
             builder.showSwitchCameraButton = false
             builder.showTorchButton = false
             builder.showCancelButton = true
@@ -128,7 +129,7 @@ class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
         }
     }
 
-    func updateView() {
+    @objc func updateView() {
         DispatchQueue.main.async { [unowned self] in
             let haveEnrollment = AppDelegate.enrollment != nil
             if let enrollment = AppDelegate.enrollment {
@@ -141,7 +142,7 @@ class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
         }
     }
 
-    func showError(_ title: String, _ cause: Error) {
+    @objc func showError(_ title: String, _ cause: Error) {
         DispatchQueue.main.async { [unowned self] in
             var errorMessage = "Unknown error"
             if let cause = cause as? GuardianError {
