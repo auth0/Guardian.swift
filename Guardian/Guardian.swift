@@ -22,6 +22,7 @@
 
 import Foundation
 
+/// Default URLSession used to send requests to Guardian API.
 public let defaultURLSession: URLSession =  {
     let config = URLSessionConfiguration.default
     config.requestCachePolicy = .reloadIgnoringLocalCacheData
@@ -382,7 +383,7 @@ public func notification(from userInfo: [AnyHashable: Any]) -> Notification? {
  - parameter rejectTitle:     the title for the "Reject" notification action
  - important: Deprecated for iOS 10 or later, please use UserNotification framework
  */
-@available(*, deprecated: 10.0, message: "Use UserNotification framework")
+@available(iOS, deprecated: 10.0, message: "Use UserNotification framework")
 public func categoryForNotification(withAcceptTitle acceptTitle: String, rejectTitle: String) -> UIUserNotificationCategory {
     let acceptAction = UIMutableUserNotificationAction()
     acceptAction.identifier = acceptActionIdentifier

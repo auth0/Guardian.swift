@@ -876,7 +876,7 @@
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
 				INFOPLIST_FILE = GuardianApp/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.guardian.sample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -885,6 +885,7 @@
 				SWIFT_INSTALL_OBJC_HEADER = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -902,7 +903,7 @@
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
 				INFOPLIST_FILE = GuardianApp/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.guardian.sample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -910,6 +911,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "match Development com.auth0.guardian.sample";
 				SWIFT_INSTALL_OBJC_HEADER = NO;
 				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
