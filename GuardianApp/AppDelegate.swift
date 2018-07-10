@@ -22,6 +22,7 @@
 
 import UIKit
 import Guardian
+import UserNotifications
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -36,12 +37,39 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
 
         // Set up push notifications
-        let category = Guardian.categoryForNotification(withAcceptTitle: NSLocalizedString("Allow", comment: "Accept Guardian authentication request"),
-                                                        rejectTitle: NSLocalizedString("Deny", comment: "Reject Guardian authentication request"))
-        let notificationTypes: UIUserNotificationType = [.badge, .sound]
-        let pushNotificationSettings = UIUserNotificationSettings(types: notificationTypes, categories: [category])
-        application.registerUserNotificationSettings(pushNotificationSettings)
-        application.registerForRemoteNotifications()
+        let acceptAction = UNNotificationAction(
+            identifier: Guardian.acceptActionIdentifier,
+            title: NSLocalizedString("Allow", comment: "Accept Guardian authentication request"),
+            options: [.authenticationRequired]
+        )
+        let rejectAction = UNNotificationAction(
+            identifier: Guardian.rejectActionIdentifier,
+            title: NSLocalizedString("Deny", comment: "Reject Guardian authentication request"),
+            options: [.destructive, .authenticationRequired]
+        )
+
+        let category = UNNotificationCategory(
+            identifier: Guardian.AuthenticationCategory,
+            actions: [acceptAction, rejectAction],
+            intentIdentifiers: [],
+            options: [])
+
+        UNUserNotificationCenter.current().requestAuthorization(options: [.badge, .sound]) { granted, error in
+            guard granted else {
+                return print("Permission not granted")
+            }
+            if let error = error {
+                return print("failed with error \(error)")
+            }
+
+            UNUserNotificationCenter.current().setNotificationCategories([category])
+            UNUserNotificationCenter.current().getNotificationSettings() { settings in
+                guard settings.authorizationStatus == .authorized else {
+                    return print("not authorized to use notifications")
+                }
+                DispatchQueue.main.async { application.registerForRemoteNotifications() }
+            }
+        }
 
         return true
     }
