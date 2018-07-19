@@ -42,7 +42,6 @@ public let rejectActionIdentifier: String = "\(AuthenticationCategory).reject"
  }
  ```
  */
-@objc(A0GNotification)
 public protocol Notification {
 
     /**
@@ -86,7 +85,6 @@ public protocol Notification {
 /**
  The source (Browser & OS) of an authentication request
  */
-@objc(A0GSource)
 public protocol Source {
 
     /**
@@ -103,7 +101,6 @@ public protocol Source {
 /**
  The browser data of an authentication request
  */
-@objc(A0GBrowser)
 public protocol Browser {
 
     /**
@@ -120,7 +117,6 @@ public protocol Browser {
 /**
  The OS data of an authentication request
  */
-@objc(A0GOS)
 public protocol OS {
 
     /**
@@ -137,7 +133,6 @@ public protocol OS {
 /**
  The geographical location of an authentication request
  */
-@objc(A0GLocation)
 public protocol Location {
 
     /**
@@ -166,7 +161,7 @@ class AuthenticationNotification: NSObject, Notification {
     let location: Location?
     let startedAt: Date
 
-    @objc init(domain: String, enrollmentId: String, transactionToken: String, challenge: String, startedAt: Date, source: Source?, location: Location?) {
+    init(domain: String, enrollmentId: String, transactionToken: String, challenge: String, startedAt: Date, source: Source?, location: Location?) {
         self.domain = domain
         self.enrollmentId = enrollmentId
         self.transactionToken = transactionToken
@@ -176,7 +171,7 @@ class AuthenticationNotification: NSObject, Notification {
         self.startedAt = startedAt
     }
 
-    @objc convenience init?(userInfo: [AnyHashable: Any]) {
+    convenience init?(userInfo: [AnyHashable: Any]) {
         guard
             let json = userInfo as? [String: Any],
             let aps = json["aps"] as? [String: Any],
@@ -216,7 +211,7 @@ class AuthenticationSource: NSObject, Source {
         let name: String
         let version: String?
 
-        @objc init(name: String, version: String?) {
+        init(name: String, version: String?) {
             self.name = name
             self.version = version
         }
@@ -225,7 +220,7 @@ class AuthenticationSource: NSObject, Source {
     let os: OS?
     let browser: Browser?
 
-    @objc init?(fromJSON json: Any?) {
+    init?(fromJSON json: Any?) {
         guard let source = json as? [String: Any] else {
             return nil
         }
@@ -271,7 +266,7 @@ class AuthenticationLocation: NSObject, Location {
     let latitude: NSNumber?
     let longitude: NSNumber?
 
-    @objc init?(fromJSON json: Any?) {
+    init?(fromJSON json: Any?) {
         guard let location = json as? [String: Any] else {
             return nil
         }

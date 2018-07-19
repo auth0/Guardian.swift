@@ -40,7 +40,7 @@ public class Request<T>: Requestable {
         self.url = url
         self.payload = payload
         self.hooks = Hooks()
-        let bundle = Bundle(for: _ObjectiveGuardian.classForCoder())
+        let bundle = Bundle(for: AuthenticationNotification.classForCoder())
         var headers = headers ?? [:]
         if let version = bundle.infoDictionary?["CFBundleShortVersionString"] as? String,
             let clientInfo = try? JSONSerialization.data(withJSONObject: [

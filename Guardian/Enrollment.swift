@@ -20,31 +20,30 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import Foundation
+import UIKit
 
 /**
  A Guardian Enrollment
  
  - seealso: Guardian.enroll
  */
-@objc(A0GEnrollment)
 public class Enrollment: NSObject {
 
     /**
      The enrollment id
      */
-    @objc public let id: String
+    public let id: String
 
     /**
      The id of this enrollment's user
      */
-    @objc public let userId: String
+    public let userId: String
 
     /**
      The token used to authenticate when updating the device data or deleting 
      the enrollment
      */
-    @objc public let deviceToken: String
+    public let deviceToken: String
 
     /**
      The APNs token for this physical device, required to check against the 
@@ -53,7 +52,7 @@ public class Enrollment: NSObject {
      - important: Needs to be kept up-to-date on the server for the push 
                   notifications to work.
      */
-    @objc public let notificationToken: String
+    public let notificationToken: String
 
     /**
      The private key used to sign the requests to allow/reject an authentication
@@ -66,27 +65,27 @@ public class Enrollment: NSObject {
 
      - important: Might be nil if TOTP mode is disabled
      */
-    @objc public let base32Secret: String?
+    public let base32Secret: String?
 
     /**
      The TOTP algorithm
      */
-    @objc public let algorithm: String
+    public let algorithm: String
 
     /**
      The TOTP digits, i.e. the code length
      */
-    @objc public let digits: Int
+    public let digits: Int
 
     /**
      The TOTP period, in seconds
      */
-    @objc public let period: Int
+    public let period: Int
 
     /**
      The identifier of the physical device, for debug/tracking purposes
      */
-    @objc public var deviceIdentifier: String {
+    public var deviceIdentifier: String {
         return Enrollment.defaultDeviceIdentifier
     }
 
@@ -98,7 +97,7 @@ public class Enrollment: NSObject {
      notification, or at the admin interface if the user wants to delete an 
      enrollment from there
      */
-    @objc public var deviceName: String {
+    public var deviceName: String {
         return Enrollment.defaultDeviceName
     }
 
@@ -140,11 +139,11 @@ public class Enrollment: NSObject {
 
 extension Enrollment {
 
-    @objc class var defaultDeviceName: String {
+    class var defaultDeviceName: String {
         return UIDevice.current.name
     }
 
-    @objc class var defaultDeviceIdentifier: String {
+    class var defaultDeviceIdentifier: String {
         return UIDevice.current.identifierForVendor!.uuidString
     }
 }

@@ -24,12 +24,12 @@ import Foundation
 
 class MockNSURLSession: URLSession {
     
-    @objc var a0_request: URLRequest?
-    @objc let a0_data: Data?
-    @objc let a0_response: URLResponse?
-    @objc let a0_error: NSError?
+    var a0_request: URLRequest?
+    let a0_data: Data?
+    let a0_response: URLResponse?
+    let a0_error: NSError?
     
-    @objc init(data: Data?, response: URLResponse?, error: NSError?) {
+    init(data: Data?, response: URLResponse?, error: NSError?) {
         self.a0_data = data
         self.a0_response = response
         self.a0_error = error
@@ -47,9 +47,9 @@ class MockNSURLSession: URLSession {
 
 class MockTask: URLSessionDataTask {
     
-    @objc let a0_completionHandler: () -> Void
+    let a0_completionHandler: () -> Void
     
-    @objc init(completionHandler: @escaping () -> Void) {
+    init(completionHandler: @escaping () -> Void) {
         self.a0_completionHandler = completionHandler
     }
     
