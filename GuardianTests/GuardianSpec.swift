@@ -323,15 +323,6 @@ class GuardianSpec: QuickSpec {
                 }
             }
         }
-
-        describe("categoryForNotification(withAcceptTitle:, rejectTitle:)") {
-
-            let category = Guardian.categoryForNotification(withAcceptTitle: "AcceptTitle", rejectTitle: "RejectTitle")
-
-            it("should set correct category identifier") {
-                expect(category.identifier).to(equal("com.auth0.notification.authentication"))
-            }
-        }
     }
 }
 

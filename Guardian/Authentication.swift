@@ -164,13 +164,13 @@ struct RSAAuthentication: Authentication {
     }
 
     func handleAction(withIdentifier identifier: String, notification: Notification) -> Request<Void> {
-        switch identifier {
-        case acceptActionIdentifier:
+        let category = AuthenticationCategory.default
+        if category.allow.identifier == identifier {
             return allow(notification: notification)
-        case rejectActionIdentifier:
-            return reject(notification: notification)
-        default:
-            return FailedRequest(error: GuardianError.invalidNotificationActionIdentifier)
         }
+        if category.reject.identifier == identifier {
+            return reject(notification: notification)
+        }
+        return FailedRequest(error: GuardianError.invalidNotificationActionIdentifier)
     }
 }

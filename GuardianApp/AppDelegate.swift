@@ -36,24 +36,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
 
-        // Set up push notifications
+        let guardianCategory = Guardian.AuthenticationCategory.default
+
+        // Set up guardian notifications actions
         let acceptAction = UNNotificationAction(
-            identifier: Guardian.acceptActionIdentifier,
+            identifier: guardianCategory.allow.identifier,
             title: NSLocalizedString("Allow", comment: "Accept Guardian authentication request"),
-            options: [.authenticationRequired]
+            options: [.authenticationRequired] // Always request local AuthN
         )
         let rejectAction = UNNotificationAction(
-            identifier: Guardian.rejectActionIdentifier,
+            identifier: guardianCategory.reject.identifier,
             title: NSLocalizedString("Deny", comment: "Reject Guardian authentication request"),
-            options: [.destructive, .authenticationRequired]
+            options: [.destructive, .authenticationRequired] // Always request local AuthN
         )
 
+        // Set up guardian notification category
         let category = UNNotificationCategory(
-            identifier: Guardian.AuthenticationCategory,
+            identifier: guardianCategory.identifier,
             actions: [acceptAction, rejectAction],
             intentIdentifiers: [],
             options: [])
 
+        // Request for AuthZ
         UNUserNotificationCenter.current().requestAuthorization(options: [.badge, .sound]) { granted, error in
             guard granted else {
                 return print("Permission not granted")
@@ -62,7 +66,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 return print("failed with error \(error)")
             }
 
+            // Register guardian notification category
             UNUserNotificationCenter.current().setNotificationCategories([category])
+            // Check AuthZ status to trigger remote notification registration
             UNUserNotificationCenter.current().getNotificationSettings() { settings in
                 guard settings.authorizationStatus == .authorized else {
                     return print("not authorized to use notifications")

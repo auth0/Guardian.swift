@@ -22,9 +22,100 @@
 
 import Foundation
 
-public let AuthenticationCategory = "com.auth0.notification.authentication"
-public let acceptActionIdentifier: String = "\(AuthenticationCategory).accept"
-public let rejectActionIdentifier: String = "\(AuthenticationCategory).reject"
+/**
+ Stores the default Guardian Push notification category and actions identifiers.
+ With these values you can create the `UNNotificationCategory` and `UNNotificationAction` to register
+ when notification access is requested using the UserNotification.framework.
+
+ ```
+ let guardianCategory = Guardian.AuthenticationCategory.default
+
+ // Set up guardian notifications actions
+ let acceptAction = UNNotificationAction(
+    identifier: guardianCategory.allow.identifier,
+    title: NSLocalizedString("Allow", comment: "Accept Guardian authentication request"),
+    options: [.authenticationRequired] // Always request local AuthN
+ )
+ let rejectAction = UNNotificationAction(
+    identifier: guardianCategory.reject.identifier,
+    title: NSLocalizedString("Deny", comment: "Reject Guardian authentication request"),
+    options: [.destructive, .authenticationRequired] // Always request local AuthN
+ )
+
+ // Set up guardian notification category
+ let category = UNNotificationCategory(
+    identifier: guardianCategory.identifier,
+    actions: [acceptAction, rejectAction],
+    intentIdentifiers: [],
+    options: [])
+
+ // Request for AuthZ
+ UNUserNotificationCenter.current().requestAuthorization(options: [.badge, .sound]) { granted, error in
+    guard granted else {
+        return print("Permission not granted")
+    }
+    if let error = error {
+        return print("failed with error \(error)")
+    }
+
+    // Register guardian notification category
+    UNUserNotificationCenter.current().setNotificationCategories([category])
+
+    // Check AuthZ status to trigger remote notification registration
+    UNUserNotificationCenter.current().getNotificationSettings() { settings in
+        guard settings.authorizationStatus == .authorized else {
+            return print("not authorized to use notifications")
+        }
+        DispatchQueue.main.async { application.registerForRemoteNotifications() }
+    }
+ }
+ ```
+
+ Then in your User notification delegate, handle the notification action using the identifier provided by iOS
+
+ ```
+ func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+    let identifier = response.actionIdentifier
+    let userInfo = response.notification.request.content.userInfo
+    if let notification = Guardian.notification(from: userInfo) {
+        /* Get the enrollment that matches the notification ... */
+        let enrollment: Enrollment = ...
+        Guardian
+        .authentication(forDomain: "tenant.guardian.auth0.com", andEnrollment: enrollment)
+        .handleAction(withIdentifier: identifier, notification: notification)
+        .start { result in
+            completionHandler()
+        }
+    } else {
+        // Other type of notification
+        completionHandler()
+    }
+ }
+ ```
+
+ */
+public struct AuthenticationCategory {
+
+    public struct Action: Equatable {
+        public let identifier: String
+    }
+
+    public let identifier: String
+    public let allow: Action
+    public let reject: Action
+
+    private init(identifier: String) {
+        self.identifier = identifier
+        self.allow = Action(identifier: "\(self.identifier).accept")
+        self.reject = Action(identifier: "\(self.identifier).reject")
+    }
+
+    private static let defaultIdentifier = "com.auth0.notification.authentication"
+
+    public static var `default`: AuthenticationCategory {
+        return AuthenticationCategory(identifier: defaultIdentifier)
+    }
+}
 
 /**
  A Guardian Notification contains data about an authentication request.
@@ -175,7 +266,7 @@ struct AuthenticationNotification: Notification, CustomDebugStringConvertible, C
         guard
             let json = userInfo as? [String: Any],
             let aps = json["aps"] as? [String: Any],
-            let category = aps["category"] as? String, category == AuthenticationCategory
+            let category = aps["category"] as? String, category == AuthenticationCategory.default.identifier
             else { return nil }
         let locale = Locale(identifier: "en_US_POSIX")
         let formatter = DateFormatter()
