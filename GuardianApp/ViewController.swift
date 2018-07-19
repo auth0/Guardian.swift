@@ -95,7 +95,7 @@ class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
         }
     }
 
-    @objc func readerDidCancel(_ reader: QRCodeReaderViewController) {
+    func readerDidCancel(_ reader: QRCodeReaderViewController) {
         self.dismiss(animated: true, completion: nil)
     }
 
@@ -129,7 +129,7 @@ class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
         }
     }
 
-    @objc func updateView() {
+    func updateView() {
         DispatchQueue.main.async { [unowned self] in
             let haveEnrollment = AppDelegate.enrollment != nil
             if let enrollment = AppDelegate.enrollment {
@@ -142,7 +142,7 @@ class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
         }
     }
 
-    @objc func showError(_ title: String, _ cause: Error) {
+    func showError(_ title: String, _ cause: Error) {
         DispatchQueue.main.async { [unowned self] in
             var errorMessage = "Unknown error"
             if let cause = cause as? GuardianError {

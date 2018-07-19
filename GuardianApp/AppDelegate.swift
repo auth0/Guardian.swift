@@ -27,9 +27,9 @@ import UserNotifications
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-    @objc static let guardianDomain = "guardian-demo.guardian.auth0.com"
-    @objc static var enrollment: Enrollment? = nil
-    @objc static var pushToken: String? = nil
+    static let guardianDomain = "guardian-demo.guardian.auth0.com"
+    static var enrollment: Enrollment? = nil
+    static var pushToken: String? = nil
 
     var window: UIWindow?
 
@@ -140,7 +140,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
 
-    @objc var rootController: UIViewController? {
+    var rootController: UIViewController? {
         return self.window?.rootViewController
     }
 }
