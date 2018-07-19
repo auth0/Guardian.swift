@@ -1,5 +1,16 @@
 # Change Log
 
+## [0.5.0](https://github.com/auth0/Guardian.swift/tree/0.5.0) (2018-07-19)
+[Full Changelog](https://github.com/auth0/Guardian.swift/compare/0.4.0...0.5.0)
+**Closed issues**
+- Private constants as default arguments - Swift 4 Support [\#61](https://github.com/auth0/Guardian.swift/issues/61)
+
+**Changed**
+- Update to compile with Swift 4 [\#63](https://github.com/auth0/Guardian.swift/pull/63) ([hzalaz](https://github.com/hzalaz))
+
+**Deprecated**
+- Deprecate iOS 9 or older notification code [\#64](https://github.com/auth0/Guardian.swift/pull/64) ([hzalaz](https://github.com/hzalaz))
+
 ## [0.4.0](https://github.com/auth0/Guardian.swift/tree/0.4.0) (2018-06-08)
 [Full Changelog](https://github.com/auth0/Guardian.swift/compare/0.3.1...0.4.0)
 
