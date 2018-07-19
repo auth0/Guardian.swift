@@ -143,15 +143,15 @@ public protocol Location {
     /**
      The approximate latitude, if available
      */
-    var latitude: NSNumber? { get }
+    var latitude: Double? { get }
 
     /**
      The approximate longitude, if available
      */
-    var longitude: NSNumber? { get }
+    var longitude: Double? { get }
 }
 
-class AuthenticationNotification: NSObject, Notification {
+struct AuthenticationNotification: Notification, CustomDebugStringConvertible, CustomStringConvertible {
 
     let domain: String
     let enrollmentId: String
@@ -171,7 +171,7 @@ class AuthenticationNotification: NSObject, Notification {
         self.startedAt = startedAt
     }
 
-    convenience init?(userInfo: [AnyHashable: Any]) {
+    init?(userInfo: [AnyHashable: Any]) {
         guard
             let json = userInfo as? [String: Any],
             let aps = json["aps"] as? [String: Any],
@@ -196,16 +196,16 @@ class AuthenticationNotification: NSObject, Notification {
         self.init(domain: domain, enrollmentId: enrollmentId, transactionToken: token, challenge: challenge, startedAt: startedAt, source: source, location: location)
     }
 
-    override var description: String {
+    var description: String {
         return "enrollmentId: <\(self.enrollmentId)> txToken: <\(self.transactionToken)> challenge: <\(self.challenge)> startedAt: \(self.startedAt)"
     }
 
-    override var debugDescription: String {
+    var debugDescription: String {
         return "domain: <\(self.domain)> enrollmentId: <\(self.enrollmentId)> txToken: <\(self.transactionToken)> challenge: <\(self.challenge)> source: <\(String(describing: self.source))> location: <\(String(describing: self.location))> startedAt: \(self.startedAt)"
     }
 }
 
-class AuthenticationSource: NSObject, Source {
+struct AuthenticationSource: Source, CustomDebugStringConvertible, CustomStringConvertible {
 
     class NamedSource: NSObject, OS, Browser {
         let name: String
@@ -247,7 +247,7 @@ class AuthenticationSource: NSObject, Source {
         self.browser = browser
     }
 
-    override var description: String {
+    var description: String {
         let osName = self.os?.name ?? "Unknown OS"
         let osVersion = self.os?.version != nil ? "(\(String(describing: self.os?.version))" : ""
         let browserName = self.browser?.name ?? "Unknown Browser"
@@ -255,16 +255,16 @@ class AuthenticationSource: NSObject, Source {
         return "\(osName) \(osVersion)".trimmingCharacters(in: .whitespaces) + " \(browserName) \(browserVersion)".trimmingCharacters(in: .whitespaces)
     }
 
-    override var debugDescription: String {
+    var debugDescription: String {
         return self.description
     }
 }
 
-class AuthenticationLocation: NSObject, Location {
+struct AuthenticationLocation: Location, CustomDebugStringConvertible, CustomStringConvertible {
 
     let name: String?
-    let latitude: NSNumber?
-    let longitude: NSNumber?
+    let latitude: Double?
+    let longitude: Double?
 
     init?(fromJSON json: Any?) {
         guard let location = json as? [String: Any] else {
@@ -276,19 +276,19 @@ class AuthenticationLocation: NSObject, Location {
         let longitudeValue = location["long"]
         if let latitudeString = latitudeValue as? String,
             let longitudeString = longitudeValue as? String {
-            latitude = Double(latitudeString) as NSNumber?
-            longitude = Double(longitudeString) as NSNumber?
+            latitude = Double(latitudeString)
+            longitude = Double(longitudeString)
         } else {
-            latitude = latitudeValue as? NSNumber
-            longitude = longitudeValue as? NSNumber
+            latitude = (latitudeValue as? NSNumber)?.doubleValue
+            longitude = (longitudeValue as? NSNumber)?.doubleValue
         }
     }
 
-    override var description: String {
+    var description: String {
         return "\(self.name ?? "Unknown") (\(String(describing: self.latitude)), \(String(describing: self.longitude)))"
     }
 
-    override var debugDescription: String {
+    var debugDescription: String {
         return self.description
     }
 
