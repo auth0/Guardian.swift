@@ -61,6 +61,10 @@
 		5F2038091D5E40EE0005D2E2 /* OHHTTPStubs.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5F2037FF1D5E40C70005D2E2 /* OHHTTPStubs.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5F20380A1D5E40EE0005D2E2 /* Nimble.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5F2038001D5E40C70005D2E2 /* Nimble.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5F2C3FB420F50C8D001DA713 /* QRCodeReader.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F2C3FB320F50C8D001DA713 /* QRCodeReader.framework */; };
+		5F6133892101273300BCC182 /* AuthenticationCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F6133882101273300BCC182 /* AuthenticationCategory.swift */; };
+		5F61338B2101286200BCC182 /* AuthenticationNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F61338A2101286200BCC182 /* AuthenticationNotification.swift */; };
+		5F61338D2101289E00BCC182 /* AuthenticationSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F61338C2101289E00BCC182 /* AuthenticationSource.swift */; };
+		5F61338F210128C800BCC182 /* AuthenticationLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F61338E210128C800BCC182 /* AuthenticationLocation.swift */; };
 		5F7969341DDABDDE006AC7BA /* AuthenticationSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1DB45C1DA4750F00264437 /* AuthenticationSpec.swift */; };
 		5F7969371DDAC074006AC7BA /* JWTSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2331BFEC1DD52ED50047F1D4 /* JWTSpec.swift */; };
 		5FB4ECBC20C9A5050050B275 /* Hooks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FB4ECBB20C9A5050050B275 /* Hooks.swift */; };
@@ -180,6 +184,10 @@
 		5F2038111D5E42AD0005D2E2 /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		5F2038181D5E46210005D2E2 /* Gemfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Gemfile; sourceTree = "<group>"; };
 		5F2C3FB320F50C8D001DA713 /* QRCodeReader.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QRCodeReader.framework; path = Carthage/Build/iOS/QRCodeReader.framework; sourceTree = "<group>"; };
+		5F6133882101273300BCC182 /* AuthenticationCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationCategory.swift; sourceTree = "<group>"; };
+		5F61338A2101286200BCC182 /* AuthenticationNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationNotification.swift; sourceTree = "<group>"; };
+		5F61338C2101289E00BCC182 /* AuthenticationSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationSource.swift; sourceTree = "<group>"; };
+		5F61338E210128C800BCC182 /* AuthenticationLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationLocation.swift; sourceTree = "<group>"; };
 		5FB4ECBB20C9A5050050B275 /* Hooks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Hooks.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -272,7 +280,7 @@
 		5F1DB4591DA4648300264437 /* Authentication */ = {
 			isa = PBXGroup;
 			children = (
-				233F75261D92F27000B8C15C /* Notification.swift */,
+				5F613387210126FF00BCC182 /* Notification */,
 				5F1DB45A1DA4649600264437 /* Authentication.swift */,
 			);
 			name = Authentication;
@@ -378,6 +386,18 @@
 				5F20380F1D5E421F0005D2E2 /* README.md */,
 			);
 			name = "Support Files";
+			sourceTree = "<group>";
+		};
+		5F613387210126FF00BCC182 /* Notification */ = {
+			isa = PBXGroup;
+			children = (
+				233F75261D92F27000B8C15C /* Notification.swift */,
+				5F6133882101273300BCC182 /* AuthenticationCategory.swift */,
+				5F61338A2101286200BCC182 /* AuthenticationNotification.swift */,
+				5F61338C2101289E00BCC182 /* AuthenticationSource.swift */,
+				5F61338E210128C800BCC182 /* AuthenticationLocation.swift */,
+			);
+			path = Notification;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -573,14 +593,18 @@
 				2374A9E61D670F5900737F2E /* Request.swift in Sources */,
 				5F1DB45B1DA4649600264437 /* Authentication.swift in Sources */,
 				2374A9E51D670F5900737F2E /* GuardianError.swift in Sources */,
+				5F61338F210128C800BCC182 /* AuthenticationLocation.swift in Sources */,
 				2356C82E1D88998A00B6C84A /* EnrollRequest.swift in Sources */,
+				5F61338D2101289E00BCC182 /* AuthenticationSource.swift in Sources */,
 				233F75271D92F27000B8C15C /* Notification.swift in Sources */,
 				23C67AEE1D81EF5300A38A2E /* Enrollment.swift in Sources */,
 				235B4B221DA3F51D00CEB5DC /* A0HMAC.m in Sources */,
 				5FB4ECBC20C9A5050050B275 /* Hooks.swift in Sources */,
 				2331C01A1DD5FC6F0047F1D4 /* Data+Base64URL.swift in Sources */,
+				5F61338B2101286200BCC182 /* AuthenticationNotification.swift in Sources */,
 				2331BFEB1DD5260D0047F1D4 /* JWT.swift in Sources */,
 				231687191DDA07FD00B09526 /* A0SHA.m in Sources */,
+				5F6133892101273300BCC182 /* AuthenticationCategory.swift in Sources */,
 				2377A6431D806DFA00D6FB04 /* API.swift in Sources */,
 				232A85DA1D6BDFCA00048DF7 /* DeviceAPIClient.swift in Sources */,
 			);

@@ -27,7 +27,7 @@ import UIKit
  
  - seealso: Guardian.enroll
  */
-public class Enrollment: NSObject {
+public struct Enrollment {
 
     /**
      The enrollment id
@@ -139,11 +139,11 @@ public class Enrollment: NSObject {
 
 extension Enrollment {
 
-    class var defaultDeviceName: String {
+    static var defaultDeviceName: String {
         return UIDevice.current.name
     }
 
-    class var defaultDeviceIdentifier: String {
+    static var defaultDeviceIdentifier: String {
         return UIDevice.current.identifierForVendor!.uuidString
     }
 }

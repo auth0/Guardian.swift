@@ -40,7 +40,7 @@ public class Request<T>: Requestable {
         self.url = url
         self.payload = payload
         self.hooks = Hooks()
-        let bundle = Bundle(for: AuthenticationNotification.classForCoder())
+        let bundle = Bundle(for: _BundleGrapple.classForCoder())
         var headers = headers ?? [:]
         if let version = bundle.infoDictionary?["CFBundleShortVersionString"] as? String,
             let clientInfo = try? JSONSerialization.data(withJSONObject: [
@@ -143,3 +143,5 @@ func json<T>(_ data: Data?) -> T? {
     let object = try? JSONSerialization.jsonObject(with: data, options: [])
     return object as? T
 }
+
+private class _BundleGrapple: NSObject {}
