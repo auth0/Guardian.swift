@@ -57,6 +57,7 @@
 		5F1604E821066A4F00B0F25B /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 5F1604E321066A4F00B0F25B /* README.md */; };
 		5F1604EA21066B2B00B0F25B /* Keys+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1604E921066B2B00B0F25B /* Keys+Utils.swift */; };
 		5F1604EC2106709B00B0F25B /* DataRSAPrivateKeySpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1604EB2106709B00B0F25B /* DataRSAPrivateKeySpec.swift */; };
+		5F1604EE210673E700B0F25B /* ASNPublicKeyDecodableSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1604ED210673E700B0F25B /* ASNPublicKeyDecodableSpec.swift */; };
 		5F1DB45B1DA4649600264437 /* Authentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1DB45A1DA4649600264437 /* Authentication.swift */; };
 		5F1DB45F1DA4757800264437 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1DB45E1DA4757800264437 /* Constants.swift */; };
 		5F2037D11D5E1E3E0005D2E2 /* Guardian.h in Headers */ = {isa = PBXBuildFile; fileRef = 5F2037D01D5E1E3E0005D2E2 /* Guardian.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -187,6 +188,7 @@
 		5F1604E321066A4F00B0F25B /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		5F1604E921066B2B00B0F25B /* Keys+Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Keys+Utils.swift"; sourceTree = "<group>"; };
 		5F1604EB2106709B00B0F25B /* DataRSAPrivateKeySpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataRSAPrivateKeySpec.swift; sourceTree = "<group>"; };
+		5F1604ED210673E700B0F25B /* ASNPublicKeyDecodableSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ASNPublicKeyDecodableSpec.swift; sourceTree = "<group>"; };
 		5F1DB45A1DA4649600264437 /* Authentication.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Authentication.swift; sourceTree = "<group>"; };
 		5F1DB45C1DA4750F00264437 /* AuthenticationSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthenticationSpec.swift; sourceTree = "<group>"; };
 		5F1DB45E1DA4757800264437 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
@@ -274,6 +276,7 @@
 				5F1604D2210661D700B0F25B /* KeychainRSAPrivateKeyCreationSpec.swift */,
 				5F1604D4210662CF00B0F25B /* DataRSAPrivateKeyCreationSpec.swift */,
 				5F1604EB2106709B00B0F25B /* DataRSAPrivateKeySpec.swift */,
+				5F1604ED210673E700B0F25B /* ASNPublicKeyDecodableSpec.swift */,
 			);
 			path = Keys;
 			sourceTree = "<group>";
@@ -702,6 +705,7 @@
 				5F1604D5210662CF00B0F25B /* DataRSAPrivateKeyCreationSpec.swift in Sources */,
 				5F1604EA21066B2B00B0F25B /* Keys+Utils.swift in Sources */,
 				5F1DB45F1DA4757800264437 /* Constants.swift in Sources */,
+				5F1604EE210673E700B0F25B /* ASNPublicKeyDecodableSpec.swift in Sources */,
 				2345A5EE1DD379BB00195291 /* RSAUtils.swift in Sources */,
 				2356C8301D88A10600B6C84A /* GuardianSpec.swift in Sources */,
 				2374A9F51D67339E00737F2E /* Matchers.swift in Sources */,

@@ -22,30 +22,25 @@
 
 import Foundation
 
+public struct PublicKeyAttributes {
+    public let modulus: Data
+    public let exponent: Data
+}
+
 public protocol ASNPublicKeyDecodable: PublicKeyDataConvertible {
-    var modulus: Data? { get }
-    var exponent: Data? { get }
+    var attributes: PublicKeyAttributes? { get }
 }
 
 extension ASNPublicKeyDecodable {
-    public var modulus: Data? {
-        let asn = { (bytes: UnsafePointer<UInt8>) -> Data? in
-            guard bytes.pointee == 0x30 else { return nil }
-            let (modulusBytes, totalLength) = self.length(from: bytes + 1)
-            guard totalLength > 0, let (_, modulus) = self.data(from: modulusBytes) else { return nil }
-            return modulus
-        }
-        return self.data?.withUnsafeBytes(asn)
-    }
 
-    public var exponent: Data? {
-        let asn = { (bytes: UnsafePointer<UInt8>) -> Data? in
+    public var attributes: PublicKeyAttributes? {
+        let asn = { (bytes: UnsafePointer<UInt8>) -> PublicKeyAttributes? in
             guard bytes.pointee == 0x30 else { return nil }
             let (modulusBytes, totalLength) = self.length(from: bytes + 1)
-            guard totalLength > 0, let (exponentBytes, _) = self.data(from: modulusBytes) else { return nil }
+            guard totalLength > 0, let (exponentBytes, modulus) = self.data(from: modulusBytes) else { return nil }
             guard let (end, exponent) = self.data(from: exponentBytes) else { return nil }
             guard abs(end.distance(to: modulusBytes)) == totalLength else { return nil }
-            return exponent
+            return PublicKeyAttributes(modulus: modulus, exponent: exponent)
         }
         return self.data?.withUnsafeBytes(asn)
     }
@@ -70,5 +65,4 @@ extension ASNPublicKeyDecodable {
         let pointer = valueBytes + valueLength
         return (pointer, data)
     }
-
 }

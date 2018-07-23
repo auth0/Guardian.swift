@@ -23,7 +23,7 @@
 import Foundation
 
 public struct AsymmetricPublicKey {
-    let key: SecKey
+    public let key: SecKey
 
     public init(privateKey: SecKey) throws {
         self.key = try publicKey(from: privateKey)
