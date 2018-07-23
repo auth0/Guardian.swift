@@ -12,7 +12,6 @@
 		2316871B1DDB867300B09526 /* RSAKeyPair.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2316871A1DDB867300B09526 /* RSAKeyPair.swift */; };
 		232A85DA1D6BDFCA00048DF7 /* DeviceAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 232A85D91D6BDFCA00048DF7 /* DeviceAPIClient.swift */; };
 		2331BFEB1DD5260D0047F1D4 /* JWT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2331BFEA1DD5260D0047F1D4 /* JWT.swift */; };
-		2331C0181DD563150047F1D4 /* identity.p12 in Resources */ = {isa = PBXBuildFile; fileRef = 2331C0171DD563150047F1D4 /* identity.p12 */; };
 		2331C01A1DD5FC6F0047F1D4 /* Data+Base64URL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2331C0191DD5FC6F0047F1D4 /* Data+Base64URL.swift */; };
 		233F75271D92F27000B8C15C /* Notification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 233F75261D92F27000B8C15C /* Notification.swift */; };
 		233F75291D93076600B8C15C /* NotificationSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 233F75281D93076600B8C15C /* NotificationSpec.swift */; };
@@ -51,6 +50,13 @@
 		5F1604C92106493600B0F25B /* SigningKeyStorageSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1604C82106493600B0F25B /* SigningKeyStorageSpec.swift */; };
 		5F1604D3210661D700B0F25B /* KeychainRSAPrivateKeyCreationSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1604D2210661D700B0F25B /* KeychainRSAPrivateKeyCreationSpec.swift */; };
 		5F1604D5210662CF00B0F25B /* DataRSAPrivateKeyCreationSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1604D4210662CF00B0F25B /* DataRSAPrivateKeyCreationSpec.swift */; };
+		5F1604E421066A4F00B0F25B /* guardian-test.private.pem in Resources */ = {isa = PBXBuildFile; fileRef = 5F1604DF21066A4F00B0F25B /* guardian-test.private.pem */; };
+		5F1604E521066A4F00B0F25B /* guardian-test.public.pem in Resources */ = {isa = PBXBuildFile; fileRef = 5F1604E021066A4F00B0F25B /* guardian-test.public.pem */; };
+		5F1604E621066A4F00B0F25B /* guardian-test.public.json in Resources */ = {isa = PBXBuildFile; fileRef = 5F1604E121066A4F00B0F25B /* guardian-test.public.json */; };
+		5F1604E721066A4F00B0F25B /* identity.p12 in Resources */ = {isa = PBXBuildFile; fileRef = 5F1604E221066A4F00B0F25B /* identity.p12 */; };
+		5F1604E821066A4F00B0F25B /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 5F1604E321066A4F00B0F25B /* README.md */; };
+		5F1604EA21066B2B00B0F25B /* Keys+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1604E921066B2B00B0F25B /* Keys+Utils.swift */; };
+		5F1604EC2106709B00B0F25B /* DataRSAPrivateKeySpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1604EB2106709B00B0F25B /* DataRSAPrivateKeySpec.swift */; };
 		5F1DB45B1DA4649600264437 /* Authentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1DB45A1DA4649600264437 /* Authentication.swift */; };
 		5F1DB45F1DA4757800264437 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1DB45E1DA4757800264437 /* Constants.swift */; };
 		5F2037D11D5E1E3E0005D2E2 /* Guardian.h in Headers */ = {isa = PBXBuildFile; fileRef = 5F2037D01D5E1E3E0005D2E2 /* Guardian.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -137,7 +143,6 @@
 		232A85D91D6BDFCA00048DF7 /* DeviceAPIClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = DeviceAPIClient.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		2331BFEA1DD5260D0047F1D4 /* JWT.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JWT.swift; sourceTree = "<group>"; };
 		2331BFEC1DD52ED50047F1D4 /* JWTSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JWTSpec.swift; sourceTree = "<group>"; };
-		2331C0171DD563150047F1D4 /* identity.p12 */ = {isa = PBXFileReference; lastKnownFileType = file; name = identity.p12; path = Data/identity.p12; sourceTree = "<group>"; };
 		2331C0191DD5FC6F0047F1D4 /* Data+Base64URL.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+Base64URL.swift"; sourceTree = "<group>"; };
 		233F75261D92F27000B8C15C /* Notification.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Notification.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		233F75281D93076600B8C15C /* NotificationSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationSpec.swift; sourceTree = "<group>"; };
@@ -175,6 +180,13 @@
 		5F1604C82106493600B0F25B /* SigningKeyStorageSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SigningKeyStorageSpec.swift; sourceTree = "<group>"; };
 		5F1604D2210661D700B0F25B /* KeychainRSAPrivateKeyCreationSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainRSAPrivateKeyCreationSpec.swift; sourceTree = "<group>"; };
 		5F1604D4210662CF00B0F25B /* DataRSAPrivateKeyCreationSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataRSAPrivateKeyCreationSpec.swift; sourceTree = "<group>"; };
+		5F1604DF21066A4F00B0F25B /* guardian-test.private.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "guardian-test.private.pem"; sourceTree = "<group>"; };
+		5F1604E021066A4F00B0F25B /* guardian-test.public.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "guardian-test.public.pem"; sourceTree = "<group>"; };
+		5F1604E121066A4F00B0F25B /* guardian-test.public.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "guardian-test.public.json"; sourceTree = "<group>"; };
+		5F1604E221066A4F00B0F25B /* identity.p12 */ = {isa = PBXFileReference; lastKnownFileType = file; path = identity.p12; sourceTree = "<group>"; };
+		5F1604E321066A4F00B0F25B /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		5F1604E921066B2B00B0F25B /* Keys+Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Keys+Utils.swift"; sourceTree = "<group>"; };
+		5F1604EB2106709B00B0F25B /* DataRSAPrivateKeySpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataRSAPrivateKeySpec.swift; sourceTree = "<group>"; };
 		5F1DB45A1DA4649600264437 /* Authentication.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Authentication.swift; sourceTree = "<group>"; };
 		5F1DB45C1DA4750F00264437 /* AuthenticationSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthenticationSpec.swift; sourceTree = "<group>"; };
 		5F1DB45E1DA4757800264437 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
@@ -246,11 +258,11 @@
 			isa = PBXGroup;
 			children = (
 				5F1DB45E1DA4757800264437 /* Constants.swift */,
-				2331C0171DD563150047F1D4 /* identity.p12 */,
 				2374A9F21D672E4F00737F2E /* Responses.swift */,
 				2374A9F41D67339E00737F2E /* Matchers.swift */,
 				23C67AEB1D81D6A400A38A2E /* MockNSURLSession.swift */,
 				2345A5ED1DD379BB00195291 /* RSAUtils.swift */,
+				5F1604E921066B2B00B0F25B /* Keys+Utils.swift */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
@@ -261,8 +273,21 @@
 				5F1604C82106493600B0F25B /* SigningKeyStorageSpec.swift */,
 				5F1604D2210661D700B0F25B /* KeychainRSAPrivateKeyCreationSpec.swift */,
 				5F1604D4210662CF00B0F25B /* DataRSAPrivateKeyCreationSpec.swift */,
+				5F1604EB2106709B00B0F25B /* DataRSAPrivateKeySpec.swift */,
 			);
 			path = Keys;
+			sourceTree = "<group>";
+		};
+		5F1604DE21066A4F00B0F25B /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				5F1604DF21066A4F00B0F25B /* guardian-test.private.pem */,
+				5F1604E021066A4F00B0F25B /* guardian-test.public.pem */,
+				5F1604E121066A4F00B0F25B /* guardian-test.public.json */,
+				5F1604E221066A4F00B0F25B /* identity.p12 */,
+				5F1604E321066A4F00B0F25B /* README.md */,
+			);
+			path = Data;
 			sourceTree = "<group>";
 		};
 		5F1DB4561DA41BBF00264437 /* Networking */ = {
@@ -366,6 +391,7 @@
 		5F2037DB1D5E1E3E0005D2E2 /* GuardianTests */ = {
 			isa = PBXGroup;
 			children = (
+				5F1604DE21066A4F00B0F25B /* Data */,
 				5F1604D1210661A300B0F25B /* Keys */,
 				2374A9F11D672E4200737F2E /* Utils */,
 				5F2037DE1D5E1E3E0005D2E2 /* Info.plist */,
@@ -587,7 +613,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2331C0181DD563150047F1D4 /* identity.p12 in Resources */,
+				5F1604E621066A4F00B0F25B /* guardian-test.public.json in Resources */,
+				5F1604E421066A4F00B0F25B /* guardian-test.private.pem in Resources */,
+				5F1604E821066A4F00B0F25B /* README.md in Resources */,
+				5F1604E521066A4F00B0F25B /* guardian-test.public.pem in Resources */,
+				5F1604E721066A4F00B0F25B /* identity.p12 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -670,6 +700,7 @@
 				5F1604D3210661D700B0F25B /* KeychainRSAPrivateKeyCreationSpec.swift in Sources */,
 				239CE2641D80CCE5008DCAE4 /* RequestSpec.swift in Sources */,
 				5F1604D5210662CF00B0F25B /* DataRSAPrivateKeyCreationSpec.swift in Sources */,
+				5F1604EA21066B2B00B0F25B /* Keys+Utils.swift in Sources */,
 				5F1DB45F1DA4757800264437 /* Constants.swift in Sources */,
 				2345A5EE1DD379BB00195291 /* RSAUtils.swift in Sources */,
 				2356C8301D88A10600B6C84A /* GuardianSpec.swift in Sources */,
@@ -683,6 +714,7 @@
 				2374A9EB1D67175200737F2E /* APIClientSpec.swift in Sources */,
 				23D3E4401D91BEA200F3FDE2 /* Base32Spec.swift in Sources */,
 				234004E91D9084A0009AB77C /* OneTimePasswordSpec.swift in Sources */,
+				5F1604EC2106709B00B0F25B /* DataRSAPrivateKeySpec.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
