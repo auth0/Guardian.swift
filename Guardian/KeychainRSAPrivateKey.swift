@@ -22,39 +22,33 @@
 
 import Foundation
 
+/// iOS keychain backed key
 public struct KeychainRSAPrivateKey: SigningKey {
+
     public let tag: String
+    public let secKey: SecKey
 
-    public init(tag: String) {
-        self.tag = tag
-    }
-    
     /**
-     Returns the `SecKey` instance
-
-     - important: This method might return nil if a key with this tag is not
-     present in the keychain or if the type of the key is not
-     appropriate.
-     */
-    public var secKey: SecKey? {
-        let query: [String: Any] = [
-            String(kSecClass)              : kSecClassKey,
-            String(kSecAttrKeyType)        : kSecAttrKeyTypeRSA,
-            String(kSecAttrApplicationTag) : self.tag,
-            String(kSecReturnRef)          : true
-        ]
-        var out: CFTypeRef?
-        let result = SecItemCopyMatching(query as CFDictionary, &out)
-        guard errSecSuccess == result else {
-            return nil
-        }
-
-        return (out as! SecKey)
+     Creates a new instance looking for a Keychain backed Private Key
+     - parameter tag: identifier that will be used to locate the key
+     - throws: `GuardianError` if the key is not found
+    */
+    public init(tag: String) throws {
+        self.init(tag: tag, secKey: try retrieveKey(of: tag))
     }
 
+    init(tag: String, secKey: SecKey) {
+        self.tag = tag
+        self.secKey = secKey
+    }
+
+    /// Available types of key accessibility in the keychain
     public enum Accessibility {
+        /// key available after one device unlock after restart (allows backups)
         case afterFirstUnlock
+        /// key available after one device unlock after restart (does not allows backups)
         case afterFirstUnlockThisDeviceOnly
+        /// key only available if there is a passcode, otherwise it will be removed
         case whenPasscodeIsSet
 
         var kSecAttr: CFString {

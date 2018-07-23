@@ -58,6 +58,8 @@
 		5F1604EA21066B2B00B0F25B /* Keys+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1604E921066B2B00B0F25B /* Keys+Utils.swift */; };
 		5F1604EC2106709B00B0F25B /* DataRSAPrivateKeySpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1604EB2106709B00B0F25B /* DataRSAPrivateKeySpec.swift */; };
 		5F1604EE210673E700B0F25B /* ASNPublicKeyDecodableSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1604ED210673E700B0F25B /* ASNPublicKeyDecodableSpec.swift */; };
+		5F1604F02106831C00B0F25B /* AsymmetricPublicKeySpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1604EF2106831C00B0F25B /* AsymmetricPublicKeySpec.swift */; };
+		5F1604F22106855F00B0F25B /* KeychainRSAPrivateKeySpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1604F12106855F00B0F25B /* KeychainRSAPrivateKeySpec.swift */; };
 		5F1DB45B1DA4649600264437 /* Authentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1DB45A1DA4649600264437 /* Authentication.swift */; };
 		5F1DB45F1DA4757800264437 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1DB45E1DA4757800264437 /* Constants.swift */; };
 		5F2037D11D5E1E3E0005D2E2 /* Guardian.h in Headers */ = {isa = PBXBuildFile; fileRef = 5F2037D01D5E1E3E0005D2E2 /* Guardian.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -80,7 +82,7 @@
 		5F61338F210128C800BCC182 /* AuthenticationLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F61338E210128C800BCC182 /* AuthenticationLocation.swift */; };
 		5F7969341DDABDDE006AC7BA /* AuthenticationSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1DB45C1DA4750F00264437 /* AuthenticationSpec.swift */; };
 		5F7969371DDAC074006AC7BA /* JWTSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2331BFEC1DD52ED50047F1D4 /* JWTSpec.swift */; };
-		5FAE672121024CDA00F149A3 /* Key.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FAE672021024CDA00F149A3 /* Key.swift */; };
+		5FAE672121024CDA00F149A3 /* Keys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FAE672021024CDA00F149A3 /* Keys.swift */; };
 		5FAE67252102509600F149A3 /* KeychainRSAPrivateKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FAE67242102509600F149A3 /* KeychainRSAPrivateKey.swift */; };
 		5FAE6727210250D000F149A3 /* DataRSAPrivateKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FAE6726210250D000F149A3 /* DataRSAPrivateKey.swift */; };
 		5FAE6729210250E300F149A3 /* AsymmetricPublicKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FAE6728210250E300F149A3 /* AsymmetricPublicKey.swift */; };
@@ -189,6 +191,8 @@
 		5F1604E921066B2B00B0F25B /* Keys+Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Keys+Utils.swift"; sourceTree = "<group>"; };
 		5F1604EB2106709B00B0F25B /* DataRSAPrivateKeySpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataRSAPrivateKeySpec.swift; sourceTree = "<group>"; };
 		5F1604ED210673E700B0F25B /* ASNPublicKeyDecodableSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ASNPublicKeyDecodableSpec.swift; sourceTree = "<group>"; };
+		5F1604EF2106831C00B0F25B /* AsymmetricPublicKeySpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsymmetricPublicKeySpec.swift; sourceTree = "<group>"; };
+		5F1604F12106855F00B0F25B /* KeychainRSAPrivateKeySpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainRSAPrivateKeySpec.swift; sourceTree = "<group>"; };
 		5F1DB45A1DA4649600264437 /* Authentication.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Authentication.swift; sourceTree = "<group>"; };
 		5F1DB45C1DA4750F00264437 /* AuthenticationSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthenticationSpec.swift; sourceTree = "<group>"; };
 		5F1DB45E1DA4757800264437 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
@@ -218,7 +222,7 @@
 		5F61338A2101286200BCC182 /* AuthenticationNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationNotification.swift; sourceTree = "<group>"; };
 		5F61338C2101289E00BCC182 /* AuthenticationSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationSource.swift; sourceTree = "<group>"; };
 		5F61338E210128C800BCC182 /* AuthenticationLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationLocation.swift; sourceTree = "<group>"; };
-		5FAE672021024CDA00F149A3 /* Key.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Key.swift; sourceTree = "<group>"; };
+		5FAE672021024CDA00F149A3 /* Keys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keys.swift; sourceTree = "<group>"; };
 		5FAE67242102509600F149A3 /* KeychainRSAPrivateKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainRSAPrivateKey.swift; sourceTree = "<group>"; };
 		5FAE6726210250D000F149A3 /* DataRSAPrivateKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataRSAPrivateKey.swift; sourceTree = "<group>"; };
 		5FAE6728210250E300F149A3 /* AsymmetricPublicKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsymmetricPublicKey.swift; sourceTree = "<group>"; };
@@ -277,6 +281,8 @@
 				5F1604D4210662CF00B0F25B /* DataRSAPrivateKeyCreationSpec.swift */,
 				5F1604EB2106709B00B0F25B /* DataRSAPrivateKeySpec.swift */,
 				5F1604ED210673E700B0F25B /* ASNPublicKeyDecodableSpec.swift */,
+				5F1604EF2106831C00B0F25B /* AsymmetricPublicKeySpec.swift */,
+				5F1604F12106855F00B0F25B /* KeychainRSAPrivateKeySpec.swift */,
 			);
 			path = Keys;
 			sourceTree = "<group>";
@@ -464,7 +470,7 @@
 		5FAE671F21024CBA00F149A3 /* Keys */ = {
 			isa = PBXGroup;
 			children = (
-				5FAE672021024CDA00F149A3 /* Key.swift */,
+				5FAE672021024CDA00F149A3 /* Keys.swift */,
 				5FAE67242102509600F149A3 /* KeychainRSAPrivateKey.swift */,
 				5FAE6726210250D000F149A3 /* DataRSAPrivateKey.swift */,
 				5FAE6728210250E300F149A3 /* AsymmetricPublicKey.swift */,
@@ -684,7 +690,7 @@
 				2331C01A1DD5FC6F0047F1D4 /* Data+Base64URL.swift in Sources */,
 				5F1604C5210636B500B0F25B /* ASNPublicKeyDecodable.swift in Sources */,
 				5FAE6727210250D000F149A3 /* DataRSAPrivateKey.swift in Sources */,
-				5FAE672121024CDA00F149A3 /* Key.swift in Sources */,
+				5FAE672121024CDA00F149A3 /* Keys.swift in Sources */,
 				5F61338B2101286200BCC182 /* AuthenticationNotification.swift in Sources */,
 				2331BFEB1DD5260D0047F1D4 /* JWT.swift in Sources */,
 				5FAE6729210250E300F149A3 /* AsymmetricPublicKey.swift in Sources */,
@@ -717,7 +723,9 @@
 				5F7969371DDAC074006AC7BA /* JWTSpec.swift in Sources */,
 				2374A9EB1D67175200737F2E /* APIClientSpec.swift in Sources */,
 				23D3E4401D91BEA200F3FDE2 /* Base32Spec.swift in Sources */,
+				5F1604F02106831C00B0F25B /* AsymmetricPublicKeySpec.swift in Sources */,
 				234004E91D9084A0009AB77C /* OneTimePasswordSpec.swift in Sources */,
+				5F1604F22106855F00B0F25B /* KeychainRSAPrivateKeySpec.swift in Sources */,
 				5F1604EC2106709B00B0F25B /* DataRSAPrivateKeySpec.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

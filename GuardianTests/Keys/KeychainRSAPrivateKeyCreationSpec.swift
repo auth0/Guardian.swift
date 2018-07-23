@@ -51,7 +51,7 @@ class KeychainRSAPrivateKeyCreationSpec: QuickSpec {
 
             it("should allow sign") {
                 let key = try! KeychainRSAPrivateKey.new(with: tag)
-                expect(SecKeyIsAlgorithmSupported(key.secKey!, .sign, SecKeyAlgorithm.rsaSignatureDigestPKCS1v15SHA256)).to(beTrue())
+                expect(SecKeyIsAlgorithmSupported(key.secKey, .sign, SecKeyAlgorithm.rsaSignatureDigestPKCS1v15SHA256)).to(beTrue())
             }
 
             it("should have the right size") {
@@ -73,7 +73,7 @@ class KeychainRSAPrivateKeyCreationSpec: QuickSpec {
 
             it("should be accesible") {
                 let _ = try! KeychainRSAPrivateKey.new(with: tag)
-                let same = KeychainRSAPrivateKey(tag: tag)
+                let same = try! KeychainRSAPrivateKey(tag: tag)
                 expect(same.secKey).toNot(beNil())
             }
 

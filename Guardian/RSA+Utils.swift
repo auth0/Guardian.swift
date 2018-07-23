@@ -53,3 +53,19 @@ func publicKey(from key: SecKey) throws -> SecKey {
     }
     return publicKey
 }
+
+func retrieveKey(of tag: String) throws -> SecKey {
+    let query: [String: Any] = [
+        String(kSecClass)              : kSecClassKey,
+        String(kSecAttrKeyType)        : kSecAttrKeyTypeRSA,
+        String(kSecAttrApplicationTag) : tag,
+        String(kSecReturnRef)          : true
+    ]
+    var out: CFTypeRef?
+    let result = SecItemCopyMatching(query as CFDictionary, &out)
+    guard errSecSuccess == result else {
+        throw GuardianError.notFoundPrivateKey(tag: tag)
+    }
+
+    return (out as! SecKey)
+}

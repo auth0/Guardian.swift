@@ -30,7 +30,7 @@ class ASNPublicKeyDecodableSpec: QuickSpec {
 
         let keys = Keys.shared
         let privateKey = try! DataRSAPrivateKey(data: keys.privateKey)
-        let publicKey = try! AsymmetricPublicKey(privateKey: privateKey.key)
+        let publicKey = try! AsymmetricPublicKey(privateKey: privateKey.secKey)
 
         describe("ASN parsing") {
 
@@ -53,6 +53,36 @@ class ASNPublicKeyDecodableSpec: QuickSpec {
 
                 expect(e).to(equal(keys.jwk.exponent))
             }
+
+        }
+
+        describe("jwk") {
+
+            it("should return a jwk") {
+                let publicKey = try! DataRSAPrivateKey.new().verificationKey()
+                expect(publicKey.jwk).toNot(beEmpty())
+            }
+
+            it("should have kty") {
+                expect(publicKey.jwk?["kty"] as? String).to(equal(keys.jwk.keyType))
+            }
+
+            it("should have use") {
+                expect(publicKey.jwk?["use"] as? String).to(equal(keys.jwk.usage))
+            }
+
+            it("should have alg") {
+                expect(publicKey.jwk?["alg"] as? String).to(equal(keys.jwk.algorithm))
+            }
+
+            it("should have n") {
+                expect(publicKey.jwk?["n"] as? String).to(equal(keys.jwk.modulus))
+            }
+
+            it("should have e") {
+                expect(publicKey.jwk?["e"] as? String).to(equal(keys.jwk.exponent))
+            }
+
 
         }
     }

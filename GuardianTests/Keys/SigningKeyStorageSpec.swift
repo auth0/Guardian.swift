@@ -50,7 +50,7 @@ class SigningKeyStorageSpec: QuickSpec {
 
             it("should be accesible") {
                 let _ = try! DataRSAPrivateKey.new().storeInKeychain(with: tag)
-                let same = KeychainRSAPrivateKey(tag: tag)
+                let same = try! KeychainRSAPrivateKey(tag: tag)
                 expect(same.secKey).toNot(beNil())
             }
 

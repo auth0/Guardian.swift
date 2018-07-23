@@ -1,4 +1,4 @@
-// DataRSAPrivateKeySpec.swift
+// AsymmetricPublicKeySpec.swift
 //
 // Copyright (c) 2018 Auth0 (http://auth0.com)
 //
@@ -24,32 +24,24 @@ import Quick
 import Nimble
 import Guardian
 
-class DataRSAPrivateKeySpec: QuickSpec {
+class AsymmetricPublicKeySpec: QuickSpec {
 
     override func spec() {
 
         let keys = Keys.shared
-        describe("init(data:)") {
 
-            it("should create from Data") {
-                expect { try DataRSAPrivateKey(data: keys.privateKey) }.toNot(throwError(errorType: GuardianError.self))
+        describe("init(privateKey:)") {
+
+            it("should get public from private key") {
+                let privateKey = try! DataRSAPrivateKey.new()
+                expect { try AsymmetricPublicKey(privateKey: privateKey.secKey) }.toNot(throwError())
             }
 
-            it("should raise error with bad data") {
-                let badData = "BAD".data(using: .utf8)!
-                expect { try DataRSAPrivateKey(data: badData) }.to(throwError(errorType: GuardianError.self))
+            it("should match data") {
+                let privateKey = try! DataRSAPrivateKey(data: keys.privateKey)
+                let publicKey = try! AsymmetricPublicKey(privateKey: privateKey.secKey)
+                expect(publicKey.data).to(equal(keys.publicKey))
             }
         }
-
-        describe("init(key:)") {
-
-            it("should create from key") {
-                let key = try! DataRSAPrivateKey(data: keys.privateKey).secKey
-                expect { try DataRSAPrivateKey(secKey: key) }.toNot(throwError(errorType: GuardianError.self))
-            }
-
-        }
-
     }
-
 }

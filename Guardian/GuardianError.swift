@@ -36,6 +36,7 @@ private let invalidAsymmetricKeyMessage = "a0.guardian.internal.invalid.assymmet
 private let notFoundPublicKeyMessage = "a0.guardian.internal.no.public.key"
 private let failedCreationAsymmetricKeyMessage = "a0.guardian.internal.failed.creation.assymmetric.key"
 private let failedStoreAsymmetricKeyMessage = "a0.guardian.internal.failed.store.assymmetric.key"
+private let notFoundPrivateKeyMessage = "a0.guardian.internal.no.private.key"
 
 /**
  An `Error` that encapsulates server and other possible internal errors
@@ -134,6 +135,13 @@ internal extension GuardianError {
 
     static var notFoundPublicKey: GuardianError {
         return GuardianError(string: notFoundPublicKeyMessage)
+    }
+
+    static func notFoundPrivateKey(tag: String) -> GuardianError {
+        return GuardianError(info: [
+            "errorCode": notFoundPrivateKeyMessage,
+            "tag": tag
+            ], statusCode: 0)
     }
 
     static func failedCreationAsymmetricKey(cause: Error) -> GuardianError {

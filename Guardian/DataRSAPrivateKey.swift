@@ -22,22 +22,19 @@
 
 import Foundation
 
-public struct DataRSAPrivateKey {
+/// Key that is only preserved in memory, useful of other types of storages
+public struct DataRSAPrivateKey: SigningKey {
 
-    public let key: SecKey
+    public let secKey: SecKey
     public let data: Data
 
-    public init(key: SecKey) throws {
-        self.key = key
-        self.data = try export(key: key)
+    public init(secKey: SecKey) throws {
+        self.secKey = secKey
+        self.data = try export(key: secKey)
     }
 
     public init(data: Data) throws {
-        self.key = try createKey(from: data)
+        self.secKey = try createKey(from: data)
         self.data = data
     }
-}
-
-extension DataRSAPrivateKey: SigningKey {
-    public var secKey: SecKey? { return self.key }
 }

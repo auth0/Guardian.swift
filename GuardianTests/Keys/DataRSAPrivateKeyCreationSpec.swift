@@ -36,12 +36,12 @@ class DataRSAPrivateKeyCreationSpec: QuickSpec {
             it("should different keys") {
                 let key1 = try! DataRSAPrivateKey.new()
                 let key2 = try! DataRSAPrivateKey.new()
-                expect(key1.key).toNot(equal(key2.key))
+                expect(key1.secKey).toNot(equal(key2.secKey))
             }
 
             it("should allow sign") {
                 let key = try! DataRSAPrivateKey.new()
-                expect(SecKeyIsAlgorithmSupported(key.key, .sign, SecKeyAlgorithm.rsaSignatureDigestPKCS1v15SHA256)).to(beTrue())
+                expect(SecKeyIsAlgorithmSupported(key.secKey, .sign, SecKeyAlgorithm.rsaSignatureDigestPKCS1v15SHA256)).to(beTrue())
             }
 
             it("should have data") {

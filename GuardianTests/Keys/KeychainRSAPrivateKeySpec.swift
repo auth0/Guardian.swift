@@ -1,4 +1,4 @@
-// DataRSAPrivateKeySpec.swift
+// KeychainRSAPrivateKeySpec.swift
 //
 // Copyright (c) 2018 Auth0 (http://auth0.com)
 //
@@ -24,32 +24,15 @@ import Quick
 import Nimble
 import Guardian
 
-class DataRSAPrivateKeySpec: QuickSpec {
+class KeychainRSAPrivateKeySpec: QuickSpec {
 
     override func spec() {
 
-        let keys = Keys.shared
-        describe("init(data:)") {
+        describe("init(tag:)") {
 
-            it("should create from Data") {
-                expect { try DataRSAPrivateKey(data: keys.privateKey) }.toNot(throwError(errorType: GuardianError.self))
-            }
-
-            it("should raise error with bad data") {
-                let badData = "BAD".data(using: .utf8)!
-                expect { try DataRSAPrivateKey(data: badData) }.to(throwError(errorType: GuardianError.self))
+            it("should instantiate with a tag") {
+                
             }
         }
-
-        describe("init(key:)") {
-
-            it("should create from key") {
-                let key = try! DataRSAPrivateKey(data: keys.privateKey).secKey
-                expect { try DataRSAPrivateKey(secKey: key) }.toNot(throwError(errorType: GuardianError.self))
-            }
-
-        }
-
     }
-
 }

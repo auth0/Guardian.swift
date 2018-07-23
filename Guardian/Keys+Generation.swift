@@ -32,7 +32,7 @@ private func newKey() throws -> DataRSAPrivateKey {
         let cause = error!.takeRetainedValue() as Error
         throw GuardianError.failedCreationAsymmetricKey(cause: cause)
     }
-    return try DataRSAPrivateKey(key: key)
+    return try DataRSAPrivateKey(secKey: key)
 }
 
 private func store(key: SecKey, with tag: String, accessible: KeychainRSAPrivateKey.Accessibility = .afterFirstUnlockThisDeviceOnly) throws -> KeychainRSAPrivateKey {
@@ -47,7 +47,7 @@ private func store(key: SecKey, with tag: String, accessible: KeychainRSAPrivate
     guard SecItemAdd(query as CFDictionary, nil) == errSecSuccess else {
         throw GuardianError.failedStoreAsymmetricKey
     }
-    return KeychainRSAPrivateKey(tag: tag)
+    return KeychainRSAPrivateKey(tag: tag, secKey: key)
 }
 
 extension DataRSAPrivateKey {
@@ -69,7 +69,7 @@ extension DataRSAPrivateKey {
             let cause = error!.takeRetainedValue() as Error
             throw GuardianError.failedCreationAsymmetricKey(cause: cause)
         }
-        return try DataRSAPrivateKey(key: key)
+        return try DataRSAPrivateKey(secKey: key)
     }
 }
 
@@ -85,12 +85,11 @@ extension KeychainRSAPrivateKey {
      - important: Using the same tag multiple times will yield the same key found in the iOS Keychain
      */
     public static func new(with tag: String, accessible: KeychainRSAPrivateKey.Accessibility = .afterFirstUnlockThisDeviceOnly) throws -> KeychainRSAPrivateKey {
-        let existing = KeychainRSAPrivateKey(tag: tag)
-        guard existing.secKey == nil else {
+        if let existing = try? KeychainRSAPrivateKey(tag: tag) {
             return existing
         }
         let new = try newKey()
-        return try store(key: new.key, with: tag)
+        return try store(key: new.secKey, with: tag)
     }
 }
 
@@ -103,8 +102,7 @@ extension SigningKey {
      - returns: an RSA private key
     */
     public func storeInKeychain(with tag: String, accessible: KeychainRSAPrivateKey.Accessibility = .afterFirstUnlockThisDeviceOnly) throws -> SigningKey {
-        guard let key = self.secKey else { throw GuardianError.failedStoreAsymmetricKey }
-        return try store(key: key, with: tag, accessible: accessible)
+        return try store(key: secKey, with: tag, accessible: accessible)
     }
 }
 
