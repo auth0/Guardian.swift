@@ -53,6 +53,11 @@ jobs:
           name: Run tests
           command: bundle exec fastlane ios ci
 
+      # Code Coverage
+      - run:
+          name: Codecov.io
+          command: bash <(curl -s https://codecov.io/bash) -J 'Guardian'
+
       - save_cache:
           key: guardian.swift-carthage-v1-{{ checksum "Cartfile.resolved" }}
           paths:
