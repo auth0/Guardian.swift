@@ -52,12 +52,12 @@ class JWTSpec: QuickSpec {
                 }
 
                 it("should verify successfuly with correct key") {
-                    let claims = try? JWT.verify(string: jwt!, publicKey: verificationKey.key)
+                    let claims = try? JWT.verify(string: jwt!, publicKey: verificationKey.secKey)
                     expect(claims).toNot(beNil())
                 }
 
                 it("should fail verify with incorrect key") {
-                    let claims = try? JWT.verify(string: jwt!, publicKey: anotherVerificationKey.key)
+                    let claims = try? JWT.verify(string: jwt!, publicKey: anotherVerificationKey.secKey)
                     expect(claims).to(beNil())
                 }
             }
@@ -73,7 +73,7 @@ class JWTSpec: QuickSpec {
 
                 describe("should verify successfuly with correct key") {
 
-                    let claims = try? JWT.verify(string: jwt!, publicKey: verificationKey.key)
+                    let claims = try? JWT.verify(string: jwt!, publicKey: verificationKey.secKey)
 
                     it("should not be nil") {
                         expect(claims).toNot(beNil())
@@ -102,7 +102,7 @@ class JWTSpec: QuickSpec {
                 }
 
                 it("should fail verify with incorrect key") {
-                    let claims = try? JWT.verify(string: jwt!, publicKey: anotherVerificationKey.key)
+                    let claims = try? JWT.verify(string: jwt!, publicKey: anotherVerificationKey.secKey)
                     expect(claims).to(beNil())
                 }
             }

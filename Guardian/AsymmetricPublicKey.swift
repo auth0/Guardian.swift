@@ -24,7 +24,7 @@ import Foundation
 
 /// Public key that is used to verify AuthN guardian responses
 public struct AsymmetricPublicKey {
-    public let key: SecKey
+    public let secKey: SecKey
 
     /**
      Creates a new instance from a private key
@@ -32,12 +32,12 @@ public struct AsymmetricPublicKey {
      - throws: `GuardianError` if the key cannot be exported
     */
     public init(privateKey: SecKey) throws {
-        self.key = try publicKey(from: privateKey)
+        self.secKey = try publicKey(from: privateKey)
     }
 }
 
 extension AsymmetricPublicKey: VerificationKey, PublicKeyDataConvertible, ASNPublicKeyDecodable {
-    public var data: Data? { return try? export(key: self.key) }
+    public var data: Data? { return try? export(key: self.secKey) }
 }
 
 extension SigningKey {
