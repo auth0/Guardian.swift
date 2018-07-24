@@ -59,6 +59,18 @@ class OneTimePasswordGeneratorSpec: QuickSpec {
                     }
                 }
 
+                let base32Secret = "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ"
+                let algorithm = "sha1"
+                let otp = try! Guardian.totp(base32Secret: base32Secret, algorithm: algorithm)
+
+                it("should default to 30 sec period") {
+                    expect(otp.new(time: 49)).to(equal("287082"))
+                }
+
+                it("should default to current date") {
+                    expect(otp.new()).toNot(beNil())
+                }
+
                 context("sha1") {
                     let key = "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ"
                     let alg = "sha1"

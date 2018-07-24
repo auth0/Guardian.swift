@@ -14,8 +14,6 @@
 		2331C01A1DD5FC6F0047F1D4 /* Data+Base64URL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2331C0191DD5FC6F0047F1D4 /* Data+Base64URL.swift */; };
 		233F75271D92F27000B8C15C /* Notification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 233F75261D92F27000B8C15C /* Notification.swift */; };
 		233F75291D93076600B8C15C /* NotificationSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 233F75281D93076600B8C15C /* NotificationSpec.swift */; };
-		234004DF1D8CA944009AB77C /* OneTimePassword.swift in Sources */ = {isa = PBXBuildFile; fileRef = 234004DE1D8CA944009AB77C /* OneTimePassword.swift */; };
-		234004E91D9084A0009AB77C /* OneTimePasswordSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 234004E81D9084A0009AB77C /* OneTimePasswordSpec.swift */; };
 		234004EF1D909C91009AB77C /* Base32.swift in Sources */ = {isa = PBXBuildFile; fileRef = 234004EE1D909C91009AB77C /* Base32.swift */; };
 		234B25B21D9DA37D00078FA0 /* NotificationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 234B25B11D9DA37D00078FA0 /* NotificationController.swift */; };
 		2356C82E1D88998A00B6C84A /* EnrollRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2356C82D1D88998A00B6C84A /* EnrollRequest.swift */; };
@@ -148,8 +146,6 @@
 		2331C0191DD5FC6F0047F1D4 /* Data+Base64URL.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+Base64URL.swift"; sourceTree = "<group>"; };
 		233F75261D92F27000B8C15C /* Notification.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Notification.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		233F75281D93076600B8C15C /* NotificationSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationSpec.swift; sourceTree = "<group>"; };
-		234004DE1D8CA944009AB77C /* OneTimePassword.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OneTimePassword.swift; sourceTree = "<group>"; };
-		234004E81D9084A0009AB77C /* OneTimePasswordSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OneTimePasswordSpec.swift; sourceTree = "<group>"; };
 		234004EE1D909C91009AB77C /* Base32.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Base32.swift; sourceTree = "<group>"; };
 		234B25AD1D9D554800078FA0 /* GuardianApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GuardianApp.entitlements; sourceTree = "<group>"; };
 		234B25B11D9DA37D00078FA0 /* NotificationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationController.swift; sourceTree = "<group>"; };
@@ -346,7 +342,6 @@
 				23B7A0461DD4E7820038124A /* A0RSA.m */,
 				231687161DDA071A00B09526 /* A0SHA.h */,
 				231687181DDA07FD00B09526 /* A0SHA.m */,
-				234004DE1D8CA944009AB77C /* OneTimePassword.swift */,
 				234004EE1D909C91009AB77C /* Base32.swift */,
 				2331BFEA1DD5260D0047F1D4 /* JWT.swift */,
 				2331C0191DD5FC6F0047F1D4 /* Data+Base64URL.swift */,
@@ -423,7 +418,6 @@
 				2374A9EA1D67175200737F2E /* APIClientSpec.swift */,
 				239CE2631D80CCE5008DCAE4 /* RequestSpec.swift */,
 				2356C82F1D88A10600B6C84A /* GuardianSpec.swift */,
-				234004E81D9084A0009AB77C /* OneTimePasswordSpec.swift */,
 				23D3E43F1D91BEA200F3FDE2 /* Base32Spec.swift */,
 				233F75281D93076600B8C15C /* NotificationSpec.swift */,
 				5F1DB45C1DA4750F00264437 /* AuthenticationSpec.swift */,
@@ -680,7 +674,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				234004DF1D8CA944009AB77C /* OneTimePassword.swift in Sources */,
 				2374A9E41D670F5900737F2E /* APIClient.swift in Sources */,
 				5F1604F72107A93D00B0F25B /* OneTimePasswordGenerator.swift in Sources */,
 				234004EF1D909C91009AB77C /* Base32.swift in Sources */,
@@ -740,7 +733,6 @@
 				2374A9EB1D67175200737F2E /* APIClientSpec.swift in Sources */,
 				23D3E4401D91BEA200F3FDE2 /* Base32Spec.swift in Sources */,
 				5F1604F02106831C00B0F25B /* AsymmetricPublicKeySpec.swift in Sources */,
-				234004E91D9084A0009AB77C /* OneTimePasswordSpec.swift in Sources */,
 				5F1604F22106855F00B0F25B /* KeychainRSAPrivateKeySpec.swift in Sources */,
 				5F1604EC2106709B00B0F25B /* DataRSAPrivateKeySpec.swift in Sources */,
 			);
