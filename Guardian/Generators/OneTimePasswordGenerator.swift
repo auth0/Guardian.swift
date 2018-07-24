@@ -1,6 +1,6 @@
-// OneTimePassword.swift
+// OneTimePasswordGenerator.swift
 //
-// Copyright (c) 2016 Auth0 (http://auth0.com)
+// Copyright (c) 2018 Auth0 (http://auth0.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,23 +22,48 @@
 
 import Foundation
 
-struct BasicTOTP {
+public protocol TOTP {
+    func new(time: TimeInterval, period: Int) -> String
+}
 
+extension TOTP {
+    public func new(time: TimeInterval = Date().timeIntervalSince1970, period: Int = 30) -> String {
+        return self.new(time: time, period: period)
+    }
+}
+
+public protocol HOTP {
+    func new(counter: Int) -> String
+}
+
+public func totp(base32Secret: String, algorithm: String, digits: Int = 6) throws -> TOTP {
+    guard let secret = Base32.decode(string: base32Secret) else { throw GuardianError.invalidBase32Secret }
+    return try totp(secret: secret, algorithm: algorithm, digits: digits)
+}
+
+public func totp(secret: Data, algorithm: String, digits: Int = 6) throws -> TOTP {
+    return try OneTimePasswordGenerator(secret: secret, algorithm: algorithm, digits: digits)
+}
+
+public func hotp(secret: Data, algorithm: String, digits: Int = 6) throws -> HOTP {
+    return try OneTimePasswordGenerator(secret: secret, algorithm: algorithm, digits: digits)
+}
+
+struct OneTimePasswordGenerator: TOTP, HOTP {
+    let digits: Int
     let hmac: A0HMAC
-    let period: Int
 
-    init?(withKey key: Data, period: Int, algorithm: String) {
-        guard let hmac = A0HMAC(algorithm: algorithm, key: key) else {
-            return nil
+    init(secret: Data, algorithm: String, digits: Int) throws {
+        guard let hmac = A0HMAC(algorithm: algorithm, key: secret) else {
+            throw GuardianError.invalidOTPAlgorithm
         }
-
         self.hmac = hmac
-        self.period = period
+        self.digits = digits
     }
 
-    func generate(digits: Int, counter: Int) -> String {
-        var t = UInt64(counter / period).bigEndian
-        let buffer = Data(bytes: &t, count: MemoryLayout<UInt64>.size);
+    func new(counter: Int) -> String {
+        var c = UInt64(counter).bigEndian
+        let buffer = Data(bytes: &c, count: MemoryLayout<UInt64>.size);
         let digestData = hmac.sign(buffer)
         let hash = digestData.withUnsafeBytes { (bytes: UnsafePointer<UInt8>) -> UInt32 in
             let last = bytes.advanced(by: hmac.digestLength - 1)
@@ -52,5 +77,10 @@ struct BasicTOTP {
         }
 
         return String(format: "%0\(digits)d", Int(hash))
+    }
+
+    func new(time: TimeInterval, period: Int) -> String {
+        let steps = time / Double(period)
+        return self.new(counter: Int(steps))
     }
 }

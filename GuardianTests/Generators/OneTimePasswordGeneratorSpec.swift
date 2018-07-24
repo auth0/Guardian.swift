@@ -1,6 +1,6 @@
-// OneTimePasswordSpec.swift
+// OneTimePasswordGeneratorSpec.swift
 //
-// Copyright (c) 2016 Auth0 (http://auth0.com)
+// Copyright (c) 2018 Auth0 (http://auth0.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,42 +22,11 @@
 
 import Quick
 import Nimble
+import Guardian
 
-@testable import Guardian
-
-class OneTimePasswordSpec: QuickSpec {
+class OneTimePasswordGeneratorSpec: QuickSpec {
 
     override func spec() {
-
-        describe("constructor") {
-
-            let period = 30
-
-            it("should return valid sha1 algorithm") {
-                let base32Secret = "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ"
-                let key = Base32.decode(string: base32Secret)!
-                expect(BasicTOTP(withKey: key, period: period, algorithm: "sha1")).toNot(beNil())
-            }
-
-            it("should return valid sha256 algorithm") {
-                let base32Secret = "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZA===="
-                let key = Base32.decode(string: base32Secret)!
-                expect(BasicTOTP(withKey: key, period: period, algorithm: "sha256")).toNot(beNil())
-            }
-
-            it("should return valid sha512 algorithm") {
-                let base32Secret = "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNA="
-                let key = Base32.decode(string: base32Secret)!
-                expect(BasicTOTP(withKey: key, period: period, algorithm: "sha512")).toNot(beNil())
-            }
-
-            it("should fail when using not supported algorithm") {
-                let base32Secret = "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNA="
-                let key = Base32.decode(string: base32Secret)!
-                expect(BasicTOTP(withKey: key, period: period, algorithm: "something")).to(beNil())
-            }
-        }
-
         describe("totp") {
 
             var algorithmName = "sha1"
@@ -69,25 +38,24 @@ class OneTimePasswordSpec: QuickSpec {
             }
 
             // Test vector from RFC 6238 https://tools.ietf.org/html/rfc6238#appendix-B
-            describe("generate code") {
+            describe("new(time:, period:)") {
 
-                let validTOTP = "valid totp"
+                let validTOTP = "rfc totp"
 
                 sharedExamples(validTOTP) { (context: SharedExampleContext) in
                     let data = context()
                     let code = data["code"] as! String
                     let counter = data["counter"] as! Int
                     let base32Secret = data["key"] as! String
-                    var otp: BasicTOTP!
+                    var otp: TOTP!
 
                     beforeEach {
                         algorithmName = data["alg"] as! String
-                        let key = Base32.decode(string: base32Secret)!
-                        otp = BasicTOTP(withKey: key, period: period, algorithm: algorithmName)
+                        otp = try! Guardian.totp(base32Secret: base32Secret, algorithm: algorithmName, digits: digits)
                     }
 
                     it("should return code '\(code)' for counter '\(counter)'") {
-                        expect(otp.generate(digits: digits, counter: counter)).to(equal(code))
+                        expect(otp.new(time: TimeInterval(counter), period: period)).to(equal(code))
                     }
                 }
 
@@ -122,6 +90,45 @@ class OneTimePasswordSpec: QuickSpec {
                     itBehavesLike(validTOTP) { ["counter": 1234567890,  "code": "93441116", "alg": alg, "key": key] }
                     itBehavesLike(validTOTP) { ["counter": 2000000000,  "code": "38618901", "alg": alg, "key": key] }
                     itBehavesLike(validTOTP) { ["counter": 20000000000, "code": "47863826", "alg": alg, "key": key] }
+                }
+            }
+
+            // Test vector from RFC 4226 https://tools.ietf.org/html/rfc4226#page-32
+            describe("new(counter:)") {
+
+                let validTOTP = "rfc hotp"
+
+                sharedExamples(validTOTP) { (context: SharedExampleContext) in
+                    let data = context()
+                    let code = data["code"] as! String
+                    let counter = data["counter"] as! Int
+                    let keyString = data["key"] as! String
+                    var otp: HOTP!
+
+                    beforeEach {
+                        algorithmName = data["alg"] as! String
+                        let key = keyString.data(using: .utf8)!
+                        otp = try! Guardian.hotp(secret: key, algorithm: algorithmName, digits: 6)
+                    }
+
+                    it("should return code '\(code)' for counter '\(counter)'") {
+                        expect(otp.new(counter: counter)).to(equal(code))
+                    }
+                }
+
+                context("sha1") {
+                    let key = "12345678901234567890"
+                    let alg = "sha1"
+                    itBehavesLike(validTOTP) { ["counter": 0, "code": "755224", "alg": alg, "key": key] }
+                    itBehavesLike(validTOTP) { ["counter": 1, "code": "287082", "alg": alg, "key": key] }
+                    itBehavesLike(validTOTP) { ["counter": 2, "code": "359152", "alg": alg, "key": key] }
+                    itBehavesLike(validTOTP) { ["counter": 3, "code": "969429", "alg": alg, "key": key] }
+                    itBehavesLike(validTOTP) { ["counter": 4, "code": "338314", "alg": alg, "key": key] }
+                    itBehavesLike(validTOTP) { ["counter": 5, "code": "254676", "alg": alg, "key": key] }
+                    itBehavesLike(validTOTP) { ["counter": 6, "code": "287922", "alg": alg, "key": key] }
+                    itBehavesLike(validTOTP) { ["counter": 7, "code": "162583", "alg": alg, "key": key] }
+                    itBehavesLike(validTOTP) { ["counter": 8, "code": "399871", "alg": alg, "key": key] }
+                    itBehavesLike(validTOTP) { ["counter": 9, "code": "520489", "alg": alg, "key": key] }
                 }
             }
         }
