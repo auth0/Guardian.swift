@@ -29,7 +29,6 @@ class OneTimePasswordGeneratorSpec: QuickSpec {
     override func spec() {
         describe("totp") {
 
-            var algorithmName = "sha1"
             var period = 30
             let digits = 8
 
@@ -50,8 +49,8 @@ class OneTimePasswordGeneratorSpec: QuickSpec {
                     var otp: TOTP!
 
                     beforeEach {
-                        algorithmName = data["alg"] as! String
-                        otp = try! Guardian.totp(base32Secret: base32Secret, algorithm: algorithmName, digits: digits)
+                        let algorithm = data["alg"] as! HMACAlgorithm
+                        otp = try! Guardian.totp(base32Secret: base32Secret, algorithm: algorithm, digits: digits)
                     }
 
                     it("should return code '\(code)' for counter '\(counter)'") {
@@ -60,8 +59,7 @@ class OneTimePasswordGeneratorSpec: QuickSpec {
                 }
 
                 let base32Secret = "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ"
-                let algorithm = "sha1"
-                let otp = try! Guardian.totp(base32Secret: base32Secret, algorithm: algorithm)
+                let otp = try! Guardian.totp(base32Secret: base32Secret, algorithm: .sha1)
 
                 it("should default to 30 sec period") {
                     expect(otp.new(time: 49)).to(equal("287082"))
@@ -73,7 +71,7 @@ class OneTimePasswordGeneratorSpec: QuickSpec {
 
                 context("sha1") {
                     let key = "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ"
-                    let alg = "sha1"
+                    let alg = HMACAlgorithm.sha1
                     itBehavesLike(validTOTP) { ["counter": 59,          "code": "94287082", "alg": alg, "key": key] }
                     itBehavesLike(validTOTP) { ["counter": 1111111109,  "code": "07081804", "alg": alg, "key": key] }
                     itBehavesLike(validTOTP) { ["counter": 1111111111,  "code": "14050471", "alg": alg, "key": key] }
@@ -84,7 +82,7 @@ class OneTimePasswordGeneratorSpec: QuickSpec {
 
                 context("sha256") {
                     let key = "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZA===="
-                    let alg = "sha256"
+                    let alg = HMACAlgorithm.sha256
                     itBehavesLike(validTOTP) { ["counter": 59,          "code": "46119246", "alg": alg, "key": key] }
                     itBehavesLike(validTOTP) { ["counter": 1111111109,  "code": "68084774", "alg": alg, "key": key] }
                     itBehavesLike(validTOTP) { ["counter": 1111111111,  "code": "67062674", "alg": alg, "key": key] }
@@ -95,7 +93,7 @@ class OneTimePasswordGeneratorSpec: QuickSpec {
 
                 context("sha512") {
                     let key = "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNA="
-                    let alg = "sha512"
+                    let alg = HMACAlgorithm.sha512
                     itBehavesLike(validTOTP) { ["counter": 59,          "code": "90693936", "alg": alg, "key": key] }
                     itBehavesLike(validTOTP) { ["counter": 1111111109,  "code": "25091201", "alg": alg, "key": key] }
                     itBehavesLike(validTOTP) { ["counter": 1111111111,  "code": "99943326", "alg": alg, "key": key] }
@@ -118,9 +116,9 @@ class OneTimePasswordGeneratorSpec: QuickSpec {
                     var otp: HOTP!
 
                     beforeEach {
-                        algorithmName = data["alg"] as! String
+                        let algorithm = data["alg"] as! HMACAlgorithm
                         let key = keyString.data(using: .utf8)!
-                        otp = try! Guardian.hotp(secret: key, algorithm: algorithmName, digits: 6)
+                        otp = try! Guardian.hotp(secret: key, algorithm: algorithm, digits: 6)
                     }
 
                     it("should return code '\(code)' for counter '\(counter)'") {
@@ -130,7 +128,7 @@ class OneTimePasswordGeneratorSpec: QuickSpec {
 
                 context("sha1") {
                     let key = "12345678901234567890"
-                    let alg = "sha1"
+                    let alg = HMACAlgorithm.sha1
                     itBehavesLike(validTOTP) { ["counter": 0, "code": "755224", "alg": alg, "key": key] }
                     itBehavesLike(validTOTP) { ["counter": 1, "code": "287082", "alg": alg, "key": key] }
                     itBehavesLike(validTOTP) { ["counter": 2, "code": "359152", "alg": alg, "key": key] }

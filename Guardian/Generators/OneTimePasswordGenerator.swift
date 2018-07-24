@@ -36,28 +36,35 @@ public protocol HOTP {
     func new(counter: Int) -> String
 }
 
-public func totp(base32Secret: String, algorithm: String, digits: Int = 6) throws -> TOTP {
+public func totp(base32Secret: String, algorithm: HMACAlgorithm, digits: Int = 6) throws -> TOTP {
     guard let secret = Base32.decode(string: base32Secret) else { throw GuardianError.invalidBase32Secret }
     return try totp(secret: secret, algorithm: algorithm, digits: digits)
 }
 
-public func totp(secret: Data, algorithm: String, digits: Int = 6) throws -> TOTP {
+public func totp(secret: Data, algorithm: HMACAlgorithm, digits: Int = 6) throws -> TOTP {
     return try OneTimePasswordGenerator(secret: secret, algorithm: algorithm, digits: digits)
 }
 
-public func hotp(secret: Data, algorithm: String, digits: Int = 6) throws -> HOTP {
+public func hotp(secret: Data, algorithm: HMACAlgorithm, digits: Int = 6) throws -> HOTP {
     return try OneTimePasswordGenerator(secret: secret, algorithm: algorithm, digits: digits)
+}
+
+public enum HMACAlgorithm: String {
+    case sha1
+    case sha256
+    case sha512
+
+    func hmac(secret: Data) -> A0HMAC {
+        return A0HMAC(algorithm: self.rawValue, key: secret)!
+    }
 }
 
 struct OneTimePasswordGenerator: TOTP, HOTP {
     let digits: Int
     let hmac: A0HMAC
 
-    init(secret: Data, algorithm: String, digits: Int) throws {
-        guard let hmac = A0HMAC(algorithm: algorithm, key: secret) else {
-            throw GuardianError.invalidOTPAlgorithm
-        }
-        self.hmac = hmac
+    init(secret: Data, algorithm: HMACAlgorithm, digits: Int) throws {
+        self.hmac = algorithm.hmac(secret: secret)
         self.digits = digits
     }
 
