@@ -40,7 +40,7 @@ class GuardianSpec: QuickSpec {
             OHHTTPStubs.removeAllStubs()
         }
 
-        describe("api(forDomain:, session:)") {
+        describe("api(forDomain:)") {
 
             it("should return api with domain only") {
                 expect(Guardian.api(forDomain: "samples.guardian.auth0.com")).toNot(beNil())
@@ -49,22 +49,12 @@ class GuardianSpec: QuickSpec {
             it("should return api with http url") {
                 expect(Guardian.api(forDomain: "https://samples.guardian.auth0.com")).toNot(beNil())
             }
-
-            it("should return api with domain and URLSession") {
-                let session = URLSession(configuration: .ephemeral)
-                expect(Guardian.api(forDomain: "samples.guardian.auth0.com", session: session)).toNot(beNil())
-            }
         }
 
-        describe("api(url:, session:)") {
+        describe("api(url:)") {
 
             it("should return api with url only") {
                 expect(Guardian.api(url: URL(string: "https://samples.guardian.auth0.com")!)).toNot(beNil())
-            }
-
-            it("should return api with url and URLSession") {
-                let session = URLSession(configuration: .ephemeral)
-                expect(Guardian.api(url: URL(string: "https://samples.guardian.auth0.com")!, session: session)).toNot(beNil())
             }
         }
 
@@ -79,28 +69,18 @@ class GuardianSpec: QuickSpec {
             it("should return authentication with http url") {
                 expect(Guardian.authentication(forDomain: "https://samples.guardian.auth0.com", device: enrollment)).toNot(beNil())
             }
-
-            it("should return authentication with domain and URLSession") {
-                let session = URLSession(configuration: .ephemeral)
-                expect(Guardian.authentication(forDomain: "samples.guardian.auth0.com", device: enrollment, session: session)).toNot(beNil())
-            }
         }
 
-        describe("authentication(url:, session:)") {
+        describe("authentication(url:)") {
 
             let enrollment = Enrollment(id: "ID", userId: "USER_ID", deviceToken: "TOKEN", notificationToken: "TOKEN", signingKey: try! DataRSAPrivateKey.new(), base32Secret: "SECRET")
 
             it("should return authentication with http url") {
                 expect(Guardian.authentication(url: URL(string: "https://samples.guardian.auth0.com")!, device: enrollment)).toNot(beNil())
             }
-
-            it("should return authentication with url and URLSession") {
-                let session = URLSession(configuration: .ephemeral)
-                expect(Guardian.authentication(url: URL(string: "https://samples.guardian.auth0.com")!, device: enrollment, session: session)).toNot(beNil())
-            }
         }
 
-        describe("enroll(forDomain:, session:, withUri:, notificationToken:)") {
+        describe("enroll(forDomain:, withUri:, notificationToken:)") {
 
             let keys = Keys.shared
 

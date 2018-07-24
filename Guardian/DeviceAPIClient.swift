@@ -23,19 +23,16 @@
 import Foundation
 
 struct DeviceAPIClient: DeviceAPI {
-    
-    let session: URLSession
     let url: URL
     let token: String
     
-    init(baseUrl: URL, session: URLSession, id: String, token: String) {
+    init(baseUrl: URL, id: String, token: String) {
         self.url = baseUrl.appendingPathComponent("api/device-accounts/\(id)")
-        self.session = session
         self.token = token
     }
     
     func delete() -> Request<Void> {
-        return Request(session: session, method: "DELETE", url: url, headers: ["Authorization": "Bearer \(token)"])
+        return Request(method: "DELETE", url: url, headers: ["Authorization": "Bearer \(token)"])
     }
     
     func update(deviceIdentifier identifier: String? = nil, name: String? = nil, notificationToken: String? = nil) -> Request<[String: Any]> {
@@ -48,6 +45,6 @@ struct DeviceAPIClient: DeviceAPI {
                 "token": notificationToken
             ]
         }
-        return Request(session: session, method: "PATCH", url: url, payload: payload, headers: ["Authorization": "Bearer \(token)"])
+        return Request(method: "PATCH", url: url, payload: payload, headers: ["Authorization": "Bearer \(token)"])
     }
 }
