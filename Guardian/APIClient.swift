@@ -25,11 +25,9 @@ import Foundation
 struct APIClient: API {
 
     let baseUrl: URL
-    let session: URLSession
-    
-    init(baseUrl: URL, session: URLSession) {
+
+    init(baseUrl: URL) {
         self.baseUrl = baseUrl
-        self.session = session
     }
 
     func enroll(withTicket enrollmentTicket: String, identifier: String, name: String, notificationToken: String, verificationKey: VerificationKey) -> Request<[String: Any]> {
@@ -49,7 +47,7 @@ struct APIClient: API {
                 ],
                 "public_key": jwk
             ]
-            return Request(session: self.session, method: "POST", url: url, payload: payload, headers: ["Authorization": "Ticket id=\"\(enrollmentTicket)\""])
+            return Request(method: "POST", url: url, payload: payload, headers: ["Authorization": "Ticket id=\"\(enrollmentTicket)\""])
         } catch(let error) {
             return FailedRequest(error: error)
         }
@@ -60,10 +58,10 @@ struct APIClient: API {
             "challenge_response": challengeResponse
         ]
         let url = self.baseUrl.appendingPathComponent("api/resolve-transaction")
-        return Request(session: self.session, method: "POST", url: url, payload: payload, headers: ["Authorization": "Bearer \(transactionToken)"])
+        return Request(method: "POST", url: url, payload: payload, headers: ["Authorization": "Bearer \(transactionToken)"])
     }
 
     func device(forEnrollmentId id: String, token: String) -> DeviceAPI {
-        return DeviceAPIClient(baseUrl: baseUrl, session: session, id: id, token: token)
+        return DeviceAPIClient(baseUrl: baseUrl, id: id, token: token)
     }
 }

@@ -28,7 +28,7 @@ class FailedRequest<T>: Request<T> {
 
     init(error: Error) {
         self.error = error
-        super.init(session: URLSession.shared, method: "GET", url: URL(string: "auth0.com")!)
+        super.init(method: "GET", url: URL(string: "auth0.com")!)
     }
 
     override func start(callback: @escaping (Result<T>) -> ()) {

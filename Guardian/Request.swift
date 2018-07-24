@@ -22,20 +22,28 @@
 
 import Foundation
 
+/// Default URLSession used to send requests to Guardian API.
+private let defaultURLSession: URLSession =  {
+    let config = URLSessionConfiguration.default
+    config.requestCachePolicy = .reloadIgnoringLocalCacheData
+    config.urlCache = nil
+
+    return URLSession.init(configuration: config)
+}()
+
 /**
  An asynchronous HTTP request
  */
 public class Request<T>: Requestable {
 
-    let session: URLSession
+    var session: URLSession = defaultURLSession
     let method: String
     let url: URL
     let payload: [String: Any]?
     let headers: [String: String]
     var hooks: Hooks
     
-    init(session: URLSession, method: String, url: URL, payload: [String: Any]? = nil, headers: [String: String]? = nil) {
-        self.session = session
+    init(method: String, url: URL, payload: [String: Any]? = nil, headers: [String: String]? = nil) {
         self.method = method
         self.url = url
         self.payload = payload
@@ -83,8 +91,13 @@ public class Request<T>: Requestable {
     ///   - response: closure called with response and data
     ///   - error: closure called with network error
     /// - Returns: itself for chaining
-    public func on(request: RequestHook? = nil, response: ResponseHook? = nil, error: ErrorHook? = nil) -> Request {
+    public func on(request: RequestHook? = nil, response: ResponseHook? = nil, error: ErrorHook? = nil) -> Request<T> {
         self.hooks = Hooks(request: request ?? self.hooks.request, response: response ?? self.hooks.response, error: error ?? self.hooks.error)
+        return self
+    }
+
+    public func using(session: URLSession) -> Request<T> {
+        self.session = session
         return self
     }
 

@@ -30,7 +30,7 @@ class APIClientSpec: QuickSpec {
     
     override func spec() {
         
-        let client = APIClient(baseUrl: ValidURL, session: Guardian.defaultURLSession)
+        let client = APIClient(baseUrl: ValidURL)
         let keys = Keys.shared
         let signingKey = try! DataRSAPrivateKey(data: keys.privateKey)
         let verificationKey = try! signingKey.verificationKey()
