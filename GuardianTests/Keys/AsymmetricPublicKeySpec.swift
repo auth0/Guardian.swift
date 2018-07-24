@@ -1,6 +1,6 @@
-// Constants.swift
+// AsymmetricPublicKeySpec.swift
 //
-// Copyright (c) 2016 Auth0 (http://auth0.com)
+// Copyright (c) 2018 Auth0 (http://auth0.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,34 +20,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import Foundation
+import Quick
+import Nimble
+import Guardian
 
-@testable import Guardian
+class AsymmetricPublicKeySpec: QuickSpec {
 
-let Domain = "tenant.guardian.auth0.com/also/works/in/appliance/"
-let Timeout: TimeInterval = 2
+    override func spec() {
 
-let ValidURL = URL(string: "https://\(Domain)")!
-let ValidTransactionId = UUID().uuidString
-let ValidEnrollmentId = UUID().uuidString
-let ValidEnrollmentToken = UUID().uuidString
-let ValidNotificationToken = UUID().uuidString
-let ValidIssuer = "aValidIssuer"
-let ValidUser = "aValidUser"
-let ValidUserId = "aValidUserId"
-let ValidBase32Secret = "aValidBase32Secret"
-let InvalidBase32Secret = "anInvalidBase32Secret!?"
-let ValidAlgorithm = "SHA1"
-let ValidDigits = 7
-let ValidPeriod = 29
-let ValidTransactionToken = "aValidTransactionToken"
-let RejectReason = "aRejectReason"
-let ValidChallengeResponse = "aValidChallengeResponse"
+        let keys = Keys.shared
 
-let ValidDeviceIdentifier = "aValidDeviceIdentifier"
-let ValidDeviceName = "aValidDeviceName"
-let ValidNotificationService = "APNS"
-let DeviceAccountToken = UUID().uuidString
-let ValidNotificationChallenge = "aValidNotificationChallenge"
+        describe("init(privateKey:)") {
 
+            it("should get public from private key") {
+                let privateKey = try! DataRSAPrivateKey.new()
+                expect { try AsymmetricPublicKey(privateKey: privateKey.secKey) }.toNot(throwError())
+            }
 
+            it("should match data") {
+                let privateKey = try! DataRSAPrivateKey(data: keys.privateKey)
+                let publicKey = try! AsymmetricPublicKey(privateKey: privateKey.secKey)
+                expect(publicKey.data).to(equal(keys.publicKey))
+            }
+        }
+    }
+}

@@ -32,6 +32,11 @@ private let invalidPublicKeyMessage = "a0.guardian.internal.invalid_public_key"
 private let invalidPrivateKeyMessage = "a0.guardian.internal.invalid_private_key"
 private let invalidOTPAlgorithmMessage = "a0.guardian.internal.invalid_otp_algorithm"
 private let invalidNotificationActionIdentifierMessage = "a0.guardian.internal.invalid_notification_action_identifier"
+private let invalidAsymmetricKeyMessage = "a0.guardian.internal.invalid.assymmetric.key"
+private let notFoundPublicKeyMessage = "a0.guardian.internal.no.public.key"
+private let failedCreationAsymmetricKeyMessage = "a0.guardian.internal.failed.creation.assymmetric.key"
+private let failedStoreAsymmetricKeyMessage = "a0.guardian.internal.failed.store.assymmetric.key"
+private let notFoundPrivateKeyMessage = "a0.guardian.internal.no.private.key"
 
 /**
  An `Error` that encapsulates server and other possible internal errors
@@ -46,11 +51,15 @@ public class GuardianError: Error, CustomStringConvertible {
         self.statusCode = statusCode
     }
     
-    init(string: String, statusCode: Int = 0) {
-        self.info = [
+    init(string: String, statusCode: Int = 0, cause: Error? = nil) {
+        var info: [String: Any] = [
             "errorCode": string
         ]
+        if let cause = cause {
+            info["cause"] = cause
+        }
         self.statusCode = statusCode
+        self.info = info
     }
 
     /**
@@ -118,5 +127,28 @@ internal extension GuardianError {
 
     static var invalidNotificationActionIdentifier: GuardianError {
         return GuardianError(string: invalidNotificationActionIdentifierMessage)
+    }
+
+    static func invalidAsymmetricKey(cause: Error? = nil) -> GuardianError {
+        return GuardianError(string: invalidAsymmetricKeyMessage, cause: cause)
+    }
+
+    static var notFoundPublicKey: GuardianError {
+        return GuardianError(string: notFoundPublicKeyMessage)
+    }
+
+    static func notFoundPrivateKey(tag: String) -> GuardianError {
+        return GuardianError(info: [
+            "errorCode": notFoundPrivateKeyMessage,
+            "tag": tag
+            ], statusCode: 0)
+    }
+
+    static func failedCreationAsymmetricKey(cause: Error) -> GuardianError {
+        return GuardianError(string: failedCreationAsymmetricKeyMessage, cause: cause)
+    }
+
+    static var failedStoreAsymmetricKey: GuardianError {
+        return GuardianError(string: failedStoreAsymmetricKeyMessage)
     }
 }

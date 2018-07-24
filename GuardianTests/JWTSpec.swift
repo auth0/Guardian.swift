@@ -31,17 +31,16 @@ class JWTSpec: QuickSpec {
 
         describe("JWT with RS256") {
 
-            let (publicKey, privateKey) = generateKeyPair(publicTag: UUID().uuidString,
-                                                          privateTag: UUID().uuidString,
-                                                          keyType: kSecAttrKeyTypeRSA,
-                                                          keySize: RSAKeySize)!
+            let signingKey = try! DataRSAPrivateKey(data: Keys.shared.privateKey)
+            let verificationKey = try! AsymmetricPublicKey(privateKey: signingKey.secKey)
+            let anotherVerificationKey = try! AsymmetricPublicKey(privateKey: DataRSAPrivateKey.new().secKey)
 
             describe("encode with hardcoded key") {
 
                 var jwt: String?
 
                 beforeEach {
-                    jwt = try? JWT.encode(claims: ["field": "value"], signingKey: ValidRSAPrivateKey.ref!)
+                    jwt = try? JWT.encode(claims: ["field": "value"], signingKey: signingKey.secKey)
                 }
 
                 it("should not return nil") {
@@ -49,16 +48,16 @@ class JWTSpec: QuickSpec {
                 }
 
                 it("should match hardcoded jwt") {
-                    expect(jwt!).to(equal("eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJmaWVsZCI6InZhbHVlIn0.D62W-L6QmF6cgNgHv5KcTVEGjupI-R7A3Fjv9667rh-gcVx7gni0thhkcyn-MypSSX-10mJI3EsBK3zhSkAmTAyQPKn1nIBPXKguJhpcp7eQnGLRuWzIYFgqSS-N6JQ5aZ5HVKLAxY0SwWagi46vDhykTQcvjhmFRgfxfoLR7WawXrYIFsyb0TZFmtaGUR7GlZ658ij5re8Lv-PC-wQQhDqMJKFrGtBuEOwqXdNXp05df4Cu--Yp0Q-FtXakYU-4TIeblNNOvq-gMgmRqwCC2oS0p7c6hIrqU2g43hbzqDqX4DH4LpfmmXmPHq4O3qjCFgaD88t4hwqF3B1FWJ3XBxiLwWO0Ah4ptRkwdBAEXN0uXN0sNGYwpbqQ8fWIJBIf4HS2XOuEch0K_w5vweiFdm6e3Rgiiel7oBqt7F_31VPttEN15IvW3UPyQUs2gwD2D1HghkVOq9icbFrOrUYnbpOQHTD_AYYiaBBNt7ht9UTeBvjcQmphmVy_pTjfgDzDPxH8A0YZlxr10UnmHoTWrEAUOfXgt_UN0NPuRF6wnDD__wyvF_SlWyW-Os6Mo7xUHZlstDe88UaUJGV1py5Qqj_E87VE2bHPIKXM6MfV9qgLG7QHFMp5_WPxE-979TBgrQ4LRFA24sYDErtz2JBuQmsjjzXG-uPK1-Q2N0Ad0dE"))
+                    expect(jwt!).to(equal("eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJmaWVsZCI6InZhbHVlIn0.fxZ42chl-gGSNLT9LfJbnXsN7dliEGw-iA7CHzbmUsUb9-Ha0StKTXvh0iXJKQFxGMddGPFPOiN7FSTn3aVKYPNwrgIomsZXgYsw6gbs6yFD4aU7SSKYUAel0-rsr77lIcsALihZesuiEyerrZjypyOn-c2MJZE0ZIWaBaMXBQiGXm0MaUaeVkO4pFhO6pUTITIj5w0LkeK0SuzttgIGPbbmsQELMMocHEEqLNF0hMbSFjqjfXvWPUk8uH-uKawn1rhEK9Q6EdLO6bm8lm93WSpuiuR83zd7L88hZxHzbYnvBKQyzV4tKd4e1MvdAvuSEsdJnoTu933nR4SJzEYViA"))
                 }
 
                 it("should verify successfuly with correct key") {
-                    let claims = try? JWT.verify(string: jwt!, publicKey: ValidRSAPublicKey.ref!)
+                    let claims = try? JWT.verify(string: jwt!, publicKey: verificationKey.secKey)
                     expect(claims).toNot(beNil())
                 }
 
                 it("should fail verify with incorrect key") {
-                    let claims = try? JWT.verify(string: jwt!, publicKey: publicKey)
+                    let claims = try? JWT.verify(string: jwt!, publicKey: anotherVerificationKey.secKey)
                     expect(claims).to(beNil())
                 }
             }
@@ -66,7 +65,7 @@ class JWTSpec: QuickSpec {
             describe("encode with generated keys") {
 
                 let jwt = try? JWT.encode(claims: ["string": "hello", "number": 7, "boolean": true],
-                                          signingKey: privateKey)
+                                          signingKey: signingKey.secKey)
 
                 it("should not return nil") {
                     expect(jwt).toNot(beNil())
@@ -74,7 +73,7 @@ class JWTSpec: QuickSpec {
 
                 describe("should verify successfuly with correct key") {
 
-                    let claims = try? JWT.verify(string: jwt!, publicKey: publicKey)
+                    let claims = try? JWT.verify(string: jwt!, publicKey: verificationKey.secKey)
 
                     it("should not be nil") {
                         expect(claims).toNot(beNil())
@@ -103,7 +102,7 @@ class JWTSpec: QuickSpec {
                 }
 
                 it("should fail verify with incorrect key") {
-                    let claims = try? JWT.verify(string: jwt!, publicKey: ValidRSAPublicKey.ref!)
+                    let claims = try? JWT.verify(string: jwt!, publicKey: anotherVerificationKey.secKey)
                     expect(claims).to(beNil())
                 }
             }

@@ -1,6 +1,6 @@
-// Constants.swift
+// Keys.swift
 //
-// Copyright (c) 2016 Auth0 (http://auth0.com)
+// Copyright (c) 2018 Auth0 (http://auth0.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,32 +22,23 @@
 
 import Foundation
 
-@testable import Guardian
+/// Key used to sign Guardian AuthN responses
+public protocol SigningKey {
 
-let Domain = "tenant.guardian.auth0.com/also/works/in/appliance/"
-let Timeout: TimeInterval = 2
+    /// the `SecKey` instance associated to the signing key
+    var secKey: SecKey { get }
+}
 
-let ValidURL = URL(string: "https://\(Domain)")!
-let ValidTransactionId = UUID().uuidString
-let ValidEnrollmentId = UUID().uuidString
-let ValidEnrollmentToken = UUID().uuidString
-let ValidNotificationToken = UUID().uuidString
-let ValidIssuer = "aValidIssuer"
-let ValidUser = "aValidUser"
-let ValidUserId = "aValidUserId"
-let ValidBase32Secret = "aValidBase32Secret"
-let InvalidBase32Secret = "anInvalidBase32Secret!?"
-let ValidAlgorithm = "SHA1"
-let ValidDigits = 7
-let ValidPeriod = 29
-let ValidTransactionToken = "aValidTransactionToken"
-let RejectReason = "aRejectReason"
-let ValidChallengeResponse = "aValidChallengeResponse"
+/// Key used by Guardian Server to validate AuthN responses
+public protocol VerificationKey {
 
-let ValidDeviceIdentifier = "aValidDeviceIdentifier"
-let ValidDeviceName = "aValidDeviceName"
-let ValidNotificationService = "APNS"
-let DeviceAccountToken = UUID().uuidString
-let ValidNotificationChallenge = "aValidNotificationChallenge"
+    /// JWK reprensentation of the verification key
+    var jwk: [String: Any]? { get }
+}
 
+/// A Public Key that can be converted to `Data`
+public protocol PublicKeyDataConvertible {
 
+    /// bytes of the Public Key
+    var data: Data? { get }
+}

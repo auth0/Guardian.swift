@@ -79,3 +79,8 @@ fastlane/test_output
 #
 .env
 .env.default
+
+# Test files
+#
+!GuardianTests/Data/guardian-test.private.pem
+!GuardianTests/Data/guardian-test.public.pem

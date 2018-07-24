@@ -1,6 +1,6 @@
-// Constants.swift
+// KeychainRSAPrivateKeySpec.swift
 //
-// Copyright (c) 2016 Auth0 (http://auth0.com)
+// Copyright (c) 2018 Auth0 (http://auth0.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,34 +20,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import Foundation
+import Quick
+import Nimble
+import Guardian
 
-@testable import Guardian
+class KeychainRSAPrivateKeySpec: QuickSpec {
 
-let Domain = "tenant.guardian.auth0.com/also/works/in/appliance/"
-let Timeout: TimeInterval = 2
+    override func spec() {
 
-let ValidURL = URL(string: "https://\(Domain)")!
-let ValidTransactionId = UUID().uuidString
-let ValidEnrollmentId = UUID().uuidString
-let ValidEnrollmentToken = UUID().uuidString
-let ValidNotificationToken = UUID().uuidString
-let ValidIssuer = "aValidIssuer"
-let ValidUser = "aValidUser"
-let ValidUserId = "aValidUserId"
-let ValidBase32Secret = "aValidBase32Secret"
-let InvalidBase32Secret = "anInvalidBase32Secret!?"
-let ValidAlgorithm = "SHA1"
-let ValidDigits = 7
-let ValidPeriod = 29
-let ValidTransactionToken = "aValidTransactionToken"
-let RejectReason = "aRejectReason"
-let ValidChallengeResponse = "aValidChallengeResponse"
+        describe("init(tag:)") {
 
-let ValidDeviceIdentifier = "aValidDeviceIdentifier"
-let ValidDeviceName = "aValidDeviceName"
-let ValidNotificationService = "APNS"
-let DeviceAccountToken = UUID().uuidString
-let ValidNotificationChallenge = "aValidNotificationChallenge"
-
-
+            it("should instantiate with a tag") {
+                
+            }
+        }
+    }
+}

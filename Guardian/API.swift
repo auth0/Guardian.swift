@@ -54,12 +54,12 @@ public protocol API {
      - parameter name:              the name to use for this device
      - parameter notificationToken: the APNS token used to send push 
                                     notifications to this device
-     - parameter publicKey:         the RSA public key to associate with the
-                                    enrollment
+     - parameter verificationKey:   the key to associate with the
+                                    enrollment used to verify Guardian AuthN responses
 
      - returns: a request to execute or start
      */
-    func enroll(withTicket enrollmentTicket: String, identifier: String, name: String, notificationToken: String, publicKey: JWKConvertable) -> Request<[String: Any]>
+    func enroll(withTicket enrollmentTicket: String, identifier: String, name: String, notificationToken: String, verificationKey: VerificationKey) -> Request<[String: Any]>
 
     /**
      Request to resolve a Guardian authentication request with a signed response

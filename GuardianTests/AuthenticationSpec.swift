@@ -30,12 +30,15 @@ class AuthenticationSpec: QuickSpec {
 
     override func spec() {
 
-        let privateKey = RSAKeyPair.new(usingPublicTag: UUID().uuidString, privateTag: UUID().uuidString)!.privateKey
+        var signingKey: SigningKey!
+        var device: MockAuthenticationDevice!
 
         beforeEach {
             stub(condition: { _ in return true }) { _ in
                 return OHHTTPStubsResponse.init(error: NSError(domain: "com.auth0", code: -99999, userInfo: nil))
                 }.name = "YOU SHALL NOT PASS!"
+            signingKey = try! DataRSAPrivateKey.new()
+            device = MockAuthenticationDevice(deviceIdentifier: UIDevice.current.identifierForVendor!.uuidString, signingKey: signingKey)
         }
 
         afterEach {
@@ -50,7 +53,7 @@ class AuthenticationSpec: QuickSpec {
                     }.name = "Missing authentication"
                 stub(condition: isResolveTransaction(baseUrl: ValidURL)
                     && hasBearerToken(ValidTransactionToken)) { req in
-                        if checkJWT(request: req, accepted: true) {
+                        if checkJWT(request: req, accepted: true, verificationKey: device.verificationKey) {
                             return successResponse()
                         }
                         return errorResponse(statusCode: 401, errorCode: "invalid_token", message: "Invalid challenge_response")
@@ -58,10 +61,9 @@ class AuthenticationSpec: QuickSpec {
             }
 
             it("should succeed when notification and enrollment is valid") {
-                let enrollment = Enrollment(id: ValidEnrollmentId, userId: ValidUserId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, signingKey: ValidRSAPrivateKey, base32Secret: ValidBase32Secret)
                 let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, challenge: ValidNotificationChallenge, startedAt: Date(), source: nil, location: nil)
                 waitUntil(timeout: Timeout) { done in
-                    Guardian.authentication(forDomain: Domain, andEnrollment: enrollment)
+                    Guardian.authentication(forDomain: Domain, device: device)
                         .allow(notification: notification)
                         .start { result in
                             expect(result).to(beSuccess())
@@ -71,10 +73,9 @@ class AuthenticationSpec: QuickSpec {
             }
 
             it("should fail when transaction token is not valid") {
-                let enrollment = Enrollment(id: ValidEnrollmentId, userId: ValidUserId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, signingKey: ValidRSAPrivateKey, base32Secret: ValidBase32Secret)
                 let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: "someInvalidTransactionToken", challenge: ValidNotificationChallenge, startedAt: Date(), source: nil, location: nil)
                 waitUntil(timeout: Timeout) { done in
-                    Guardian.authentication(forDomain: Domain, andEnrollment: enrollment)
+                    Guardian.authentication(forDomain: Domain, device: device)
                         .allow(notification: notification)
                         .start { result in
                             expect(result).to(haveGuardianError(withErrorCode: "invalid_token"))
@@ -84,10 +85,9 @@ class AuthenticationSpec: QuickSpec {
             }
 
             it("should fail when challenge is invalid") {
-                let enrollment = Enrollment(id: ValidEnrollmentId, userId: ValidUserId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, signingKey: ValidRSAPrivateKey, base32Secret: ValidBase32Secret)
                 let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, challenge: "anInvalidNotificationChallenge", startedAt: Date(), source: nil, location: nil)
                 waitUntil(timeout: Timeout) { done in
-                    Guardian.authentication(forDomain: Domain, andEnrollment: enrollment)
+                    Guardian.authentication(forDomain: Domain, device: device)
                         .allow(notification: notification)
                         .start { result in
                             expect(result).to(haveGuardianError(withErrorCode: "invalid_token"))
@@ -97,10 +97,10 @@ class AuthenticationSpec: QuickSpec {
             }
 
             it("should fail when enrollment signing key is not correct") {
-                let enrollment = Enrollment(id: ValidEnrollmentId, userId: ValidUserId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, signingKey: privateKey, base32Secret: ValidBase32Secret)
                 let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, challenge: ValidNotificationChallenge, startedAt: Date(), source: nil, location: nil)
+                let anotherDevice = MockAuthenticationDevice(deviceIdentifier: UUID().uuidString, signingKey: try! DataRSAPrivateKey.new())
                 waitUntil(timeout: Timeout) { done in
-                    Guardian.authentication(forDomain: Domain, andEnrollment: enrollment)
+                    Guardian.authentication(forDomain: Domain, device: anotherDevice)
                         .allow(notification: notification)
                         .start { result in
                             expect(result).to(haveGuardianError(withErrorCode: "invalid_token"))
@@ -118,7 +118,7 @@ class AuthenticationSpec: QuickSpec {
                     }.name = "Missing authentication"
                 stub(condition: isResolveTransaction(baseUrl: ValidURL)
                     && hasBearerToken(ValidTransactionToken)) { req in
-                        if checkJWT(request: req, accepted: false, reason: RejectReason) {
+                        if checkJWT(request: req, accepted: false, reason: RejectReason, verificationKey: device.verificationKey) {
                             return successResponse()
                         }
                         return errorResponse(statusCode: 401, errorCode: "invalid_token", message: "Invalid challenge_response")
@@ -128,16 +128,15 @@ class AuthenticationSpec: QuickSpec {
             it("without reason should succeed when notification and enrollment is valid") {
                 stub(condition: isResolveTransaction(baseUrl: ValidURL)
                     && hasBearerToken(ValidTransactionToken)) { req in
-                        if checkJWT(request: req, accepted: false) {
+                        if checkJWT(request: req, accepted: false, verificationKey: device.verificationKey) {
                             return successResponse()
                         }
                         return errorResponse(statusCode: 401, errorCode: "invalid_token", message: "Invalid challenge_response")
                     }.name = "Checking challenge_response"
 
-                let enrollment = Enrollment(id: ValidEnrollmentId, userId: ValidUserId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, signingKey: ValidRSAPrivateKey, base32Secret: ValidBase32Secret)
                 let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, challenge: ValidNotificationChallenge, startedAt: Date(), source: nil, location: nil)
                 waitUntil(timeout: Timeout) { done in
-                    Guardian.authentication(forDomain: Domain, andEnrollment: enrollment)
+                    Guardian.authentication(forDomain: Domain, device: device)
                         .reject(notification: notification)
                         .start { result in
                             expect(result).to(beSuccess())
@@ -147,10 +146,9 @@ class AuthenticationSpec: QuickSpec {
             }
 
             it("with reason should succeed when notification and enrollment is valid") {
-                let enrollment = Enrollment(id: ValidEnrollmentId, userId: ValidUserId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, signingKey: ValidRSAPrivateKey, base32Secret: ValidBase32Secret)
                 let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, challenge: ValidNotificationChallenge, startedAt: Date(), source: nil, location: nil)
                 waitUntil(timeout: Timeout) { done in
-                    Guardian.authentication(forDomain: Domain, andEnrollment: enrollment)
+                    Guardian.authentication(forDomain: Domain, device: device)
                         .reject(notification: notification, withReason: RejectReason)
                         .start { result in
                             expect(result).to(beSuccess())
@@ -160,10 +158,9 @@ class AuthenticationSpec: QuickSpec {
             }
 
             it("should fail when transaction token is not valid") {
-                let enrollment = Enrollment(id: ValidEnrollmentId, userId: ValidUserId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, signingKey: ValidRSAPrivateKey, base32Secret: ValidBase32Secret)
                 let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: "someInvalidTransactionToken", challenge: ValidNotificationChallenge, startedAt: Date(), source: nil, location: nil)
                 waitUntil(timeout: Timeout) { done in
-                    Guardian.authentication(forDomain: Domain, andEnrollment: enrollment)
+                    Guardian.authentication(forDomain: Domain, device: device)
                         .reject(notification: notification, withReason: RejectReason)
                         .start { result in
                             expect(result).to(haveGuardianError(withErrorCode: "invalid_token"))
@@ -173,10 +170,9 @@ class AuthenticationSpec: QuickSpec {
             }
 
             it("should fail when challenge is invalid") {
-                let enrollment = Enrollment(id: ValidEnrollmentId, userId: ValidUserId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, signingKey: ValidRSAPrivateKey, base32Secret: ValidBase32Secret)
                 let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, challenge: "anInvalidNotificationChallenge", startedAt: Date(), source: nil, location: nil)
                 waitUntil(timeout: Timeout) { done in
-                    Guardian.authentication(forDomain: Domain, andEnrollment: enrollment)
+                    Guardian.authentication(forDomain: Domain, device: device)
                         .reject(notification: notification, withReason: RejectReason)
                         .start { result in
                             expect(result).to(haveGuardianError(withErrorCode: "invalid_token"))
@@ -186,10 +182,10 @@ class AuthenticationSpec: QuickSpec {
             }
 
             it("should fail when enrollment signing key is not correct") {
-                let enrollment = Enrollment(id: ValidEnrollmentId, userId: ValidUserId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, signingKey: privateKey, base32Secret: ValidBase32Secret)
                 let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, challenge: ValidNotificationChallenge, startedAt: Date(), source: nil, location: nil)
+                let anotherDevice = MockAuthenticationDevice(deviceIdentifier: UUID().uuidString, signingKey: try! DataRSAPrivateKey.new())
                 waitUntil(timeout: Timeout) { done in
-                    Guardian.authentication(forDomain: Domain, andEnrollment: enrollment)
+                    Guardian.authentication(forDomain: Domain, device: anotherDevice)
                         .reject(notification: notification, withReason: RejectReason)
                         .start { result in
                             expect(result).to(haveGuardianError(withErrorCode: "invalid_token"))
@@ -204,15 +200,14 @@ class AuthenticationSpec: QuickSpec {
             it("should allow when identifier is com.auth0.notification.authentication.accept") {
                 stub(condition: isResolveTransaction(baseUrl: ValidURL)
                     && hasBearerToken(ValidTransactionToken)) { req in
-                        if checkJWT(request: req, accepted: true) {
+                        if checkJWT(request: req, accepted: true, verificationKey: device.verificationKey) {
                             return successResponse()
                         }
                         return errorResponse(statusCode: 401, errorCode: "invalid_token", message: "Invalid challenge_response")
                     }.name = "Checking challenge_response"
-                let enrollment = Enrollment(id: ValidEnrollmentId, userId: ValidUserId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, signingKey: ValidRSAPrivateKey, base32Secret: ValidBase32Secret)
                 let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, challenge: ValidNotificationChallenge, startedAt: Date(), source: nil, location: nil)
                 waitUntil(timeout: Timeout) { done in
-                    Guardian.authentication(forDomain: Domain, andEnrollment: enrollment)
+                    Guardian.authentication(forDomain: Domain, device: device)
                         .handleAction(withIdentifier: "com.auth0.notification.authentication.accept", notification: notification)
                         .start { result in
                             expect(result).to(beSuccess())
@@ -224,15 +219,14 @@ class AuthenticationSpec: QuickSpec {
             it("should reject when identifier is com.auth0.notification.authentication.reject") {
                 stub(condition: isResolveTransaction(baseUrl: ValidURL)
                     && hasBearerToken(ValidTransactionToken)) { req in
-                        if checkJWT(request: req, accepted: false) {
+                        if checkJWT(request: req, accepted: false, verificationKey: device.verificationKey) {
                             return successResponse()
                         }
                         return errorResponse(statusCode: 401, errorCode: "invalid_token", message: "Invalid challenge_response")
                     }.name = "Checking challenge_response"
-                let enrollment = Enrollment(id: ValidEnrollmentId, userId: ValidUserId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, signingKey: ValidRSAPrivateKey, base32Secret: ValidBase32Secret)
                 let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, challenge: ValidNotificationChallenge, startedAt: Date(), source: nil, location: nil)
                 waitUntil(timeout: Timeout) { done in
-                    Guardian.authentication(forDomain: Domain, andEnrollment: enrollment)
+                    Guardian.authentication(forDomain: Domain, device: device)
                         .handleAction(withIdentifier: "com.auth0.notification.authentication.reject", notification: notification)
                         .start { result in
                             expect(result).to(beSuccess())
@@ -242,10 +236,9 @@ class AuthenticationSpec: QuickSpec {
             }
 
             it("should fail when identifier is not valid") {
-                let enrollment = Enrollment(id: ValidEnrollmentId, userId: ValidUserId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, signingKey: ValidRSAPrivateKey, base32Secret: ValidBase32Secret)
                 let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, challenge: ValidNotificationChallenge, startedAt: Date(), source: nil, location: nil)
                 waitUntil(timeout: Timeout) { done in
-                    Guardian.authentication(forDomain: Domain, andEnrollment: enrollment)
+                    Guardian.authentication(forDomain: Domain, device: device)
                         .handleAction(withIdentifier: "com.auth0.notification.authentication.something", notification: notification)
                         .start { result in
                             expect(result).to(haveGuardianError(withErrorCode: "a0.guardian.internal.invalid_notification_action_identifier"))
@@ -265,7 +258,7 @@ class AuthenticationSpec: QuickSpec {
                         }.name = "Missing authentication"
                     stub(condition: isResolveTransaction(baseUrl: ValidURL)
                         && hasBearerToken(ValidTransactionToken)) { req in
-                            if checkJWT(request: req, accepted: true) {
+                            if checkJWT(request: req, accepted: true, verificationKey: device.verificationKey) {
                                 return successResponse()
                             }
                             return errorResponse(statusCode: 401, errorCode: "invalid_token", message: "Invalid challenge_response")
@@ -273,10 +266,9 @@ class AuthenticationSpec: QuickSpec {
                 }
 
                 it("should succeed when notification and enrollment is valid") {
-                    let enrollment = Enrollment(id: ValidEnrollmentId, userId: ValidUserId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, signingKey: ValidRSAPrivateKey, base32Secret: ValidBase32Secret)
                     let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, challenge: ValidNotificationChallenge, startedAt: Date(), source: nil, location: nil)
                     waitUntil(timeout: Timeout) { done in
-                        Guardian.authentication(url: ValidURL, andEnrollment: enrollment)
+                        Guardian.authentication(url: ValidURL, device: device)
                             .allow(notification: notification)
                             .start { result in
                                 expect(result).to(beSuccess())
@@ -286,10 +278,9 @@ class AuthenticationSpec: QuickSpec {
                 }
 
                 it("should fail when transaction token is not valid") {
-                    let enrollment = Enrollment(id: ValidEnrollmentId, userId: ValidUserId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, signingKey: ValidRSAPrivateKey, base32Secret: ValidBase32Secret)
                     let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: "someInvalidTransactionToken", challenge: ValidNotificationChallenge, startedAt: Date(), source: nil, location: nil)
                     waitUntil(timeout: Timeout) { done in
-                        Guardian.authentication(url: ValidURL, andEnrollment: enrollment)
+                        Guardian.authentication(url: ValidURL, device: device)
                             .allow(notification: notification)
                             .start { result in
                                 expect(result).to(haveGuardianError(withErrorCode: "invalid_token"))
@@ -299,10 +290,9 @@ class AuthenticationSpec: QuickSpec {
                 }
 
                 it("should fail when challenge is invalid") {
-                    let enrollment = Enrollment(id: ValidEnrollmentId, userId: ValidUserId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, signingKey: ValidRSAPrivateKey, base32Secret: ValidBase32Secret)
                     let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, challenge: "anInvalidNotificationChallenge", startedAt: Date(), source: nil, location: nil)
                     waitUntil(timeout: Timeout) { done in
-                        Guardian.authentication(url: ValidURL, andEnrollment: enrollment)
+                        Guardian.authentication(url: ValidURL, device: device)
                             .allow(notification: notification)
                             .start { result in
                                 expect(result).to(haveGuardianError(withErrorCode: "invalid_token"))
@@ -312,10 +302,10 @@ class AuthenticationSpec: QuickSpec {
                 }
 
                 it("should fail when enrollment signing key is not correct") {
-                    let enrollment = Enrollment(id: ValidEnrollmentId, userId: ValidUserId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, signingKey: privateKey, base32Secret: ValidBase32Secret)
                     let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, challenge: ValidNotificationChallenge, startedAt: Date(), source: nil, location: nil)
+                    let anotherDevice = MockAuthenticationDevice(deviceIdentifier: UUID().uuidString, signingKey: try! DataRSAPrivateKey.new())
                     waitUntil(timeout: Timeout) { done in
-                        Guardian.authentication(url: ValidURL, andEnrollment: enrollment)
+                        Guardian.authentication(url: ValidURL, device: anotherDevice)
                             .allow(notification: notification)
                             .start { result in
                                 expect(result).to(haveGuardianError(withErrorCode: "invalid_token"))
@@ -333,7 +323,7 @@ class AuthenticationSpec: QuickSpec {
                         }.name = "Missing authentication"
                     stub(condition: isResolveTransaction(baseUrl: ValidURL)
                         && hasBearerToken(ValidTransactionToken)) { req in
-                            if checkJWT(request: req, accepted: false, reason: RejectReason) {
+                            if checkJWT(request: req, accepted: false, reason: RejectReason, verificationKey: device.verificationKey) {
                                 return successResponse()
                             }
                             return errorResponse(statusCode: 401, errorCode: "invalid_token", message: "Invalid challenge_response")
@@ -343,16 +333,15 @@ class AuthenticationSpec: QuickSpec {
                 it("without reason should succeed when notification and enrollment is valid") {
                     stub(condition: isResolveTransaction(baseUrl: ValidURL)
                         && hasBearerToken(ValidTransactionToken)) { req in
-                            if checkJWT(request: req, accepted: false) {
+                            if checkJWT(request: req, accepted: false, verificationKey: device.verificationKey) {
                                 return successResponse()
                             }
                             return errorResponse(statusCode: 401, errorCode: "invalid_token", message: "Invalid challenge_response")
                         }.name = "Checking challenge_response"
 
-                    let enrollment = Enrollment(id: ValidEnrollmentId, userId: ValidUserId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, signingKey: ValidRSAPrivateKey, base32Secret: ValidBase32Secret)
                     let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, challenge: ValidNotificationChallenge, startedAt: Date(), source: nil, location: nil)
                     waitUntil(timeout: Timeout) { done in
-                        Guardian.authentication(url: ValidURL, andEnrollment: enrollment)
+                        Guardian.authentication(url: ValidURL, device: device)
                             .reject(notification: notification)
                             .start { result in
                                 expect(result).to(beSuccess())
@@ -362,10 +351,9 @@ class AuthenticationSpec: QuickSpec {
                 }
 
                 it("with reason should succeed when notification and enrollment is valid") {
-                    let enrollment = Enrollment(id: ValidEnrollmentId, userId: ValidUserId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, signingKey: ValidRSAPrivateKey, base32Secret: ValidBase32Secret)
                     let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, challenge: ValidNotificationChallenge, startedAt: Date(), source: nil, location: nil)
                     waitUntil(timeout: Timeout) { done in
-                        Guardian.authentication(url: ValidURL, andEnrollment: enrollment)
+                        Guardian.authentication(url: ValidURL, device: device)
                             .reject(notification: notification, withReason: RejectReason)
                             .start { result in
                                 expect(result).to(beSuccess())
@@ -375,10 +363,9 @@ class AuthenticationSpec: QuickSpec {
                 }
 
                 it("should fail when transaction token is not valid") {
-                    let enrollment = Enrollment(id: ValidEnrollmentId, userId: ValidUserId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, signingKey: ValidRSAPrivateKey, base32Secret: ValidBase32Secret)
                     let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: "someInvalidTransactionToken", challenge: ValidNotificationChallenge, startedAt: Date(), source: nil, location: nil)
                     waitUntil(timeout: Timeout) { done in
-                        Guardian.authentication(url: ValidURL, andEnrollment: enrollment)
+                        Guardian.authentication(url: ValidURL, device: device)
                             .reject(notification: notification, withReason: RejectReason)
                             .start { result in
                                 expect(result).to(haveGuardianError(withErrorCode: "invalid_token"))
@@ -388,10 +375,9 @@ class AuthenticationSpec: QuickSpec {
                 }
 
                 it("should fail when challenge is invalid") {
-                    let enrollment = Enrollment(id: ValidEnrollmentId, userId: ValidUserId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, signingKey: ValidRSAPrivateKey, base32Secret: ValidBase32Secret)
                     let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, challenge: "anInvalidNotificationChallenge", startedAt: Date(), source: nil, location: nil)
                     waitUntil(timeout: Timeout) { done in
-                        Guardian.authentication(url: ValidURL, andEnrollment: enrollment)
+                        Guardian.authentication(url: ValidURL, device: device)
                             .reject(notification: notification, withReason: RejectReason)
                             .start { result in
                                 expect(result).to(haveGuardianError(withErrorCode: "invalid_token"))
@@ -401,10 +387,10 @@ class AuthenticationSpec: QuickSpec {
                 }
 
                 it("should fail when enrollment signing key is not correct") {
-                    let enrollment = Enrollment(id: ValidEnrollmentId, userId: ValidUserId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, signingKey: privateKey, base32Secret: ValidBase32Secret)
                     let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, challenge: ValidNotificationChallenge, startedAt: Date(), source: nil, location: nil)
+                    let anotherDevice = MockAuthenticationDevice(deviceIdentifier: UUID().uuidString, signingKey: try! DataRSAPrivateKey.new())
                     waitUntil(timeout: Timeout) { done in
-                        Guardian.authentication(url: ValidURL, andEnrollment: enrollment)
+                        Guardian.authentication(url: ValidURL, device: anotherDevice)
                             .reject(notification: notification, withReason: RejectReason)
                             .start { result in
                                 expect(result).to(haveGuardianError(withErrorCode: "invalid_token"))
@@ -419,15 +405,14 @@ class AuthenticationSpec: QuickSpec {
                 it("should allow when identifier is com.auth0.notification.authentication.accept") {
                     stub(condition: isResolveTransaction(baseUrl: ValidURL)
                         && hasBearerToken(ValidTransactionToken)) { req in
-                            if checkJWT(request: req, accepted: true) {
+                            if checkJWT(request: req, accepted: true, verificationKey: device.verificationKey) {
                                 return successResponse()
                             }
                             return errorResponse(statusCode: 401, errorCode: "invalid_token", message: "Invalid challenge_response")
                         }.name = "Checking challenge_response"
-                    let enrollment = Enrollment(id: ValidEnrollmentId, userId: ValidUserId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, signingKey: ValidRSAPrivateKey, base32Secret: ValidBase32Secret)
                     let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, challenge: ValidNotificationChallenge, startedAt: Date(), source: nil, location: nil)
                     waitUntil(timeout: Timeout) { done in
-                        Guardian.authentication(url: ValidURL, andEnrollment: enrollment)
+                        Guardian.authentication(url: ValidURL, device: device)
                             .handleAction(withIdentifier: "com.auth0.notification.authentication.accept", notification: notification)
                             .start { result in
                                 expect(result).to(beSuccess())
@@ -439,15 +424,14 @@ class AuthenticationSpec: QuickSpec {
                 it("should reject when identifier is com.auth0.notification.authentication.reject") {
                     stub(condition: isResolveTransaction(baseUrl: ValidURL)
                         && hasBearerToken(ValidTransactionToken)) { req in
-                            if checkJWT(request: req, accepted: false) {
+                            if checkJWT(request: req, accepted: false, verificationKey: device.verificationKey) {
                                 return successResponse()
                             }
                             return errorResponse(statusCode: 401, errorCode: "invalid_token", message: "Invalid challenge_response")
                         }.name = "Checking challenge_response"
-                    let enrollment = Enrollment(id: ValidEnrollmentId, userId: ValidUserId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, signingKey: ValidRSAPrivateKey, base32Secret: ValidBase32Secret)
                     let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, challenge: ValidNotificationChallenge, startedAt: Date(), source: nil, location: nil)
                     waitUntil(timeout: Timeout) { done in
-                        Guardian.authentication(url: ValidURL, andEnrollment: enrollment)
+                        Guardian.authentication(url: ValidURL, device: device)
                             .handleAction(withIdentifier: "com.auth0.notification.authentication.reject", notification: notification)
                             .start { result in
                                 expect(result).to(beSuccess())
@@ -457,10 +441,9 @@ class AuthenticationSpec: QuickSpec {
                 }
 
                 it("should fail when identifier is not valid") {
-                    let enrollment = Enrollment(id: ValidEnrollmentId, userId: ValidUserId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, signingKey: ValidRSAPrivateKey, base32Secret: ValidBase32Secret)
                     let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, challenge: ValidNotificationChallenge, startedAt: Date(), source: nil, location: nil)
                     waitUntil(timeout: Timeout) { done in
-                        Guardian.authentication(url: ValidURL, andEnrollment: enrollment)
+                        Guardian.authentication(url: ValidURL, device: device)
                             .handleAction(withIdentifier: "com.auth0.notification.authentication.something", notification: notification)
                             .start { result in
                                 expect(result).to(haveGuardianError(withErrorCode: "a0.guardian.internal.invalid_notification_action_identifier"))
@@ -474,11 +457,20 @@ class AuthenticationSpec: QuickSpec {
     }
 }
 
-func checkJWT(request: URLRequest, accepted: Bool, reason: String? = nil, challenge: String = ValidNotificationChallenge) -> Bool {
+struct MockAuthenticationDevice: AuthenticationDevice {
+    let deviceIdentifier: String
+    let signingKey: SigningKey
+
+    var verificationKey: AsymmetricPublicKey {
+        return try! AsymmetricPublicKey(privateKey: self.signingKey.secKey)
+    }
+}
+
+func checkJWT(request: URLRequest, accepted: Bool, reason: String? = nil, challenge: String = ValidNotificationChallenge, verificationKey: AsymmetricPublicKey) -> Bool {
     let currentTime = Int(Date().timeIntervalSince1970)
     if let payload = request.a0_payload,
         let challengeResponse = payload["challenge_response"] as? String,
-        let claims = try? JWT.verify(string: challengeResponse, publicKey: ValidRSAPublicKey.ref!),
+        let claims = try? JWT.verify(string: challengeResponse, publicKey: verificationKey.secKey),
         let aud = claims["aud"] as? String,
         aud == "https://tenant.guardian.auth0.com/also/works/in/appliance/api/resolve-transaction",
         let sub = claims["sub"] as? String,

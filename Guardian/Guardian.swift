@@ -77,17 +77,16 @@ public func api(url: URL, session: URLSession = defaultURLSession) -> API {
  ```
 
  - parameter forDomain:     domain or URL of your Guardian server
- - parameter andEnrollment: the enrollment that will be used to handle 
-                            authentication
+ - parameter device:        the enrolled device that will be used to handle authentication
  - parameter session:       session to use for network requests
  
  - returns: an `Authentication` instance
  
  - seealso: Guardian.Authentication
  */
-public func authentication(forDomain domain: String, andEnrollment enrollment: Enrollment, session: URLSession = defaultURLSession) -> Authentication {
+public func authentication(forDomain domain: String, device: AuthenticationDevice, session: URLSession = defaultURLSession) -> Authentication {
     let client = api(forDomain: domain, session: session)
-    return RSAAuthentication(api: client, enrollment: enrollment)
+    return RSAAuthentication(api: client, device: device)
 }
 
 /**
@@ -101,17 +100,16 @@ public func authentication(forDomain domain: String, andEnrollment enrollment: E
  ```
 
  - parameter url:           URL of your Guardian server
- - parameter andEnrollment: the enrollment that will be used to handle
- authentication
+ - parameter device:        the enrolled device that will be used to handle authentication
  - parameter session:       session to use for network requests
 
  - returns: an `Authentication` instance
 
  - seealso: Guardian.Authentication
  */
-public func authentication(url: URL, andEnrollment enrollment: Enrollment, session: URLSession = defaultURLSession) -> Authentication {
+public func authentication(url: URL, device: AuthenticationDevice, session: URLSession = defaultURLSession) -> Authentication {
     let client = api(url: url, session: session)
-    return RSAAuthentication(api: client, enrollment: enrollment)
+    return RSAAuthentication(api: client, device: device)
 }
 
 /**
@@ -154,13 +152,14 @@ public func authentication(url: URL, andEnrollment enrollment: Enrollment, sessi
  - parameter session:           session to use for network requests
  - parameter usingUri:          the enrollment URI
  - parameter notificationToken: the APNS token of the device
- - parameter keyPair:           the RSA key pair
+ - parameter signingKey:        the signing key for Guardian AuthN responses
+ - parameter signingKey:        the verification key for Guardian AuthN responses
  
  - returns: a request to create an enrollment
  */
-public func enroll(forDomain domain: String, session: URLSession = defaultURLSession, usingUri uri: String, notificationToken: String, keyPair: RSAKeyPair) -> EnrollRequest {
+public func enroll(forDomain domain: String, session: URLSession = defaultURLSession, usingUri uri: String, notificationToken: String, signingKey: SigningKey, verificationKey: VerificationKey) -> EnrollRequest {
     let client = api(forDomain: domain, session: session)
-    return EnrollRequest(api: client, enrollmentUri: uri, notificationToken: notificationToken, keyPair: keyPair)
+    return EnrollRequest(api: client, enrollmentUri: uri, notificationToken: notificationToken, verificationKey: verificationKey, signingKey: signingKey)
 }
 
 /**
@@ -203,13 +202,14 @@ public func enroll(forDomain domain: String, session: URLSession = defaultURLSes
  - parameter session:           session to use for network requests
  - parameter usingUri:          the enrollment URI
  - parameter notificationToken: the APNS token of the device
- - parameter keyPair:           the RSA key pair
+ - parameter signingKey:        the signing key for Guardian AuthN responses
+ - parameter signingKey:        the verification key for Guardian AuthN responses
 
  - returns: a request to create an enrollment
  */
-public func enroll(url: URL, session: URLSession = defaultURLSession, usingUri uri: String, notificationToken: String, keyPair: RSAKeyPair) -> EnrollRequest {
+public func enroll(url: URL, session: URLSession = defaultURLSession, usingUri uri: String, notificationToken: String, signingKey: SigningKey, verificationKey: VerificationKey) -> EnrollRequest {
     let client = api(url: url, session: session)
-    return EnrollRequest(api: client, enrollmentUri: uri, notificationToken: notificationToken, keyPair: keyPair)
+    return EnrollRequest(api: client, enrollmentUri: uri, notificationToken: notificationToken, verificationKey: verificationKey, signingKey: signingKey)
 }
 
 /**
@@ -251,13 +251,14 @@ public func enroll(url: URL, session: URLSession = defaultURLSession, usingUri u
  - parameter session:           session to use for network requests
  - parameter usingTicket:       the enrollment ticket
  - parameter notificationToken: the APNS token of the device
- - parameter keyPair:           the RSA key pair
+ - parameter signingKey:        the signing key for Guardian AuthN responses
+ - parameter signingKey:        the verification key for Guardian AuthN responses
 
  - returns: a request to create an enrollment
  */
-public func enroll(forDomain domain: String, session: URLSession = defaultURLSession, usingTicket ticket: String, notificationToken: String, keyPair: RSAKeyPair) -> EnrollRequest {
+public func enroll(forDomain domain: String, session: URLSession = defaultURLSession, usingTicket ticket: String, notificationToken: String, signingKey: SigningKey, verificationKey: VerificationKey) -> EnrollRequest {
     let client = api(forDomain: domain, session: session)
-    return EnrollRequest(api: client, enrollmentTicket: ticket, notificationToken: notificationToken, keyPair: keyPair)
+    return EnrollRequest(api: client, enrollmentTicket: ticket, notificationToken: notificationToken, verificationKey: verificationKey, signingKey: signingKey)
 }
 
 /**
@@ -299,13 +300,14 @@ public func enroll(forDomain domain: String, session: URLSession = defaultURLSes
  - parameter session:           session to use for network requests
  - parameter usingTicket:       the enrollment ticket
  - parameter notificationToken: the APNS token of the device
- - parameter keyPair:           the RSA key pair
+ - parameter signingKey:        the signing key for Guardian AuthN responses
+ - parameter signingKey:        the verification key for Guardian AuthN responses
 
  - returns: a request to create an enrollment
  */
-public func enroll(url: URL, session: URLSession = defaultURLSession, usingTicket ticket: String, notificationToken: String, keyPair: RSAKeyPair) -> EnrollRequest {
+public func enroll(url: URL, session: URLSession = defaultURLSession, usingTicket ticket: String, notificationToken: String, signingKey: SigningKey, verificationKey: VerificationKey) -> EnrollRequest {
     let client = api(url: url, session: session)
-    return EnrollRequest(api: client, enrollmentTicket: ticket, notificationToken: notificationToken, keyPair: keyPair)
+    return EnrollRequest(api: client, enrollmentTicket: ticket, notificationToken: notificationToken, verificationKey: verificationKey, signingKey: signingKey)
 }
 
 /**

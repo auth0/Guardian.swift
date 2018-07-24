@@ -36,15 +36,17 @@ public class EnrollRequest: Requestable {
     private let enrollmentTicket: String?
     private let enrollmentUri: String?
     private let notificationToken: String
-    private let keyPair: RSAKeyPair
+    private let verificationKey: VerificationKey
+    private let signingKey: SigningKey
     private var request: Request<[String: Any]>
 
-    init(api: API, enrollmentTicket: String? = nil, enrollmentUri: String? = nil, notificationToken: String, keyPair: RSAKeyPair) {
+    init(api: API, enrollmentTicket: String? = nil, enrollmentUri: String? = nil, notificationToken: String, verificationKey: VerificationKey, signingKey: SigningKey) {
         self.api = api
         self.enrollmentTicket = enrollmentTicket
         self.enrollmentUri = enrollmentUri
         self.notificationToken = notificationToken
-        self.keyPair = keyPair
+        self.verificationKey = verificationKey
+        self.signingKey = signingKey
         let ticket: String
         if let enrollmentTicket = enrollmentTicket {
             ticket = enrollmentTicket
@@ -55,7 +57,7 @@ public class EnrollRequest: Requestable {
             return
         }
 
-        self.request = api.enroll(withTicket: ticket, identifier: Enrollment.defaultDeviceIdentifier, name: Enrollment.defaultDeviceName, notificationToken: notificationToken, publicKey: keyPair.publicKey)
+        self.request = api.enroll(withTicket: ticket, identifier: Enrollment.defaultDeviceIdentifier, name: Enrollment.defaultDeviceName, notificationToken: notificationToken, verificationKey: self.verificationKey)
     }
 
     /// Registers hooks to be called on specific events:
@@ -108,7 +110,7 @@ public class EnrollRequest: Requestable {
                     let totpPeriod = totpData?["period"] as? Int
                     let totpDigits = totpData?["digits"] as? Int
 
-                    let enrollment = Enrollment(id: id, userId: userId, deviceToken: token, notificationToken: self.notificationToken, signingKey: self.keyPair.privateKey, base32Secret: totpSecret, algorithm: totpAlgorithm, digits: totpDigits, period: totpPeriod)
+                    let enrollment = Enrollment(id: id, userId: userId, deviceToken: token, notificationToken: self.notificationToken, signingKey: self.signingKey, base32Secret: totpSecret, algorithm: totpAlgorithm, digits: totpDigits, period: totpPeriod)
                     callback(.success(payload: enrollment))
                 }
         }

@@ -1,6 +1,6 @@
-// Constants.swift
+// DataRSAPrivateKey.swift
 //
-// Copyright (c) 2016 Auth0 (http://auth0.com)
+// Copyright (c) 2018 Auth0 (http://auth0.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,32 +22,19 @@
 
 import Foundation
 
-@testable import Guardian
+/// Key that is only preserved in memory, useful of other types of storages
+public struct DataRSAPrivateKey: SigningKey {
 
-let Domain = "tenant.guardian.auth0.com/also/works/in/appliance/"
-let Timeout: TimeInterval = 2
+    public let secKey: SecKey
+    public let data: Data
 
-let ValidURL = URL(string: "https://\(Domain)")!
-let ValidTransactionId = UUID().uuidString
-let ValidEnrollmentId = UUID().uuidString
-let ValidEnrollmentToken = UUID().uuidString
-let ValidNotificationToken = UUID().uuidString
-let ValidIssuer = "aValidIssuer"
-let ValidUser = "aValidUser"
-let ValidUserId = "aValidUserId"
-let ValidBase32Secret = "aValidBase32Secret"
-let InvalidBase32Secret = "anInvalidBase32Secret!?"
-let ValidAlgorithm = "SHA1"
-let ValidDigits = 7
-let ValidPeriod = 29
-let ValidTransactionToken = "aValidTransactionToken"
-let RejectReason = "aRejectReason"
-let ValidChallengeResponse = "aValidChallengeResponse"
+    public init(secKey: SecKey) throws {
+        self.secKey = secKey
+        self.data = try export(key: secKey)
+    }
 
-let ValidDeviceIdentifier = "aValidDeviceIdentifier"
-let ValidDeviceName = "aValidDeviceName"
-let ValidNotificationService = "APNS"
-let DeviceAccountToken = UUID().uuidString
-let ValidNotificationChallenge = "aValidNotificationChallenge"
-
-
+    public init(data: Data) throws {
+        self.secKey = try createKey(from: data)
+        self.data = data
+    }
+}

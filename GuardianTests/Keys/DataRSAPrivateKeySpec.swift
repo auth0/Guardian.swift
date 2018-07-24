@@ -1,6 +1,6 @@
-// Constants.swift
+// DataRSAPrivateKeySpec.swift
 //
-// Copyright (c) 2016 Auth0 (http://auth0.com)
+// Copyright (c) 2018 Auth0 (http://auth0.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,34 +20,37 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import Foundation
+import Quick
+import Nimble
+import Guardian
 
-@testable import Guardian
+class DataRSAPrivateKeySpec: QuickSpec {
 
-let Domain = "tenant.guardian.auth0.com/also/works/in/appliance/"
-let Timeout: TimeInterval = 2
+    override func spec() {
 
-let ValidURL = URL(string: "https://\(Domain)")!
-let ValidTransactionId = UUID().uuidString
-let ValidEnrollmentId = UUID().uuidString
-let ValidEnrollmentToken = UUID().uuidString
-let ValidNotificationToken = UUID().uuidString
-let ValidIssuer = "aValidIssuer"
-let ValidUser = "aValidUser"
-let ValidUserId = "aValidUserId"
-let ValidBase32Secret = "aValidBase32Secret"
-let InvalidBase32Secret = "anInvalidBase32Secret!?"
-let ValidAlgorithm = "SHA1"
-let ValidDigits = 7
-let ValidPeriod = 29
-let ValidTransactionToken = "aValidTransactionToken"
-let RejectReason = "aRejectReason"
-let ValidChallengeResponse = "aValidChallengeResponse"
+        let keys = Keys.shared
+        
+        describe("init(data:)") {
 
-let ValidDeviceIdentifier = "aValidDeviceIdentifier"
-let ValidDeviceName = "aValidDeviceName"
-let ValidNotificationService = "APNS"
-let DeviceAccountToken = UUID().uuidString
-let ValidNotificationChallenge = "aValidNotificationChallenge"
+            it("should create from Data") {
+                expect { try DataRSAPrivateKey(data: keys.privateKey) }.toNot(throwError(errorType: GuardianError.self))
+            }
 
+            it("should raise error with bad data") {
+                let badData = "BAD".data(using: .utf8)!
+                expect { try DataRSAPrivateKey(data: badData) }.to(throwError(errorType: GuardianError.self))
+            }
+        }
 
+        describe("init(key:)") {
+
+            it("should create from key") {
+                let key = try! DataRSAPrivateKey(data: keys.privateKey).secKey
+                expect { try DataRSAPrivateKey(secKey: key) }.toNot(throwError(errorType: GuardianError.self))
+            }
+
+        }
+
+    }
+
+}

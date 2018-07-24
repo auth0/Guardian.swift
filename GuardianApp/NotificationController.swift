@@ -36,7 +36,7 @@ class NotificationController: UIViewController {
             return self.dismiss(animated: true, completion: nil)
         }
         let request = Guardian
-            .authentication(forDomain: AppDelegate.guardianDomain, andEnrollment: enrollment)
+            .authentication(forDomain: AppDelegate.guardianDomain, device: enrollment)
             .allow(notification: notification)
         debugPrint(request)
         request.start { result in
@@ -57,7 +57,7 @@ class NotificationController: UIViewController {
             return self.dismiss(animated: true, completion: nil)
         }
         let request = Guardian
-            .authentication(forDomain: AppDelegate.guardianDomain, andEnrollment: enrollment)
+            .authentication(forDomain: AppDelegate.guardianDomain, device: enrollment)
             .reject(notification: notification)
         debugPrint(request)
         request.start { result in
