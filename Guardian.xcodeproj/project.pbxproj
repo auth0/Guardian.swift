@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		231687171DDA071A00B09526 /* A0SHA.h in Headers */ = {isa = PBXBuildFile; fileRef = 231687161DDA071A00B09526 /* A0SHA.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		231687191DDA07FD00B09526 /* A0SHA.m in Sources */ = {isa = PBXBuildFile; fileRef = 231687181DDA07FD00B09526 /* A0SHA.m */; };
-		2316871B1DDB867300B09526 /* RSAKeyPair.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2316871A1DDB867300B09526 /* RSAKeyPair.swift */; };
 		232A85DA1D6BDFCA00048DF7 /* DeviceAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 232A85D91D6BDFCA00048DF7 /* DeviceAPIClient.swift */; };
 		2331BFEB1DD5260D0047F1D4 /* JWT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2331BFEA1DD5260D0047F1D4 /* JWT.swift */; };
 		2331C01A1DD5FC6F0047F1D4 /* Data+Base64URL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2331C0191DD5FC6F0047F1D4 /* Data+Base64URL.swift */; };
@@ -18,7 +17,6 @@
 		234004DF1D8CA944009AB77C /* OneTimePassword.swift in Sources */ = {isa = PBXBuildFile; fileRef = 234004DE1D8CA944009AB77C /* OneTimePassword.swift */; };
 		234004E91D9084A0009AB77C /* OneTimePasswordSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 234004E81D9084A0009AB77C /* OneTimePasswordSpec.swift */; };
 		234004EF1D909C91009AB77C /* Base32.swift in Sources */ = {isa = PBXBuildFile; fileRef = 234004EE1D909C91009AB77C /* Base32.swift */; };
-		2345A5EE1DD379BB00195291 /* RSAUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2345A5ED1DD379BB00195291 /* RSAUtils.swift */; };
 		234B25B21D9DA37D00078FA0 /* NotificationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 234B25B11D9DA37D00078FA0 /* NotificationController.swift */; };
 		2356C82E1D88998A00B6C84A /* EnrollRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2356C82D1D88998A00B6C84A /* EnrollRequest.swift */; };
 		2356C8301D88A10600B6C84A /* GuardianSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2356C82F1D88A10600B6C84A /* GuardianSpec.swift */; };
@@ -53,7 +51,6 @@
 		5F1604E421066A4F00B0F25B /* guardian-test.private.pem in Resources */ = {isa = PBXBuildFile; fileRef = 5F1604DF21066A4F00B0F25B /* guardian-test.private.pem */; };
 		5F1604E521066A4F00B0F25B /* guardian-test.public.pem in Resources */ = {isa = PBXBuildFile; fileRef = 5F1604E021066A4F00B0F25B /* guardian-test.public.pem */; };
 		5F1604E621066A4F00B0F25B /* guardian-test.public.json in Resources */ = {isa = PBXBuildFile; fileRef = 5F1604E121066A4F00B0F25B /* guardian-test.public.json */; };
-		5F1604E721066A4F00B0F25B /* identity.p12 in Resources */ = {isa = PBXBuildFile; fileRef = 5F1604E221066A4F00B0F25B /* identity.p12 */; };
 		5F1604E821066A4F00B0F25B /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 5F1604E321066A4F00B0F25B /* README.md */; };
 		5F1604EA21066B2B00B0F25B /* Keys+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1604E921066B2B00B0F25B /* Keys+Utils.swift */; };
 		5F1604EC2106709B00B0F25B /* DataRSAPrivateKeySpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1604EB2106709B00B0F25B /* DataRSAPrivateKeySpec.swift */; };
@@ -143,7 +140,6 @@
 /* Begin PBXFileReference section */
 		231687161DDA071A00B09526 /* A0SHA.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = A0SHA.h; sourceTree = "<group>"; };
 		231687181DDA07FD00B09526 /* A0SHA.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = A0SHA.m; sourceTree = "<group>"; };
-		2316871A1DDB867300B09526 /* RSAKeyPair.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RSAKeyPair.swift; sourceTree = "<group>"; };
 		232A85D91D6BDFCA00048DF7 /* DeviceAPIClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = DeviceAPIClient.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		2331BFEA1DD5260D0047F1D4 /* JWT.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JWT.swift; sourceTree = "<group>"; };
 		2331BFEC1DD52ED50047F1D4 /* JWTSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JWTSpec.swift; sourceTree = "<group>"; };
@@ -153,7 +149,6 @@
 		234004DE1D8CA944009AB77C /* OneTimePassword.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OneTimePassword.swift; sourceTree = "<group>"; };
 		234004E81D9084A0009AB77C /* OneTimePasswordSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OneTimePasswordSpec.swift; sourceTree = "<group>"; };
 		234004EE1D909C91009AB77C /* Base32.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Base32.swift; sourceTree = "<group>"; };
-		2345A5ED1DD379BB00195291 /* RSAUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RSAUtils.swift; sourceTree = "<group>"; };
 		234B25AD1D9D554800078FA0 /* GuardianApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GuardianApp.entitlements; sourceTree = "<group>"; };
 		234B25B11D9DA37D00078FA0 /* NotificationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationController.swift; sourceTree = "<group>"; };
 		2356C82D1D88998A00B6C84A /* EnrollRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnrollRequest.swift; sourceTree = "<group>"; };
@@ -187,7 +182,6 @@
 		5F1604DF21066A4F00B0F25B /* guardian-test.private.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "guardian-test.private.pem"; sourceTree = "<group>"; };
 		5F1604E021066A4F00B0F25B /* guardian-test.public.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "guardian-test.public.pem"; sourceTree = "<group>"; };
 		5F1604E121066A4F00B0F25B /* guardian-test.public.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "guardian-test.public.json"; sourceTree = "<group>"; };
-		5F1604E221066A4F00B0F25B /* identity.p12 */ = {isa = PBXFileReference; lastKnownFileType = file; path = identity.p12; sourceTree = "<group>"; };
 		5F1604E321066A4F00B0F25B /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		5F1604E921066B2B00B0F25B /* Keys+Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Keys+Utils.swift"; sourceTree = "<group>"; };
 		5F1604EB2106709B00B0F25B /* DataRSAPrivateKeySpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataRSAPrivateKeySpec.swift; sourceTree = "<group>"; };
@@ -269,7 +263,6 @@
 				2374A9F21D672E4F00737F2E /* Responses.swift */,
 				2374A9F41D67339E00737F2E /* Matchers.swift */,
 				23C67AEB1D81D6A400A38A2E /* MockNSURLSession.swift */,
-				2345A5ED1DD379BB00195291 /* RSAUtils.swift */,
 				5F1604E921066B2B00B0F25B /* Keys+Utils.swift */,
 			);
 			name = Utils;
@@ -295,7 +288,6 @@
 				5F1604DF21066A4F00B0F25B /* guardian-test.private.pem */,
 				5F1604E021066A4F00B0F25B /* guardian-test.public.pem */,
 				5F1604E121066A4F00B0F25B /* guardian-test.public.json */,
-				5F1604E221066A4F00B0F25B /* identity.p12 */,
 				5F1604E321066A4F00B0F25B /* README.md */,
 			);
 			path = Data;
@@ -338,7 +330,6 @@
 				234004EE1D909C91009AB77C /* Base32.swift */,
 				2331BFEA1DD5260D0047F1D4 /* JWT.swift */,
 				2331C0191DD5FC6F0047F1D4 /* Data+Base64URL.swift */,
-				2316871A1DDB867300B09526 /* RSAKeyPair.swift */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
@@ -629,7 +620,6 @@
 				5F1604E421066A4F00B0F25B /* guardian-test.private.pem in Resources */,
 				5F1604E821066A4F00B0F25B /* README.md in Resources */,
 				5F1604E521066A4F00B0F25B /* guardian-test.public.pem in Resources */,
-				5F1604E721066A4F00B0F25B /* identity.p12 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -668,7 +658,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2316871B1DDB867300B09526 /* RSAKeyPair.swift in Sources */,
 				234004DF1D8CA944009AB77C /* OneTimePassword.swift in Sources */,
 				2374A9E41D670F5900737F2E /* APIClient.swift in Sources */,
 				234004EF1D909C91009AB77C /* Base32.swift in Sources */,
@@ -716,7 +705,6 @@
 				5F1604EA21066B2B00B0F25B /* Keys+Utils.swift in Sources */,
 				5F1DB45F1DA4757800264437 /* Constants.swift in Sources */,
 				5F1604EE210673E700B0F25B /* ASNPublicKeyDecodableSpec.swift in Sources */,
-				2345A5EE1DD379BB00195291 /* RSAUtils.swift in Sources */,
 				2356C8301D88A10600B6C84A /* GuardianSpec.swift in Sources */,
 				2374A9F51D67339E00737F2E /* Matchers.swift in Sources */,
 				23C67AEC1D81D6A400A38A2E /* MockNSURLSession.swift in Sources */,

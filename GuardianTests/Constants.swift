@@ -50,39 +50,4 @@ let ValidNotificationService = "APNS"
 let DeviceAccountToken = UUID().uuidString
 let ValidNotificationChallenge = "aValidNotificationChallenge"
 
-let RSAPublicKeyTag = "\(UUID().uuidString)-public"
-let RSAPrivateKeyTag = "\(UUID().uuidString)-private"
-let RSAKeySize = 2048
-
-let NonRSAPublicKey: RSAPublicKey = {
-    let ecPublicKeyTag = RSAPublicKeyTag + "-invalid"
-    let ecPublicKey = generateKeyPair(publicTag: ecPublicKeyTag,
-                                      privateTag: RSAPrivateKeyTag + "-invalid",
-                                      keyType: kSecAttrKeyTypeEC,
-                                      keySize: 256)!.publicKey
-    return RSAKeyPair.publicKey(withTag: ecPublicKeyTag)
-}()
-
-let ValidRSAPublicKey: RSAPublicKey = {
-    return ValidRSAKeyPair.publicKey
-}()
-
-let ValidRSAPrivateKey: RSAPrivateKey = {
-    return ValidRSAKeyPair.privateKey
-}()
-
-let ValidRSAKeyPair: RSAKeyPair = {
-    let path = Bundle(for: GuardianSpec.self).path(forResource: "identity", ofType: "p12")!
-    let p12Data = try! Data(contentsOf: URL(fileURLWithPath: path))
-    let (publicKey, privateKey) = getKeys(fromPkcs12: p12Data, passphrase : "1234")!
-    guard storeInKeychain(publicKey, withTag: RSAPublicKeyTag),
-        storeInKeychain(privateKey, withTag: RSAPrivateKeyTag) else {
-            return RSAKeyPair.new(usingPublicTag: RSAPublicKeyTag,
-                                  privateTag: RSAPrivateKeyTag,
-                                  keySize: RSAKeySize)!
-    }
-    return RSAKeyPair(publicKeyTag: RSAPublicKeyTag, privateKeyTag: RSAPrivateKeyTag)
-}()
-
-
 
