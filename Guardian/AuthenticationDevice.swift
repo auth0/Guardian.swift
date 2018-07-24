@@ -1,4 +1,4 @@
-// DataRSAPrivateKeySpec.swift
+// AuthenticationDevice.swift
 //
 // Copyright (c) 2018 Auth0 (http://auth0.com)
 //
@@ -20,37 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import Quick
-import Nimble
-import Guardian
+import Foundation
 
-class DataRSAPrivateKeySpec: QuickSpec {
-
-    override func spec() {
-
-        let keys = Keys.shared
-        
-        describe("init(data:)") {
-
-            it("should create from Data") {
-                expect { try DataRSAPrivateKey(data: keys.privateKey) }.toNot(throwError(errorType: GuardianError.self))
-            }
-
-            it("should raise error with bad data") {
-                let badData = "BAD".data(using: .utf8)!
-                expect { try DataRSAPrivateKey(data: badData) }.to(throwError(errorType: GuardianError.self))
-            }
-        }
-
-        describe("init(key:)") {
-
-            it("should create from key") {
-                let key = try! DataRSAPrivateKey(data: keys.privateKey).secKey
-                expect { try DataRSAPrivateKey(secKey: key) }.toNot(throwError(errorType: GuardianError.self))
-            }
-
-        }
-
-    }
-
+public protocol AuthenticationDevice {
+    var signingKey: SigningKey { get }
+    var deviceIdentifier: String { get }
 }

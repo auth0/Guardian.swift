@@ -114,7 +114,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                 completionHandler()
             } else { // Guardian allow/reject action
                 Guardian
-                    .authentication(forDomain: AppDelegate.guardianDomain, andEnrollment: enrollment)
+                    .authentication(forDomain: AppDelegate.guardianDomain, device: enrollment)
                     .handleAction(withIdentifier: identifier, notification: notification)
                     .start { _ in completionHandler() }
             }

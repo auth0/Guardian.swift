@@ -76,12 +76,11 @@ class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
     func reader(_ reader: QRCodeReaderViewController, didScanResult result: QRCodeReaderResult) {
         self.dismiss(animated: true) { [unowned self] in
 
-            guard let keyPair = RSAKeyPair.new(usingPublicTag: ViewController.RSA_KEY_PUBLIC_TAG, privateTag: ViewController.RSA_KEY_PRIVATE_TAG) else {
-                return
-            }
+            guard let signingKey = try? KeychainRSAPrivateKey.new(with: ViewController.RSA_KEY_PRIVATE_TAG),
+                let verificationKey = try? signingKey.verificationKey() else { return }
 
             let request = Guardian
-                .enroll(forDomain: AppDelegate.guardianDomain, usingUri: result.value, notificationToken: AppDelegate.pushToken!, keyPair: keyPair)
+                .enroll(forDomain: AppDelegate.guardianDomain, usingUri: result.value, notificationToken: AppDelegate.pushToken!, signingKey: signingKey, verificationKey: verificationKey)
             debugPrint(request)
             request.start { result in
                     switch result {

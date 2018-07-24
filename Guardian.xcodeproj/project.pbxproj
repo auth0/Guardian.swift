@@ -60,6 +60,7 @@
 		5F1604EE210673E700B0F25B /* ASNPublicKeyDecodableSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1604ED210673E700B0F25B /* ASNPublicKeyDecodableSpec.swift */; };
 		5F1604F02106831C00B0F25B /* AsymmetricPublicKeySpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1604EF2106831C00B0F25B /* AsymmetricPublicKeySpec.swift */; };
 		5F1604F22106855F00B0F25B /* KeychainRSAPrivateKeySpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1604F12106855F00B0F25B /* KeychainRSAPrivateKeySpec.swift */; };
+		5F1604F421068FCC00B0F25B /* AuthenticationDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1604F321068FCC00B0F25B /* AuthenticationDevice.swift */; };
 		5F1DB45B1DA4649600264437 /* Authentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1DB45A1DA4649600264437 /* Authentication.swift */; };
 		5F1DB45F1DA4757800264437 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1DB45E1DA4757800264437 /* Constants.swift */; };
 		5F2037D11D5E1E3E0005D2E2 /* Guardian.h in Headers */ = {isa = PBXBuildFile; fileRef = 5F2037D01D5E1E3E0005D2E2 /* Guardian.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -193,6 +194,7 @@
 		5F1604ED210673E700B0F25B /* ASNPublicKeyDecodableSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ASNPublicKeyDecodableSpec.swift; sourceTree = "<group>"; };
 		5F1604EF2106831C00B0F25B /* AsymmetricPublicKeySpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsymmetricPublicKeySpec.swift; sourceTree = "<group>"; };
 		5F1604F12106855F00B0F25B /* KeychainRSAPrivateKeySpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainRSAPrivateKeySpec.swift; sourceTree = "<group>"; };
+		5F1604F321068FCC00B0F25B /* AuthenticationDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationDevice.swift; sourceTree = "<group>"; };
 		5F1DB45A1DA4649600264437 /* Authentication.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Authentication.swift; sourceTree = "<group>"; };
 		5F1DB45C1DA4750F00264437 /* AuthenticationSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthenticationSpec.swift; sourceTree = "<group>"; };
 		5F1DB45E1DA4757800264437 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
@@ -346,6 +348,7 @@
 			children = (
 				5F613387210126FF00BCC182 /* Notification */,
 				5F1DB45A1DA4649600264437 /* Authentication.swift */,
+				5F1604F321068FCC00B0F25B /* AuthenticationDevice.swift */,
 			);
 			name = Authentication;
 			sourceTree = "<group>";
@@ -678,6 +681,7 @@
 				2374A9E61D670F5900737F2E /* Request.swift in Sources */,
 				5F1DB45B1DA4649600264437 /* Authentication.swift in Sources */,
 				2374A9E51D670F5900737F2E /* GuardianError.swift in Sources */,
+				5F1604F421068FCC00B0F25B /* AuthenticationDevice.swift in Sources */,
 				5F61338F210128C800BCC182 /* AuthenticationLocation.swift in Sources */,
 				2356C82E1D88998A00B6C84A /* EnrollRequest.swift in Sources */,
 				5F1604C321062BEA00B0F25B /* RSA+Utils.swift in Sources */,

@@ -32,11 +32,11 @@ struct APIClient: API {
         self.session = session
     }
 
-    func enroll(withTicket enrollmentTicket: String, identifier: String, name: String, notificationToken: String, publicKey: JWKConvertable) -> Request<[String: Any]> {
+    func enroll(withTicket enrollmentTicket: String, identifier: String, name: String, notificationToken: String, verificationKey: VerificationKey) -> Request<[String: Any]> {
         do {
             let url = self.baseUrl.appendingPathComponent("api/enroll")
 
-            guard let jwk = publicKey.jwk else {
+            guard let jwk = verificationKey.jwk else {
                 throw GuardianError.invalidPublicKey
             }
 

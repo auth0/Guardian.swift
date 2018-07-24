@@ -123,7 +123,7 @@ struct RSAAuthentication: Authentication {
     private static let challengeResponseExpiresInSecs = 30
 
     let api: API
-    let enrollment: Enrollment
+    let device: AuthenticationDevice
 
     func allow(notification: Notification) -> Request<Void> {
         return resolve(transaction: notification.transactionToken,
@@ -145,7 +145,7 @@ struct RSAAuthentication: Authentication {
                 "iat": currentTime,
                 "exp": currentTime + RSAAuthentication.challengeResponseExpiresInSecs,
                 "aud": self.api.baseUrl.appendingPathComponent("api/resolve-transaction").absoluteString,
-                "iss": self.enrollment.deviceIdentifier,
+                "iss": self.device.deviceIdentifier,
                 "sub": challenge,
                 "auth0_guardian_method": "push",
                 "auth0_guardian_accepted": accepted
@@ -153,10 +153,7 @@ struct RSAAuthentication: Authentication {
             if let reason = reason {
                 jwtPayload["auth0_guardian_reason"] = reason
             }
-            guard let signingKey = self.enrollment.signingKey.ref else {
-                throw GuardianError.invalidPrivateKey
-            }
-            let jwt = try JWT.encode(claims: jwtPayload, signingKey: signingKey)
+            let jwt = try JWT.encode(claims: jwtPayload, signingKey: self.device.signingKey.secKey)
             return self.api.resolve(transaction: transactionToken, withChallengeResponse: jwt)
         } catch(let error) {
             return FailedRequest(error: error)

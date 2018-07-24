@@ -27,7 +27,7 @@ import UIKit
  
  - seealso: Guardian.enroll
  */
-public struct Enrollment {
+public struct Enrollment: AuthenticationDevice {
 
     /**
      The enrollment id
@@ -58,7 +58,7 @@ public struct Enrollment {
      The private key used to sign the requests to allow/reject an authentication
      request.
      */
-    public let signingKey: RSAPrivateKey
+    public let signingKey: SigningKey
 
     /**
      The TOTP secret, Base32 encoded
@@ -119,7 +119,7 @@ public struct Enrollment {
          userId: String,
          deviceToken: String,
          notificationToken: String,
-         signingKey: RSAPrivateKey,
+         signingKey: SigningKey,
          base32Secret: String?,
          algorithm: String? = nil,
          digits: Int? = nil,

@@ -53,7 +53,7 @@ struct JWK: Codable {
 }
 
 private func loadPEM(from filename: String) -> Data {
-    let bundle = Bundle(for: GuardianSpec.self)
+    let bundle = Bundle(for: _Bundle.self)
     let path = bundle.path(forResource: filename, ofType: "pem")!
     let data = try! Data(contentsOf: URL(fileURLWithPath: path))
     let pemString = String(data: data, encoding: .utf8)!.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -65,9 +65,11 @@ private func loadPEM(from filename: String) -> Data {
 
 private func loadJWK(from filename: String) -> JWK {
     let decoder = JSONDecoder()
-    let bundle = Bundle(for: GuardianSpec.self)
+    let bundle = Bundle(for: _Bundle.self)
     let path = bundle.path(forResource: filename, ofType: "json")!
     let data = try! Data(contentsOf: URL(fileURLWithPath: path))
     let jwk = try! decoder.decode(JWK.self, from: data)
     return jwk
 }
+
+class _Bundle {}
