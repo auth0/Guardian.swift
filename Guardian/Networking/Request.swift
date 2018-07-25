@@ -157,4 +157,4 @@ func json<T>(_ data: Data?) -> T? {
     return object as? T
 }
 
-private class _BundleGrapple: NSObject {}
+class _BundleGrapple: NSObject {}

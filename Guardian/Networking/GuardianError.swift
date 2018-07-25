@@ -113,6 +113,10 @@ internal extension GuardianError {
         return GuardianError(string: invalidPayloadMessage)
     }
 
+    static func invalidPayload(cause: Error) -> GuardianError {
+        return GuardianError(string: invalidPayloadMessage, cause: cause)
+    }
+
     static var invalidResponse: GuardianError {
         return GuardianError(string: invalidResponseMessage)
     }

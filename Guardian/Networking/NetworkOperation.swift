@@ -22,15 +22,37 @@
 
 import Foundation
 
-public struct NetworkOperation<T: Decodable> {
+func defaultHeaders(hasBody: Bool) throws -> [String: String] {
+    let info = Bundle(for: _BundleGrapple.classForCoder()).infoDictionary ?? [:]
+    let clientInfo = ClientInfo(info: info)
+    let telemetry = try clientInfo?.asHeader() ?? [:]
+    let content = hasBody ? ["Content-Type": "application/json"] : [:]
+    return telemetry.merging(content) { _, new in new }
+}
+
+func encode<B: Encodable>(body: B, encoder: JSONEncoder = JSONEncoder()) throws -> Data {
+    do {
+        return try encoder.encode(body)
+    }
+    catch let error { throw GuardianError.invalidPayload(cause: error) }
+}
+
+public struct NetworkOperation<B: Encodable, T: Decodable> {
 
     let request: URLRequest
+    let body: B?
 
-    init(method: HTTPMethod, url: URL, headers: [String: String] = [:], body: Encodable? = nil) throws {
+    init(method: HTTPMethod, url: URL, headers: [String: String] = [:], body: B? = nil) throws {
         var request = URLRequest(url: url)
         request.httpMethod = method.rawValue.uppercased()
-        headers.forEach { request.setValue($0.value, forHTTPHeaderField: $0.key) }
+        headers
+            .merging(try defaultHeaders(hasBody: body != nil)) { old, _ in return old }
+            .forEach { request.setValue($0.value, forHTTPHeaderField: $0.key) }
 
+        if let body = body {
+            request.httpBody = try encode(body: body)
+        }
+        self.body = body
         self.request = request
     }
 
@@ -41,6 +63,26 @@ public struct NetworkOperation<T: Decodable> {
      */
     public func start(callback: @escaping (Result<T>) -> ()) {
         
+    }
+}
+
+extension NetworkOperation: CustomStringConvertible, CustomDebugStringConvertible {
+    public var description: String {
+        return "\(self.request.httpMethod!) \(self.request.url!.absoluteString)"
+    }
+
+    public var debugDescription: String {
+        var description = "\(self.request.httpMethod!) \(self.request.url!.absoluteString)\n"
+        self.request.allHTTPHeaderFields?.forEach { description.append("\($0): \($1)\n") }
+        description.append("\n")
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = .prettyPrinted
+        if let payload = self.body,
+            let data = try? encode(body: payload, encoder: encoder),
+            let json = String(data: data, encoding: .utf8) {
+            description.append(json.replacingOccurrences(of: "\\n", with: "\n"))
+        }
+        return description
     }
 
 }

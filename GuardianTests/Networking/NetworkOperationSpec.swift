@@ -32,13 +32,13 @@ class NetworkOperationSpec: QuickSpec {
 
         fdescribe("init(method:, url:, headers:, body:)") {
 
-            func new(method: HTTPMethod = .get, url: URL = url, headers: [String: String] = [:]) -> NetworkOperation<String> {
-                return try! NetworkOperation(method: method, url: url, headers: headers)
+            func new(method: HTTPMethod = .get, url: URL = url, headers: [String: String] = [:], body: [String: String]? = nil) -> NetworkOperation<[String: String], String> {
+                return try! NetworkOperation(method: method, url: url, headers: headers, body: body)
             }
 
             it("should create with mandatory only parameters") {
                 expect {
-                    try NetworkOperation(method: .get, url: url) as NetworkOperation<String>
+                    try NetworkOperation(method: .get, url: url) as NetworkOperation<String, String>
                 }.toNot(throwError())
             }
 
@@ -63,6 +63,52 @@ class NetworkOperationSpec: QuickSpec {
                 let key = "X-Custom-Tracker"
                 let value = UUID().uuidString
                 expect(new(headers: [key: value]).request.value(forHTTPHeaderField: key)).to(equal(value))
+            }
+
+            it("should have a request with telemetry header") {
+                let key = "Auth0-Client"
+                expect(new().request.value(forHTTPHeaderField: key)).toNot(beNil())
+            }
+
+            it("should not have a request with content header") {
+                let key = "Content-Type"
+                expect(new().request.value(forHTTPHeaderField: key)).to(beNil())
+            }
+
+            it("should have a request with 'application/json' content") {
+                let key = "Content-Type"
+                expect(new(body: ["KEY": "VALUE"]).request.value(forHTTPHeaderField: key)).to(equal("application/json"))
+            }
+
+            it("should have a request with telemetry header and client info") {
+                expect({
+                    let key = "Auth0-Client"
+                    let version = Bundle.main.infoDictionary!["CFBundleShortVersionString"] as! String
+                    let expected = ClientInfo(name: "Guardian.swift", version: version)
+                    let decoder = JSONDecoder()
+                    guard let value = new().request.value(forHTTPHeaderField: key) else {
+                        return .failed(reason: "missing auth0-client value")
+                    }
+                    guard let data = Data(base64URLEncoded: value), let actual = try? decoder.decode(ClientInfo.self, from: data) else {
+                        return .failed(reason: "invalid auth0-client value \(value)")
+                    }
+                    guard actual == expected else {
+                        return .failed(reason: "expected auth0-client with \(expected) but got \(actual)")
+                    }
+                    return .succeeded
+
+                }).to(succeed())
+            }
+
+            it("should have no body") {
+                expect(new().request.httpBody).to(beNil())
+            }
+
+            it("should have a JSON body") {
+                let value = UUID().uuidString
+                let body = ["id": value]
+                let json = "{\"id\":\"\(value)\"}".data(using: .utf8)
+                expect(new(body: body).request.httpBody).to(equal(json))
             }
         }
     }
