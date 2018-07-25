@@ -70,7 +70,7 @@ public protocol DeviceAPI {
      Guardian
         .api(forDomain: "tenant.guardian.auth0.com")
         .device(forEnrollmentId: enrollment.id, token: enrollment.deviceToken)
-        .update(deviceIdentifier: enrollment.deviceIdentifier
+        .update(localIdentifier: enrollment.deviceIdentifier
                 name: enrollment.deviceName
                 notificationToken: enrollment.notificationToken)
         .start { result in
@@ -84,7 +84,7 @@ public protocol DeviceAPI {
      }
      ```
 
-     - parameter deviceIdentifier:  a unique identifier for this device, usually
+     - parameter localIdentifier:  a unique identifier for this device, usually
                                     the UUID
      - parameter name:              the name to use for this device
      - parameter notificationToken: the APNS token used to send push 
@@ -92,5 +92,5 @@ public protocol DeviceAPI {
 
      - returns: a Request ready to execute
      */
-    func update(deviceIdentifier identifier: String?, name: String?, notificationToken: String?) -> Request<[String: Any]>
+    func update(localIdentifier identifier: String?, name: String?, notificationToken: String?) -> Request<[String: Any]>
 }

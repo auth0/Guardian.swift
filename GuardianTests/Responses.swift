@@ -22,6 +22,7 @@
 
 import Foundation
 import OHHTTPStubs
+import Guardian
 
 func enrollmentInfoResponse(withDeviceAccountToken deviceAccountToken: String) -> OHHTTPStubsResponse {
     let json = [
@@ -45,7 +46,7 @@ func deviceResponse(enrollmentId id: String?, deviceIdentifier: String?, name: S
     return OHHTTPStubsResponse(jsonObject: json, statusCode: 200, headers: ["Content-Type": "application/json"])
 }
 
-func enrollResponse(enrollmentId id: String?, url: String?, userId: String?, issuer: String?, token: String?, totpSecret: String? = nil, totpAlgorithm: String? = nil, totpDigits: Int? = nil, totpPeriod: Int? = nil, recoveryCode: String? = nil) -> OHHTTPStubsResponse {
+func enrollResponse(enrollmentId id: String?, url: String?, userId: String?, issuer: String?, token: String?, totpSecret: String? = nil, totpAlgorithm: HMACAlgorithm? = nil, totpDigits: Int? = nil, totpPeriod: Int? = nil, recoveryCode: String? = nil) -> OHHTTPStubsResponse {
     var json: [String : Any] = [
         "id": id ?? "",
         "url": url ?? "",
@@ -57,7 +58,7 @@ func enrollResponse(enrollmentId id: String?, url: String?, userId: String?, iss
     if let secret = totpSecret, let algorithm = totpAlgorithm, let digits = totpDigits, let period = totpPeriod {
         json["totp"] = [
             "secret": secret,
-            "algorithm": algorithm,
+            "algorithm": algorithm.rawValue,
             "digits": digits,
             "period": period
         ] as [String : Any]

@@ -145,7 +145,7 @@ struct RSAAuthentication: Authentication {
                 "iat": currentTime,
                 "exp": currentTime + RSAAuthentication.challengeResponseExpiresInSecs,
                 "aud": self.api.baseUrl.appendingPathComponent("api/resolve-transaction").absoluteString,
-                "iss": self.device.deviceIdentifier,
+                "iss": self.device.localIdentifier,
                 "sub": challenge,
                 "auth0_guardian_method": "push",
                 "auth0_guardian_accepted": accepted

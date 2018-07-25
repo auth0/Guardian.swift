@@ -1,4 +1,4 @@
-// Enrollment.swift
+// EnrolledDevice.swift
 //
 // Copyright (c) 2016 Auth0 (http://auth0.com)
 //
@@ -23,25 +23,25 @@
 import UIKit
 
 /**
- A Guardian Enrollment
+ A Guardian enrolled device
  
  - seealso: Guardian.enroll
  */
-public struct Enrollment: AuthenticationDevice {
+public struct EnrolledDevice: AuthenticationDevice {
 
     /**
-     The enrollment id
+     The enrolled device id from Guardian
      */
     public let id: String
 
     /**
-     The id of this enrollment's user
+     The id of the user associated to this device
      */
     public let userId: String
 
     /**
      The token used to authenticate when updating the device data or deleting 
-     the enrollment
+     it
      */
     public let deviceToken: String
 
@@ -56,63 +56,45 @@ public struct Enrollment: AuthenticationDevice {
 
     /**
      The private key used to sign the requests to allow/reject an authentication
-     request.
+     request for the associated user.
      */
     public let signingKey: SigningKey
 
     /**
-     The TOTP secret, Base32 encoded
+     The TOTP parameters associated to the device
 
      - important: Might be nil if TOTP mode is disabled
      */
-    public let base32Secret: String?
-
-    /**
-     The TOTP algorithm
-     */
-    public let algorithm: String
-
-    /**
-     The TOTP digits, i.e. the code length
-     */
-    public let digits: Int
-
-    /**
-     The TOTP period, in seconds
-     */
-    public let period: Int
+    public let totp: OTPParameters?
 
     /**
      The identifier of the physical device, for debug/tracking purposes
      */
-    public var deviceIdentifier: String {
-        return Enrollment.defaultDeviceIdentifier
+    public var localIdentifier: String {
+        return EnrolledDevice.vendorIdentifier
     }
 
     /**
      The name to display whenever it is necessary to identify this specific 
-     enrollment. 
+     device.
 
      For example when the user has to choose where to send the push 
-     notification, or at the admin interface if the user wants to delete an 
-     enrollment from there
+     notification, or at the admin interface if the user wants to delete
+     an enrolled devicefrom there
      */
-    public var deviceName: String {
-        return Enrollment.defaultDeviceName
+    public var name: String {
+        return UIDevice.current.name
     }
 
     /**
-     Creates a new `Enrollment` instance.
+     Creates a new `EnrolledDevice` instance.
      
      - parameter id:                the enrollment id
      - parameter deviceToken:       the token used to authenticate when updating
-                                    the device data or deleting the enrollment
+                                    the device data or deleting it
      - parameter notificationToken: the APNs token for this physical device
-     - parameter signingKey:        the private key used to sign the requests
-     - parameter base32Secret:      the TOTP secret, Base32 encoded
-     - parameter algorithm:         the TOTP algorithm
-     - parameter digits:            the TOTP digits, i.e. the code length
-     - parameter period:            the TOTP period, in seconds
+     - parameter signingKey:        the private key used to sign Guardian AuthN requests
+     - parameter totp:              the TOTP parameters for the enrollment or nil if its disabled
      */
     public init(
          id: String,
@@ -120,30 +102,45 @@ public struct Enrollment: AuthenticationDevice {
          deviceToken: String,
          notificationToken: String,
          signingKey: SigningKey,
-         base32Secret: String?,
-         algorithm: String? = nil,
-         digits: Int? = nil,
-         period: Int? = nil
+         totp: OTPParameters? = nil
         ) {
         self.id = id
         self.userId = userId
         self.deviceToken = deviceToken
         self.notificationToken = notificationToken
         self.signingKey = signingKey
-        self.base32Secret = base32Secret
-        self.algorithm = algorithm ?? "sha1"
-        self.digits = digits ?? 6
-        self.period = period ?? 30
+        self.totp = totp
+    }
+
+    static var vendorIdentifier: String {
+        return UIDevice.current.identifierForVendor!.uuidString
+    }
+
+    static var deviceName: String {
+        return UIDevice.current.name
     }
 }
 
-extension Enrollment {
+/// Parameters for OTP codes
+public struct OTPParameters {
+    /// The TOTP secret, Base32 encoded
+    public let base32Secret: String
+    /// The TOTP algorithm
+    public let algorithm: HMACAlgorithm
+    /// The TOTP digits, i.e. the code length. Default is 6 digits
+    public let digits: Int
+    /// The TOTP period, in seconds. Default is 30 seconds
+    public let period: Int
 
-    static var defaultDeviceName: String {
-        return UIDevice.current.name
+    public init(base32Secret: String, algorithm: HMACAlgorithm = .sha1, digits: Int =  6, period: Int = 30) {
+        self.base32Secret = base32Secret
+        self.algorithm = algorithm
+        self.digits = digits
+        self.period = period
     }
 
-    static var defaultDeviceIdentifier: String {
-        return UIDevice.current.identifierForVendor!.uuidString
+    public init(base32Secret: String, algorithm: HMACAlgorithm?, digits: Int?, period: Int?) {
+        self.init(base32Secret: base32Secret, algorithm: algorithm ?? .sha1, digits: digits ?? 6, period: period ?? 30)
     }
+
 }

@@ -28,7 +28,7 @@ import UserNotifications
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     static let guardianDomain = "guardian-demo.guardian.auth0.com"
-    static var enrollment: Enrollment? = nil
+    static var enrollment: EnrolledDevice? = nil
     static var pushToken: String? = nil
 
     var window: UIWindow?

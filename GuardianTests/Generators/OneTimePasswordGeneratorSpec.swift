@@ -29,12 +29,8 @@ class OneTimePasswordGeneratorSpec: QuickSpec {
     override func spec() {
         describe("totp") {
 
-            var period = 30
-            let digits = 8
-
-            beforeEach {
-                period = 30
-            }
+            let period = 30
+            let digits = 6
 
             // Test vector from RFC 6238 https://tools.ietf.org/html/rfc6238#appendix-B
             describe("new(time:, period:)") {
@@ -50,23 +46,27 @@ class OneTimePasswordGeneratorSpec: QuickSpec {
 
                     beforeEach {
                         let algorithm = data["alg"] as! HMACAlgorithm
-                        otp = try! Guardian.totp(base32Secret: base32Secret, algorithm: algorithm, digits: digits)
+                        otp = try! Guardian.totp(base32Secret: base32Secret, algorithm: algorithm, digits: 8, period: period)
                     }
 
                     it("should return code '\(code)' for counter '\(counter)'") {
-                        expect(otp.new(time: TimeInterval(counter), period: period)).to(equal(code))
+                        expect(otp.stringCode(time: TimeInterval(counter))).to(equal(code))
                     }
                 }
 
                 let base32Secret = "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ"
-                let otp = try! Guardian.totp(base32Secret: base32Secret, algorithm: .sha1)
+                let otp = try! Guardian.totp(base32Secret: base32Secret, algorithm: .sha1, digits: digits, period: period)
 
                 it("should default to 30 sec period") {
-                    expect(otp.new(time: 49)).to(equal("287082"))
+                    expect(otp.stringCode(time: 49)).to(equal("287082"))
                 }
 
-                it("should default to current date") {
-                    expect(otp.new()).toNot(beNil())
+                it("should have number of digits") {
+                    expect(otp.stringCode()).to(haveCount(digits))
+                }
+
+                it("should generate the same string and int code for the same time") {
+                    expect(otp.stringCode(time: 49)).to(equal(otp.code(time: 49).description)) // Picked time that generates a number with 6 digits and no 0 prefix in string
                 }
 
                 context("sha1") {
@@ -112,22 +112,21 @@ class OneTimePasswordGeneratorSpec: QuickSpec {
                     let data = context()
                     let code = data["code"] as! String
                     let counter = data["counter"] as! Int
-                    let keyString = data["key"] as! String
+                    let key = data["key"] as! String
                     var otp: HOTP!
 
                     beforeEach {
                         let algorithm = data["alg"] as! HMACAlgorithm
-                        let key = keyString.data(using: .utf8)!
-                        otp = try! Guardian.hotp(secret: key, algorithm: algorithm, digits: 6)
+                        otp = try! Guardian.hotp(base32Secret: key, algorithm: algorithm, digits: 6)
                     }
 
                     it("should return code '\(code)' for counter '\(counter)'") {
-                        expect(otp.new(counter: counter)).to(equal(code))
+                        expect(otp.stringCode(counter: counter)).to(equal(code))
                     }
                 }
 
                 context("sha1") {
-                    let key = "12345678901234567890"
+                    let key = "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ" // Base32.encode("12345678901234567890")
                     let alg = HMACAlgorithm.sha1
                     itBehavesLike(validTOTP) { ["counter": 0, "code": "755224", "alg": alg, "key": key] }
                     itBehavesLike(validTOTP) { ["counter": 1, "code": "287082", "alg": alg, "key": key] }

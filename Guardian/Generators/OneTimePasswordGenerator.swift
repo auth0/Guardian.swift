@@ -23,30 +23,39 @@
 import Foundation
 
 public protocol TOTP {
-    func new(time: TimeInterval, period: Int) -> String
+    func stringCode(time: TimeInterval) -> String
+    func code(time: TimeInterval) -> Int
 }
 
 extension TOTP {
-    public func new(time: TimeInterval = Date().timeIntervalSince1970, period: Int = 30) -> String {
-        return self.new(time: time, period: period)
+    public func stringCode() -> String {
+        return self.stringCode(time: Date().timeIntervalSince1970)
+    }
+
+    public func code() -> Int {
+        return self.code(time: Date().timeIntervalSince1970)
     }
 }
 
 public protocol HOTP {
-    func new(counter: Int) -> String
+    func stringCode(counter: Int) -> String
+    func code(counter: Int) -> Int
 }
 
-public func totp(base32Secret: String, algorithm: HMACAlgorithm, digits: Int = 6) throws -> TOTP {
-    guard let secret = Base32.decode(string: base32Secret) else { throw GuardianError.invalidBase32Secret }
-    return try totp(secret: secret, algorithm: algorithm, digits: digits)
+public func totp(base32Secret: String, algorithm: HMACAlgorithm, digits: Int = 6, period: Int = 30) throws -> TOTP {
+    return try totp(parameters: OTPParameters(base32Secret: base32Secret, algorithm: algorithm, digits: digits, period: period))
 }
 
-public func totp(secret: Data, algorithm: HMACAlgorithm, digits: Int = 6) throws -> TOTP {
-    return try OneTimePasswordGenerator(secret: secret, algorithm: algorithm, digits: digits)
+public func totp(parameters: OTPParameters) throws -> TOTP {
+    return try OneTimePasswordGenerator(parameters: parameters)
 }
 
-public func hotp(secret: Data, algorithm: HMACAlgorithm, digits: Int = 6) throws -> HOTP {
-    return try OneTimePasswordGenerator(secret: secret, algorithm: algorithm, digits: digits)
+public func hotp(base32Secret: String, algorithm: HMACAlgorithm, digits: Int = 6) throws -> HOTP {
+    return try hotp(parameters: OTPParameters(base32Secret: base32Secret, algorithm: algorithm, digits: digits))
+}
+
+public func hotp(parameters: OTPParameters) throws -> HOTP {
+    return try OneTimePasswordGenerator(parameters: parameters)
 }
 
 public enum HMACAlgorithm: String {
@@ -60,15 +69,16 @@ public enum HMACAlgorithm: String {
 }
 
 struct OneTimePasswordGenerator: TOTP, HOTP {
-    let digits: Int
+    let parameters: OTPParameters
     let hmac: A0HMAC
 
-    init(secret: Data, algorithm: HMACAlgorithm, digits: Int) throws {
-        self.hmac = algorithm.hmac(secret: secret)
-        self.digits = digits
+    init(parameters: OTPParameters) throws {
+        self.parameters = parameters
+        guard let secret = Base32.decode(string: parameters.base32Secret) else { throw GuardianError.invalidBase32Secret }
+        self.hmac = parameters.algorithm.hmac(secret: secret)
     }
 
-    func new(counter: Int) -> String {
+    func code(counter: Int) -> Int {
         var c = UInt64(counter).bigEndian
         let buffer = Data(bytes: &c, count: MemoryLayout<UInt64>.size);
         let digestData = hmac.sign(buffer)
@@ -79,15 +89,34 @@ struct OneTimePasswordGenerator: TOTP, HOTP {
             let value = start.withMemoryRebound(to: UInt32.self, capacity: 1) { $0 }
             var hash = UInt32(bigEndian: value.pointee)
             hash &= 0x7fffffff
-            hash = hash % UInt32(pow(10, Float(digits)))
+            hash = hash % UInt32(pow(10, Float(self.parameters.digits)))
             return hash
         }
 
-        return String(format: "%0\(digits)d", Int(hash))
+        return Int(hash)
     }
 
-    func new(time: TimeInterval, period: Int) -> String {
-        let steps = time / Double(period)
-        return self.new(counter: Int(steps))
+    func stringCode(counter: Int) -> String {
+        let code = self.code(counter: counter)
+        return format(code: code, digits: self.parameters.digits)
+    }
+
+    func code(time: TimeInterval) -> Int {
+        let steps = timeSteps(from: time, period: self.parameters.period)
+        return self.code(counter: steps)
+    }
+
+    func stringCode(time: TimeInterval) -> String {
+        let steps = timeSteps(from: time, period: self.parameters.period)
+        let code = self.code(counter: steps)
+        return format(code: code, digits: self.parameters.digits)
+    }
+
+    private func timeSteps(from time: TimeInterval, period: Int) -> Int {
+        return Int(time / Double(self.parameters.period))
+    }
+
+    private func format(code: Int, digits: Int) -> String {
+        return String(format: "%0\(digits)d", code)
     }
 }

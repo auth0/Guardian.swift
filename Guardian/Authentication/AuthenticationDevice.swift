@@ -24,5 +24,5 @@ import Foundation
 
 public protocol AuthenticationDevice {
     var signingKey: SigningKey { get }
-    var deviceIdentifier: String { get }
+    var localIdentifier: String { get }
 }

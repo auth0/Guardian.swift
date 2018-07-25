@@ -228,7 +228,7 @@ class APIClientSpec: QuickSpec {
                 waitUntil(timeout: Timeout) { done in
                     client
                         .device(forEnrollmentId: ValidEnrollmentId, token: ValidEnrollmentToken)
-                        .update(deviceIdentifier: ValidDeviceIdentifier, name: ValidDeviceName, notificationToken: ValidNotificationToken)
+                        .update(localIdentifier: ValidDeviceIdentifier, name: ValidDeviceName, notificationToken: ValidNotificationToken)
                         .start { result in
                             expect(result).to(haveEnrollment(withId: ValidEnrollmentId, deviceIdentifier: ValidDeviceIdentifier, deviceName: ValidDeviceName, notificationService: ValidNotificationService, notificationToken: ValidNotificationToken))
                             done()
@@ -240,7 +240,7 @@ class APIClientSpec: QuickSpec {
                 waitUntil(timeout: Timeout) { done in
                     client
                         .device(forEnrollmentId: "someInvalidEnrollmentId", token: ValidEnrollmentToken)
-                        .update(deviceIdentifier: "someDeviceIdentifier", name: "someName", notificationToken: "someNotificationToken")
+                        .update(localIdentifier: "someDeviceIdentifier", name: "someName", notificationToken: "someNotificationToken")
                         .start { result in
                             expect(result).to(haveGuardianError(withErrorCode: "enrollment_not_found"))
                             done()
@@ -252,7 +252,7 @@ class APIClientSpec: QuickSpec {
                 waitUntil(timeout: Timeout) { done in
                     client
                         .device(forEnrollmentId: ValidEnrollmentId, token: "someInvalidEnrollmentToken")
-                        .update(deviceIdentifier: "someDeviceIdentifier", name: "someName", notificationToken: "someNotificationToken")
+                        .update(localIdentifier: "someDeviceIdentifier", name: "someName", notificationToken: "someNotificationToken")
                         .start { result in
                             expect(result).to(haveGuardianError(withErrorCode: "invalid_token"))
                             done()
