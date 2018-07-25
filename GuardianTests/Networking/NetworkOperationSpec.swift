@@ -30,11 +30,11 @@ class NetworkOperationSpec: QuickSpec {
 
     override func spec() {
 
-        fdescribe("init(method:, url:, headers:, body:)") {
+        func new(method: HTTPMethod = .get, url: URL = url, headers: [String: String] = [:], body: [String: String]? = nil) -> NetworkOperation<[String: String], String> {
+            return try! NetworkOperation(method: method, url: url, headers: headers, body: body)
+        }
 
-            func new(method: HTTPMethod = .get, url: URL = url, headers: [String: String] = [:], body: [String: String]? = nil) -> NetworkOperation<[String: String], String> {
-                return try! NetworkOperation(method: method, url: url, headers: headers, body: body)
-            }
+        describe("init(method:, url:, headers:, body:)") {
 
             it("should create with mandatory only parameters") {
                 expect {
@@ -111,5 +111,20 @@ class NetworkOperationSpec: QuickSpec {
                 expect(new(body: body).request.httpBody).to(equal(json))
             }
         }
+
+        describe("withURLSession()") {
+
+            it("should have a session by default") {
+                expect(new().session).toNot(beNil())
+            }
+
+            it("should allow to override URLSession") {
+                let session = URLSession.shared
+                expect(new().withURLSession(session).session).to(equal(session))
+            }
+
+        }
+
+        
     }
 }

@@ -22,6 +22,15 @@
 
 import Foundation
 
+/// Default URLSession used to send requests to Guardian API.
+private let privateSession: URLSession =  {
+    let config = URLSessionConfiguration.ephemeral
+    config.requestCachePolicy = .reloadIgnoringLocalCacheData
+    config.urlCache = nil
+
+    return URLSession.init(configuration: config)
+}()
+
 func defaultHeaders(hasBody: Bool) throws -> [String: String] {
     let info = Bundle(for: _BundleGrapple.classForCoder()).infoDictionary ?? [:]
     let clientInfo = ClientInfo(info: info)
@@ -41,6 +50,7 @@ public struct NetworkOperation<B: Encodable, T: Decodable> {
 
     let request: URLRequest
     let body: B?
+    var session: URLSession
 
     init(method: HTTPMethod, url: URL, headers: [String: String] = [:], body: B? = nil) throws {
         var request = URLRequest(url: url)
@@ -52,8 +62,17 @@ public struct NetworkOperation<B: Encodable, T: Decodable> {
         if let body = body {
             request.httpBody = try encode(body: body)
         }
+
+
         self.body = body
         self.request = request
+        self.session = privateSession
+    }
+
+    func withURLSession(_ session: URLSession) -> NetworkOperation<B, T> {
+        var newSelf = self
+        newSelf.session = session
+        return newSelf
     }
 
     /**
@@ -62,7 +81,7 @@ public struct NetworkOperation<B: Encodable, T: Decodable> {
      - parameter callback: the termination callback, where the result is received
      */
     public func start(callback: @escaping (Result<T>) -> ()) {
-        
+
     }
 }
 
