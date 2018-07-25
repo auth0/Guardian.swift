@@ -85,6 +85,8 @@
 		5FAE6727210250D000F149A3 /* DataRSAPrivateKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FAE6726210250D000F149A3 /* DataRSAPrivateKey.swift */; };
 		5FAE6729210250E300F149A3 /* AsymmetricPublicKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FAE6728210250E300F149A3 /* AsymmetricPublicKey.swift */; };
 		5FB4ECBC20C9A5050050B275 /* Hooks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FB4ECBB20C9A5050050B275 /* Hooks.swift */; };
+		5FF42BA521091AD10082459F /* NetworkOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FF42BA421091AD10082459F /* NetworkOperation.swift */; };
+		5FF42BA821091F150082459F /* NetworkOperationSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FF42BA721091F150082459F /* NetworkOperationSpec.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -223,6 +225,8 @@
 		5FAE6726210250D000F149A3 /* DataRSAPrivateKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataRSAPrivateKey.swift; sourceTree = "<group>"; };
 		5FAE6728210250E300F149A3 /* AsymmetricPublicKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsymmetricPublicKey.swift; sourceTree = "<group>"; };
 		5FB4ECBB20C9A5050050B275 /* Hooks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Hooks.swift; sourceTree = "<group>"; };
+		5FF42BA421091AD10082459F /* NetworkOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkOperation.swift; sourceTree = "<group>"; };
+		5FF42BA721091F150082459F /* NetworkOperationSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkOperationSpec.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -378,6 +382,7 @@
 				2374A9EE1D672ABD00737F2E /* Result.swift */,
 				23AD869E1DEE10B500051F41 /* FailedRequest.swift */,
 				5FB4ECBB20C9A5050050B275 /* Hooks.swift */,
+				5FF42BA421091AD10082459F /* NetworkOperation.swift */,
 			);
 			path = Networking;
 			sourceTree = "<group>";
@@ -424,6 +429,7 @@
 		5F2037DB1D5E1E3E0005D2E2 /* GuardianTests */ = {
 			isa = PBXGroup;
 			children = (
+				5FF42BA621091EF20082459F /* Networking */,
 				5F1604F92107AEE100B0F25B /* Generators */,
 				5F1604DE21066A4F00B0F25B /* Data */,
 				5F1604D1210661A300B0F25B /* Keys */,
@@ -489,6 +495,14 @@
 				5F61338E210128C800BCC182 /* AuthenticationLocation.swift */,
 			);
 			path = Notification;
+			sourceTree = "<group>";
+		};
+		5FF42BA621091EF20082459F /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+				5FF42BA721091F150082459F /* NetworkOperationSpec.swift */,
+			);
+			path = Networking;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -682,6 +696,7 @@
 				2374A9ED1D672A8D00737F2E /* Requestable.swift in Sources */,
 				237246751D7DC63B00CCF635 /* Guardian.swift in Sources */,
 				2377A6411D806D9900D6FB04 /* DeviceAPI.swift in Sources */,
+				5FF42BA521091AD10082459F /* NetworkOperation.swift in Sources */,
 				23B7A0471DD4E7820038124A /* A0RSA.m in Sources */,
 				2374A9E61D670F5900737F2E /* Request.swift in Sources */,
 				5F1DB45B1DA4649600264437 /* Authentication.swift in Sources */,
@@ -728,6 +743,7 @@
 				5F1604C92106493600B0F25B /* SigningKeyStorageSpec.swift in Sources */,
 				5F7969341DDABDDE006AC7BA /* AuthenticationSpec.swift in Sources */,
 				2374A9F31D672E4F00737F2E /* Responses.swift in Sources */,
+				5FF42BA821091F150082459F /* NetworkOperationSpec.swift in Sources */,
 				233F75291D93076600B8C15C /* NotificationSpec.swift in Sources */,
 				5F7969371DDAC074006AC7BA /* JWTSpec.swift in Sources */,
 				2374A9EB1D67175200737F2E /* APIClientSpec.swift in Sources */,
