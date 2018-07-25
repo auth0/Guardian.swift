@@ -61,26 +61,11 @@ public struct Enrollment: AuthenticationDevice {
     public let signingKey: SigningKey
 
     /**
-     The TOTP secret, Base32 encoded
+     The TOTP parameters associated to the device
 
      - important: Might be nil if TOTP mode is disabled
      */
-    public let base32Secret: String?
-
-    /**
-     The TOTP algorithm
-     */
-    public let algorithm: String
-
-    /**
-     The TOTP digits, i.e. the code length
-     */
-    public let digits: Int
-
-    /**
-     The TOTP period, in seconds
-     */
-    public let period: Int
+    public let totp: TOTPParameters?
 
     /**
      The identifier of the physical device, for debug/tracking purposes
@@ -108,7 +93,7 @@ public struct Enrollment: AuthenticationDevice {
      - parameter deviceToken:       the token used to authenticate when updating
                                     the device data or deleting the enrollment
      - parameter notificationToken: the APNs token for this physical device
-     - parameter signingKey:        the private key used to sign the requests
+     - parameter signingKey:        the private key used to sign Guardian AuthN requests
      - parameter base32Secret:      the TOTP secret, Base32 encoded
      - parameter algorithm:         the TOTP algorithm
      - parameter digits:            the TOTP digits, i.e. the code length
@@ -120,21 +105,39 @@ public struct Enrollment: AuthenticationDevice {
          deviceToken: String,
          notificationToken: String,
          signingKey: SigningKey,
-         base32Secret: String?,
-         algorithm: String? = nil,
-         digits: Int? = nil,
-         period: Int? = nil
+         totp: TOTPParameters? = nil
         ) {
         self.id = id
         self.userId = userId
         self.deviceToken = deviceToken
         self.notificationToken = notificationToken
         self.signingKey = signingKey
-        self.base32Secret = base32Secret
-        self.algorithm = algorithm ?? "sha1"
-        self.digits = digits ?? 6
-        self.period = period ?? 30
+        self.totp = totp
     }
+}
+
+/// Parameters for TOTP codes
+public struct TOTPParameters {
+    /// The TOTP secret, Base32 encoded
+    public let base32Secret: String
+    /// The TOTP algorithm
+    public let algorithm: HMACAlgorithm
+    /// The TOTP digits, i.e. the code length. Default is 6 digits
+    public let digits: Int
+    /// The TOTP period, in seconds. Default is 30 seconds
+    public let period: Int
+
+    public init(base32Secret: String, algorithm: HMACAlgorithm = .sha1, digits: Int =  6, period: Int = 30) {
+        self.base32Secret = base32Secret
+        self.algorithm = algorithm
+        self.digits = digits
+        self.period = period
+    }
+
+    public init(base32Secret: String, algorithm: HMACAlgorithm?, digits: Int?, period: Int?) {
+        self.init(base32Secret: base32Secret, algorithm: algorithm ?? .sha1, digits: digits ?? 6, period: period ?? 30)
+    }
+
 }
 
 extension Enrollment {

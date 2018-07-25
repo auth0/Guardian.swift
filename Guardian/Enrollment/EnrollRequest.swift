@@ -104,13 +104,21 @@ public class EnrollRequest: Requestable {
                             return callback(.failure(cause: GuardianError.invalidResponse))
                     }
 
-                    let totpData = payload["totp"] as? [String: Any]
-                    let totpSecret = totpData?["secret"] as? String
-                    let totpAlgorithm = totpData?["algorithm"] as? String
-                    let totpPeriod = totpData?["period"] as? Int
-                    let totpDigits = totpData?["digits"] as? Int
+                    var totp: TOTPParameters? = nil
+                    if let totpData = payload["totp"] as? [String: Any], let totpSecret = totpData["secret"] as? String {
+                        let algorithm: HMACAlgorithm
+                        if let totpAlgorithm = totpData["algorithm"] as? String {
+                            guard let hmac = HMACAlgorithm(rawValue: totpAlgorithm) else { return callback(.failure(cause: GuardianError.invalidOTPAlgorithm)) }
+                            algorithm = hmac
+                        } else {
+                            algorithm = .sha1
+                        }
+                        let totpPeriod = totpData["period"] as? Int
+                        let totpDigits = totpData["digits"] as? Int
+                        totp = TOTPParameters(base32Secret: totpSecret, algorithm: algorithm, digits: totpDigits, period: totpPeriod)
+                    }
 
-                    let enrollment = Enrollment(id: id, userId: userId, deviceToken: token, notificationToken: self.notificationToken, signingKey: self.signingKey, base32Secret: totpSecret, algorithm: totpAlgorithm, digits: totpDigits, period: totpPeriod)
+                    let enrollment = Enrollment(id: id, userId: userId, deviceToken: token, notificationToken: self.notificationToken, signingKey: self.signingKey, totp: totp)
                     callback(.success(payload: enrollment))
                 }
         }

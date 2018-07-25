@@ -186,7 +186,7 @@ func haveEnrollment(withId enrollmentId: String?, deviceIdentifier: String?, dev
     }
 }
 
-func haveEnrollment(withBaseUrl baseURL: URL, enrollmentId: String, deviceToken: String, notificationToken: String, issuer: String, userId: String, signingKey: SigningKey, base32Secret: String, algorithm: String, digits: Int, period: Int) -> Predicate<Result<Enrollment>> {
+func haveEnrollment(withBaseUrl baseURL: URL, enrollmentId: String, deviceToken: String, notificationToken: String, issuer: String, userId: String, signingKey: SigningKey, base32Secret: String, algorithm: HMACAlgorithm, digits: Int, period: Int) -> Predicate<Result<Enrollment>> {
     return Predicate.define("be an enrollment with") { expression, msg -> PredicateResult in
         let message = msg.appended(details: " <baseUrl: \(baseURL)>" +
             " <id: \(enrollmentId)>" +
@@ -205,10 +205,10 @@ func haveEnrollment(withBaseUrl baseURL: URL, enrollmentId: String, deviceToken:
                 && result.deviceToken == deviceToken
                 && result.notificationToken == notificationToken
                 && result.signingKey.secKey == signingKey.secKey
-                && result.base32Secret == base32Secret
-                && result.algorithm == algorithm
-                && result.digits == digits
-                && result.period == period
+                && result.totp?.base32Secret == base32Secret
+                && result.totp?.algorithm == algorithm
+                && result.totp?.digits == digits
+                && result.totp?.period == period
             return PredicateResult(bool: status, message: message)
         }
         return PredicateResult(status: .fail, message: message)

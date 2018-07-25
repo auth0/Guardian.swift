@@ -133,7 +133,7 @@ class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
             let haveEnrollment = AppDelegate.enrollment != nil
             if let enrollment = AppDelegate.enrollment {
                 self.enrollmentLabel.text = enrollment.id
-                self.secretLabel.text = enrollment.base32Secret
+                self.secretLabel.text = enrollment.totp?.base32Secret
             }
             self.enrollButton.isHidden = haveEnrollment
             self.unenrollButton.isHidden = !haveEnrollment

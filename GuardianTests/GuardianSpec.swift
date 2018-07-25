@@ -60,7 +60,7 @@ class GuardianSpec: QuickSpec {
 
         describe("authentication(forDomain:, session:)") {
 
-            let enrollment = Enrollment(id: "ID", userId: "USER_ID", deviceToken: "TOKEN", notificationToken: "TOKEN", signingKey: try! DataRSAPrivateKey.new(), base32Secret: "SECRET")
+            let enrollment = Enrollment(id: "ID", userId: "USER_ID", deviceToken: "TOKEN", notificationToken: "TOKEN", signingKey: try! DataRSAPrivateKey.new())
 
             it("should return authentication with domain only") {
                 expect(Guardian.authentication(forDomain: "samples.guardian.auth0.com", device: enrollment)).toNot(beNil())
@@ -73,7 +73,7 @@ class GuardianSpec: QuickSpec {
 
         describe("authentication(url:)") {
 
-            let enrollment = Enrollment(id: "ID", userId: "USER_ID", deviceToken: "TOKEN", notificationToken: "TOKEN", signingKey: try! DataRSAPrivateKey.new(), base32Secret: "SECRET")
+            let enrollment = Enrollment(id: "ID", userId: "USER_ID", deviceToken: "TOKEN", notificationToken: "TOKEN", signingKey: try! DataRSAPrivateKey.new())
 
             it("should return authentication with http url") {
                 expect(Guardian.authentication(url: URL(string: "https://samples.guardian.auth0.com")!, device: enrollment)).toNot(beNil())
@@ -327,6 +327,6 @@ struct NoJWKKey: VerificationKey {
     let jwk: [String : Any]? = nil
 }
 
-func enrollmentUri(withTransactionId transactionId: String, baseUrl: String, enrollmentId: String, issuer: String, user: String, secret: String, algorithm: String, digits: Int, period: Int) -> String {
-    return "otpauth://totp/\(issuer):\(user)?secret=\(secret)&issuer=\(issuer)&enrollment_tx_id=\(transactionId)&id=\(enrollmentId)&algorithm=\(algorithm)&digits=\(digits)&period=\(period)&base_url=\(baseUrl)"
+func enrollmentUri(withTransactionId transactionId: String, baseUrl: String, enrollmentId: String, issuer: String, user: String, secret: String, algorithm: HMACAlgorithm, digits: Int, period: Int) -> String {
+    return "otpauth://totp/\(issuer):\(user)?secret=\(secret)&issuer=\(issuer)&enrollment_tx_id=\(transactionId)&id=\(enrollmentId)&algorithm=\(algorithm.rawValue)&digits=\(digits)&period=\(period)&base_url=\(baseUrl)"
 }
