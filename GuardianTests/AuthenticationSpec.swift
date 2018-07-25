@@ -38,7 +38,7 @@ class AuthenticationSpec: QuickSpec {
                 return OHHTTPStubsResponse.init(error: NSError(domain: "com.auth0", code: -99999, userInfo: nil))
                 }.name = "YOU SHALL NOT PASS!"
             signingKey = try! DataRSAPrivateKey.new()
-            device = MockAuthenticationDevice(deviceIdentifier: UIDevice.current.identifierForVendor!.uuidString, signingKey: signingKey)
+            device = MockAuthenticationDevice(localIdentifier: UIDevice.current.identifierForVendor!.uuidString, signingKey: signingKey)
         }
 
         afterEach {
@@ -98,7 +98,7 @@ class AuthenticationSpec: QuickSpec {
 
             it("should fail when enrollment signing key is not correct") {
                 let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, challenge: ValidNotificationChallenge, startedAt: Date(), source: nil, location: nil)
-                let anotherDevice = MockAuthenticationDevice(deviceIdentifier: UUID().uuidString, signingKey: try! DataRSAPrivateKey.new())
+                let anotherDevice = MockAuthenticationDevice(localIdentifier: UUID().uuidString, signingKey: try! DataRSAPrivateKey.new())
                 waitUntil(timeout: Timeout) { done in
                     Guardian.authentication(forDomain: Domain, device: anotherDevice)
                         .allow(notification: notification)
@@ -183,7 +183,7 @@ class AuthenticationSpec: QuickSpec {
 
             it("should fail when enrollment signing key is not correct") {
                 let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, challenge: ValidNotificationChallenge, startedAt: Date(), source: nil, location: nil)
-                let anotherDevice = MockAuthenticationDevice(deviceIdentifier: UUID().uuidString, signingKey: try! DataRSAPrivateKey.new())
+                let anotherDevice = MockAuthenticationDevice(localIdentifier: UUID().uuidString, signingKey: try! DataRSAPrivateKey.new())
                 waitUntil(timeout: Timeout) { done in
                     Guardian.authentication(forDomain: Domain, device: anotherDevice)
                         .reject(notification: notification, withReason: RejectReason)
@@ -303,7 +303,7 @@ class AuthenticationSpec: QuickSpec {
 
                 it("should fail when enrollment signing key is not correct") {
                     let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, challenge: ValidNotificationChallenge, startedAt: Date(), source: nil, location: nil)
-                    let anotherDevice = MockAuthenticationDevice(deviceIdentifier: UUID().uuidString, signingKey: try! DataRSAPrivateKey.new())
+                    let anotherDevice = MockAuthenticationDevice(localIdentifier: UUID().uuidString, signingKey: try! DataRSAPrivateKey.new())
                     waitUntil(timeout: Timeout) { done in
                         Guardian.authentication(url: ValidURL, device: anotherDevice)
                             .allow(notification: notification)
@@ -388,7 +388,7 @@ class AuthenticationSpec: QuickSpec {
 
                 it("should fail when enrollment signing key is not correct") {
                     let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, challenge: ValidNotificationChallenge, startedAt: Date(), source: nil, location: nil)
-                    let anotherDevice = MockAuthenticationDevice(deviceIdentifier: UUID().uuidString, signingKey: try! DataRSAPrivateKey.new())
+                    let anotherDevice = MockAuthenticationDevice(localIdentifier: UUID().uuidString, signingKey: try! DataRSAPrivateKey.new())
                     waitUntil(timeout: Timeout) { done in
                         Guardian.authentication(url: ValidURL, device: anotherDevice)
                             .reject(notification: notification, withReason: RejectReason)
@@ -458,7 +458,7 @@ class AuthenticationSpec: QuickSpec {
 }
 
 struct MockAuthenticationDevice: AuthenticationDevice {
-    let deviceIdentifier: String
+    let localIdentifier: String
     let signingKey: SigningKey
 
     var verificationKey: AsymmetricPublicKey {
@@ -476,7 +476,7 @@ func checkJWT(request: URLRequest, accepted: Bool, reason: String? = nil, challe
         let sub = claims["sub"] as? String,
         sub == challenge,
         let iss = claims["iss"] as? String,
-        iss == Enrollment.defaultDeviceIdentifier,
+        iss == EnrolledDevice.vendorIdentifier,
         let iat = claims["iat"] as? Int,
         iat <= currentTime,
         iat >= currentTime - 5,

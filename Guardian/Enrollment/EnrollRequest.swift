@@ -30,7 +30,7 @@ import Foundation
  */
 public class EnrollRequest: Requestable {
 
-    typealias T = Enrollment
+    typealias T = EnrolledDevice
 
     private let api: API
     private let enrollmentTicket: String?
@@ -57,7 +57,7 @@ public class EnrollRequest: Requestable {
             return
         }
 
-        self.request = api.enroll(withTicket: ticket, identifier: Enrollment.defaultDeviceIdentifier, name: Enrollment.defaultDeviceName, notificationToken: notificationToken, verificationKey: self.verificationKey)
+        self.request = api.enroll(withTicket: ticket, identifier: EnrolledDevice.vendorIdentifier, name: EnrolledDevice.deviceName, notificationToken: notificationToken, verificationKey: self.verificationKey)
     }
 
     /// Registers hooks to be called on specific events:
@@ -89,7 +89,7 @@ public class EnrollRequest: Requestable {
      - parameter callback: the termination callback, where the result is
      received
      */
-    public func start(callback: @escaping (Result<Enrollment>) -> ()) {
+    public func start(callback: @escaping (Result<EnrolledDevice>) -> ()) {
         self.request.start { result in
                 switch result {
                 case .failure(let cause):
@@ -118,7 +118,7 @@ public class EnrollRequest: Requestable {
                         totp = OTPParameters(base32Secret: totpSecret, algorithm: algorithm, digits: totpDigits, period: totpPeriod)
                     }
 
-                    let enrollment = Enrollment(id: id, userId: userId, deviceToken: token, notificationToken: self.notificationToken, signingKey: self.signingKey, totp: totp)
+                    let enrollment = EnrolledDevice(id: id, userId: userId, deviceToken: token, notificationToken: self.notificationToken, signingKey: self.signingKey, totp: totp)
                     callback(.success(payload: enrollment))
                 }
         }

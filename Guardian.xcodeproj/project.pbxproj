@@ -36,7 +36,7 @@
 		23B7A0471DD4E7820038124A /* A0RSA.m in Sources */ = {isa = PBXBuildFile; fileRef = 23B7A0461DD4E7820038124A /* A0RSA.m */; };
 		23B7A0491DD4E8300038124A /* A0RSA.h in Headers */ = {isa = PBXBuildFile; fileRef = 23B7A0481DD4E8300038124A /* A0RSA.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		23C67AEC1D81D6A400A38A2E /* MockNSURLSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23C67AEB1D81D6A400A38A2E /* MockNSURLSession.swift */; };
-		23C67AEE1D81EF5300A38A2E /* Enrollment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23C67AED1D81EF5300A38A2E /* Enrollment.swift */; };
+		23C67AEE1D81EF5300A38A2E /* EnrolledDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23C67AED1D81EF5300A38A2E /* EnrolledDevice.swift */; };
 		23D3E4401D91BEA200F3FDE2 /* Base32Spec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23D3E43F1D91BEA200F3FDE2 /* Base32Spec.swift */; };
 		23FE50831D949EC400407A1D /* Guardian.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F2037CD1D5E1E3E0005D2E2 /* Guardian.framework */; };
 		23FE50841D949EC400407A1D /* Guardian.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5F2037CD1D5E1E3E0005D2E2 /* Guardian.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -169,7 +169,7 @@
 		23B7A0461DD4E7820038124A /* A0RSA.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = A0RSA.m; sourceTree = "<group>"; };
 		23B7A0481DD4E8300038124A /* A0RSA.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = A0RSA.h; sourceTree = "<group>"; };
 		23C67AEB1D81D6A400A38A2E /* MockNSURLSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockNSURLSession.swift; sourceTree = "<group>"; };
-		23C67AED1D81EF5300A38A2E /* Enrollment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Enrollment.swift; sourceTree = "<group>"; };
+		23C67AED1D81EF5300A38A2E /* EnrolledDevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnrolledDevice.swift; sourceTree = "<group>"; };
 		23D3E43F1D91BEA200F3FDE2 /* Base32Spec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Base32Spec.swift; sourceTree = "<group>"; };
 		5F1604C221062BEA00B0F25B /* RSA+Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RSA+Utils.swift"; sourceTree = "<group>"; };
 		5F1604C4210636B500B0F25B /* ASNPublicKeyDecodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ASNPublicKeyDecodable.swift; sourceTree = "<group>"; };
@@ -352,7 +352,7 @@
 		5F1604FF2108D13A00B0F25B /* Enrollment */ = {
 			isa = PBXGroup;
 			children = (
-				23C67AED1D81EF5300A38A2E /* Enrollment.swift */,
+				23C67AED1D81EF5300A38A2E /* EnrolledDevice.swift */,
 				2356C82D1D88998A00B6C84A /* EnrollRequest.swift */,
 			);
 			path = Enrollment;
@@ -692,7 +692,7 @@
 				5F1604C321062BEA00B0F25B /* RSA+Utils.swift in Sources */,
 				5F61338D2101289E00BCC182 /* AuthenticationSource.swift in Sources */,
 				233F75271D92F27000B8C15C /* Notification.swift in Sources */,
-				23C67AEE1D81EF5300A38A2E /* Enrollment.swift in Sources */,
+				23C67AEE1D81EF5300A38A2E /* EnrolledDevice.swift in Sources */,
 				235B4B221DA3F51D00CEB5DC /* A0HMAC.m in Sources */,
 				5FB4ECBC20C9A5050050B275 /* Hooks.swift in Sources */,
 				5F1604C721063FA000B0F25B /* Keys+Generation.swift in Sources */,

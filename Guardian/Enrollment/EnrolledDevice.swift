@@ -1,4 +1,4 @@
-// Enrollment.swift
+// EnrolledDevice.swift
 //
 // Copyright (c) 2016 Auth0 (http://auth0.com)
 //
@@ -23,25 +23,25 @@
 import UIKit
 
 /**
- A Guardian Enrollment
+ A Guardian enrolled device
  
  - seealso: Guardian.enroll
  */
-public struct Enrollment: AuthenticationDevice {
+public struct EnrolledDevice: AuthenticationDevice {
 
     /**
-     The enrollment id
+     The enrolled device id from Guardian
      */
     public let id: String
 
     /**
-     The id of this enrollment's user
+     The id of the user associated to this device
      */
     public let userId: String
 
     /**
      The token used to authenticate when updating the device data or deleting 
-     the enrollment
+     it
      */
     public let deviceToken: String
 
@@ -56,7 +56,7 @@ public struct Enrollment: AuthenticationDevice {
 
     /**
      The private key used to sign the requests to allow/reject an authentication
-     request.
+     request for the associated user.
      */
     public let signingKey: SigningKey
 
@@ -70,28 +70,28 @@ public struct Enrollment: AuthenticationDevice {
     /**
      The identifier of the physical device, for debug/tracking purposes
      */
-    public var deviceIdentifier: String {
-        return Enrollment.defaultDeviceIdentifier
+    public var localIdentifier: String {
+        return EnrolledDevice.vendorIdentifier
     }
 
     /**
      The name to display whenever it is necessary to identify this specific 
-     enrollment. 
+     device.
 
      For example when the user has to choose where to send the push 
-     notification, or at the admin interface if the user wants to delete an 
-     enrollment from there
+     notification, or at the admin interface if the user wants to delete
+     an enrolled devicefrom there
      */
-    public var deviceName: String {
-        return Enrollment.defaultDeviceName
+    public var name: String {
+        return UIDevice.current.name
     }
 
     /**
-     Creates a new `Enrollment` instance.
+     Creates a new `EnrolledDevice` instance.
      
      - parameter id:                the enrollment id
      - parameter deviceToken:       the token used to authenticate when updating
-                                    the device data or deleting the enrollment
+                                    the device data or deleting it
      - parameter notificationToken: the APNs token for this physical device
      - parameter signingKey:        the private key used to sign Guardian AuthN requests
      - parameter totp:              the TOTP parameters for the enrollment or nil if its disabled
@@ -110,6 +110,14 @@ public struct Enrollment: AuthenticationDevice {
         self.notificationToken = notificationToken
         self.signingKey = signingKey
         self.totp = totp
+    }
+
+    static var vendorIdentifier: String {
+        return UIDevice.current.identifierForVendor!.uuidString
+    }
+
+    static var deviceName: String {
+        return UIDevice.current.name
     }
 }
 
@@ -135,15 +143,4 @@ public struct OTPParameters {
         self.init(base32Secret: base32Secret, algorithm: algorithm ?? .sha1, digits: digits ?? 6, period: period ?? 30)
     }
 
-}
-
-extension Enrollment {
-
-    static var defaultDeviceName: String {
-        return UIDevice.current.name
-    }
-
-    static var defaultDeviceIdentifier: String {
-        return UIDevice.current.identifierForVendor!.uuidString
-    }
 }

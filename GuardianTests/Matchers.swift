@@ -186,7 +186,7 @@ func haveEnrollment(withId enrollmentId: String?, deviceIdentifier: String?, dev
     }
 }
 
-func haveEnrollment(withBaseUrl baseURL: URL, enrollmentId: String, deviceToken: String, notificationToken: String, issuer: String, userId: String, signingKey: SigningKey, base32Secret: String, algorithm: HMACAlgorithm, digits: Int, period: Int) -> Predicate<Result<Enrollment>> {
+func haveEnrollment(withBaseUrl baseURL: URL, enrollmentId: String, deviceToken: String, notificationToken: String, issuer: String, userId: String, signingKey: SigningKey, base32Secret: String, algorithm: HMACAlgorithm, digits: Int, period: Int) -> Predicate<Result<EnrolledDevice>> {
     return Predicate.define("be an enrollment with") { expression, msg -> PredicateResult in
         let message = msg.appended(details: " <baseUrl: \(baseURL)>" +
             " <id: \(enrollmentId)>" +
