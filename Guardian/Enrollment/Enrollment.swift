@@ -65,7 +65,7 @@ public struct Enrollment: AuthenticationDevice {
 
      - important: Might be nil if TOTP mode is disabled
      */
-    public let totp: TOTPParameters?
+    public let totp: OTPParameters?
 
     /**
      The identifier of the physical device, for debug/tracking purposes
@@ -94,10 +94,7 @@ public struct Enrollment: AuthenticationDevice {
                                     the device data or deleting the enrollment
      - parameter notificationToken: the APNs token for this physical device
      - parameter signingKey:        the private key used to sign Guardian AuthN requests
-     - parameter base32Secret:      the TOTP secret, Base32 encoded
-     - parameter algorithm:         the TOTP algorithm
-     - parameter digits:            the TOTP digits, i.e. the code length
-     - parameter period:            the TOTP period, in seconds
+     - parameter totp:              the TOTP parameters for the enrollment or nil if its disabled
      */
     public init(
          id: String,
@@ -105,7 +102,7 @@ public struct Enrollment: AuthenticationDevice {
          deviceToken: String,
          notificationToken: String,
          signingKey: SigningKey,
-         totp: TOTPParameters? = nil
+         totp: OTPParameters? = nil
         ) {
         self.id = id
         self.userId = userId
@@ -116,8 +113,8 @@ public struct Enrollment: AuthenticationDevice {
     }
 }
 
-/// Parameters for TOTP codes
-public struct TOTPParameters {
+/// Parameters for OTP codes
+public struct OTPParameters {
     /// The TOTP secret, Base32 encoded
     public let base32Secret: String
     /// The TOTP algorithm

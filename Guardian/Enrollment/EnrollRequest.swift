@@ -104,7 +104,7 @@ public class EnrollRequest: Requestable {
                             return callback(.failure(cause: GuardianError.invalidResponse))
                     }
 
-                    var totp: TOTPParameters? = nil
+                    var totp: OTPParameters? = nil
                     if let totpData = payload["totp"] as? [String: Any], let totpSecret = totpData["secret"] as? String {
                         let algorithm: HMACAlgorithm
                         if let totpAlgorithm = totpData["algorithm"] as? String {
@@ -115,7 +115,7 @@ public class EnrollRequest: Requestable {
                         }
                         let totpPeriod = totpData["period"] as? Int
                         let totpDigits = totpData["digits"] as? Int
-                        totp = TOTPParameters(base32Secret: totpSecret, algorithm: algorithm, digits: totpDigits, period: totpPeriod)
+                        totp = OTPParameters(base32Secret: totpSecret, algorithm: algorithm, digits: totpDigits, period: totpPeriod)
                     }
 
                     let enrollment = Enrollment(id: id, userId: userId, deviceToken: token, notificationToken: self.notificationToken, signingKey: self.signingKey, totp: totp)
