@@ -309,31 +309,7 @@
 			path = Generators;
 			sourceTree = "<group>";
 		};
-		5F1DB4561DA41BBF00264437 /* Networking */ = {
-			isa = PBXGroup;
-			children = (
-				2374A9E11D670F5900737F2E /* GuardianError.swift */,
-				2374A9EC1D672A8D00737F2E /* Requestable.swift */,
-				2374A9E21D670F5900737F2E /* Request.swift */,
-				2374A9EE1D672ABD00737F2E /* Result.swift */,
-				23AD869E1DEE10B500051F41 /* FailedRequest.swift */,
-				5FB4ECBB20C9A5050050B275 /* Hooks.swift */,
-			);
-			name = Networking;
-			sourceTree = "<group>";
-		};
-		5F1DB4571DA41BD100264437 /* API */ = {
-			isa = PBXGroup;
-			children = (
-				2377A6421D806DFA00D6FB04 /* API.swift */,
-				2374A9E01D670F5900737F2E /* APIClient.swift */,
-				2377A6401D806D9900D6FB04 /* DeviceAPI.swift */,
-				232A85D91D6BDFCA00048DF7 /* DeviceAPIClient.swift */,
-			);
-			name = API;
-			sourceTree = "<group>";
-		};
-		5F1DB4581DA431CF00264437 /* Utils */ = {
+		5F1604FC2108D0E800B0F25B /* Crypto */ = {
 			isa = PBXGroup;
 			children = (
 				235B4B251DA3F85A00CEB5DC /* A0HMAC.h */,
@@ -346,26 +322,64 @@
 				2331BFEA1DD5260D0047F1D4 /* JWT.swift */,
 				2331C0191DD5FC6F0047F1D4 /* Data+Base64URL.swift */,
 			);
-			name = Utils;
+			path = Crypto;
 			sourceTree = "<group>";
 		};
-		5F1DB4591DA4648300264437 /* Authentication */ = {
+		5F1604FD2108D0FE00B0F25B /* Keys */ = {
+			isa = PBXGroup;
+			children = (
+				5FAE672021024CDA00F149A3 /* Keys.swift */,
+				5FAE67242102509600F149A3 /* KeychainRSAPrivateKey.swift */,
+				5FAE6726210250D000F149A3 /* DataRSAPrivateKey.swift */,
+				5FAE6728210250E300F149A3 /* AsymmetricPublicKey.swift */,
+				5F1604C221062BEA00B0F25B /* RSA+Utils.swift */,
+				5F1604C4210636B500B0F25B /* ASNPublicKeyDecodable.swift */,
+				5F1604C621063FA000B0F25B /* Keys+Generation.swift */,
+			);
+			path = Keys;
+			sourceTree = "<group>";
+		};
+		5F1604FE2108D12000B0F25B /* Authentication */ = {
 			isa = PBXGroup;
 			children = (
 				5F613387210126FF00BCC182 /* Notification */,
 				5F1DB45A1DA4649600264437 /* Authentication.swift */,
 				5F1604F321068FCC00B0F25B /* AuthenticationDevice.swift */,
 			);
-			name = Authentication;
+			path = Authentication;
 			sourceTree = "<group>";
 		};
-		5F1DB47A1DA57AB300264437 /* Enrollment */ = {
+		5F1604FF2108D13A00B0F25B /* Enrollment */ = {
 			isa = PBXGroup;
 			children = (
 				23C67AED1D81EF5300A38A2E /* Enrollment.swift */,
 				2356C82D1D88998A00B6C84A /* EnrollRequest.swift */,
 			);
-			name = Enrollment;
+			path = Enrollment;
+			sourceTree = "<group>";
+		};
+		5F1605002108D14900B0F25B /* API */ = {
+			isa = PBXGroup;
+			children = (
+				2377A6421D806DFA00D6FB04 /* API.swift */,
+				2374A9E01D670F5900737F2E /* APIClient.swift */,
+				2377A6401D806D9900D6FB04 /* DeviceAPI.swift */,
+				232A85D91D6BDFCA00048DF7 /* DeviceAPIClient.swift */,
+			);
+			path = API;
+			sourceTree = "<group>";
+		};
+		5F1605012108D15600B0F25B /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+				2374A9E11D670F5900737F2E /* GuardianError.swift */,
+				2374A9EC1D672A8D00737F2E /* Requestable.swift */,
+				2374A9E21D670F5900737F2E /* Request.swift */,
+				2374A9EE1D672ABD00737F2E /* Result.swift */,
+				23AD869E1DEE10B500051F41 /* FailedRequest.swift */,
+				5FB4ECBB20C9A5050050B275 /* Hooks.swift */,
+			);
+			path = Networking;
 			sourceTree = "<group>";
 		};
 		5F2037C31D5E1E3E0005D2E2 = {
@@ -393,16 +407,16 @@
 		5F2037CF1D5E1E3E0005D2E2 /* Guardian */ = {
 			isa = PBXGroup;
 			children = (
+				5F1605002108D14900B0F25B /* API */,
+				5F1604FF2108D13A00B0F25B /* Enrollment */,
+				5F1604FE2108D12000B0F25B /* Authentication */,
+				5F1604FD2108D0FE00B0F25B /* Keys */,
 				5F1604F52107A8E700B0F25B /* Generators */,
-				5FAE671F21024CBA00F149A3 /* Keys */,
-				5F1DB4591DA4648300264437 /* Authentication */,
-				5F1DB47A1DA57AB300264437 /* Enrollment */,
-				5F1DB4571DA41BD100264437 /* API */,
-				5F1DB4561DA41BBF00264437 /* Networking */,
+				5F1605012108D15600B0F25B /* Networking */,
+				5F1604FC2108D0E800B0F25B /* Crypto */,
 				5F2037D01D5E1E3E0005D2E2 /* Guardian.h */,
 				5F2037D21D5E1E3E0005D2E2 /* Info.plist */,
 				237246741D7DC63B00CCF635 /* Guardian.swift */,
-				5F1DB4581DA431CF00264437 /* Utils */,
 			);
 			path = Guardian;
 			sourceTree = "<group>";
@@ -475,20 +489,6 @@
 				5F61338E210128C800BCC182 /* AuthenticationLocation.swift */,
 			);
 			path = Notification;
-			sourceTree = "<group>";
-		};
-		5FAE671F21024CBA00F149A3 /* Keys */ = {
-			isa = PBXGroup;
-			children = (
-				5FAE672021024CDA00F149A3 /* Keys.swift */,
-				5FAE67242102509600F149A3 /* KeychainRSAPrivateKey.swift */,
-				5FAE6726210250D000F149A3 /* DataRSAPrivateKey.swift */,
-				5FAE6728210250E300F149A3 /* AsymmetricPublicKey.swift */,
-				5F1604C221062BEA00B0F25B /* RSA+Utils.swift */,
-				5F1604C4210636B500B0F25B /* ASNPublicKeyDecodable.swift */,
-				5F1604C621063FA000B0F25B /* Keys+Generation.swift */,
-			);
-			name = Keys;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
