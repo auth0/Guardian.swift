@@ -186,6 +186,14 @@ class NetworkOperationSpec: QuickSpec {
                 expect(request.result).toEventually(beFailure(with: error))
             }
 
+            it("should fail when response is not 2xx and show plain text message") {
+                let error = NetworkError(code: .notAuthorized, description: "Forbidden", statusCode: 403)
+                session.a0_response = http(statusCode: 403, headers: ["Content-Type": "plain/text"])
+                session.a0_data = "Forbidden".data(using: .utf8)
+                request.start()
+                expect(request.result).toEventually(beFailure(with: error))
+            }
+
             it("should succeed with 204 and no content") {
                 session.a0_response = http(statusCode: 204)
                 session.a0_data = nil

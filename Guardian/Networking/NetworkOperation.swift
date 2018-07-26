@@ -129,10 +129,9 @@ public struct NetworkOperation<T: Encodable, E: Decodable> {
 
         let statusCode = httpResponse.statusCode
         guard (200..<300).contains(statusCode) else {
-            let error = self.errorMapper(httpResponse, data) ?? NetworkError(statusCode: statusCode)
+            let error: Error = self.errorMapper(httpResponse, data)
+                ?? NetworkError(statusCode: statusCode, description: message(from: httpResponse, data: data))
             return .failure(cause: error)
-            // Handle 4xx text/plain
-            // Handle 429
         }
 
         guard httpResponse.isJSON else {
@@ -150,6 +149,11 @@ public struct NetworkOperation<T: Encodable, E: Decodable> {
         } catch let error {
             return .failure(cause: NetworkError(code: .invalidResponse, statusCode: statusCode, cause: error))
         }
+    }
+
+    func message(from response: HTTPURLResponse, data: Data?) -> String? {
+        guard response.isText, let data = data else { return nil }
+        return String(data: data, encoding: .utf8)
     }
 }
 
@@ -184,8 +188,8 @@ public struct NetworkError: Error, CustomStringConvertible {
         self.cause = cause
     }
 
-    init(statusCode: Int) {
-        self.init(code: .from(statusCode: statusCode), statusCode: statusCode)
+    init(statusCode: Int, description: String? = nil) {
+        self.init(code: .from(statusCode: statusCode), description: description, statusCode: statusCode)
     }
 
     public enum Code: String {
