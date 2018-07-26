@@ -270,15 +270,6 @@ func beSuccess(withData data: [String: String]) -> Predicate<Result<[String: Str
     }
 }
 
-func beSuccess<T>() -> Predicate<Result<T>> {
-    return Predicate.define("be an empty success response") { expression, msg -> PredicateResult in
-        if let actual = try expression.evaluate(), case .success(_) = actual {
-            return PredicateResult(bool: true, message: msg)
-        }
-        return PredicateResult(status: .fail, message: msg)
-    }
-}
-
 extension URLRequest {
     var a0_payload: [String: Any]? {
         guard let data = (self as NSURLRequest).ohhttpStubs_HTTPBody() else { return nil }

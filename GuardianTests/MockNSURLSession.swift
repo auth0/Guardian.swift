@@ -25,11 +25,11 @@ import Foundation
 class MockNSURLSession: URLSession {
     
     var a0_request: URLRequest?
-    let a0_data: Data?
-    let a0_response: URLResponse?
-    let a0_error: NSError?
+    var a0_data: Data?
+    var a0_response: URLResponse?
+    var a0_error: Error?
     
-    init(data: Data?, response: URLResponse?, error: NSError?) {
+    init(data: Data? = nil, response: URLResponse? = nil, error: Error? = nil) {
         self.a0_data = data
         self.a0_response = response
         self.a0_error = error

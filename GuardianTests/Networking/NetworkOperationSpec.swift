@@ -25,13 +25,20 @@ import Nimble
 @testable import Guardian
 
 let url = URL(string: "https://auth0.com")!
-
 class NetworkOperationSpec: QuickSpec {
 
     override func spec() {
 
         func new(method: HTTPMethod = .get, url: URL = url, headers: [String: String] = [:], body: [String: String]? = nil) -> NetworkOperation<[String: String], String> {
             return try! NetworkOperation(method: method, url: url, headers: headers, body: body)
+        }
+
+        var basicJSON: [String: String]!
+        var basicJSONString: String!
+
+        beforeEach {
+            basicJSON = ["key": UUID().uuidString]
+            basicJSONString = try! String(data: JSONEncoder().encode(basicJSON), encoding: .utf8)
         }
 
         describe("init(method:, url:, headers:, body:)") {
@@ -105,9 +112,8 @@ class NetworkOperationSpec: QuickSpec {
             }
 
             it("should have a JSON body") {
-                let value = UUID().uuidString
-                let body = ["id": value]
-                let json = "{\"id\":\"\(value)\"}".data(using: .utf8)
+                let body = basicJSON
+                let json = basicJSONString.data(using: .utf8)
                 expect(new(body: body).request.httpBody).to(equal(json))
             }
         }
@@ -125,6 +131,152 @@ class NetworkOperationSpec: QuickSpec {
 
         }
 
-        
+        describe("start(callback:)") {
+
+            var session: MockNSURLSession!
+            var request: SyncRequest<[String: String]>!
+
+            beforeEach {
+                session = MockNSURLSession()
+                request = SyncRequest(session: session)
+            }
+
+            it("should fail if request fails") {
+                let error: Error = NetworkError(code: .cannotDecodeJSON)
+                session.a0_error = error
+                request.start()
+                expect(request.result).toEventually(beFailure())
+            }
+
+            it("should fail with non-http response") {
+                let error = NetworkError(code: .failedRequest)
+                session.a0_response = URLResponse()
+                request.start()
+                expect(request.result).toEventually(beFailure(with: error))
+            }
+
+            it("should fail when status code is not 2xx") {
+                let error = NetworkError(code: .serverError, statusCode: 500)
+                session.a0_response = http(statusCode: 500)
+                request.start()
+                expect(request.result).toEventually(beFailure(with: error))
+            }
+
+            it("should fail when status code is 200 with no data") {
+                let error = NetworkError(code: .missingResponse, statusCode: 200)
+                session.a0_response = http(statusCode: 200)
+                session.a0_data = nil
+                request.start()
+                expect(request.result).toEventually(beFailure(with: error))
+            }
+
+            it("should fail when payload is not json") {
+                let error = NetworkError(code: .invalidResponse, statusCode: 200)
+                session.a0_response = http(statusCode: 200)
+                session.a0_data = Data()
+                request.start()
+                expect(request.result).toEventually(beFailure(with: error))
+            }
+
+            it("should fail when mime type is not json") {
+                let error = NetworkError(code: .invalidResponse, statusCode: 200)
+                session.a0_response = http(statusCode: 200, headers: nil)
+                session.a0_data = basicJSONString.data(using: .utf8)
+                request.start()
+                expect(request.result).toEventually(beFailure(with: error))
+            }
+
+            it("should succeed with 204 and no content") {
+                session.a0_response = http(statusCode: 204)
+                session.a0_data = nil
+                let request: SyncRequest<NoContent> = SyncRequest(session: session)
+                request.start()
+                expect(request.result).toEventually(beSuccess())
+            }
+
+            it("should ignore data when status is 204") {
+                session.a0_response = http(statusCode: 204)
+                session.a0_data = basicJSONString.data(using: .utf8)
+                let request: SyncRequest<NoContent> = SyncRequest(session: session)
+                request.start()
+                expect(request.result).toEventually(beSuccess())
+            }
+
+            it("should succeed with payload") {
+                session.a0_response = http(statusCode: 200)
+                session.a0_data = basicJSONString.data(using: .utf8)
+                request.start()
+                expect(request.result).toEventually(beSuccess(with: basicJSON))
+            }
+
+            it("should succeed with custom decodable") {
+                let response = MockResponse(key: UUID().uuidString)
+                session.a0_response = http(statusCode: 200)
+                session.a0_data = "{\"key\": \"\(response.key)\"}".data(using: .utf8)
+                let request: SyncRequest<MockResponse> = SyncRequest(session: session)
+                request.start()
+                expect(request.result).toEventually(beSuccess(with: response))
+            }
+
+        }
+    }
+}
+
+func http(statusCode: Int = 200, headers: [String: String]? = ["Content-Type": "application/json"]) -> HTTPURLResponse {
+    return HTTPURLResponse(url: url, statusCode: statusCode, httpVersion: nil, headerFields: headers)!
+}
+
+struct MockResponse: Decodable, Equatable {
+    let key: String
+}
+
+class SyncRequest<T: Decodable> {
+    let request: NetworkOperation<[String: String], T>
+    var result: Result<T>? = nil
+
+    init(session: URLSession) {
+        self.request = try! NetworkOperation(method: .get, url: url).withURLSession(session)
+    }
+
+    func start() -> () {
+        self.request.start { self.result = $0 }
+    }
+}
+
+func beSuccess<T: Equatable>(with payload: T) -> Predicate<Result<T>> {
+    return Predicate.define("be a success result with \(payload)") { exp, msg in
+        guard let result = try exp.evaluate(), case .success(let actual) = result else {
+            return PredicateResult(status: .doesNotMatch, message: msg)
+        }
+        return PredicateResult(bool: actual == payload, message: msg)
+    }
+}
+
+func beSuccess<T>() -> Predicate<Result<T>> {
+    return Predicate.define("be a success result of \(T.self)") { exp, msg in
+        guard let result = try exp.evaluate(), case .success = result else {
+            return PredicateResult(status: .doesNotMatch, message: msg)
+        }
+        return PredicateResult(status: .matches, message: msg)
+    }
+}
+
+func beFailure<T>() -> Predicate<Result<T>> {
+    return Predicate.define("be a failure result of network operation") { exp, msg in
+        guard let result = try exp.evaluate(), case .failure = result else {
+            return PredicateResult(status: .doesNotMatch, message: msg)
+        }
+        return PredicateResult(status: .matches, message: msg)
+    }
+}
+
+func beFailure<T>(with cause: NetworkError) -> Predicate<Result<T>> {
+    return Predicate.define("be a failure result of network operation w/ error \(cause)") { exp, msg in
+        guard let result = try exp.evaluate(),
+            case .failure(let actual) = result,
+            let error = actual as? NetworkError else {
+                return PredicateResult(status: .doesNotMatch, message: msg)
+        }
+        return PredicateResult(bool: error == cause, message: msg)
     }
 }

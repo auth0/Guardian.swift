@@ -39,37 +39,39 @@ func defaultHeaders(hasBody: Bool) throws -> [String: String] {
     return telemetry.merging(content) { _, new in new }
 }
 
-func encode<B: Encodable>(body: B, encoder: JSONEncoder = JSONEncoder()) throws -> Data {
-    do {
-        return try encoder.encode(body)
-    }
-    catch let error { throw GuardianError.invalidPayload(cause: error) }
+func decode<T: Decodable>(_ type: T.Type, from data: Data, decoder: JSONDecoder = JSONDecoder()) throws -> T {
+    do { return try decoder.decode(type, from: data) }
+    catch let error { throw NetworkError(code: .cannotDecodeJSON, cause: error) }
 }
 
-public struct NetworkOperation<B: Encodable, T: Decodable> {
+func encode<B: Encodable>(body: B, encoder: JSONEncoder = JSONEncoder()) throws -> Data {
+    do { return try encoder.encode(body) }
+    catch let error { throw NetworkError(code: .cannotEncodeJSON, cause: error) }
+}
+
+public struct NetworkOperation<T: Encodable, E: Decodable> {
 
     let request: URLRequest
-    let body: B?
+    let body: T?
     var session: URLSession
 
-    init(method: HTTPMethod, url: URL, headers: [String: String] = [:], body: B? = nil) throws {
+    init(method: HTTPMethod, url: URL, headers: [String: String] = [:], body: T? = nil) throws {
         var request = URLRequest(url: url)
         request.httpMethod = method.rawValue.uppercased()
         headers
             .merging(try defaultHeaders(hasBody: body != nil)) { old, _ in return old }
             .forEach { request.setValue($0.value, forHTTPHeaderField: $0.key) }
 
-        if let body = body {
+        if let body = body { // Fail if its 'GET'
             request.httpBody = try encode(body: body)
         }
-
 
         self.body = body
         self.request = request
         self.session = privateSession
     }
 
-    func withURLSession(_ session: URLSession) -> NetworkOperation<B, T> {
+    func withURLSession(_ session: URLSession) -> NetworkOperation<T, E> {
         var newSelf = self
         newSelf.session = session
         return newSelf
@@ -80,8 +82,128 @@ public struct NetworkOperation<B: Encodable, T: Decodable> {
 
      - parameter callback: the termination callback, where the result is received
      */
-    public func start(callback: @escaping (Result<T>) -> ()) {
+    public func start(callback: @escaping (Result<E>) -> ()) {
+        let task = self.session.dataTask(with: request) {
+            callback(self.handle(data: $0, response: $1, error: $2))
+        }
+        task.resume()
+    }
 
+    func handle(data: Data?, response: URLResponse?, error: Error?) -> Result<E> {
+        if let error = error {
+            return .failure(cause: NetworkError(code: .failedRequest, cause: error))
+        }
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            return .failure(cause: NetworkError(code: .failedRequest))
+        }
+
+        // Custom debug hook response
+
+        let statusCode = httpResponse.statusCode
+        guard (200..<300).contains(statusCode) else {
+            return .failure(cause: NetworkError(statusCode: statusCode))
+            // Custom 4xx Hook if JSON
+            // Handle 4xx text/plain
+            // Handle 429
+        }
+
+        guard httpResponse.mimeType == "application/json" else {
+            return .failure(cause: NetworkError(code: .invalidResponse, statusCode: statusCode))
+        }
+
+        let payloadData = statusCode == 204 && data == nil ? "{}".data(using: .utf8) : data
+        guard let data = payloadData else {
+            return .failure(cause: NetworkError(code: .missingResponse, statusCode: statusCode))
+        }
+
+        do {
+            let body = try decode(E.self, from: data)
+            return .success(payload: body)
+        } catch let error {
+            return .failure(cause: NetworkError(code: .invalidResponse, statusCode: statusCode, cause: error))
+        }
+    }
+}
+
+public struct NoContent: Decodable {
+    public init(from decoder: Decoder) throws {}
+}
+
+public struct NetworkError: Error, CustomStringConvertible {
+    public let statusCode: Int
+    public let description: String
+    public let code: Code
+    public let cause: Error?
+
+    init(code: Code, description: String? = nil, statusCode: Int = 0, cause: Error? = nil) {
+        self.code = code
+        self.description = description ?? code.message
+        self.statusCode = statusCode
+        self.cause = cause
+    }
+
+    init(statusCode: Int) {
+        self.init(code: .from(statusCode: statusCode), statusCode: statusCode)
+    }
+
+    public enum Code: String {
+        case cannotEncodeJSON
+        case cannotDecodeJSON
+        case failedRequest
+        case invalidResponse
+        case failedResponse
+        case missingResponse
+        case badRequest
+        case notAuthorized
+        case rateLimited
+        case serverError
+
+        var message: String {
+            switch self {
+            case .cannotEncodeJSON:
+                return "Cannot encode request JSON body"
+            case .cannotDecodeJSON:
+                return "Cannot decode response JSON body"
+            case .failedRequest:
+                return "Request failed to be sent"
+            case .failedResponse:
+                return "Server returned with a non 2XX status code"
+            case .invalidResponse:
+                return "Server returned a non JSON response"
+            case .missingResponse:
+                return "No response body was received"
+            case .badRequest:
+                return "The request was considered invalid by the server"
+            case .notAuthorized:
+                return "Not authorized or missing authorization"
+            case .rateLimited:
+                return "Exceeded number of request to API"
+            case .serverError:
+                return "Server failed to respond"
+            }
+        }
+
+        static func from(statusCode: Int) -> Code {
+            switch statusCode {
+            case 400:
+                return .badRequest
+            case 401, 403:
+                return .notAuthorized
+            case 429:
+                return .rateLimited
+            case 500...599:
+                return .serverError
+            default:
+                return .failedRequest
+            }
+        }
+    }
+}
+
+extension NetworkError: Equatable {
+    public static func == (lhs: NetworkError, rhs: NetworkError) -> Bool {
+        return lhs.code == rhs.code && lhs.statusCode == rhs.statusCode
     }
 }
 
