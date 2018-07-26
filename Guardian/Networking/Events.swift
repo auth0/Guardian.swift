@@ -34,6 +34,27 @@ public protocol RequestEvent {
 public protocol ResponseEvent {
     var response: HTTPURLResponse { get }
     var data: Data? { get }
+    var rateLimit: RateLimit? { get }
+}
+
+public struct RateLimit {
+    public let limit: Int
+    public let remaining: Int
+    public let resetAt: Date
+
+    init?(response: HTTPURLResponse) {
+        guard let limitValue = response.value(forHeader: "X-RateLimit-Limit"),
+            let limit = Int(limitValue),
+            let remainingValue = response.value(forHeader: "X-RateLimit-Remaining"),
+            let remaining = Int(remainingValue),
+            let resetValue = response.value(forHeader: "X-RateLimit-Reset"),
+            let resetSeconds = TimeInterval(resetValue)
+            else { return nil }
+        let resetAt = Date(timeIntervalSince1970: resetSeconds)
+        self.limit = limit
+        self.remaining = remaining
+        self.resetAt = resetAt
+    }
 }
 
 struct NetworkObserver {

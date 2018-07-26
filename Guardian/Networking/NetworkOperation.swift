@@ -125,7 +125,8 @@ public struct NetworkOperation<T: Encodable, E: Decodable> {
             return .failure(cause: NetworkError(code: .failedRequest))
         }
 
-        self.observer.response?(NetworkResponseEvent(data: data, response: httpResponse))
+        let responseEvent = NetworkResponseEvent(data: data, response: httpResponse, rateLimit: RateLimit(response: httpResponse))
+        self.observer.response?(responseEvent)
 
         let statusCode = httpResponse.statusCode
         guard (200..<300).contains(statusCode) else {
@@ -168,6 +169,11 @@ extension HTTPURLResponse {
 
     var noContent: Bool {
         return self.statusCode == 204
+    }
+
+    func value(forHeader name: String) -> String? {
+        let headers = self.allHeaderFields
+        return (headers[name] ?? headers[name.lowercased()]) as? String
     }
 }
 
@@ -259,7 +265,9 @@ struct NetworkRequestEvent: RequestEvent {
 struct NetworkResponseEvent: ResponseEvent {
     let data: Data?
     let response: HTTPURLResponse
+    let rateLimit: RateLimit?
 }
+
 
 extension NetworkOperation: CustomStringConvertible, CustomDebugStringConvertible {
     public var description: String {

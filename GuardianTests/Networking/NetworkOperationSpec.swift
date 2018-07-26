@@ -227,7 +227,7 @@ class NetworkOperationSpec: QuickSpec {
             }
         }
 
-        describe("on(request:, response:)") {
+        fdescribe("on(request:, response:)") {
             var session: MockNSURLSession!
             var request: SyncRequest<[String: String]>!
 
@@ -250,6 +250,37 @@ class NetworkOperationSpec: QuickSpec {
                 expect(request.responseEvent?.data).toEventually(equal(session.a0_data))
                 expect(request.responseEvent?.response).toEventually(equal(session.a0_response))
             }
+
+            it("should not have rate limit info") {
+                session.a0_response = http()
+                session.a0_data = basicJSONString.data(using: .utf8)
+                request.start()
+                expect(request.responseEvent?.rateLimit).toEventually(beNil())
+            }
+
+            it("should not have rate limit info if all headers are not found") {
+                session.a0_response = http(headers: [
+                    "x-ratelimit-limit": "1000000",
+                    "x-ratelimit-reset": "1532635354"
+                    ])
+                session.a0_data = basicJSONString.data(using: .utf8)
+                request.start()
+                expect(request.responseEvent?.rateLimit).toEventually(beNil())
+            }
+
+            it("should have rate limit info") {
+                session.a0_response = http(headers: [
+                    "x-ratelimit-limit": "1000000",
+                    "x-ratelimit-remaining": "999999",
+                    "x-ratelimit-reset": "1532635354"
+                    ])
+                session.a0_data = basicJSONString.data(using: .utf8)
+                request.start()
+                expect(request.responseEvent?.rateLimit?.limit).toEventually(equal(1000000))
+                expect(request.responseEvent?.rateLimit?.remaining).toEventually(equal(999999))
+                expect(request.responseEvent?.rateLimit?.resetAt).toEventually(equal(Date(timeIntervalSince1970: 1532635354)))
+            }
+
         }
 
         describe("mapError(transform:)") {
