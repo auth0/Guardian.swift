@@ -54,6 +54,7 @@ public struct NetworkOperation<T: Encodable, E: Decodable> {
     let request: URLRequest
     let body: T?
     var session: URLSession
+    var observer: NetworkObserver
 
     init(method: HTTPMethod, url: URL, headers: [String: String] = [:], body: T? = nil) throws {
         var request = URLRequest(url: url)
@@ -69,11 +70,27 @@ public struct NetworkOperation<T: Encodable, E: Decodable> {
         self.body = body
         self.request = request
         self.session = privateSession
+        self.observer = NetworkObserver()
     }
 
     func withURLSession(_ session: URLSession) -> NetworkOperation<T, E> {
         var newSelf = self
         newSelf.session = session
+        return newSelf
+    }
+
+    /** Registers hooks to be called on specific events:
+         * on request being sent
+         * on response recieved (successful or not)
+
+        - Parameters:
+          - request: closure called with request information
+          - response: closure called with response and data
+        - Returns: itself for chaining
+    */
+    public func on(request: OnRequestEvent? = nil, response: OnResponseEvent? = nil) -> NetworkOperation<T, E> {
+        var newSelf = self
+        newSelf.observer = NetworkObserver(request: request ?? self.observer.request, response: response ?? self.observer.response)
         return newSelf
     }
 
@@ -83,6 +100,7 @@ public struct NetworkOperation<T: Encodable, E: Decodable> {
      - parameter callback: the termination callback, where the result is received
      */
     public func start(callback: @escaping (Result<E>) -> ()) {
+        self.observer.request?(NetworkRequestEvent(request: request))
         let task = self.session.dataTask(with: request) {
             callback(self.handle(data: $0, response: $1, error: $2))
         }
@@ -98,7 +116,7 @@ public struct NetworkOperation<T: Encodable, E: Decodable> {
             return .failure(cause: NetworkError(code: .failedRequest))
         }
 
-        // Custom debug hook response
+        self.observer.response?(NetworkResponseEvent(data: data, response: httpResponse))
 
         let statusCode = httpResponse.statusCode
         guard (200..<300).contains(statusCode) else {
@@ -199,6 +217,15 @@ public struct NetworkError: Error, CustomStringConvertible {
             }
         }
     }
+}
+
+struct NetworkRequestEvent: RequestEvent {
+    let request: URLRequest
+}
+
+struct NetworkResponseEvent: ResponseEvent {
+    let data: Data?
+    let response: HTTPURLResponse
 }
 
 extension NetworkError: Equatable {

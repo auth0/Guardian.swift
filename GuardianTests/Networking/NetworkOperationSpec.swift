@@ -217,6 +217,31 @@ class NetworkOperationSpec: QuickSpec {
                 request.start()
                 expect(request.result).toEventually(beSuccess(with: response))
             }
+        }
+
+        describe("on(request:, response:)") {
+            var session: MockNSURLSession!
+            var request: SyncRequest<[String: String]>!
+
+            beforeEach {
+                session = MockNSURLSession()
+                request = SyncRequest(session: session)
+            }
+
+            it("should send request event") {
+                request.start()
+                expect(request.requestEvent).toEventuallyNot(beNil())
+                expect(request.requestEvent?.request).toEventuallyNot(beNil())
+            }
+
+            it("should send response event") {
+                session.a0_response = http()
+                session.a0_data = basicJSONString.data(using: .utf8)
+                request.start()
+                expect(request.responseEvent).toEventuallyNot(beNil())
+                expect(request.responseEvent?.data).toEventually(equal(session.a0_data))
+                expect(request.responseEvent?.response).toEventually(equal(session.a0_response))
+            }
 
         }
     }
@@ -231,11 +256,24 @@ struct MockResponse: Decodable, Equatable {
 }
 
 class SyncRequest<T: Decodable> {
-    let request: NetworkOperation<[String: String], T>
+    var request: NetworkOperation<[String: String], T>
     var result: Result<T>? = nil
+    var requestEvent: RequestEvent? = nil
+    var responseEvent: ResponseEvent? = nil
 
     init(session: URLSession) {
-        self.request = try! NetworkOperation(method: .get, url: url).withURLSession(session)
+        self.request = try! NetworkOperation(method: .get, url: url)
+            .withURLSession(session)
+        self.request = self.request.on(request: { [weak self] r in
+            self?.requestEvent = r
+            }, response: { [weak self] r in
+                self?.responseEvent = r
+        })
+    }
+
+    public func on(request: OnRequestEvent? = nil, response: OnResponseEvent? = nil) -> SyncRequest<T> {
+        self.request = self.request.on(request: request, response: response)
+        return self
     }
 
     func start() -> () {

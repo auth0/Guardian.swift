@@ -42,6 +42,7 @@
 		23FE50841D949EC400407A1D /* Guardian.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5F2037CD1D5E1E3E0005D2E2 /* Guardian.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5F07A58521092C7D00819FA2 /* ClientInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F07A58421092C7D00819FA2 /* ClientInfo.swift */; };
 		5F07A58721092F2300819FA2 /* ClientInfoSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F07A58621092F2300819FA2 /* ClientInfoSpec.swift */; };
+		5F07A589210A57C200819FA2 /* Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F07A588210A57C200819FA2 /* Events.swift */; };
 		5F1604C321062BEA00B0F25B /* RSA+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1604C221062BEA00B0F25B /* RSA+Utils.swift */; };
 		5F1604C5210636B500B0F25B /* ASNPublicKeyDecodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1604C4210636B500B0F25B /* ASNPublicKeyDecodable.swift */; };
 		5F1604C721063FA000B0F25B /* Keys+Generation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1604C621063FA000B0F25B /* Keys+Generation.swift */; };
@@ -177,6 +178,7 @@
 		23D3E43F1D91BEA200F3FDE2 /* Base32Spec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Base32Spec.swift; sourceTree = "<group>"; };
 		5F07A58421092C7D00819FA2 /* ClientInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientInfo.swift; sourceTree = "<group>"; };
 		5F07A58621092F2300819FA2 /* ClientInfoSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientInfoSpec.swift; sourceTree = "<group>"; };
+		5F07A588210A57C200819FA2 /* Events.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Events.swift; sourceTree = "<group>"; };
 		5F1604C221062BEA00B0F25B /* RSA+Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RSA+Utils.swift"; sourceTree = "<group>"; };
 		5F1604C4210636B500B0F25B /* ASNPublicKeyDecodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ASNPublicKeyDecodable.swift; sourceTree = "<group>"; };
 		5F1604C621063FA000B0F25B /* Keys+Generation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Keys+Generation.swift"; sourceTree = "<group>"; };
@@ -388,6 +390,7 @@
 				5FB4ECBB20C9A5050050B275 /* Hooks.swift */,
 				5FF42BA421091AD10082459F /* NetworkOperation.swift */,
 				5F07A58421092C7D00819FA2 /* ClientInfo.swift */,
+				5F07A588210A57C200819FA2 /* Events.swift */,
 			);
 			path = Networking;
 			sourceTree = "<group>";
@@ -698,6 +701,7 @@
 				5F1604F72107A93D00B0F25B /* OneTimePasswordGenerator.swift in Sources */,
 				234004EF1D909C91009AB77C /* Base32.swift in Sources */,
 				2374A9EF1D672ABD00737F2E /* Result.swift in Sources */,
+				5F07A589210A57C200819FA2 /* Events.swift in Sources */,
 				23AD869F1DEE10B500051F41 /* FailedRequest.swift in Sources */,
 				2374A9ED1D672A8D00737F2E /* Requestable.swift in Sources */,
 				237246751D7DC63B00CCF635 /* Guardian.swift in Sources */,
