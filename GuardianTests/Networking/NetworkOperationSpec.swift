@@ -242,8 +242,57 @@ class NetworkOperationSpec: QuickSpec {
                 expect(request.responseEvent?.data).toEventually(equal(session.a0_data))
                 expect(request.responseEvent?.response).toEventually(equal(session.a0_response))
             }
+        }
+
+        describe("mapError(transform:)") {
+            var session: MockNSURLSession!
+            var request: SyncRequest<[String: String]>!
+
+            beforeEach {
+                session = MockNSURLSession()
+                request = SyncRequest(session: session)
+            }
+
+            it("should not call when network fails") {
+                let error = MockError()
+                let cause = NetworkError(code: .cannotDecodeJSON)
+                session.a0_error = cause
+                request
+                    .mapError { _, _ in return error }
+                    .start()
+                expect(request.result).toEventuallyNot(beFailure(with: cause))
+            }
+
+            it("should not call on success") {
+                session.a0_response = http()
+                session.a0_data = basicJSONString.data(using: .utf8)
+                request
+                    .mapError { _, _ in return MockError() }
+                    .start()
+                expect(request.result).toEventually(beSuccess())
+            }
+
+            it("should call when request status is failure") {
+                let error = MockError()
+                session.a0_response = http(statusCode: 400)
+                session.a0_data = basicJSONString.data(using: .utf8)
+                request
+                    .mapError { _, _ in return error }
+                    .start()
+                expect(request.result).toEventually(beFailure(with: error))
+            }
+
+            it("should use default error if nil is returned") {
+                session.a0_response = http(statusCode: 400)
+                session.a0_data = basicJSONString.data(using: .utf8)
+                request
+                    .mapError { _, _ in return nil }
+                    .start()
+                expect(request.result).toEventually(beFailure(with: NetworkError(statusCode: 400)))
+            }
 
         }
+
     }
 }
 
@@ -253,6 +302,12 @@ func http(statusCode: Int = 200, headers: [String: String]? = ["Content-Type": "
 
 struct MockResponse: Decodable, Equatable {
     let key: String
+}
+
+struct MockError: Error, Equatable {
+    let id: UUID
+
+    init() { self.id = UUID() }
 }
 
 class SyncRequest<T: Decodable> {
@@ -269,6 +324,11 @@ class SyncRequest<T: Decodable> {
             }, response: { [weak self] r in
                 self?.responseEvent = r
         })
+    }
+
+    public func mapError(transform: @escaping (HTTPURLResponse, Data?) -> Error?) -> SyncRequest<T> {
+        self.request = self.request.mapError(transform: transform)
+        return self
     }
 
     public func on(request: OnRequestEvent? = nil, response: OnResponseEvent? = nil) -> SyncRequest<T> {
@@ -305,6 +365,17 @@ func beFailure<T>() -> Predicate<Result<T>> {
             return PredicateResult(status: .doesNotMatch, message: msg)
         }
         return PredicateResult(status: .matches, message: msg)
+    }
+}
+
+func beFailure<T>(with cause: MockError) -> Predicate<Result<T>> {
+    return Predicate.define("be a failure result of network operation w/ error \(cause)") { exp, msg in
+        guard let result = try exp.evaluate(),
+            case .failure(let actual) = result,
+            let error = actual as? MockError else {
+                return PredicateResult(status: .doesNotMatch, message: msg)
+        }
+        return PredicateResult(bool: error == cause, message: msg)
     }
 }
 

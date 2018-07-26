@@ -55,6 +55,7 @@ public struct NetworkOperation<T: Encodable, E: Decodable> {
     let body: T?
     var session: URLSession
     var observer: NetworkObserver
+    var errorMapper: (HTTPURLResponse, Data?) -> Error?
 
     init(method: HTTPMethod, url: URL, headers: [String: String] = [:], body: T? = nil) throws {
         var request = URLRequest(url: url)
@@ -71,6 +72,7 @@ public struct NetworkOperation<T: Encodable, E: Decodable> {
         self.request = request
         self.session = privateSession
         self.observer = NetworkObserver()
+        self.errorMapper = { _, _ in return nil }
     }
 
     func withURLSession(_ session: URLSession) -> NetworkOperation<T, E> {
@@ -79,9 +81,10 @@ public struct NetworkOperation<T: Encodable, E: Decodable> {
         return newSelf
     }
 
-    /** Registers hooks to be called on specific events:
-         * on request being sent
-         * on response recieved (successful or not)
+    /**
+     Registers hooks to be called on specific events:
+        * on request being sent
+        * on response recieved (successful or not)
 
         - Parameters:
           - request: closure called with request information
@@ -91,6 +94,12 @@ public struct NetworkOperation<T: Encodable, E: Decodable> {
     public func on(request: OnRequestEvent? = nil, response: OnResponseEvent? = nil) -> NetworkOperation<T, E> {
         var newSelf = self
         newSelf.observer = NetworkObserver(request: request ?? self.observer.request, response: response ?? self.observer.response)
+        return newSelf
+    }
+
+    public func mapError(transform: @escaping (HTTPURLResponse, Data?) -> Error?) -> NetworkOperation<T, E> {
+        var newSelf = self
+        newSelf.errorMapper = transform
         return newSelf
     }
 
@@ -120,17 +129,17 @@ public struct NetworkOperation<T: Encodable, E: Decodable> {
 
         let statusCode = httpResponse.statusCode
         guard (200..<300).contains(statusCode) else {
-            return .failure(cause: NetworkError(statusCode: statusCode))
-            // Custom 4xx Hook if JSON
+            let error = self.errorMapper(httpResponse, data) ?? NetworkError(statusCode: statusCode)
+            return .failure(cause: error)
             // Handle 4xx text/plain
             // Handle 429
         }
 
-        guard httpResponse.mimeType == "application/json" else {
+        guard httpResponse.isJSON else {
             return .failure(cause: NetworkError(code: .invalidResponse, statusCode: statusCode))
         }
 
-        let payloadData = statusCode == 204 && data == nil ? "{}".data(using: .utf8) : data
+        let payloadData = httpResponse.noContent && data == nil ? "{}".data(using: .utf8) : data
         guard let data = payloadData else {
             return .failure(cause: NetworkError(code: .missingResponse, statusCode: statusCode))
         }
@@ -141,6 +150,20 @@ public struct NetworkOperation<T: Encodable, E: Decodable> {
         } catch let error {
             return .failure(cause: NetworkError(code: .invalidResponse, statusCode: statusCode, cause: error))
         }
+    }
+}
+
+extension HTTPURLResponse {
+    var isJSON: Bool {
+        return self.mimeType == "application/json"
+    }
+
+    var isText: Bool {
+        return self.mimeType == "text/plain"
+    }
+
+    var noContent: Bool {
+        return self.statusCode == 204
     }
 }
 
@@ -219,6 +242,12 @@ public struct NetworkError: Error, CustomStringConvertible {
     }
 }
 
+extension NetworkError: Equatable {
+    public static func == (lhs: NetworkError, rhs: NetworkError) -> Bool {
+        return lhs.code == rhs.code && lhs.statusCode == rhs.statusCode
+    }
+}
+
 struct NetworkRequestEvent: RequestEvent {
     let request: URLRequest
 }
@@ -226,12 +255,6 @@ struct NetworkRequestEvent: RequestEvent {
 struct NetworkResponseEvent: ResponseEvent {
     let data: Data?
     let response: HTTPURLResponse
-}
-
-extension NetworkError: Equatable {
-    public static func == (lhs: NetworkError, rhs: NetworkError) -> Bool {
-        return lhs.code == rhs.code && lhs.statusCode == rhs.statusCode
-    }
 }
 
 extension NetworkOperation: CustomStringConvertible, CustomDebugStringConvertible {
