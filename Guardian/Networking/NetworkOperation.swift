@@ -22,7 +22,7 @@
 
 import Foundation
 
-/// Default URLSession used to send requests to Guardian API.
+/// Default URLSession used to send requests.
 private let privateSession: URLSession =  {
     let config = URLSessionConfiguration.ephemeral
     config.requestCachePolicy = .reloadIgnoringLocalCacheData
@@ -37,16 +37,6 @@ func defaultHeaders(hasBody: Bool) throws -> [String: String] {
     let telemetry = try clientInfo?.asHeader() ?? [:]
     let content = hasBody ? ["Content-Type": "application/json"] : [:]
     return telemetry.merging(content) { _, new in new }
-}
-
-func decode<T: Decodable>(_ type: T.Type, from data: Data, decoder: JSONDecoder = JSONDecoder()) throws -> T {
-    do { return try decoder.decode(type, from: data) }
-    catch let error { throw NetworkError(code: .cannotDecodeJSON, cause: error) }
-}
-
-func encode<B: Encodable>(body: B, encoder: JSONEncoder = JSONEncoder()) throws -> Data {
-    do { return try encoder.encode(body) }
-    catch let error { throw NetworkError(code: .cannotEncodeJSON, cause: error) }
 }
 
 public struct NetworkOperation<T: Encodable, E: Decodable> {
@@ -75,7 +65,12 @@ public struct NetworkOperation<T: Encodable, E: Decodable> {
         self.errorMapper = { _, _ in return nil }
     }
 
-    func withURLSession(_ session: URLSession) -> NetworkOperation<T, E> {
+    /**
+     Allows to change the URLSession used to perform the requests.
+     - parameter session: new URLSession to use to perform requests
+     - returns: itself for easy chaining
+    */
+    public func withURLSession(_ session: URLSession) -> NetworkOperation<T, E> {
         var newSelf = self
         newSelf.session = session
         return newSelf
@@ -97,6 +92,11 @@ public struct NetworkOperation<T: Encodable, E: Decodable> {
         return newSelf
     }
 
+    /**
+     Allows to return a custom error when HTTP response is not 2xx. If nil is returned a default error will be used.
+     - parameter transform: closure that will be executed when a custom error is needed. It will receive the response and its body as parameters
+     - returns: istelf for chaining
+    */
     public func mapError(transform: @escaping (HTTPURLResponse, Data?) -> Error?) -> NetworkOperation<T, E> {
         var newSelf = self
         newSelf.errorMapper = transform
@@ -158,106 +158,6 @@ public struct NetworkOperation<T: Encodable, E: Decodable> {
     }
 }
 
-extension HTTPURLResponse {
-    var isJSON: Bool {
-        return self.mimeType == "application/json"
-    }
-
-    var isText: Bool {
-        return self.mimeType == "text/plain"
-    }
-
-    var noContent: Bool {
-        return self.statusCode == 204
-    }
-
-    func value(forHeader name: String) -> String? {
-        let headers = self.allHeaderFields
-        return (headers[name] ?? headers[name.lowercased()]) as? String
-    }
-}
-
-public struct NoContent: Decodable {
-    public init(from decoder: Decoder) throws {}
-}
-
-public struct NetworkError: Error, CustomStringConvertible {
-    public let statusCode: Int
-    public let description: String
-    public let code: Code
-    public let cause: Error?
-
-    init(code: Code, description: String? = nil, statusCode: Int = 0, cause: Error? = nil) {
-        self.code = code
-        self.description = description ?? code.message
-        self.statusCode = statusCode
-        self.cause = cause
-    }
-
-    init(statusCode: Int, description: String? = nil) {
-        self.init(code: .from(statusCode: statusCode), description: description, statusCode: statusCode)
-    }
-
-    public enum Code: String {
-        case cannotEncodeJSON
-        case cannotDecodeJSON
-        case failedRequest
-        case invalidResponse
-        case failedResponse
-        case missingResponse
-        case badRequest
-        case notAuthorized
-        case rateLimited
-        case serverError
-
-        var message: String {
-            switch self {
-            case .cannotEncodeJSON:
-                return "Cannot encode request JSON body"
-            case .cannotDecodeJSON:
-                return "Cannot decode response JSON body"
-            case .failedRequest:
-                return "Request failed to be sent"
-            case .failedResponse:
-                return "Server returned with a non 2XX status code"
-            case .invalidResponse:
-                return "Server returned a non JSON response"
-            case .missingResponse:
-                return "No response body was received"
-            case .badRequest:
-                return "The request was considered invalid by the server"
-            case .notAuthorized:
-                return "Not authorized or missing authorization"
-            case .rateLimited:
-                return "Exceeded number of request to API"
-            case .serverError:
-                return "Server failed to respond"
-            }
-        }
-
-        static func from(statusCode: Int) -> Code {
-            switch statusCode {
-            case 400:
-                return .badRequest
-            case 401, 403:
-                return .notAuthorized
-            case 429:
-                return .rateLimited
-            case 500...599:
-                return .serverError
-            default:
-                return .failedRequest
-            }
-        }
-    }
-}
-
-extension NetworkError: Equatable {
-    public static func == (lhs: NetworkError, rhs: NetworkError) -> Bool {
-        return lhs.code == rhs.code && lhs.statusCode == rhs.statusCode
-    }
-}
-
 struct NetworkRequestEvent: RequestEvent {
     let request: URLRequest
 }
@@ -288,11 +188,4 @@ extension NetworkOperation: CustomStringConvertible, CustomDebugStringConvertibl
         return description
     }
 
-}
-
-enum HTTPMethod: String {
-    case get
-    case post
-    case patch
-    case delete
 }

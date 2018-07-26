@@ -43,6 +43,10 @@
 		5F07A58521092C7D00819FA2 /* ClientInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F07A58421092C7D00819FA2 /* ClientInfo.swift */; };
 		5F07A58721092F2300819FA2 /* ClientInfoSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F07A58621092F2300819FA2 /* ClientInfoSpec.swift */; };
 		5F07A589210A57C200819FA2 /* Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F07A588210A57C200819FA2 /* Events.swift */; };
+		5F07A58B210A6D5A00819FA2 /* Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F07A58A210A6D5A00819FA2 /* Additions.swift */; };
+		5F07A58D210A6DF000819FA2 /* CodableAdditions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F07A58C210A6DF000819FA2 /* CodableAdditions.swift */; };
+		5F07A58F210A6E5900819FA2 /* NoContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F07A58E210A6E5900819FA2 /* NoContent.swift */; };
+		5F07A591210A6E8400819FA2 /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F07A590210A6E8400819FA2 /* NetworkError.swift */; };
 		5F1604C321062BEA00B0F25B /* RSA+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1604C221062BEA00B0F25B /* RSA+Utils.swift */; };
 		5F1604C5210636B500B0F25B /* ASNPublicKeyDecodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1604C4210636B500B0F25B /* ASNPublicKeyDecodable.swift */; };
 		5F1604C721063FA000B0F25B /* Keys+Generation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1604C621063FA000B0F25B /* Keys+Generation.swift */; };
@@ -179,6 +183,10 @@
 		5F07A58421092C7D00819FA2 /* ClientInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientInfo.swift; sourceTree = "<group>"; };
 		5F07A58621092F2300819FA2 /* ClientInfoSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientInfoSpec.swift; sourceTree = "<group>"; };
 		5F07A588210A57C200819FA2 /* Events.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Events.swift; sourceTree = "<group>"; };
+		5F07A58A210A6D5A00819FA2 /* Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Additions.swift; sourceTree = "<group>"; };
+		5F07A58C210A6DF000819FA2 /* CodableAdditions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodableAdditions.swift; sourceTree = "<group>"; };
+		5F07A58E210A6E5900819FA2 /* NoContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoContent.swift; sourceTree = "<group>"; };
+		5F07A590210A6E8400819FA2 /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
 		5F1604C221062BEA00B0F25B /* RSA+Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RSA+Utils.swift"; sourceTree = "<group>"; };
 		5F1604C4210636B500B0F25B /* ASNPublicKeyDecodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ASNPublicKeyDecodable.swift; sourceTree = "<group>"; };
 		5F1604C621063FA000B0F25B /* Keys+Generation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Keys+Generation.swift"; sourceTree = "<group>"; };
@@ -375,6 +383,7 @@
 				2374A9E01D670F5900737F2E /* APIClient.swift */,
 				2377A6401D806D9900D6FB04 /* DeviceAPI.swift */,
 				232A85D91D6BDFCA00048DF7 /* DeviceAPIClient.swift */,
+				5F07A58E210A6E5900819FA2 /* NoContent.swift */,
 			);
 			path = API;
 			sourceTree = "<group>";
@@ -391,6 +400,9 @@
 				5FF42BA421091AD10082459F /* NetworkOperation.swift */,
 				5F07A58421092C7D00819FA2 /* ClientInfo.swift */,
 				5F07A588210A57C200819FA2 /* Events.swift */,
+				5F07A58A210A6D5A00819FA2 /* Additions.swift */,
+				5F07A58C210A6DF000819FA2 /* CodableAdditions.swift */,
+				5F07A590210A6E8400819FA2 /* NetworkError.swift */,
 			);
 			path = Networking;
 			sourceTree = "<group>";
@@ -699,6 +711,7 @@
 			files = (
 				2374A9E41D670F5900737F2E /* APIClient.swift in Sources */,
 				5F1604F72107A93D00B0F25B /* OneTimePasswordGenerator.swift in Sources */,
+				5F07A58F210A6E5900819FA2 /* NoContent.swift in Sources */,
 				234004EF1D909C91009AB77C /* Base32.swift in Sources */,
 				2374A9EF1D672ABD00737F2E /* Result.swift in Sources */,
 				5F07A589210A57C200819FA2 /* Events.swift in Sources */,
@@ -713,6 +726,7 @@
 				2374A9E51D670F5900737F2E /* GuardianError.swift in Sources */,
 				5F1604F421068FCC00B0F25B /* AuthenticationDevice.swift in Sources */,
 				5F61338F210128C800BCC182 /* AuthenticationLocation.swift in Sources */,
+				5F07A591210A6E8400819FA2 /* NetworkError.swift in Sources */,
 				2356C82E1D88998A00B6C84A /* EnrollRequest.swift in Sources */,
 				5F1604C321062BEA00B0F25B /* RSA+Utils.swift in Sources */,
 				5F61338D2101289E00BCC182 /* AuthenticationSource.swift in Sources */,
@@ -720,6 +734,7 @@
 				23C67AEE1D81EF5300A38A2E /* EnrolledDevice.swift in Sources */,
 				235B4B221DA3F51D00CEB5DC /* A0HMAC.m in Sources */,
 				5FB4ECBC20C9A5050050B275 /* Hooks.swift in Sources */,
+				5F07A58D210A6DF000819FA2 /* CodableAdditions.swift in Sources */,
 				5F07A58521092C7D00819FA2 /* ClientInfo.swift in Sources */,
 				5F1604C721063FA000B0F25B /* Keys+Generation.swift in Sources */,
 				2331C01A1DD5FC6F0047F1D4 /* Data+Base64URL.swift in Sources */,
@@ -732,6 +747,7 @@
 				5FAE67252102509600F149A3 /* KeychainRSAPrivateKey.swift in Sources */,
 				231687191DDA07FD00B09526 /* A0SHA.m in Sources */,
 				5F6133892101273300BCC182 /* AuthenticationCategory.swift in Sources */,
+				5F07A58B210A6D5A00819FA2 /* Additions.swift in Sources */,
 				2377A6431D806DFA00D6FB04 /* API.swift in Sources */,
 				232A85DA1D6BDFCA00048DF7 /* DeviceAPIClient.swift in Sources */,
 			);
