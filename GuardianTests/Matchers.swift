@@ -129,12 +129,9 @@ func haveDeviceAccountToken(_ deviceAccountToken: String?) -> Predicate<Result<[
     }
 }
 
-func haveEnrollment(withId enrollmentId: String?, deviceIdentifier: String?, deviceName: String?, notificationService: String?, notificationToken: String?) -> Predicate<Result<[String: Any]>> {
-    return Predicate.define("be a successful enrollment info result with") { expression, msg -> PredicateResult in
+func beUpdatedDevice(deviceIdentifier: String?, deviceName: String?, notificationService: String?, notificationToken: String?) -> Predicate<Result<UpdatedDevice>> {
+    return Predicate.define("be a updated device result with") { expression, msg -> PredicateResult in
         var message = msg
-        if let enrollmentId = enrollmentId {
-            message = message.appended(details: " <id: \(enrollmentId)>")
-        }
         if let deviceIdentifier = deviceIdentifier {
             message = message.appended(details: " <identifier: \(deviceIdentifier)>")
         }
@@ -149,32 +146,27 @@ func haveEnrollment(withId enrollmentId: String?, deviceIdentifier: String?, dev
         }
 
         if let actual = try expression.evaluate(), case .success(let result) = actual {
-            if let enrollmentId = enrollmentId {
-                guard let id = result["id"] as? String , id == enrollmentId else {
-                    return PredicateResult(status: .fail, message: message)
-                }
-            }
             if let deviceIdentifier = deviceIdentifier {
-                guard let identifier = result["identifier"] as? String , identifier == deviceIdentifier else {
+                guard result.identifier == deviceIdentifier else {
                     return PredicateResult(status: .fail, message: message)
                 }
             }
             if let deviceName = deviceName {
-                guard let name = result["name"] as? String , name == deviceName else {
+                guard result.name == deviceName else {
                     return PredicateResult(status: .fail, message: message)
                 }
             }
             if notificationService != nil || notificationToken != nil {
-                guard let pushCredentials = result["push_credentials"] as? [String: String] else {
+                guard let pushCredentials = result.pushCredentials else {
                     return PredicateResult(status: .fail, message: message)
                 }
                 if let notificationService = notificationService {
-                    guard let service = pushCredentials["service"] , service == notificationService else {
+                    guard pushCredentials.service == notificationService else {
                         return PredicateResult(status: .fail, message: message)
                     }
                 }
                 if let notificationToken = notificationToken {
-                    guard let token = pushCredentials["token"] , token == notificationToken else {
+                    guard pushCredentials.token == notificationToken else {
                         return PredicateResult(status: .fail, message: message)
                     }
                 }

@@ -38,7 +38,7 @@ public class EnrollRequest: Requestable {
     private let notificationToken: String
     private let verificationKey: VerificationKey
     private let signingKey: SigningKey
-    private var request: Request<[String: Any]>
+    private var request: GuardianRequest<Device, Enrollment>
 
     init(api: API, enrollmentTicket: String? = nil, enrollmentUri: String? = nil, notificationToken: String, verificationKey: VerificationKey, signingKey: SigningKey) {
         self.api = api
@@ -53,7 +53,8 @@ public class EnrollRequest: Requestable {
         } else if let enrollmentUri = enrollmentUri, let parameters = parameters(fromUri: enrollmentUri), let enrollmentTxId = parameters["enrollment_tx_id"] {
             ticket = enrollmentTxId
         } else {
-            self.request = FailedRequest(error: GuardianError.invalidEnrollmentUri)
+            let url = self.api.baseUrl.appendingPathComponent("api/enroll")
+            self.request = GuardianRequest(method: .post, url: url, error: GuardianError.invalidEnrollmentUri)
             return
         }
 
@@ -71,7 +72,6 @@ public class EnrollRequest: Requestable {
     ///   - error: closure called with network error
     /// - Returns: itself for chaining
     public func on(request: RequestHook? = nil, response: ResponseHook? = nil, error: ErrorHook? = nil) -> EnrollRequest {
-        let _ = self.request.on(request: request, response: response, error: error)
         return self
     }
 
@@ -95,30 +95,7 @@ public class EnrollRequest: Requestable {
                 case .failure(let cause):
                     callback(.failure(cause: cause))
                 case .success(let payload):
-                    guard
-                        let id = payload["id"] as? String,
-                        let token = payload["token"] as? String,
-                        let userId = payload["user_id"] as? String,
-                        let _ = payload["issuer"] as? String,
-                        let _ = payload["url"] as? String else {
-                            return callback(.failure(cause: GuardianError.invalidResponse))
-                    }
-
-                    var totp: OTPParameters? = nil
-                    if let totpData = payload["totp"] as? [String: Any], let totpSecret = totpData["secret"] as? String {
-                        let algorithm: HMACAlgorithm
-                        if let totpAlgorithm = totpData["algorithm"] as? String {
-                            guard let hmac = HMACAlgorithm(rawValue: totpAlgorithm) else { return callback(.failure(cause: GuardianError.invalidOTPAlgorithm)) }
-                            algorithm = hmac
-                        } else {
-                            algorithm = .sha1
-                        }
-                        let totpPeriod = totpData["period"] as? Int
-                        let totpDigits = totpData["digits"] as? Int
-                        totp = OTPParameters(base32Secret: totpSecret, algorithm: algorithm, digits: totpDigits, period: totpPeriod)
-                    }
-
-                    let enrollment = EnrolledDevice(id: id, userId: userId, deviceToken: token, notificationToken: self.notificationToken, signingKey: self.signingKey, totp: totp)
+                    let enrollment = EnrolledDevice(id: payload.identifier, userId: payload.userId, deviceToken: payload.token, notificationToken: self.notificationToken, signingKey: self.signingKey, totp: payload.totp)
                     callback(.success(payload: enrollment))
                 }
         }

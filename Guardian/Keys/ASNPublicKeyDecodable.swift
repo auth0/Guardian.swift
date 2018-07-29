@@ -69,14 +69,8 @@ extension ASNPublicKeyDecodable {
 
 extension VerificationKey where Self: ASNPublicKeyDecodable {
 
-    public var jwk: [String : Any]? {
+    public var jwk: RSAPublicJWK? {
         guard let attributes = self.attributes else { return nil }
-        return [
-            "kty": "RSA",
-            "alg": "RS256",
-            "use": "sig",
-            "e": attributes.exponent.base64URLEncodedString(),
-            "n": attributes.modulus.base64URLEncodedString(),
-        ]
+        return RSAPublicJWK(modulus: attributes.modulus.base64URLEncodedString(), exponent: attributes.exponent.base64URLEncodedString())
     }
 }

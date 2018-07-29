@@ -122,7 +122,7 @@ public struct EnrolledDevice: AuthenticationDevice {
 }
 
 /// Parameters for OTP codes
-public struct OTPParameters {
+public struct OTPParameters: Decodable {
     /// The TOTP secret, Base32 encoded
     public let base32Secret: String
     /// The TOTP algorithm
@@ -131,6 +131,13 @@ public struct OTPParameters {
     public let digits: Int
     /// The TOTP period, in seconds. Default is 30 seconds
     public let period: Int
+
+    enum CodingKeys: String, CodingKey {
+        case base32Secret = "secret"
+        case algorithm
+        case digits
+        case period
+    }
 
     public init(base32Secret: String, algorithm: HMACAlgorithm = .sha1, digits: Int =  6, period: Int = 30) {
         self.base32Secret = base32Secret

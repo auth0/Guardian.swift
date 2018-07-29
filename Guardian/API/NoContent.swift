@@ -23,6 +23,7 @@
 import Foundation
 
 /// Represents an empty API response
-public struct NoContent: Decodable {
+public struct NoContent: Codable {
     public init(from decoder: Decoder) throws {}
+    public func encode(to encoder: Encoder) throws {}
 }

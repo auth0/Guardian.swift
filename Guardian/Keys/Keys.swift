@@ -33,7 +33,7 @@ public protocol SigningKey {
 public protocol VerificationKey {
 
     /// JWK reprensentation of the verification key
-    var jwk: [String: Any]? { get }
+    var jwk: RSAPublicJWK? { get }
 }
 
 /// A Public Key that can be converted to `Data`

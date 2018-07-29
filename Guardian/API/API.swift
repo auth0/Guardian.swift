@@ -59,7 +59,7 @@ public protocol API {
 
      - returns: a request to execute or start
      */
-    func enroll(withTicket enrollmentTicket: String, identifier: String, name: String, notificationToken: String, verificationKey: VerificationKey) -> Request<[String: Any]>
+    func enroll(withTicket enrollmentTicket: String, identifier: String, name: String, notificationToken: String, verificationKey: VerificationKey) -> GuardianRequest<Device, Enrollment>
 
     /**
      Request to resolve a Guardian authentication request with a signed response
@@ -87,7 +87,7 @@ public protocol API {
 
      - returns: a Request ready to execute
      */
-    func resolve(transaction transactionToken: String, withChallengeResponse challengeResponse: String) -> Request<Void>
+    func resolve(transaction transactionToken: String, withChallengeResponse challengeResponse: String) -> GuardianRequest<Transaction, NoContent>
 
     /**
      Returns a DeviceAPI to manage the device data about an enrollment.

@@ -230,7 +230,7 @@ class APIClientSpec: QuickSpec {
                         .device(forEnrollmentId: ValidEnrollmentId, token: ValidEnrollmentToken)
                         .update(localIdentifier: ValidDeviceIdentifier, name: ValidDeviceName, notificationToken: ValidNotificationToken)
                         .start { result in
-                            expect(result).to(haveEnrollment(withId: ValidEnrollmentId, deviceIdentifier: ValidDeviceIdentifier, deviceName: ValidDeviceName, notificationService: ValidNotificationService, notificationToken: ValidNotificationToken))
+                            expect(result).to(beUpdatedDevice(deviceIdentifier: ValidDeviceIdentifier, deviceName: ValidDeviceName, notificationService: ValidNotificationService, notificationToken: ValidNotificationToken))
                             done()
                     }
                 }

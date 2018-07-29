@@ -55,6 +55,7 @@ public struct NetworkError: Error, CustomStringConvertible {
         case notAuthorized
         case rateLimited
         case serverError
+        case notFound
 
         var message: String {
             switch self {
@@ -78,6 +79,8 @@ public struct NetworkError: Error, CustomStringConvertible {
                 return "Exceeded number of request to API"
             case .serverError:
                 return "Server failed to respond"
+            case .notFound:
+                return "Resource was not found in the server"
             }
         }
 
@@ -85,6 +88,8 @@ public struct NetworkError: Error, CustomStringConvertible {
             switch statusCode {
             case 400:
                 return .badRequest
+            case 404:
+                return .notFound
             case 401, 403:
                 return .notAuthorized
             case 429:

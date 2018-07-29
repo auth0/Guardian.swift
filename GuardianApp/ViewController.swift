@@ -82,7 +82,13 @@ class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
             let request = Guardian
                 .enroll(forDomain: AppDelegate.guardianDomain, usingUri: result.value, notificationToken: AppDelegate.pushToken!, signingKey: signingKey, verificationKey: verificationKey)
             debugPrint(request)
-            request.start { result in
+            request
+                .on(response: {_, d in
+                    guard let data = d else { return }
+                    let body = String(data: data, encoding: .utf8) ?? "INVALID BODY"
+                    print(body)
+                })
+                .start { result in
                     switch result {
                     case .failure(let cause):
                         self.showError("Enroll failed", cause)

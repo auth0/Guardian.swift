@@ -227,7 +227,7 @@ class NetworkOperationSpec: QuickSpec {
             }
         }
 
-        fdescribe("on(request:, response:)") {
+        describe("on(request:, response:)") {
             var session: MockNSURLSession!
             var request: SyncRequest<[String: String]>!
 

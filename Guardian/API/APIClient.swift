@@ -22,6 +22,117 @@
 
 import Foundation
 
+struct PushCredentials: Codable {
+    let service = "APNS"
+    let token: String
+}
+
+public struct RSAPublicJWK: Codable {
+    public let keyType = "RSA"
+    public let usage = "sig"
+    public let algorithm = "RS256"
+    public let modulus: String
+    public let exponent: String
+
+    enum CodingKeys: String, CodingKey {
+        case keyType = "kty"
+        case usage = "use"
+        case algorithm = "alg"
+        case modulus = "n"
+        case exponent = "e"
+    }
+}
+
+public struct Device: Encodable {
+    let identifier: String
+    let name: String
+    let pushCredentials: PushCredentials
+    let publicKey: RSAPublicJWK
+
+    enum CodingKeys: String, CodingKey {
+        case identifier
+        case name
+        case pushCredentials = "push_credentials"
+        case publicKey = "public_key"
+    }
+}
+
+public struct Enrollment: Decodable{
+    let identifier: String
+    let token: String
+    let userId: String
+    let issuer: String
+    let totp: OTPParameters?
+
+    enum CodingKeys: String, CodingKey {
+        case identifier = "id"
+        case token
+        case userId = "user_id"
+        case issuer
+        case totp
+    }
+}
+
+public struct Transaction: Codable {
+    let challengeResponse: String
+
+    enum CodingKeys: String, CodingKey {
+        case challengeResponse = "challenge_response"
+    }
+}
+
+let errorBuilder = { (response: HTTPURLResponse, data: Data?) -> Error? in
+    guard let data = data, let json = try? JSONSerialization.jsonObject(with: data, options: []), let info = json as? [String: Any] else { return nil }
+    return GuardianError(info: info, statusCode: response.statusCode)
+}
+
+public struct GuardianRequest<T: Encodable, E: Decodable>: Operation {
+    let request: NetworkOperation<T, E>
+
+    static func new(method: HTTPMethod, url: URL, headers: [String: String] = [:], body: T? = nil) -> GuardianRequest<T, E>{
+        do {
+            let request: NetworkOperation<T, E> = try NetworkOperation(method: method, url: url, headers: headers, body: body)
+            return GuardianRequest(request: request)
+        } catch let error {
+            return GuardianRequest(method: method, url: url, error: error)
+        }
+    }
+
+    init(request: NetworkOperation<T, E>) {
+        self.request = request.mapError(transform: errorBuilder)
+    }
+
+    init(method: HTTPMethod, url: URL, error: Error) {
+        let request: NetworkOperation<T, E> = NetworkOperation(method: method, url: url, error: error)
+        self.init(request: request)
+    }
+
+    public func start(callback: @escaping (Result<E>) -> ()) {
+        self.request.start(callback: callback)
+    }
+
+    public func on(request: OnRequestEvent? = nil, response: OnResponseEvent? = nil) -> GuardianRequest<T, E> {
+        let request = self.request.on(request: request, response: response)
+        return GuardianRequest(request: request)
+    }
+
+    public func mapError(transform: @escaping (HTTPURLResponse, Data?) -> Error?) -> GuardianRequest<T, E> {
+        let request = self.request.mapError { (response, data) -> Error? in
+            return transform(response, data) ?? errorBuilder(response, data)
+        }
+        return GuardianRequest(request: request)
+    }
+
+    public func withURLSession(_ session: URLSession) -> GuardianRequest<T, E> {
+        let request = self.request.withURLSession(session)
+        return GuardianRequest(request: request)
+    }
+
+    public var description: String { return self.request.description }
+    public var debugDescription: String { return self.request.debugDescription }
+}
+
+
 struct APIClient: API {
 
     let baseUrl: URL
@@ -30,35 +141,26 @@ struct APIClient: API {
         self.baseUrl = baseUrl
     }
 
-    func enroll(withTicket enrollmentTicket: String, identifier: String, name: String, notificationToken: String, verificationKey: VerificationKey) -> Request<[String: Any]> {
+    func enroll(withTicket enrollmentTicket: String, identifier: String, name: String, notificationToken: String, verificationKey: VerificationKey) -> GuardianRequest<Device, Enrollment> {
+        let url = self.baseUrl.appendingPathComponent("api/enroll")
         do {
-            let url = self.baseUrl.appendingPathComponent("api/enroll")
-
+            let headers = ["Authorization": "Ticket id=\"\(enrollmentTicket)\""]
             guard let jwk = verificationKey.jwk else {
                 throw GuardianError.invalidPublicKey
             }
 
-            let payload: [String: Any] = [
-                "identifier": identifier,
-                "name": name,
-                "push_credentials": [
-                    "service": "APNS",
-                    "token": notificationToken
-                ],
-                "public_key": jwk
-            ]
-            return Request(method: "POST", url: url, payload: payload, headers: ["Authorization": "Ticket id=\"\(enrollmentTicket)\""])
-        } catch(let error) {
-            return FailedRequest(error: error)
+            let device = Device(identifier: identifier, name: name, pushCredentials: PushCredentials(token: notificationToken), publicKey: jwk)
+            return GuardianRequest.new(method: .post, url: url, headers: headers, body: device)
+        }
+        catch let error {
+            return GuardianRequest(method: .post, url: url, error: error)
         }
     }
 
-    func resolve(transaction transactionToken: String, withChallengeResponse challengeResponse: String) -> Request<Void> {
-        let payload = [
-            "challenge_response": challengeResponse
-        ]
+    func resolve(transaction transactionToken: String, withChallengeResponse challengeResponse: String) -> GuardianRequest<Transaction, NoContent> {
+        let transaction = Transaction(challengeResponse: challengeResponse)
         let url = self.baseUrl.appendingPathComponent("api/resolve-transaction")
-        return Request(method: "POST", url: url, payload: payload, headers: ["Authorization": "Bearer \(transactionToken)"])
+        return GuardianRequest.new(method: .post, url: url, headers: ["Authorization": "Bearer \(transactionToken)"], body: transaction)
     }
 
     func device(forEnrollmentId id: String, token: String) -> DeviceAPI {
