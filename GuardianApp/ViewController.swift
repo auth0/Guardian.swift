@@ -83,8 +83,8 @@ class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
                 .enroll(forDomain: AppDelegate.guardianDomain, usingUri: result.value, notificationToken: AppDelegate.pushToken!, signingKey: signingKey, verificationKey: verificationKey)
             debugPrint(request)
             request
-                .on(response: {_, d in
-                    guard let data = d else { return }
+                .on(response: { event in
+                    guard let data = event.data else { return }
                     let body = String(data: data, encoding: .utf8) ?? "INVALID BODY"
                     print(body)
                 })

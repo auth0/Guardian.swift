@@ -28,9 +28,9 @@ import Foundation
  - seealso: Guardian.enroll
  - seealso: Guardian.Enrollment
  */
-public class EnrollRequest: Requestable {
-
-    typealias T = EnrolledDevice
+public class EnrollRequest: Operation {
+    public typealias E = EnrolledDevice
+    public typealias T = Device
 
     private let api: API
     private let enrollmentTicket: String?
@@ -38,7 +38,7 @@ public class EnrollRequest: Requestable {
     private let notificationToken: String
     private let verificationKey: VerificationKey
     private let signingKey: SigningKey
-    private var request: GuardianRequest<Device, Enrollment>
+    private var request: Request<Device, Enrollment>
 
     init(api: API, enrollmentTicket: String? = nil, enrollmentUri: String? = nil, notificationToken: String, verificationKey: VerificationKey, signingKey: SigningKey) {
         self.api = api
@@ -54,24 +54,25 @@ public class EnrollRequest: Requestable {
             ticket = enrollmentTxId
         } else {
             let url = self.api.baseUrl.appendingPathComponent("api/enroll")
-            self.request = GuardianRequest(method: .post, url: url, error: GuardianError.invalidEnrollmentUri)
+            self.request = Request(method: .post, url: url, error: GuardianError.invalidEnrollmentUri)
             return
         }
 
         self.request = api.enroll(withTicket: ticket, identifier: EnrolledDevice.vendorIdentifier, name: EnrolledDevice.deviceName, notificationToken: notificationToken, verificationKey: self.verificationKey)
     }
 
-    /// Registers hooks to be called on specific events:
-    ///  * on request being sent
-    ///  * on response recieved (successful or not)
-    ///  * on network error
-    ///
-    /// - Parameters:
-    ///   - request: closure called with request information
-    ///   - response: closure called with response and data
-    ///   - error: closure called with network error
-    /// - Returns: itself for chaining
-    public func on(request: RequestHook? = nil, response: ResponseHook? = nil, error: ErrorHook? = nil) -> EnrollRequest {
+    public func on(request: OnRequestEvent? = nil, response: OnResponseEvent? = nil) -> Self {
+        self.request = self.request.on(request: request, response: response)
+        return self
+    }
+
+    public func withURLSession(_ session: URLSession) -> Self {
+        self.request = self.request.withURLSession(session)
+        return self
+    }
+
+    public func mapError(transform: @escaping (HTTPURLResponse, Data?) -> Error?) -> Self {
+        self.request = self.request.mapError(transform: transform)
         return self
     }
 

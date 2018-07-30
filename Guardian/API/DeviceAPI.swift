@@ -59,7 +59,7 @@ public protocol DeviceAPI {
      - important: The second factor will be disabled if this was the only 
                   enrollment
      */
-    func delete() -> GuardianRequest<NoContent, NoContent>
+    func delete() -> Request<NoContent, NoContent>
 
     /**
      Request to update the data of the device.
@@ -92,5 +92,5 @@ public protocol DeviceAPI {
 
      - returns: a Request ready to execute
      */
-    func update(localIdentifier identifier: String?, name: String?, notificationToken: String?) -> GuardianRequest<UpdatedDevice, UpdatedDevice>
+    func update(localIdentifier identifier: String?, name: String?, notificationToken: String?) -> Request<UpdatedDevice, UpdatedDevice>
 }

@@ -44,11 +44,11 @@ struct DeviceAPIClient: DeviceAPI {
         self.token = token
     }
     
-    func delete() -> GuardianRequest<NoContent, NoContent> {
-        return GuardianRequest.new(method: .delete, url: url, headers: ["Authorization": "Bearer \(token)"])
+    func delete() -> Request<NoContent, NoContent> {
+        return Request.new(method: .delete, url: url, headers: ["Authorization": "Bearer \(token)"])
     }
     
-    func update(localIdentifier identifier: String? = nil, name: String? = nil, notificationToken: String? = nil) -> GuardianRequest<UpdatedDevice, UpdatedDevice> {
+    func update(localIdentifier identifier: String? = nil, name: String? = nil, notificationToken: String? = nil) -> Request<UpdatedDevice, UpdatedDevice> {
         let credentials: PushCredentials?
         if let notificationToken = notificationToken {
             credentials = PushCredentials(token: notificationToken)
@@ -56,6 +56,6 @@ struct DeviceAPIClient: DeviceAPI {
             credentials = nil
         }
         let update = UpdatedDevice(identifier: identifier, name: name, pushCredentials: credentials)
-        return GuardianRequest.new(method: .patch, url: url, headers: ["Authorization": "Bearer \(token)"], body: update)
+        return Request.new(method: .patch, url: url, headers: ["Authorization": "Bearer \(token)"], body: update)
     }
 }

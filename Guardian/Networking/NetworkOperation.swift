@@ -39,43 +39,7 @@ func defaultHeaders(hasBody: Bool) throws -> [String: String] {
     return telemetry.merging(content) { _, new in new }
 }
 
-public protocol Operation: CustomDebugStringConvertible, CustomStringConvertible {
-    associatedtype T: Encodable
-    associatedtype E: Decodable
-
-    /**
-     Allows to change the URLSession used to perform the requests.
-     - parameter session: new URLSession to use to perform requests
-     - returns: itself for easy chaining
-     */
-    func withURLSession(_ session: URLSession) -> Self
-
-    /**
-     Registers hooks to be called on specific events:
-     * on request being sent
-     * on response recieved (successful or not)
-
-     - Parameters:
-     - request: closure called with request information
-     - response: closure called with response and data
-     - Returns: itself for chaining
-     */
-    func on(request: OnRequestEvent?, response: OnResponseEvent?) -> Self
-
-    /**
-     Allows to return a custom error when HTTP response is not 2xx. If nil is returned a default error will be used.
-     - parameter transform: closure that will be executed when a custom error is needed. It will receive the response and its body as parameters
-     - returns: istelf for chaining
-     */
-    func mapError(transform: @escaping (HTTPURLResponse, Data?) -> Error?) -> Self
-
-    /**
-     Executes the request in a background thread
-
-     - parameter callback: the termination callback, where the result is received
-     */
-    func start(callback: @escaping (Result<E>) -> ())
-}
+class _BundleGrapple: NSObject {}
 
 public struct NetworkOperation<T: Encodable, E: Decodable>: Operation {
 
