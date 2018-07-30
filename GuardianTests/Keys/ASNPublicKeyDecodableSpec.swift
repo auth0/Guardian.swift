@@ -22,7 +22,7 @@
 
 import Quick
 import Nimble
-import Guardian
+@testable import Guardian
 
 class ASNPublicKeyDecodableSpec: QuickSpec {
 

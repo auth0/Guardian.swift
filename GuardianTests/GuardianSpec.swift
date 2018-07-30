@@ -24,7 +24,7 @@ import Quick
 import Nimble
 import OHHTTPStubs
 
-import Guardian
+@testable import Guardian
 
 class GuardianSpec: QuickSpec {
     

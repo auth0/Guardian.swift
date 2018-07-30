@@ -53,6 +53,7 @@
 		5F07A5A6210F9C6C00819FA2 /* NoContentDecoderSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F07A5A5210F9C6C00819FA2 /* NoContentDecoderSpec.swift */; };
 		5F07A5A8210FA08B00819FA2 /* RequestSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F07A5A7210FA08B00819FA2 /* RequestSpec.swift */; };
 		5F07A5AA210FAF9600819FA2 /* JWT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F07A5A9210FAF9600819FA2 /* JWT.swift */; };
+		5F07A5AC210FD09F00819FA2 /* GuardianErrorSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F07A5AB210FD09F00819FA2 /* GuardianErrorSpec.swift */; };
 		5F1604C321062BEA00B0F25B /* RSA+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1604C221062BEA00B0F25B /* RSA+Utils.swift */; };
 		5F1604C5210636B500B0F25B /* ASNPublicKeyDecodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1604C4210636B500B0F25B /* ASNPublicKeyDecodable.swift */; };
 		5F1604C721063FA000B0F25B /* Keys+Generation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1604C621063FA000B0F25B /* Keys+Generation.swift */; };
@@ -198,6 +199,7 @@
 		5F07A5A5210F9C6C00819FA2 /* NoContentDecoderSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoContentDecoderSpec.swift; sourceTree = "<group>"; };
 		5F07A5A7210FA08B00819FA2 /* RequestSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestSpec.swift; sourceTree = "<group>"; };
 		5F07A5A9210FAF9600819FA2 /* JWT.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JWT.swift; sourceTree = "<group>"; };
+		5F07A5AB210FD09F00819FA2 /* GuardianErrorSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuardianErrorSpec.swift; sourceTree = "<group>"; };
 		5F1604C221062BEA00B0F25B /* RSA+Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RSA+Utils.swift"; sourceTree = "<group>"; };
 		5F1604C4210636B500B0F25B /* ASNPublicKeyDecodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ASNPublicKeyDecodable.swift; sourceTree = "<group>"; };
 		5F1604C621063FA000B0F25B /* Keys+Generation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Keys+Generation.swift"; sourceTree = "<group>"; };
@@ -310,6 +312,7 @@
 			children = (
 				5F07A5A2210F9A1200819FA2 /* NoContentSpec.swift */,
 				5F07A5A7210FA08B00819FA2 /* RequestSpec.swift */,
+				5F07A5AB210FD09F00819FA2 /* GuardianErrorSpec.swift */,
 			);
 			path = API;
 			sourceTree = "<group>";
@@ -802,6 +805,7 @@
 				5F1604FB2107AF2800B0F25B /* OneTimePasswordGeneratorSpec.swift in Sources */,
 				5F1604C92106493600B0F25B /* SigningKeyStorageSpec.swift in Sources */,
 				5F7969341DDABDDE006AC7BA /* AuthenticationSpec.swift in Sources */,
+				5F07A5AC210FD09F00819FA2 /* GuardianErrorSpec.swift in Sources */,
 				2374A9F31D672E4F00737F2E /* Responses.swift in Sources */,
 				5F07A5A0210F989100819FA2 /* EnrolledDeviceSpec.swift in Sources */,
 				5FF42BA821091F150082459F /* NetworkOperationSpec.swift in Sources */,
