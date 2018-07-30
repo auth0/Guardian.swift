@@ -26,6 +26,14 @@ public struct GuardianError: Swift.Error {
     let code: Code
     let description: String
     let info: [String: Any]
+    let cause: Swift.Error?
+
+    init(code: Code, description: String? = nil, info: [String: Any] = [:], cause: Swift.Error? = nil) {
+        self.code = code
+        self.description = description ?? code.rawValue
+        self.info = info
+        self.cause = cause
+    }
 
     enum Code: String {
         case invalidErollmentUri = "a0.guardian.internal.invalid.enrollment_uri"
