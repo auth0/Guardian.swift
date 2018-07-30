@@ -49,6 +49,7 @@
 		5F07A591210A6E8400819FA2 /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F07A590210A6E8400819FA2 /* NetworkError.swift */; };
 		5F07A593210F567900819FA2 /* State.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F07A592210F567900819FA2 /* State.swift */; };
 		5F07A595210F5CCA00819FA2 /* SimpleKeychain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F07A594210F5CC900819FA2 /* SimpleKeychain.framework */; };
+		5F07A597210F672200819FA2 /* NoContentDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F07A596210F672200819FA2 /* NoContentDecoder.swift */; };
 		5F1604C321062BEA00B0F25B /* RSA+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1604C221062BEA00B0F25B /* RSA+Utils.swift */; };
 		5F1604C5210636B500B0F25B /* ASNPublicKeyDecodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1604C4210636B500B0F25B /* ASNPublicKeyDecodable.swift */; };
 		5F1604C721063FA000B0F25B /* Keys+Generation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1604C621063FA000B0F25B /* Keys+Generation.swift */; };
@@ -191,6 +192,7 @@
 		5F07A590210A6E8400819FA2 /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
 		5F07A592210F567900819FA2 /* State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = State.swift; sourceTree = "<group>"; };
 		5F07A594210F5CC900819FA2 /* SimpleKeychain.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SimpleKeychain.framework; path = Carthage/Build/iOS/SimpleKeychain.framework; sourceTree = "<group>"; };
+		5F07A596210F672200819FA2 /* NoContentDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoContentDecoder.swift; sourceTree = "<group>"; };
 		5F1604C221062BEA00B0F25B /* RSA+Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RSA+Utils.swift"; sourceTree = "<group>"; };
 		5F1604C4210636B500B0F25B /* ASNPublicKeyDecodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ASNPublicKeyDecodable.swift; sourceTree = "<group>"; };
 		5F1604C621063FA000B0F25B /* Keys+Generation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Keys+Generation.swift"; sourceTree = "<group>"; };
@@ -408,6 +410,7 @@
 				5F07A58A210A6D5A00819FA2 /* Additions.swift */,
 				5F07A58C210A6DF000819FA2 /* CodableAdditions.swift */,
 				5F07A590210A6E8400819FA2 /* NetworkError.swift */,
+				5F07A596210F672200819FA2 /* NoContentDecoder.swift */,
 			);
 			path = Networking;
 			sourceTree = "<group>";
@@ -756,6 +759,7 @@
 				231687191DDA07FD00B09526 /* A0SHA.m in Sources */,
 				5F6133892101273300BCC182 /* AuthenticationCategory.swift in Sources */,
 				5F07A58B210A6D5A00819FA2 /* Additions.swift in Sources */,
+				5F07A597210F672200819FA2 /* NoContentDecoder.swift in Sources */,
 				2377A6431D806DFA00D6FB04 /* API.swift in Sources */,
 				232A85DA1D6BDFCA00048DF7 /* DeviceAPIClient.swift in Sources */,
 			);

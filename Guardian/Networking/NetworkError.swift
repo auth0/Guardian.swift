@@ -68,7 +68,7 @@ public struct NetworkError: Error, CustomStringConvertible {
             case .failedResponse:
                 return "Server returned with a non 2XX status code"
             case .invalidResponse:
-                return "Server returned a non JSON response"
+                return "Server returned a response in an unknown format"
             case .missingResponse:
                 return "No response body was received"
             case .badRequest:

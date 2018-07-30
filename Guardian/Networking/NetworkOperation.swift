@@ -183,17 +183,22 @@ public struct NetworkOperation<T: Encodable, E: Decodable>: Operation {
             return .failure(cause: error)
         }
 
-        guard httpResponse.isJSON else {
-            return .failure(cause: NetworkError(code: .invalidResponse, statusCode: statusCode))
-        }
-
-        let payloadData = httpResponse.noContent && data == nil ? "{}".data(using: .utf8) : data
+        let payloadData = httpResponse.noContent && data == nil ? Data() : data
         guard let data = payloadData else {
             return .failure(cause: NetworkError(code: .missingResponse, statusCode: statusCode))
         }
 
+        guard httpResponse.isJSON || httpResponse.noContent else {
+            return .failure(cause: NetworkError(code: .invalidResponse, statusCode: statusCode))
+        }
+
         do {
-            let body = try decode(E.self, from: data)
+            let body: E
+            if httpResponse.noContent {
+                body = try E(from: NoContentDecoder())
+            } else {
+                body = try decode(E.self, from: data)
+            }
             return .success(payload: body)
         } catch let error {
             return .failure(cause: NetworkError(code: .invalidResponse, statusCode: statusCode, cause: error))
