@@ -21,7 +21,6 @@
 		235B4B261DA3F85A00CEB5DC /* A0HMAC.h in Headers */ = {isa = PBXBuildFile; fileRef = 235B4B251DA3F85A00CEB5DC /* A0HMAC.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		237246751D7DC63B00CCF635 /* Guardian.swift in Sources */ = {isa = PBXBuildFile; fileRef = 237246741D7DC63B00CCF635 /* Guardian.swift */; };
 		2374A9E41D670F5900737F2E /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2374A9E01D670F5900737F2E /* APIClient.swift */; };
-		2374A9E51D670F5900737F2E /* LegacyGuardianError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2374A9E11D670F5900737F2E /* LegacyGuardianError.swift */; };
 		2374A9EB1D67175200737F2E /* APIClientSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2374A9EA1D67175200737F2E /* APIClientSpec.swift */; };
 		2374A9EF1D672ABD00737F2E /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2374A9EE1D672ABD00737F2E /* Result.swift */; };
 		2374A9F31D672E4F00737F2E /* Responses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2374A9F21D672E4F00737F2E /* Responses.swift */; };
@@ -169,7 +168,6 @@
 		235B4B251DA3F85A00CEB5DC /* A0HMAC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = A0HMAC.h; sourceTree = "<group>"; };
 		237246741D7DC63B00CCF635 /* Guardian.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Guardian.swift; sourceTree = "<group>"; };
 		2374A9E01D670F5900737F2E /* APIClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
-		2374A9E11D670F5900737F2E /* LegacyGuardianError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = LegacyGuardianError.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		2374A9EA1D67175200737F2E /* APIClientSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIClientSpec.swift; sourceTree = "<group>"; };
 		2374A9EE1D672ABD00737F2E /* Result.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Result.swift; sourceTree = "<group>"; };
 		2374A9F21D672E4F00737F2E /* Responses.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Responses.swift; sourceTree = "<group>"; };
@@ -424,7 +422,6 @@
 		5F1605012108D15600B0F25B /* Networking */ = {
 			isa = PBXGroup;
 			children = (
-				2374A9E11D670F5900737F2E /* LegacyGuardianError.swift */,
 				2374A9EE1D672ABD00737F2E /* Result.swift */,
 				5FF42BA421091AD10082459F /* NetworkOperation.swift */,
 				5F07A58421092C7D00819FA2 /* ClientInfo.swift */,
@@ -756,7 +753,6 @@
 				5FF42BA521091AD10082459F /* NetworkOperation.swift in Sources */,
 				23B7A0471DD4E7820038124A /* A0RSA.m in Sources */,
 				5F1DB45B1DA4649600264437 /* Authentication.swift in Sources */,
-				2374A9E51D670F5900737F2E /* LegacyGuardianError.swift in Sources */,
 				5F07A59D210F849E00819FA2 /* GuardianError.swift in Sources */,
 				5F1604F421068FCC00B0F25B /* AuthenticationDevice.swift in Sources */,
 				5F61338F210128C800BCC182 /* AuthenticationLocation.swift in Sources */,

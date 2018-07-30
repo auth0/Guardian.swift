@@ -26,7 +26,7 @@ func export(key: SecKey) throws -> Data {
     var error: Unmanaged<CFError>?
     guard let data: NSData = SecKeyCopyExternalRepresentation(key, &error) else {
         let cause = error!.takeRetainedValue() as Swift.Error
-        throw LegacyGuardianError.invalidAsymmetricKey(cause: cause)
+        throw GuardianError(code: .invalidAsymmetricKey, cause: cause)
     }
     return data as Data
 }
@@ -42,14 +42,14 @@ func createKey(from data: Data) throws -> SecKey {
                                          options as CFDictionary,
                                          &error) else {
                                             let cause = error!.takeRetainedValue() as Swift.Error
-                                            throw LegacyGuardianError.invalidAsymmetricKey(cause: cause)
+                                            throw GuardianError(code: .invalidAsymmetricKey, cause: cause)
     }
     return key
 }
 
 func publicKey(from key: SecKey) throws -> SecKey {
     guard let publicKey = SecKeyCopyPublicKey(key) else {
-        throw LegacyGuardianError.notFoundPublicKey
+        throw GuardianError(code: .notFoundPublicKey)
     }
     return publicKey
 }
@@ -64,7 +64,7 @@ func retrieveKey(of tag: String) throws -> SecKey {
     var out: CFTypeRef?
     let result = SecItemCopyMatching(query as CFDictionary, &out)
     guard errSecSuccess == result else {
-        throw LegacyGuardianError.notFoundPrivateKey(tag: tag)
+        throw GuardianError(code: .notFoundPrivateKey, description: "key with tag \(tag) not found")
     }
 
     return (out as! SecKey)

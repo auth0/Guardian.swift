@@ -241,7 +241,7 @@ class AuthenticationSpec: QuickSpec {
                     Guardian.authentication(forDomain: Domain, device: device)
                         .handleAction(withIdentifier: "com.auth0.notification.authentication.something", notification: notification)
                         .start { result in
-                            expect(result).to(haveGuardianError(withErrorCode: "a0.guardian.internal.invalid_notification_action_identifier"))
+                            expect(result).to(haveGuardianError(withErrorCode: "a0.guardian.internal.invalid.notification_action_identifier"))
                             done()
                     }
                 }
@@ -446,7 +446,7 @@ class AuthenticationSpec: QuickSpec {
                         Guardian.authentication(url: ValidURL, device: device)
                             .handleAction(withIdentifier: "com.auth0.notification.authentication.something", notification: notification)
                             .start { result in
-                                expect(result).to(haveGuardianError(withErrorCode: "a0.guardian.internal.invalid_notification_action_identifier"))
+                                expect(result).to(haveGuardianError(withErrorCode: "a0.guardian.internal.invalid.notification_action_identifier"))
                                 done()
                         }
                     }

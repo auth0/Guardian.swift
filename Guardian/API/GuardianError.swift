@@ -23,10 +23,10 @@
 import Foundation
 
 public struct GuardianError: Swift.Error {
-    let code: String
-    let description: String
-    let info: [String: Any]
-    let cause: Swift.Error?
+    public let code: String
+    public let description: String
+    public let info: [String: Any]
+    public let cause: Swift.Error?
 
     init(code: Code, description: String? = nil, info: [String: Any] = [:], cause: Swift.Error? = nil) {
         self.code = code.rawValue

@@ -151,7 +151,7 @@ class GuardianSpec: QuickSpec {
                     Guardian
                         .enroll(forDomain: Domain, usingUri: enrollmentUri, notificationToken: ValidNotificationToken, signingKey: signingKey, verificationKey: verificationKey)
                         .start { result in
-                            expect(result).to(haveGuardianError(withErrorCode: "a0.guardian.internal.invalid_enrollment_uri"))
+                            expect(result).to(haveGuardianError(withErrorCode: "a0.guardian.internal.invalid.enrollment_uri"))
                             done()
                     }
                 }
@@ -270,7 +270,7 @@ class GuardianSpec: QuickSpec {
                     Guardian
                         .enroll(url: ValidURL, usingUri: enrollmentUri, notificationToken: ValidNotificationToken, signingKey: signingKey, verificationKey: verificationKey)
                         .start { result in
-                            expect(result).to(haveGuardianError(withErrorCode: "a0.guardian.internal.invalid_enrollment_uri"))
+                            expect(result).to(haveGuardianError(withErrorCode: "a0.guardian.internal.invalid.enrollment_uri"))
                             done()
                     }
                 }

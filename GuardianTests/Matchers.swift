@@ -207,19 +207,15 @@ func haveEnrollment(withBaseUrl baseURL: URL, enrollmentId: String, deviceToken:
     }
 }
 
-func haveGuardianError<T>(withErrorCode errorCode: String? = nil, andStatusCode statusCode: Int? = nil) -> Predicate<Result<T>> {
+func haveGuardianError<T>(withErrorCode errorCode: String? = nil) -> Predicate<Result<T>> {
     return Predicate.define("be a Guardian error response with") { expression, msg -> PredicateResult in
         var message = msg
         if let errorCode = errorCode {
             message = message.appended(details: " <errorCode: \(errorCode)>")
         }
-        if let statusCode = statusCode {
-            message = message.appended(details: " <statusCode: \(statusCode)>")
-        }
         if let actual = try expression.evaluate(), case .failure(let cause) = actual {
-            if let error = cause as? LegacyGuardianError {
-                let status = (errorCode == nil || errorCode == error.errorCode) &&
-                    (statusCode == nil || statusCode == error.statusCode)
+            if let error = cause as? GuardianError {
+                let status = (errorCode == nil || errorCode == error.code)
                 return PredicateResult(bool: status, message: message)
             }
         }

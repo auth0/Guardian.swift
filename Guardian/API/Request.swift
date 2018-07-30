@@ -23,8 +23,9 @@
 import Foundation
 
 let errorBuilder = { (response: HTTPURLResponse, data: Data?) -> Swift.Error? in
-    guard let data = data, let json = try? JSONSerialization.jsonObject(with: data, options: []), let info = json as? [String: Any] else { return nil }
-    return LegacyGuardianError(info: info, statusCode: response.statusCode)
+    let decoder = JSONDecoder()
+    guard let data = data else { return nil }
+    return try? decoder.decode(GuardianError.self, from: data)
 }
 
 public struct Request<T: Encodable, E: Decodable>: Operation {

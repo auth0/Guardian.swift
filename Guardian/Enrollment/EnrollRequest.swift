@@ -54,7 +54,7 @@ public class EnrollRequest: Operation {
             ticket = enrollmentTxId
         } else {
             let url = self.api.baseUrl.appendingPathComponent("api/enroll")
-            self.request = Request(method: .post, url: url, error: LegacyGuardianError.invalidEnrollmentUri)
+            self.request = Request(method: .post, url: url, error: GuardianError(code: .invalidErollmentUri))
             return
         }
 
