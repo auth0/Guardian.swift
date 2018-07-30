@@ -40,7 +40,7 @@ class JWTSpec: QuickSpec {
                 var jwt: String?
 
                 beforeEach {
-                    jwt = try? JWT.encode(claims: ["field": "value"], signingKey: signingKey.secKey)
+                    jwt = try? JsonWebToken.encode(claims: ["field": "value"], signingKey: signingKey.secKey)
                 }
 
                 it("should not return nil") {
@@ -52,19 +52,19 @@ class JWTSpec: QuickSpec {
                 }
 
                 it("should verify successfuly with correct key") {
-                    let claims = try? JWT.verify(string: jwt!, publicKey: verificationKey.secKey)
+                    let claims = try? JsonWebToken.verify(string: jwt!, publicKey: verificationKey.secKey)
                     expect(claims).toNot(beNil())
                 }
 
                 it("should fail verify with incorrect key") {
-                    let claims = try? JWT.verify(string: jwt!, publicKey: anotherVerificationKey.secKey)
+                    let claims = try? JsonWebToken.verify(string: jwt!, publicKey: anotherVerificationKey.secKey)
                     expect(claims).to(beNil())
                 }
             }
 
             describe("encode with generated keys") {
 
-                let jwt = try? JWT.encode(claims: ["string": "hello", "number": 7, "boolean": true],
+                let jwt = try? JsonWebToken.encode(claims: ["string": "hello", "number": 7, "boolean": true],
                                           signingKey: signingKey.secKey)
 
                 it("should not return nil") {
@@ -73,7 +73,7 @@ class JWTSpec: QuickSpec {
 
                 describe("should verify successfuly with correct key") {
 
-                    let claims = try? JWT.verify(string: jwt!, publicKey: verificationKey.secKey)
+                    let claims = try? JsonWebToken.verify(string: jwt!, publicKey: verificationKey.secKey)
 
                     it("should not be nil") {
                         expect(claims).toNot(beNil())
@@ -102,7 +102,7 @@ class JWTSpec: QuickSpec {
                 }
 
                 it("should fail verify with incorrect key") {
-                    let claims = try? JWT.verify(string: jwt!, publicKey: anotherVerificationKey.secKey)
+                    let claims = try? JsonWebToken.verify(string: jwt!, publicKey: anotherVerificationKey.secKey)
                     expect(claims).to(beNil())
                 }
             }

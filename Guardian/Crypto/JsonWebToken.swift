@@ -22,7 +22,7 @@
 
 import Foundation
 
-struct JWT {
+struct JsonWebToken {
 
     static func encode(claims: [String: Any],
                        signingKey: SecKey) throws -> String {

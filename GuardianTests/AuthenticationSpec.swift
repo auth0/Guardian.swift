@@ -470,7 +470,7 @@ func checkJWT(request: URLRequest, accepted: Bool, reason: String? = nil, challe
     let currentTime = Int(Date().timeIntervalSince1970)
     if let payload = request.a0_payload,
         let challengeResponse = payload["challenge_response"] as? String,
-        let claims = try? JWT.verify(string: challengeResponse, publicKey: verificationKey.secKey),
+        let claims = try? JsonWebToken.verify(string: challengeResponse, publicKey: verificationKey.secKey),
         let aud = claims["aud"] as? String,
         aud == "https://tenant.guardian.auth0.com/also/works/in/appliance/api/resolve-transaction",
         let sub = claims["sub"] as? String,

@@ -10,7 +10,7 @@
 		231687171DDA071A00B09526 /* A0SHA.h in Headers */ = {isa = PBXBuildFile; fileRef = 231687161DDA071A00B09526 /* A0SHA.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		231687191DDA07FD00B09526 /* A0SHA.m in Sources */ = {isa = PBXBuildFile; fileRef = 231687181DDA07FD00B09526 /* A0SHA.m */; };
 		232A85DA1D6BDFCA00048DF7 /* DeviceAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 232A85D91D6BDFCA00048DF7 /* DeviceAPIClient.swift */; };
-		2331BFEB1DD5260D0047F1D4 /* JWT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2331BFEA1DD5260D0047F1D4 /* JWT.swift */; };
+		2331BFEB1DD5260D0047F1D4 /* JsonWebToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2331BFEA1DD5260D0047F1D4 /* JsonWebToken.swift */; };
 		2331C01A1DD5FC6F0047F1D4 /* Data+Base64URL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2331C0191DD5FC6F0047F1D4 /* Data+Base64URL.swift */; };
 		233F75271D92F27000B8C15C /* Notification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 233F75261D92F27000B8C15C /* Notification.swift */; };
 		233F75291D93076600B8C15C /* NotificationSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 233F75281D93076600B8C15C /* NotificationSpec.swift */; };
@@ -155,7 +155,7 @@
 		231687161DDA071A00B09526 /* A0SHA.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = A0SHA.h; sourceTree = "<group>"; };
 		231687181DDA07FD00B09526 /* A0SHA.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = A0SHA.m; sourceTree = "<group>"; };
 		232A85D91D6BDFCA00048DF7 /* DeviceAPIClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = DeviceAPIClient.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
-		2331BFEA1DD5260D0047F1D4 /* JWT.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JWT.swift; sourceTree = "<group>"; };
+		2331BFEA1DD5260D0047F1D4 /* JsonWebToken.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonWebToken.swift; sourceTree = "<group>"; };
 		2331BFEC1DD52ED50047F1D4 /* JWTSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JWTSpec.swift; sourceTree = "<group>"; };
 		2331C0191DD5FC6F0047F1D4 /* Data+Base64URL.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+Base64URL.swift"; sourceTree = "<group>"; };
 		233F75261D92F27000B8C15C /* Notification.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Notification.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
@@ -365,7 +365,7 @@
 				231687161DDA071A00B09526 /* A0SHA.h */,
 				231687181DDA07FD00B09526 /* A0SHA.m */,
 				234004EE1D909C91009AB77C /* Base32.swift */,
-				2331BFEA1DD5260D0047F1D4 /* JWT.swift */,
+				2331BFEA1DD5260D0047F1D4 /* JsonWebToken.swift */,
 				2331C0191DD5FC6F0047F1D4 /* Data+Base64URL.swift */,
 			);
 			path = Crypto;
@@ -774,7 +774,7 @@
 				5FAE6727210250D000F149A3 /* DataRSAPrivateKey.swift in Sources */,
 				5FAE672121024CDA00F149A3 /* Keys.swift in Sources */,
 				5F61338B2101286200BCC182 /* AuthenticationNotification.swift in Sources */,
-				2331BFEB1DD5260D0047F1D4 /* JWT.swift in Sources */,
+				2331BFEB1DD5260D0047F1D4 /* JsonWebToken.swift in Sources */,
 				5FAE6729210250E300F149A3 /* AsymmetricPublicKey.swift in Sources */,
 				5FAE67252102509600F149A3 /* KeychainRSAPrivateKey.swift in Sources */,
 				231687191DDA07FD00B09526 /* A0SHA.m in Sources */,

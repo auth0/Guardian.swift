@@ -154,7 +154,7 @@ struct RSAAuthentication: Authentication {
             if let reason = reason {
                 jwtPayload["auth0_guardian_reason"] = reason
             }
-            let jwt = try JWT.encode(claims: jwtPayload, signingKey: self.device.signingKey.secKey)
+            let jwt = try JsonWebToken.encode(claims: jwtPayload, signingKey: self.device.signingKey.secKey)
             return self.api.resolve(transaction: transactionToken, withChallengeResponse: jwt)
         } catch(let error) {
             return Request(method: .post, url: path, error: error)
