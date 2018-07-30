@@ -32,7 +32,7 @@ class NotificationController: UIViewController {
     @IBOutlet var dateLabel: UILabel!
 
     @IBAction func allowAction(_ sender: AnyObject) {
-        guard let notification = notification, let enrollment = AppDelegate.enrollment else {
+        guard let notification = notification, let enrollment = AppDelegate.state else {
             return self.dismiss(animated: true, completion: nil)
         }
         let request = Guardian
@@ -53,7 +53,7 @@ class NotificationController: UIViewController {
     }
 
     @IBAction func denyAction(_ sender: AnyObject) {
-        guard let notification = notification, let enrollment = AppDelegate.enrollment else {
+        guard let notification = notification, let enrollment = AppDelegate.state else {
             return self.dismiss(animated: true, completion: nil)
         }
         let request = Guardian
@@ -76,7 +76,7 @@ class NotificationController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        guard let notification = notification, let _ = AppDelegate.enrollment else {
+        guard let notification = notification, let _ = AppDelegate.state else {
             return
         }
 

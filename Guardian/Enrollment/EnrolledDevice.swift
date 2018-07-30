@@ -122,7 +122,7 @@ public struct EnrolledDevice: AuthenticationDevice {
 }
 
 /// Parameters for OTP codes
-public struct OTPParameters: Decodable {
+public struct OTPParameters: Codable {
     /// The TOTP secret, Base32 encoded
     public let base32Secret: String
     /// The TOTP algorithm

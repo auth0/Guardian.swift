@@ -47,6 +47,8 @@
 		5F07A58D210A6DF000819FA2 /* CodableAdditions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F07A58C210A6DF000819FA2 /* CodableAdditions.swift */; };
 		5F07A58F210A6E5900819FA2 /* NoContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F07A58E210A6E5900819FA2 /* NoContent.swift */; };
 		5F07A591210A6E8400819FA2 /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F07A590210A6E8400819FA2 /* NetworkError.swift */; };
+		5F07A593210F567900819FA2 /* State.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F07A592210F567900819FA2 /* State.swift */; };
+		5F07A595210F5CCA00819FA2 /* SimpleKeychain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F07A594210F5CC900819FA2 /* SimpleKeychain.framework */; };
 		5F1604C321062BEA00B0F25B /* RSA+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1604C221062BEA00B0F25B /* RSA+Utils.swift */; };
 		5F1604C5210636B500B0F25B /* ASNPublicKeyDecodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1604C4210636B500B0F25B /* ASNPublicKeyDecodable.swift */; };
 		5F1604C721063FA000B0F25B /* Keys+Generation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1604C621063FA000B0F25B /* Keys+Generation.swift */; };
@@ -187,6 +189,8 @@
 		5F07A58C210A6DF000819FA2 /* CodableAdditions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodableAdditions.swift; sourceTree = "<group>"; };
 		5F07A58E210A6E5900819FA2 /* NoContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoContent.swift; sourceTree = "<group>"; };
 		5F07A590210A6E8400819FA2 /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
+		5F07A592210F567900819FA2 /* State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = State.swift; sourceTree = "<group>"; };
+		5F07A594210F5CC900819FA2 /* SimpleKeychain.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SimpleKeychain.framework; path = Carthage/Build/iOS/SimpleKeychain.framework; sourceTree = "<group>"; };
 		5F1604C221062BEA00B0F25B /* RSA+Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RSA+Utils.swift"; sourceTree = "<group>"; };
 		5F1604C4210636B500B0F25B /* ASNPublicKeyDecodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ASNPublicKeyDecodable.swift; sourceTree = "<group>"; };
 		5F1604C621063FA000B0F25B /* Keys+Generation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Keys+Generation.swift"; sourceTree = "<group>"; };
@@ -268,6 +272,7 @@
 			files = (
 				23FE50831D949EC400407A1D /* Guardian.framework in Frameworks */,
 				5F2C3FB420F50C8D001DA713 /* QRCodeReader.framework in Frameworks */,
+				5F07A595210F5CCA00819FA2 /* SimpleKeychain.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -477,6 +482,7 @@
 				5F2037F61D5E22590005D2E2 /* LaunchScreen.storyboard */,
 				5F2037F91D5E22590005D2E2 /* Info.plist */,
 				234B25B11D9DA37D00078FA0 /* NotificationController.swift */,
+				5F07A592210F567900819FA2 /* State.swift */,
 			);
 			path = GuardianApp;
 			sourceTree = "<group>";
@@ -484,6 +490,7 @@
 		5F2037FD1D5E40A90005D2E2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				5F07A594210F5CC900819FA2 /* SimpleKeychain.framework */,
 				5F2C3FB320F50C8D001DA713 /* QRCodeReader.framework */,
 				5F2037FE1D5E40C70005D2E2 /* Quick.framework */,
 				5F2037FF1D5E40C70005D2E2 /* OHHTTPStubs.framework */,
@@ -694,6 +701,7 @@
 			);
 			inputPaths = (
 				"$(SRCROOT)/Carthage/Build/iOS/QRCodeReader.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/SimpleKeychain.framework",
 			);
 			name = Carthage;
 			outputPaths = (
@@ -789,6 +797,7 @@
 				234B25B21D9DA37D00078FA0 /* NotificationController.swift in Sources */,
 				5F2037F01D5E22590005D2E2 /* ViewController.swift in Sources */,
 				5F2037EE1D5E22590005D2E2 /* AppDelegate.swift in Sources */,
+				5F07A593210F567900819FA2 /* State.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

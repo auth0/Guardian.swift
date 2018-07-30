@@ -58,7 +58,7 @@ public func hotp(parameters: OTPParameters) throws -> HOTP {
     return try OneTimePasswordGenerator(parameters: parameters)
 }
 
-public enum HMACAlgorithm: String, Decodable {
+public enum HMACAlgorithm: String, Codable {
     case sha1
     case sha256
     case sha512

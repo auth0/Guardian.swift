@@ -28,13 +28,10 @@ import UserNotifications
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     static let guardianDomain = "guardian-demo.guardian.auth0.com"
-    static var enrollment: EnrolledDevice? = nil
     static var pushToken: String? = nil
-
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
 
         let guardianCategory = Guardian.AuthenticationCategory.default
 
@@ -98,6 +95,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 }
 
+extension AppDelegate {
+    static var state: GuardianState? {
+        get {
+            return GuardianState.load()
+        }
+        set {
+            if newValue == nil {
+                GuardianState.delete()
+            } else {
+                try? newValue?.save()
+            }
+        }
+    }
+}
+
 extension AppDelegate: UNUserNotificationCenterDelegate {
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         let identifier = response.actionIdentifier
@@ -107,7 +119,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         print("identifier: \(identifier), userInfo: \(userInfo)")
 
         if let notification = Guardian.notification(from: userInfo),
-            let enrollment = AppDelegate.enrollment
+            let enrollment = AppDelegate.state
         {
             if UNNotificationDefaultActionIdentifier == identifier { // App opened from notification
                 show(notification: notification)
