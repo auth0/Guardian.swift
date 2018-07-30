@@ -83,7 +83,7 @@ public struct EnrolledDevice: AuthenticationDevice {
      an enrolled devicefrom there
      */
     public var name: String {
-        return UIDevice.current.name
+        return EnrolledDevice.deviceName
     }
 
     /**
@@ -144,10 +144,6 @@ public struct OTPParameters: Codable {
         self.algorithm = algorithm
         self.digits = digits
         self.period = period
-    }
-
-    public init(base32Secret: String, algorithm: HMACAlgorithm?, digits: Int?, period: Int?) {
-        self.init(base32Secret: base32Secret, algorithm: algorithm ?? .sha1, digits: digits ?? 6, period: period ?? 30)
     }
 
 }

@@ -363,9 +363,13 @@ class SyncRequest<T: Decodable> {
     var requestEvent: RequestEvent? = nil
     var responseEvent: ResponseEvent? = nil
 
-    init(session: URLSession) {
-        self.request = try! NetworkOperation(method: .get, url: url)
-            .withURLSession(session)
+    convenience init(session: URLSession) {
+        self.init(request: try! NetworkOperation(method: .get, url: url)
+            .withURLSession(session))
+    }
+
+    init(request: NetworkOperation<[String: String], T>) {
+        self.request = request
         self.request = self.request.on(request: { [weak self] r in
             self?.requestEvent = r
             }, response: { [weak self] r in

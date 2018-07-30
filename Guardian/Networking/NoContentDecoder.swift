@@ -29,14 +29,18 @@ struct NoContentDecoder: Decoder {
     var userInfo: [CodingUserInfoKey : Any] = [:]
 
     func container<Key>(keyedBy type: Key.Type) throws -> KeyedDecodingContainer<Key> where Key : CodingKey {
-        throw NetworkError(code: .invalidResponse)
+        throw NoContentDecoder.Error()
     }
 
     func unkeyedContainer() throws -> UnkeyedDecodingContainer {
-        throw NetworkError(code: .invalidResponse)
+        throw NoContentDecoder.Error()
     }
 
     func singleValueContainer() throws -> SingleValueDecodingContainer {
-        throw NetworkError(code: .invalidResponse)
+        throw NoContentDecoder.Error()
+    }
+
+    private struct Error: Swift.Error {
+        var localizedDescription: String = "Should not decode anything"
     }
 }

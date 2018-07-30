@@ -1,4 +1,4 @@
-// NoContent.swift
+// EnrolledDeviceSpec.swift
 //
 // Copyright (c) 2018 Auth0 (http://auth0.com)
 //
@@ -20,11 +20,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import Foundation
+import Quick
+import Nimble
+import Guardian
 
-/// Represents an empty API response
-public struct NoContent: Codable {
-    init() {}
-    public init(from decoder: Decoder) throws {}
-    public func encode(to encoder: Encoder) throws {}
+class EnrolledDeviceSpec: QuickSpec {
+
+    override func spec() {
+
+        describe("init(id:, deviceToken:, notificationToken:, signingKey:, totp:)") {
+
+            var device: EnrolledDevice!
+
+            beforeEach {
+                device = EnrolledDevice(id: UUID().uuidString, userId: UUID().uuidString, deviceToken: UUID().uuidString, notificationToken: UUID().uuidString, signingKey: try! DataRSAPrivateKey.new())
+            }
+
+            it("should return device name") {
+                expect(device.name).to(equal(UIDevice.current.name))
+            }
+
+            it("should return vendor identifier") {
+                expect(device.localIdentifier).to(equal(UIDevice.current.identifierForVendor?.uuidString))
+            }
+        }
+    }
 }

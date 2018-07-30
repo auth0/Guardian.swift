@@ -1,4 +1,4 @@
-// NoContent.swift
+// NoContentSpec.swift
 //
 // Copyright (c) 2018 Auth0 (http://auth0.com)
 //
@@ -20,11 +20,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import Foundation
+import Quick
+import Nimble
+@testable import Guardian
 
-/// Represents an empty API response
-public struct NoContent: Codable {
-    init() {}
-    public init(from decoder: Decoder) throws {}
-    public func encode(to encoder: Encoder) throws {}
+class NoContentSpec: QuickSpec {
+
+    override func spec() {
+
+        describe("Decodable") {
+
+            it("should load from NoContent decoder") {
+                expect(try? NoContent(from: NoContentDecoder())).toNot(beNil())
+            }
+
+            it("should load from JSON decoder with data") {
+                expect(try? JSONDecoder().decode(NoContent.self, from: "{\"key\":\"value\"}".data(using: .utf8)!)).toNot(beNil())
+            }
+
+        }
+
+        describe("Encodable") {
+
+            it("should fail to encode json") {
+                expect {
+                    return try JSONEncoder().encode(NoContent())
+                }.to(throwError())
+            }
+        }
+    }
 }

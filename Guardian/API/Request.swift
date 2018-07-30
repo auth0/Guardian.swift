@@ -32,15 +32,15 @@ public struct Request<T: Encodable, E: Decodable>: Operation {
 
     static func new(method: HTTPMethod, url: URL, headers: [String: String] = [:], body: T? = nil) -> Request<T, E>{
         do {
-            let request: NetworkOperation<T, E> = try NetworkOperation(method: method, url: url, headers: headers, body: body)
+            let request: NetworkOperation<T, E> = try NetworkOperation(method: method, url: url, headers: headers, body: body).mapError(transform: errorBuilder)
             return Request(request: request)
         } catch let error {
             return Request(method: method, url: url, error: error)
         }
     }
 
-    init(request: NetworkOperation<T, E>) {
-        self.request = request.mapError(transform: errorBuilder)
+    private init(request: NetworkOperation<T, E>) {
+        self.request = request
     }
 
     init(method: HTTPMethod, url: URL, error: Swift.Error) {
