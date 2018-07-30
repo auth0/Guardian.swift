@@ -120,7 +120,7 @@ public extension Authentication {
 
 struct RSAAuthentication: Authentication {
 
-    private static let challengeResponseExpiresInSecs = 30
+    private static let reponseExpiration: TimeInterval = 30
 
     let api: API
     let device: AuthenticationDevice
@@ -140,25 +140,23 @@ struct RSAAuthentication: Authentication {
 
     func resolve(transaction transactionToken: String, withChallenge challenge: String, accepted: Bool, reason: String? = nil) -> Request<Transaction, NoContent> {
         let path = self.api.baseUrl.appendingPathComponent("api/resolve-transaction")
+        let currentTime = Date()
+        let claims = GuardianClaimSet(
+            subject: challenge,
+            issuer: self.device.localIdentifier,
+            audience: path.absoluteString,
+            expireAt: currentTime.addingTimeInterval(RSAAuthentication.reponseExpiration),
+            issuedAt: currentTime,
+            status: accepted,
+            reason: reason
+        )
+        let jwt: JWT<GuardianClaimSet>
         do {
-            let currentTime = Int(Date().timeIntervalSince1970)
-            var jwtPayload: [String: Any] = [
-                "iat": currentTime,
-                "exp": currentTime + RSAAuthentication.challengeResponseExpiresInSecs,
-                "aud": path.absoluteString,
-                "iss": self.device.localIdentifier,
-                "sub": challenge,
-                "auth0_guardian_method": "push",
-                "auth0_guardian_accepted": accepted
-            ]
-            if let reason = reason {
-                jwtPayload["auth0_guardian_reason"] = reason
-            }
-            let jwt = try JsonWebToken.encode(claims: jwtPayload, signingKey: self.device.signingKey.secKey)
-            return self.api.resolve(transaction: transactionToken, withChallengeResponse: jwt)
+            jwt = try JWT(claimSet: claims, key: self.device.signingKey.secKey)
         } catch(let error) {
-            return Request(method: .post, url: path, error: error)
+            return Request(method: .post, url: path, error: GuardianError(code: .cannotSignTransactionChallenge, cause: error))
         }
+        return self.api.resolve(transaction: transactionToken, withChallengeResponse: jwt.string)
     }
 
     func handleAction(withIdentifier identifier: String, notification: Notification) -> Request<Transaction, NoContent> {
