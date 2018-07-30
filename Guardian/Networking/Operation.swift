@@ -50,7 +50,7 @@ public protocol Operation: CustomDebugStringConvertible, CustomStringConvertible
      - parameter transform: closure that will be executed when a custom error is needed. It will receive the response and its body as parameters
      - returns: istelf for chaining
      */
-    func mapError(transform: @escaping (HTTPURLResponse, Data?) -> Error?) -> Self
+    func mapError(transform: @escaping (HTTPURLResponse, Data?) -> Swift.Error?) -> Self
 
     /**
      Executes the request in a background thread

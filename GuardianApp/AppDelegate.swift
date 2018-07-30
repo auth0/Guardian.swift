@@ -85,7 +85,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         print("DEVICE TOKEN = \(token)")
     }
 
-    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Swift.Error) {
         // when there's an error and the registration for push notifications failed
         print(error)
     }

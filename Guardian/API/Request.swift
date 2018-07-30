@@ -22,9 +22,9 @@
 
 import Foundation
 
-let errorBuilder = { (response: HTTPURLResponse, data: Data?) -> Error? in
+let errorBuilder = { (response: HTTPURLResponse, data: Data?) -> Swift.Error? in
     guard let data = data, let json = try? JSONSerialization.jsonObject(with: data, options: []), let info = json as? [String: Any] else { return nil }
-    return GuardianError(info: info, statusCode: response.statusCode)
+    return LegacyGuardianError(info: info, statusCode: response.statusCode)
 }
 
 public struct Request<T: Encodable, E: Decodable>: Operation {
@@ -43,7 +43,7 @@ public struct Request<T: Encodable, E: Decodable>: Operation {
         self.request = request.mapError(transform: errorBuilder)
     }
 
-    init(method: HTTPMethod, url: URL, error: Error) {
+    init(method: HTTPMethod, url: URL, error: Swift.Error) {
         let request: NetworkOperation<T, E> = NetworkOperation(method: method, url: url, error: error)
         self.init(request: request)
     }
@@ -57,8 +57,8 @@ public struct Request<T: Encodable, E: Decodable>: Operation {
         return Request(request: request)
     }
 
-    public func mapError(transform: @escaping (HTTPURLResponse, Data?) -> Error?) -> Request<T, E> {
-        let request = self.request.mapError { (response, data) -> Error? in
+    public func mapError(transform: @escaping (HTTPURLResponse, Data?) -> Swift.Error?) -> Request<T, E> {
+        let request = self.request.mapError { (response, data) -> Swift.Error? in
             return transform(response, data) ?? errorBuilder(response, data)
         }
         return Request(request: request)

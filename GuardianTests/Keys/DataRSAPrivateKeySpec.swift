@@ -33,12 +33,12 @@ class DataRSAPrivateKeySpec: QuickSpec {
         describe("init(data:)") {
 
             it("should create from Data") {
-                expect { try DataRSAPrivateKey(data: keys.privateKey) }.toNot(throwError(errorType: GuardianError.self))
+                expect { try DataRSAPrivateKey(data: keys.privateKey) }.toNot(throwError(errorType: LegacyGuardianError.self))
             }
 
             it("should raise error with bad data") {
                 let badData = "BAD".data(using: .utf8)!
-                expect { try DataRSAPrivateKey(data: badData) }.to(throwError(errorType: GuardianError.self))
+                expect { try DataRSAPrivateKey(data: badData) }.to(throwError(errorType: LegacyGuardianError.self))
             }
         }
 
@@ -46,7 +46,7 @@ class DataRSAPrivateKeySpec: QuickSpec {
 
             it("should create from key") {
                 let key = try! DataRSAPrivateKey(data: keys.privateKey).secKey
-                expect { try DataRSAPrivateKey(secKey: key) }.toNot(throwError(errorType: GuardianError.self))
+                expect { try DataRSAPrivateKey(secKey: key) }.toNot(throwError(errorType: LegacyGuardianError.self))
             }
 
         }

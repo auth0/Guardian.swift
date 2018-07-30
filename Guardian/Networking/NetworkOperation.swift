@@ -28,10 +28,10 @@ public struct NetworkOperation<T: Encodable, E: Decodable>: Operation {
     let body: T?
     var session: URLSession = privateSession
     var observer: NetworkObserver = NetworkObserver()
-    var errorMapper: (HTTPURLResponse, Data?) -> Error? = { _, _ in return nil }
-    let error: Error?
+    var errorMapper: (HTTPURLResponse, Data?) -> Swift.Error? = { _, _ in return nil }
+    let error: Swift.Error?
 
-    init(method: HTTPMethod, url: URL, error: Error) {
+    init(method: HTTPMethod, url: URL, error: Swift.Error) {
         var request = URLRequest(url: url)
         request.httpMethod = method.rawValue.uppercased()
         self.request = request
@@ -87,7 +87,7 @@ public struct NetworkOperation<T: Encodable, E: Decodable>: Operation {
      - parameter transform: closure that will be executed when a custom error is needed. It will receive the response and its body as parameters
      - returns: istelf for chaining
     */
-    public func mapError(transform: @escaping (HTTPURLResponse, Data?) -> Error?) -> NetworkOperation<T, E> {
+    public func mapError(transform: @escaping (HTTPURLResponse, Data?) -> Swift.Error?) -> NetworkOperation<T, E> {
         var newSelf = self
         newSelf.errorMapper = transform
         return newSelf
@@ -109,7 +109,7 @@ public struct NetworkOperation<T: Encodable, E: Decodable>: Operation {
         task.resume()
     }
 
-    func handle(data: Data?, response: URLResponse?, error: Error?) -> Result<E> {
+    func handle(data: Data?, response: URLResponse?, error: Swift.Error?) -> Result<E> {
         if let error = error {
             return .failure(cause: NetworkError(code: .failedRequest, cause: error))
         }
@@ -123,7 +123,7 @@ public struct NetworkOperation<T: Encodable, E: Decodable>: Operation {
 
         let statusCode = httpResponse.statusCode
         guard (200..<300).contains(statusCode) else {
-            let error: Error = self.errorMapper(httpResponse, data)
+            let error: Swift.Error = self.errorMapper(httpResponse, data)
                 ?? NetworkError(statusCode: statusCode, description: message(from: httpResponse, data: data))
             return .failure(cause: error)
         }

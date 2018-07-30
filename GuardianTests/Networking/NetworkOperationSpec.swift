@@ -142,7 +142,7 @@ class NetworkOperationSpec: QuickSpec {
             }
 
             it("should fail if request fails") {
-                let error: Error = NetworkError(code: .cannotDecodeJSON)
+                let error: Swift.Error = NetworkError(code: .cannotDecodeJSON)
                 session.a0_error = error
                 request.start()
                 expect(request.result).toEventually(beFailure())
@@ -351,7 +351,7 @@ struct MockResponse: Decodable, Equatable {
     let key: String
 }
 
-struct MockError: Error, Equatable {
+struct MockError: Swift.Error, Equatable {
     let id: UUID
 
     init() { self.id = UUID() }
@@ -373,7 +373,7 @@ class SyncRequest<T: Decodable> {
         })
     }
 
-    public func mapError(transform: @escaping (HTTPURLResponse, Data?) -> Error?) -> SyncRequest<T> {
+    public func mapError(transform: @escaping (HTTPURLResponse, Data?) -> Swift.Error?) -> SyncRequest<T> {
         self.request = self.request.mapError(transform: transform)
         return self
     }

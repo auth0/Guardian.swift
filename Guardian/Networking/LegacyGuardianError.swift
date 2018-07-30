@@ -1,4 +1,4 @@
-// GuardianError.swift
+// LegacyGuardianError.swift
 //
 // Copyright (c) 2016 Auth0 (http://auth0.com)
 //
@@ -38,7 +38,7 @@ private let notFoundPrivateKeyMessage = "a0.guardian.internal.no.private.key"
 /**
  An `Error` that encapsulates server and other possible internal errors
  */
-public class GuardianError: Error, CustomStringConvertible {
+public class LegacyGuardianError: Swift.Error, CustomStringConvertible {
 
     let info: [String: Any]?
     let statusCode: Int
@@ -48,7 +48,7 @@ public class GuardianError: Error, CustomStringConvertible {
         self.statusCode = statusCode
     }
     
-    init(string: String, statusCode: Int = 0, cause: Error? = nil) {
+    init(string: String, statusCode: Int = 0, cause: Swift.Error? = nil) {
         var info: [String: Any] = [
             "errorCode": string
         ]
@@ -81,55 +81,55 @@ public class GuardianError: Error, CustomStringConvertible {
     }
 }
 
-internal extension GuardianError {
-    static var internalError: GuardianError {
-        return GuardianError(string: internalErrorMessage)
+internal extension LegacyGuardianError {
+    static var internalError: LegacyGuardianError {
+        return LegacyGuardianError(string: internalErrorMessage)
     }
 
-    static var invalidBase32Secret: GuardianError {
-        return GuardianError(string: invalidBase32SecretMessage)
+    static var invalidBase32Secret: LegacyGuardianError {
+        return LegacyGuardianError(string: invalidBase32SecretMessage)
     }
 
-    static var invalidJWK: GuardianError {
-        return GuardianError(string: invalidJWKMessage)
+    static var invalidJWK: LegacyGuardianError {
+        return LegacyGuardianError(string: invalidJWKMessage)
     }
 
-    static var invalidOTPAlgorithm: GuardianError {
-        return GuardianError(string: invalidOTPAlgorithmMessage)
+    static var invalidOTPAlgorithm: LegacyGuardianError {
+        return LegacyGuardianError(string: invalidOTPAlgorithmMessage)
     }
 
-    static var invalidPayload: GuardianError {
-        return GuardianError(string: invalidPayloadMessage)
+    static var invalidPayload: LegacyGuardianError {
+        return LegacyGuardianError(string: invalidPayloadMessage)
     }
 
-    static var invalidEnrollmentUri: GuardianError {
-        return GuardianError(string: invalidEnrollmentUriMessage)
+    static var invalidEnrollmentUri: LegacyGuardianError {
+        return LegacyGuardianError(string: invalidEnrollmentUriMessage)
     }
 
-    static var invalidNotificationActionIdentifier: GuardianError {
-        return GuardianError(string: invalidNotificationActionIdentifierMessage)
+    static var invalidNotificationActionIdentifier: LegacyGuardianError {
+        return LegacyGuardianError(string: invalidNotificationActionIdentifierMessage)
     }
 
-    static func invalidAsymmetricKey(cause: Error? = nil) -> GuardianError {
-        return GuardianError(string: invalidAsymmetricKeyMessage, cause: cause)
+    static func invalidAsymmetricKey(cause: Swift.Error? = nil) -> LegacyGuardianError {
+        return LegacyGuardianError(string: invalidAsymmetricKeyMessage, cause: cause)
     }
 
-    static var notFoundPublicKey: GuardianError {
-        return GuardianError(string: notFoundPublicKeyMessage)
+    static var notFoundPublicKey: LegacyGuardianError {
+        return LegacyGuardianError(string: notFoundPublicKeyMessage)
     }
 
-    static func notFoundPrivateKey(tag: String) -> GuardianError {
-        return GuardianError(info: [
+    static func notFoundPrivateKey(tag: String) -> LegacyGuardianError {
+        return LegacyGuardianError(info: [
             "errorCode": notFoundPrivateKeyMessage,
             "tag": tag
             ], statusCode: 0)
     }
 
-    static func failedCreationAsymmetricKey(cause: Error) -> GuardianError {
-        return GuardianError(string: failedCreationAsymmetricKeyMessage, cause: cause)
+    static func failedCreationAsymmetricKey(cause: Swift.Error) -> LegacyGuardianError {
+        return LegacyGuardianError(string: failedCreationAsymmetricKeyMessage, cause: cause)
     }
 
-    static var failedStoreAsymmetricKey: GuardianError {
-        return GuardianError(string: failedStoreAsymmetricKeyMessage)
+    static var failedStoreAsymmetricKey: LegacyGuardianError {
+        return LegacyGuardianError(string: failedStoreAsymmetricKeyMessage)
     }
 }

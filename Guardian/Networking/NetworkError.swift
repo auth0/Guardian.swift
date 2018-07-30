@@ -23,7 +23,7 @@
 import Foundation
 
 /// Network Error
-public struct NetworkError: Error, CustomStringConvertible {
+public struct NetworkError: Swift.Error, CustomStringConvertible {
     /// Status code returned from the server or `0` if request failed
     public let statusCode: Int
     /// Description of the error
@@ -31,9 +31,9 @@ public struct NetworkError: Error, CustomStringConvertible {
     /// Internal error code
     public let code: Code
     /// If the error was triggered by another one
-    public let cause: Error?
+    public let cause: Swift.Error?
 
-    init(code: Code, description: String? = nil, statusCode: Int = 0, cause: Error? = nil) {
+    init(code: Code, description: String? = nil, statusCode: Int = 0, cause: Swift.Error? = nil) {
         self.code = code
         self.description = description ?? code.message
         self.statusCode = statusCode

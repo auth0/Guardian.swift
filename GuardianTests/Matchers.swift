@@ -217,7 +217,7 @@ func haveGuardianError<T>(withErrorCode errorCode: String? = nil, andStatusCode 
             message = message.appended(details: " <statusCode: \(statusCode)>")
         }
         if let actual = try expression.evaluate(), case .failure(let cause) = actual {
-            if let error = cause as? GuardianError {
+            if let error = cause as? LegacyGuardianError {
                 let status = (errorCode == nil || errorCode == error.errorCode) &&
                     (statusCode == nil || statusCode == error.statusCode)
                 return PredicateResult(bool: status, message: message)
@@ -242,7 +242,7 @@ func haveNSError<T>(withErrorCode errorCode: Int? = nil) -> Predicate<Result<T>>
     }
 }
 
-func haveError<T, E>(_ error: E) -> Predicate<Result<T>> where E: Error, E: Equatable {
+func haveError<T, E>(_ error: E) -> Predicate<Result<T>> where E: Swift.Error, E: Equatable {
     return Predicate.define("fail with <error: \(error)>") { expression, msg -> PredicateResult in
         if let actual = try expression.evaluate(), case .failure(let cause) = actual {
             if let cause = cause as? E {

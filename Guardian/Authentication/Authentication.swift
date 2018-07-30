@@ -170,6 +170,6 @@ struct RSAAuthentication: Authentication {
             return reject(notification: notification)
         }
         let path = self.api.baseUrl.appendingPathComponent("api/resolve-transaction")
-        return Request(method: .post, url: path, error: GuardianError.invalidNotificationActionIdentifier)
+        return Request(method: .post, url: path, error: LegacyGuardianError.invalidNotificationActionIdentifier)
     }
 }

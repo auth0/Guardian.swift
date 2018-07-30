@@ -29,8 +29,8 @@ private func newKey() throws -> DataRSAPrivateKey {
         ]
     var error: Unmanaged<CFError>?
     guard let key = SecKeyCreateRandomKey(query as CFDictionary, &error) else {
-        let cause = error!.takeRetainedValue() as Error
-        throw GuardianError.failedCreationAsymmetricKey(cause: cause)
+        let cause = error!.takeRetainedValue() as Swift.Error
+        throw LegacyGuardianError.failedCreationAsymmetricKey(cause: cause)
     }
     return try DataRSAPrivateKey(secKey: key)
 }
@@ -45,7 +45,7 @@ private func store(key: SecKey, with tag: String, accessible: KeychainRSAPrivate
         String(kSecAttrAccessible): accessible.kSecAttr
     ]
     guard SecItemAdd(query as CFDictionary, nil) == errSecSuccess else {
-        throw GuardianError.failedStoreAsymmetricKey
+        throw LegacyGuardianError.failedStoreAsymmetricKey
     }
     return KeychainRSAPrivateKey(tag: tag, secKey: key)
 }
@@ -66,8 +66,8 @@ extension DataRSAPrivateKey {
             ]
         var error: Unmanaged<CFError>?
         guard let key = SecKeyCreateRandomKey(query as CFDictionary, &error) else {
-            let cause = error!.takeRetainedValue() as Error
-            throw GuardianError.failedCreationAsymmetricKey(cause: cause)
+            let cause = error!.takeRetainedValue() as Swift.Error
+            throw LegacyGuardianError.failedCreationAsymmetricKey(cause: cause)
         }
         return try DataRSAPrivateKey(secKey: key)
     }

@@ -85,10 +85,10 @@ class NotificationController: UIViewController {
         dateLabel.text = "\(notification.startedAt)"
     }
 
-    func showError(_ title: String, _ cause: Error) {
+    func showError(_ title: String, _ cause: Swift.Error) {
         DispatchQueue.main.async { [unowned self] in
             var errorMessage = "Unknown error"
-            if let cause = cause as? GuardianError {
+            if let cause = cause as? LegacyGuardianError {
                 errorMessage = cause.description
             }
             let alert = UIAlertController(

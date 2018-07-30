@@ -54,7 +54,7 @@ public class EnrollRequest: Operation {
             ticket = enrollmentTxId
         } else {
             let url = self.api.baseUrl.appendingPathComponent("api/enroll")
-            self.request = Request(method: .post, url: url, error: GuardianError.invalidEnrollmentUri)
+            self.request = Request(method: .post, url: url, error: LegacyGuardianError.invalidEnrollmentUri)
             return
         }
 
@@ -71,7 +71,7 @@ public class EnrollRequest: Operation {
         return self
     }
 
-    public func mapError(transform: @escaping (HTTPURLResponse, Data?) -> Error?) -> Self {
+    public func mapError(transform: @escaping (HTTPURLResponse, Data?) -> Swift.Error?) -> Self {
         self.request = self.request.mapError(transform: transform)
         return self
     }

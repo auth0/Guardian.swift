@@ -94,7 +94,7 @@ struct APIClient: API {
         do {
             let headers = ["Authorization": "Ticket id=\"\(enrollmentTicket)\""]
             guard let jwk = verificationKey.jwk else {
-                throw GuardianError.invalidJWK
+                throw LegacyGuardianError.invalidJWK
             }
 
             let device = Device(identifier: identifier, name: name, pushCredentials: PushCredentials(token: notificationToken), publicKey: jwk)
