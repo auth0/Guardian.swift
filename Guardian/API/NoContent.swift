@@ -1,6 +1,6 @@
-// FailedRequest.swift
+// NoContent.swift
 //
-// Copyright (c) 2016 Auth0 (http://auth0.com)
+// Copyright (c) 2018 Auth0 (http://auth0.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,16 +22,9 @@
 
 import Foundation
 
-class FailedRequest<T>: Request<T> {
-
-    let error: Error
-
-    init(error: Error) {
-        self.error = error
-        super.init(method: "GET", url: URL(string: "auth0.com")!)
-    }
-
-    override func start(callback: @escaping (Result<T>) -> ()) {
-        callback(.failure(cause: error))
-    }
+/// Represents an empty API response
+public struct NoContent: Codable {
+    init() {}
+    public init(from decoder: Decoder) throws {}
+    public func encode(to encoder: Encoder) throws {}
 }

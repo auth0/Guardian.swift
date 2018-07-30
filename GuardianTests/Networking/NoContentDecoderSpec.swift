@@ -1,4 +1,4 @@
-// DataRSAPrivateKeySpec.swift
+// NoContentDecoderSpec.swift
 //
 // Copyright (c) 2018 Auth0 (http://auth0.com)
 //
@@ -22,35 +22,43 @@
 
 import Quick
 import Nimble
-import Guardian
+@testable import Guardian
 
-class DataRSAPrivateKeySpec: QuickSpec {
+class NoContentDecoderSpec: QuickSpec {
 
     override func spec() {
 
-        let keys = Keys.shared
-        
-        describe("init(data:)") {
+        describe("fail all operations") {
 
-            it("should create from Data") {
-                expect { try DataRSAPrivateKey(data: keys.privateKey) }.toNot(throwError(errorType: LegacyGuardianError.self))
+            it("should fail to decode keyed container") {
+                let decoder = NoContentDecoder()
+                expect {
+                    return try decoder.container(keyedBy: Device.CodingKeys.self)
+                }.to(throwError())
             }
 
-            it("should raise error with bad data") {
-                let badData = "BAD".data(using: .utf8)!
-                expect { try DataRSAPrivateKey(data: badData) }.to(throwError(errorType: LegacyGuardianError.self))
+            it("should fail to decode with unkeyed container") {
+                let decoder = NoContentDecoder()
+                expect {
+                    return try decoder.unkeyedContainer()
+                }.to(throwError())
             }
+
+            it("should fail with single value container") {
+                let decoder = NoContentDecoder()
+                expect {
+                    return try decoder.singleValueContainer()
+                }.to(throwError())
+            }
+
+            it("should have no coding path") {
+                expect(NoContentDecoder().codingPath).to(beEmpty())
+            }
+
+            it("should have no user info") {
+                expect(NoContentDecoder().userInfo).to(beEmpty())
+            }
+
         }
-
-        describe("init(key:)") {
-
-            it("should create from key") {
-                let key = try! DataRSAPrivateKey(data: keys.privateKey).secKey
-                expect { try DataRSAPrivateKey(secKey: key) }.toNot(throwError(errorType: LegacyGuardianError.self))
-            }
-
-        }
-
     }
-
 }

@@ -22,6 +22,65 @@
 
 import Foundation
 
+struct PushCredentials: Codable {
+    let service = "APNS"
+    let token: String
+}
+
+public struct RSAPublicJWK: Codable {
+    public let keyType = "RSA"
+    public let usage = "sig"
+    public let algorithm = "RS256"
+    public let modulus: String
+    public let exponent: String
+
+    enum CodingKeys: String, CodingKey {
+        case keyType = "kty"
+        case usage = "use"
+        case algorithm = "alg"
+        case modulus = "n"
+        case exponent = "e"
+    }
+}
+
+public struct Device: Encodable {
+    let identifier: String
+    let name: String
+    let pushCredentials: PushCredentials
+    let publicKey: RSAPublicJWK
+
+    enum CodingKeys: String, CodingKey {
+        case identifier
+        case name
+        case pushCredentials = "push_credentials"
+        case publicKey = "public_key"
+    }
+}
+
+public struct Enrollment: Decodable{
+    let identifier: String
+    let token: String
+    let userId: String
+    let issuer: String
+    let totp: OTPParameters?
+
+    enum CodingKeys: String, CodingKey {
+        case identifier = "id"
+        case token
+        case userId = "user_id"
+        case issuer
+        case totp
+    }
+}
+
+public struct Transaction: Codable {
+    let challengeResponse: String
+
+    enum CodingKeys: String, CodingKey {
+        case challengeResponse = "challenge_response"
+    }
+}
+
 struct APIClient: API {
 
     let baseUrl: URL
@@ -30,35 +89,26 @@ struct APIClient: API {
         self.baseUrl = baseUrl
     }
 
-    func enroll(withTicket enrollmentTicket: String, identifier: String, name: String, notificationToken: String, verificationKey: VerificationKey) -> Request<[String: Any]> {
+    func enroll(withTicket enrollmentTicket: String, identifier: String, name: String, notificationToken: String, verificationKey: VerificationKey) -> Request<Device, Enrollment> {
+        let url = self.baseUrl.appendingPathComponent("api/enroll")
         do {
-            let url = self.baseUrl.appendingPathComponent("api/enroll")
-
+            let headers = ["Authorization": "Ticket id=\"\(enrollmentTicket)\""]
             guard let jwk = verificationKey.jwk else {
-                throw GuardianError.invalidPublicKey
+                throw LegacyGuardianError.invalidJWK
             }
 
-            let payload: [String: Any] = [
-                "identifier": identifier,
-                "name": name,
-                "push_credentials": [
-                    "service": "APNS",
-                    "token": notificationToken
-                ],
-                "public_key": jwk
-            ]
-            return Request(method: "POST", url: url, payload: payload, headers: ["Authorization": "Ticket id=\"\(enrollmentTicket)\""])
-        } catch(let error) {
-            return FailedRequest(error: error)
+            let device = Device(identifier: identifier, name: name, pushCredentials: PushCredentials(token: notificationToken), publicKey: jwk)
+            return Request.new(method: .post, url: url, headers: headers, body: device)
+        }
+        catch let error {
+            return Request(method: .post, url: url, error: error)
         }
     }
 
-    func resolve(transaction transactionToken: String, withChallengeResponse challengeResponse: String) -> Request<Void> {
-        let payload = [
-            "challenge_response": challengeResponse
-        ]
+    func resolve(transaction transactionToken: String, withChallengeResponse challengeResponse: String) -> Request<Transaction, NoContent> {
+        let transaction = Transaction(challengeResponse: challengeResponse)
         let url = self.baseUrl.appendingPathComponent("api/resolve-transaction")
-        return Request(method: "POST", url: url, payload: payload, headers: ["Authorization": "Bearer \(transactionToken)"])
+        return Request.new(method: .post, url: url, headers: ["Authorization": "Bearer \(transactionToken)"], body: transaction)
     }
 
     func device(forEnrollmentId id: String, token: String) -> DeviceAPI {

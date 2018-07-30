@@ -35,10 +35,10 @@ struct JWT {
         let message = jsonHeader.base64URLEncodedString() + "." + jsonPayload.base64URLEncodedString()
 
         guard let data = message.data(using: .utf8) else {
-            throw GuardianError.invalidPayload
+            throw GuardianError(code: .cannotSignTransactionChallenge, description: "invalid jwt payload")
         }
         guard let sha256 = A0SHA(algorithm: "sha256"), let rsa = A0RSA(key: signingKey) else {
-            throw GuardianError.internalError
+            throw GuardianError(code: .cannotSignTransactionChallenge, description: "invalid sign algorithm")
         }
         let hash = sha256.hash(data)
         let signature = rsa.sign(hash)
@@ -57,18 +57,18 @@ struct JWT {
             let claims = (try? JSONSerialization.jsonObject(with: jsonClaims, options: [])) as? [String: Any],
             let signature = Data(base64URLEncoded: components[2])
             else {
-                throw GuardianError.invalidPayload
+                throw GuardianError(code: .cannotSignTransactionChallenge, description: "invalid jwt")
         }
         guard let sha256 = A0SHA(algorithm: "sha256"), let rsa = A0RSA(key: publicKey) else {
-            throw GuardianError.internalError
+            throw GuardianError(code: .cannotSignTransactionChallenge, description: "invalid sign algorithm")
         }
         let message = components[0] + "." + components[1]
         guard let data = message.data(using: .utf8) else {
-            throw GuardianError.invalidPayload
+            throw GuardianError(code: .cannotSignTransactionChallenge, description: "invalid jwt payload")
         }
         let hash = sha256.hash(data)
         guard true == rsa.verify(hash, signature: signature) else {
-            throw GuardianError.invalidPayload
+            throw GuardianError(code: .cannotSignTransactionChallenge, description: "invalid jwt signature")
         }
         return claims
     }

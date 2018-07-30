@@ -82,12 +82,18 @@ class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
             let request = Guardian
                 .enroll(forDomain: AppDelegate.guardianDomain, usingUri: result.value, notificationToken: AppDelegate.pushToken!, signingKey: signingKey, verificationKey: verificationKey)
             debugPrint(request)
-            request.start { result in
+            request
+                .on(response: { event in
+                    guard let data = event.data else { return }
+                    let body = String(data: data, encoding: .utf8) ?? "INVALID BODY"
+                    print(body)
+                })
+                .start { result in
                     switch result {
                     case .failure(let cause):
                         self.showError("Enroll failed", cause)
                     case .success(let enrollment):
-                        AppDelegate.enrollment = enrollment
+                        AppDelegate.state = GuardianState(identifier: enrollment.id, localIdentifier: enrollment.localIdentifier, token: enrollment.deviceToken, keyTag: signingKey.tag, otp: enrollment.totp)
                     }
                     self.updateView()
             }
@@ -110,10 +116,10 @@ class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
     }
 
     @IBAction func unenrollAction(_ sender: AnyObject) {
-        if let enrollment = AppDelegate.enrollment {
+        if let enrollment = AppDelegate.state {
             let request = Guardian
                 .api(forDomain: AppDelegate.guardianDomain)
-                .device(forEnrollmentId: enrollment.id, token: enrollment.deviceToken)
+                .device(forEnrollmentId: enrollment.identifier, token: enrollment.token)
                 .delete()
             debugPrint(request)
             request.start { [unowned self] result in
@@ -121,7 +127,7 @@ class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
                     case .failure(let cause):
                         self.showError("Unenroll failed", cause)
                     case .success:
-                        AppDelegate.enrollment = nil
+                        AppDelegate.state = nil
                     }
                     self.updateView()
             }
@@ -130,10 +136,10 @@ class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
 
     func updateView() {
         DispatchQueue.main.async { [unowned self] in
-            let haveEnrollment = AppDelegate.enrollment != nil
-            if let enrollment = AppDelegate.enrollment {
-                self.enrollmentLabel.text = enrollment.id
-                self.secretLabel.text = enrollment.totp?.base32Secret
+            let haveEnrollment = AppDelegate.state != nil
+            if let enrollment = AppDelegate.state {
+                self.enrollmentLabel.text = enrollment.identifier
+                self.secretLabel.text = enrollment.otp?.base32Secret
             }
             self.enrollButton.isHidden = haveEnrollment
             self.unenrollButton.isHidden = !haveEnrollment
@@ -141,10 +147,10 @@ class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
         }
     }
 
-    func showError(_ title: String, _ cause: Error) {
+    func showError(_ title: String, _ cause: Swift.Error) {
         DispatchQueue.main.async { [unowned self] in
             var errorMessage = "Unknown error"
-            if let cause = cause as? GuardianError {
+            if let cause = cause as? LegacyGuardianError {
                 errorMessage = cause.description
             }
             let alert = UIAlertController(

@@ -1,4 +1,4 @@
-// Keys.swift
+// NoContentDecoder.swift
 //
 // Copyright (c) 2018 Auth0 (http://auth0.com)
 //
@@ -22,23 +22,25 @@
 
 import Foundation
 
-/// Key used to sign Guardian AuthN responses
-public protocol SigningKey {
+/// Used when there is no Data and status is 204
+struct NoContentDecoder: Decoder {
+    var codingPath: [CodingKey] = []
 
-    /// the `SecKey` instance associated to the signing key
-    var secKey: SecKey { get }
-}
+    var userInfo: [CodingUserInfoKey : Any] = [:]
 
-/// Key used by Guardian Server to validate AuthN responses
-public protocol VerificationKey {
+    func container<Key>(keyedBy type: Key.Type) throws -> KeyedDecodingContainer<Key> where Key : CodingKey {
+        throw NoContentDecoder.Error()
+    }
 
-    /// JWK reprensentation of the verification key
-    var jwk: RSAPublicJWK? { get }
-}
+    func unkeyedContainer() throws -> UnkeyedDecodingContainer {
+        throw NoContentDecoder.Error()
+    }
 
-/// A Public Key that can be converted to `Data`
-public protocol PublicKeyDataConvertible {
+    func singleValueContainer() throws -> SingleValueDecodingContainer {
+        throw NoContentDecoder.Error()
+    }
 
-    /// bytes of the Public Key
-    var data: Data? { get }
+    private struct Error: Swift.Error {
+        var localizedDescription: String = "Should not decode anything"
+    }
 }

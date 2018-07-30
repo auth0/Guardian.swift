@@ -1,4 +1,4 @@
-// Keys.swift
+// EnrolledDeviceSpec.swift
 //
 // Copyright (c) 2018 Auth0 (http://auth0.com)
 //
@@ -20,25 +20,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import Foundation
+import Quick
+import Nimble
+import Guardian
 
-/// Key used to sign Guardian AuthN responses
-public protocol SigningKey {
+class EnrolledDeviceSpec: QuickSpec {
 
-    /// the `SecKey` instance associated to the signing key
-    var secKey: SecKey { get }
-}
+    override func spec() {
 
-/// Key used by Guardian Server to validate AuthN responses
-public protocol VerificationKey {
+        describe("init(id:, deviceToken:, notificationToken:, signingKey:, totp:)") {
 
-    /// JWK reprensentation of the verification key
-    var jwk: RSAPublicJWK? { get }
-}
+            var device: EnrolledDevice!
 
-/// A Public Key that can be converted to `Data`
-public protocol PublicKeyDataConvertible {
+            beforeEach {
+                device = EnrolledDevice(id: UUID().uuidString, userId: UUID().uuidString, deviceToken: UUID().uuidString, notificationToken: UUID().uuidString, signingKey: try! DataRSAPrivateKey.new())
+            }
 
-    /// bytes of the Public Key
-    var data: Data? { get }
+            it("should return device name") {
+                expect(device.name).to(equal(UIDevice.current.name))
+            }
+
+            it("should return vendor identifier") {
+                expect(device.localIdentifier).to(equal(UIDevice.current.identifierForVendor?.uuidString))
+            }
+        }
+    }
 }

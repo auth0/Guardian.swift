@@ -22,6 +22,19 @@
 
 import Foundation
 
+public struct UpdatedDevice: Codable {
+
+    let identifier: String?
+    let name: String?
+    let pushCredentials: PushCredentials?
+
+    enum CodingKeys: String, CodingKey {
+        case identifier
+        case name
+        case pushCredentials = "push_credentials"
+    }
+}
+
 struct DeviceAPIClient: DeviceAPI {
     let url: URL
     let token: String
@@ -31,20 +44,18 @@ struct DeviceAPIClient: DeviceAPI {
         self.token = token
     }
     
-    func delete() -> Request<Void> {
-        return Request(method: "DELETE", url: url, headers: ["Authorization": "Bearer \(token)"])
+    func delete() -> Request<NoContent, NoContent> {
+        return Request.new(method: .delete, url: url, headers: ["Authorization": "Bearer \(token)"])
     }
     
-    func update(localIdentifier identifier: String? = nil, name: String? = nil, notificationToken: String? = nil) -> Request<[String: Any]> {
-        var payload: [String: Any] = [:]
-        payload["identifier"] = identifier
-        payload["name"] = name
+    func update(localIdentifier identifier: String? = nil, name: String? = nil, notificationToken: String? = nil) -> Request<UpdatedDevice, UpdatedDevice> {
+        let credentials: PushCredentials?
         if let notificationToken = notificationToken {
-            payload["push_credentials"] = [
-                "service": "APNS",
-                "token": notificationToken
-            ]
+            credentials = PushCredentials(token: notificationToken)
+        } else {
+            credentials = nil
         }
-        return Request(method: "PATCH", url: url, payload: payload, headers: ["Authorization": "Bearer \(token)"])
+        let update = UpdatedDevice(identifier: identifier, name: name, pushCredentials: credentials)
+        return Request.new(method: .patch, url: url, headers: ["Authorization": "Bearer \(token)"], body: update)
     }
 }

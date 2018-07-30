@@ -88,12 +88,12 @@ class APIClientSpec: QuickSpec {
                 }
             }
 
-            it("should fail when public key is invalid") {
+            it("should fail when public key lacks JWK") {
                 waitUntil(timeout: Timeout) { done in
                     client
                         .enroll(withTicket: ValidTransactionId, identifier: ValidDeviceIdentifier, name: ValidDeviceName, notificationToken: ValidNotificationToken, verificationKey: NoJWKKey())
                         .start { result in
-                            expect(result).to(haveGuardianError(withErrorCode: "a0.guardian.internal.invalid_public_key"))
+                            expect(result).to(haveGuardianError(withErrorCode: "a0.guardian.internal.invalid_jwk"))
                             done()
                     }
                 }
@@ -230,7 +230,7 @@ class APIClientSpec: QuickSpec {
                         .device(forEnrollmentId: ValidEnrollmentId, token: ValidEnrollmentToken)
                         .update(localIdentifier: ValidDeviceIdentifier, name: ValidDeviceName, notificationToken: ValidNotificationToken)
                         .start { result in
-                            expect(result).to(haveEnrollment(withId: ValidEnrollmentId, deviceIdentifier: ValidDeviceIdentifier, deviceName: ValidDeviceName, notificationService: ValidNotificationService, notificationToken: ValidNotificationToken))
+                            expect(result).to(beUpdatedDevice(deviceIdentifier: ValidDeviceIdentifier, deviceName: ValidDeviceName, notificationService: ValidNotificationService, notificationToken: ValidNotificationToken))
                             done()
                     }
                 }

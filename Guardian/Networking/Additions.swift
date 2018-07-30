@@ -1,4 +1,4 @@
-// Keys.swift
+// Additions.swift
 //
 // Copyright (c) 2018 Auth0 (http://auth0.com)
 //
@@ -22,23 +22,29 @@
 
 import Foundation
 
-/// Key used to sign Guardian AuthN responses
-public protocol SigningKey {
 
-    /// the `SecKey` instance associated to the signing key
-    var secKey: SecKey { get }
+extension HTTPURLResponse {
+    var isJSON: Bool {
+        return self.mimeType == "application/json"
+    }
+
+    var isText: Bool {
+        return self.mimeType == "text/plain"
+    }
+
+    var noContent: Bool {
+        return self.statusCode == 204
+    }
+
+    func value(forHeader name: String) -> String? {
+        let headers = self.allHeaderFields
+        return (headers[name] ?? headers[name.lowercased()]) as? String
+    }
 }
 
-/// Key used by Guardian Server to validate AuthN responses
-public protocol VerificationKey {
-
-    /// JWK reprensentation of the verification key
-    var jwk: RSAPublicJWK? { get }
-}
-
-/// A Public Key that can be converted to `Data`
-public protocol PublicKeyDataConvertible {
-
-    /// bytes of the Public Key
-    var data: Data? { get }
+enum HTTPMethod: String {
+    case get
+    case post
+    case patch
+    case delete
 }

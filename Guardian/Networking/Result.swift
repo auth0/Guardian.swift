@@ -49,5 +49,5 @@ public enum Result<T> {
     /**
      The action failed, the cause can be accessed at `cause`
      */
-    case failure(cause: Error)
+    case failure(cause: Swift.Error)
 }

@@ -57,7 +57,7 @@ public protocol Authentication {
      
      - returns: a request to execute
      */
-    func allow(notification: Notification) -> Request<Void>
+    func allow(notification: Notification) -> Request<Transaction, NoContent>
 
     /**
      Reject/denies the authentication request
@@ -85,7 +85,7 @@ public protocol Authentication {
 
      - returns: a request to execute
      */
-    func reject(notification: Notification, withReason reason: String?) -> Request<Void>
+    func reject(notification: Notification, withReason reason: String?) -> Request<Transaction, NoContent>
 
     /**
      Handles the Guardian remote notification action matching the supplied 
@@ -109,11 +109,11 @@ public protocol Authentication {
      }
      ```
      */
-    func handleAction(withIdentifier identifier: String, notification: Notification) -> Request<Void>
+    func handleAction(withIdentifier identifier: String, notification: Notification) -> Request<Transaction, NoContent>
 }
 
 public extension Authentication {
-    public func reject(notification: Notification, withReason reason: String? = nil) -> Request<Void> {
+    public func reject(notification: Notification, withReason reason: String? = nil) -> Request<Transaction, NoContent> {
         return self.reject(notification: notification, withReason: reason)
     }
 }
@@ -125,26 +125,27 @@ struct RSAAuthentication: Authentication {
     let api: API
     let device: AuthenticationDevice
 
-    func allow(notification: Notification) -> Request<Void> {
+    func allow(notification: Notification) -> Request<Transaction, NoContent> {
         return resolve(transaction: notification.transactionToken,
                        withChallenge: notification.challenge,
                        accepted: true)
     }
 
-    func reject(notification: Notification, withReason reason: String?) -> Request<Void> {
+    func reject(notification: Notification, withReason reason: String?) -> Request<Transaction, NoContent> {
         return resolve(transaction: notification.transactionToken,
                        withChallenge: notification.challenge,
                        accepted: false,
                        reason: reason)
     }
 
-    func resolve(transaction transactionToken: String, withChallenge challenge: String, accepted: Bool, reason: String? = nil) -> Request<Void> {
+    func resolve(transaction transactionToken: String, withChallenge challenge: String, accepted: Bool, reason: String? = nil) -> Request<Transaction, NoContent> {
+        let path = self.api.baseUrl.appendingPathComponent("api/resolve-transaction")
         do {
             let currentTime = Int(Date().timeIntervalSince1970)
             var jwtPayload: [String: Any] = [
                 "iat": currentTime,
                 "exp": currentTime + RSAAuthentication.challengeResponseExpiresInSecs,
-                "aud": self.api.baseUrl.appendingPathComponent("api/resolve-transaction").absoluteString,
+                "aud": path.absoluteString,
                 "iss": self.device.localIdentifier,
                 "sub": challenge,
                 "auth0_guardian_method": "push",
@@ -156,11 +157,11 @@ struct RSAAuthentication: Authentication {
             let jwt = try JWT.encode(claims: jwtPayload, signingKey: self.device.signingKey.secKey)
             return self.api.resolve(transaction: transactionToken, withChallengeResponse: jwt)
         } catch(let error) {
-            return FailedRequest(error: error)
+            return Request(method: .post, url: path, error: error)
         }
     }
 
-    func handleAction(withIdentifier identifier: String, notification: Notification) -> Request<Void> {
+    func handleAction(withIdentifier identifier: String, notification: Notification) -> Request<Transaction, NoContent> {
         let category = AuthenticationCategory.default
         if category.allow.identifier == identifier {
             return allow(notification: notification)
@@ -168,6 +169,7 @@ struct RSAAuthentication: Authentication {
         if category.reject.identifier == identifier {
             return reject(notification: notification)
         }
-        return FailedRequest(error: GuardianError.invalidNotificationActionIdentifier)
+        let path = self.api.baseUrl.appendingPathComponent("api/resolve-transaction")
+        return Request(method: .post, url: path, error: LegacyGuardianError.invalidNotificationActionIdentifier)
     }
 }

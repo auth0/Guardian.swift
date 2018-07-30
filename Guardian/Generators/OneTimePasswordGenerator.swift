@@ -58,7 +58,7 @@ public func hotp(parameters: OTPParameters) throws -> HOTP {
     return try OneTimePasswordGenerator(parameters: parameters)
 }
 
-public enum HMACAlgorithm: String {
+public enum HMACAlgorithm: String, Codable {
     case sha1
     case sha256
     case sha512
@@ -74,7 +74,7 @@ struct OneTimePasswordGenerator: TOTP, HOTP {
 
     init(parameters: OTPParameters) throws {
         self.parameters = parameters
-        guard let secret = Base32.decode(string: parameters.base32Secret) else { throw GuardianError.invalidBase32Secret }
+        guard let secret = Base32.decode(string: parameters.base32Secret) else { throw LegacyGuardianError.invalidBase32Secret }
         self.hmac = parameters.algorithm.hmac(secret: secret)
     }
 

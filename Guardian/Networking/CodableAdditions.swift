@@ -1,6 +1,6 @@
-// Requestable.swift
+// CodableAdditions.swift
 //
-// Copyright (c) 2016 Auth0 (http://auth0.com)
+// Copyright (c) 2018 Auth0 (http://auth0.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,15 +22,23 @@
 
 import Foundation
 
-protocol Requestable: CustomDebugStringConvertible, CustomStringConvertible {
+func decode<T: Decodable>(_ type: T.Type, from data: Data, decoder: JSONDecoder = JSONDecoder()) throws -> T {
+    do { return try decoder.decode(type, from: data) }
+    catch let error { throw NetworkError(code: .cannotDecodeJSON, cause: error) }
+}
 
-    associatedtype T
+func encode<B: Encodable>(body: B, encoder: JSONEncoder = JSONEncoder()) throws -> Data {
+    do { return try encoder.encode(body) }
+    catch let error { throw NetworkError(code: .cannotEncodeJSON, cause: error) }
+}
 
-    /**
-     Executes the request in a background thread
-     
-     - parameter callback: the termination callback, where the result is 
-                           received
-     */
-    func start(callback: @escaping (Result<T>) -> ())
+func nothing<E: Decodable>(_ type: E.Type, decoder: Decoder = NoContentDecoder()) throws -> E {
+    return try E(from: decoder)
+}
+
+func decode<T: Decodable>(_ type: T.Type, from data: Data?) throws -> T {
+    if let data = data {
+        return try decode(type, from: data)
+    }
+    return try nothing(type)
 }

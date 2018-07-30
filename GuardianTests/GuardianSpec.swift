@@ -162,7 +162,7 @@ class GuardianSpec: QuickSpec {
                     Guardian
                         .enroll(forDomain: Domain, usingTicket: ValidTransactionId, notificationToken: ValidNotificationToken, signingKey: try! DataRSAPrivateKey.new(), verificationKey: NoJWKKey())
                         .start { result in
-                            expect(result).to(haveGuardianError(withErrorCode: "a0.guardian.internal.invalid_public_key"))
+                            expect(result).to(haveGuardianError(withErrorCode: "a0.guardian.internal.invalid_jwk"))
                             done()
                     }
                 }
@@ -195,7 +195,7 @@ class GuardianSpec: QuickSpec {
                     Guardian
                         .enroll(forDomain: Domain, usingTicket: ValidTransactionId, notificationToken: ValidNotificationToken, signingKey: signingKey, verificationKey: verificationKey)
                         .start { result in
-                            expect(result).to(haveGuardianError(withErrorCode: "a0.guardian.internal.invalid_response"))
+                            expect(result).to(beFailure())
                             done()
                     }
                 }
@@ -276,12 +276,12 @@ class GuardianSpec: QuickSpec {
                 }
             }
 
-            it("should fail when public key is invalid") {
+            it("should fail when public key lacks JWK") {
                 waitUntil(timeout: Timeout) { done in
                     Guardian
                         .enroll(url: ValidURL, usingTicket: ValidTransactionId, notificationToken: ValidNotificationToken, signingKey: try! DataRSAPrivateKey.new(), verificationKey: NoJWKKey())
                         .start { result in
-                            expect(result).to(haveGuardianError(withErrorCode: "a0.guardian.internal.invalid_public_key"))
+                            expect(result).to(haveGuardianError(withErrorCode: "a0.guardian.internal.invalid_jwk"))
                             done()
                     }
                 }
@@ -314,7 +314,7 @@ class GuardianSpec: QuickSpec {
                     Guardian
                         .enroll(url: ValidURL, usingTicket: ValidTransactionId, notificationToken: ValidNotificationToken, signingKey: signingKey, verificationKey: verificationKey)
                         .start { result in
-                            expect(result).to(haveGuardianError(withErrorCode: "a0.guardian.internal.invalid_response"))
+                            expect(result).to(beFailure())
                             done()
                     }
                 }
@@ -324,7 +324,7 @@ class GuardianSpec: QuickSpec {
 }
 
 struct NoJWKKey: VerificationKey {
-    let jwk: [String : Any]? = nil
+    let jwk: RSAPublicJWK? = nil
 }
 
 func enrollmentUri(withTransactionId transactionId: String, baseUrl: String, enrollmentId: String, issuer: String, user: String, secret: String, algorithm: HMACAlgorithm, digits: Int, period: Int) -> String {

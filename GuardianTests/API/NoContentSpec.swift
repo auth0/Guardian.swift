@@ -1,4 +1,4 @@
-// Keys.swift
+// NoContentSpec.swift
 //
 // Copyright (c) 2018 Auth0 (http://auth0.com)
 //
@@ -20,25 +20,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import Foundation
+import Quick
+import Nimble
+@testable import Guardian
 
-/// Key used to sign Guardian AuthN responses
-public protocol SigningKey {
+class NoContentSpec: QuickSpec {
 
-    /// the `SecKey` instance associated to the signing key
-    var secKey: SecKey { get }
-}
+    override func spec() {
 
-/// Key used by Guardian Server to validate AuthN responses
-public protocol VerificationKey {
+        describe("Decodable") {
 
-    /// JWK reprensentation of the verification key
-    var jwk: RSAPublicJWK? { get }
-}
+            it("should load from NoContent decoder") {
+                expect(try? NoContent(from: NoContentDecoder())).toNot(beNil())
+            }
 
-/// A Public Key that can be converted to `Data`
-public protocol PublicKeyDataConvertible {
+            it("should load from JSON decoder with data") {
+                expect(try? JSONDecoder().decode(NoContent.self, from: "{\"key\":\"value\"}".data(using: .utf8)!)).toNot(beNil())
+            }
 
-    /// bytes of the Public Key
-    var data: Data? { get }
+        }
+
+        describe("Encodable") {
+
+            it("should fail to encode json") {
+                expect {
+                    return try JSONEncoder().encode(NoContent())
+                }.to(throwError())
+            }
+        }
+    }
 }

@@ -83,7 +83,7 @@ public struct EnrolledDevice: AuthenticationDevice {
      an enrolled devicefrom there
      */
     public var name: String {
-        return UIDevice.current.name
+        return EnrolledDevice.deviceName
     }
 
     /**
@@ -122,7 +122,7 @@ public struct EnrolledDevice: AuthenticationDevice {
 }
 
 /// Parameters for OTP codes
-public struct OTPParameters {
+public struct OTPParameters: Codable {
     /// The TOTP secret, Base32 encoded
     public let base32Secret: String
     /// The TOTP algorithm
@@ -132,15 +132,18 @@ public struct OTPParameters {
     /// The TOTP period, in seconds. Default is 30 seconds
     public let period: Int
 
+    enum CodingKeys: String, CodingKey {
+        case base32Secret = "secret"
+        case algorithm
+        case digits
+        case period
+    }
+
     public init(base32Secret: String, algorithm: HMACAlgorithm = .sha1, digits: Int =  6, period: Int = 30) {
         self.base32Secret = base32Secret
         self.algorithm = algorithm
         self.digits = digits
         self.period = period
-    }
-
-    public init(base32Secret: String, algorithm: HMACAlgorithm?, digits: Int?, period: Int?) {
-        self.init(base32Secret: base32Secret, algorithm: algorithm ?? .sha1, digits: digits ?? 6, period: period ?? 30)
     }
 
 }

@@ -21,11 +21,12 @@
 // THE SOFTWARE.
 
 import Foundation
+import Guardian
 
 struct Keys {
     let privateKey: Data
     let publicKey: Data
-    let jwk: JWK
+    let jwk: RSAPublicJWK
 
     static let shared = Keys()
     
@@ -33,22 +34,6 @@ struct Keys {
         self.privateKey = loadPEM(from: "guardian-test.private")
         self.publicKey = loadPEM(from: "guardian-test.public")
         self.jwk = loadJWK(from: "guardian-test.public")
-    }
-}
-
-struct JWK: Codable {
-    let keyType: String
-    let algorithm: String
-    let usage: String
-    let modulus: String
-    let exponent: String
-
-    enum CodingKeys: String, CodingKey {
-        case keyType = "kty"
-        case algorithm = "alg"
-        case usage = "use"
-        case modulus = "n"
-        case exponent = "e"
     }
 }
 
@@ -63,12 +48,12 @@ private func loadPEM(from filename: String) -> Data {
     return decoded
 }
 
-private func loadJWK(from filename: String) -> JWK {
+private func loadJWK(from filename: String) -> RSAPublicJWK {
     let decoder = JSONDecoder()
     let bundle = Bundle(for: _Bundle.self)
     let path = bundle.path(forResource: filename, ofType: "json")!
     let data = try! Data(contentsOf: URL(fileURLWithPath: path))
-    let jwk = try! decoder.decode(JWK.self, from: data)
+    let jwk = try! decoder.decode(RSAPublicJWK.self, from: data)
     return jwk
 }
 

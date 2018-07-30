@@ -32,7 +32,7 @@ class NotificationController: UIViewController {
     @IBOutlet var dateLabel: UILabel!
 
     @IBAction func allowAction(_ sender: AnyObject) {
-        guard let notification = notification, let enrollment = AppDelegate.enrollment else {
+        guard let notification = notification, let enrollment = AppDelegate.state else {
             return self.dismiss(animated: true, completion: nil)
         }
         let request = Guardian
@@ -53,7 +53,7 @@ class NotificationController: UIViewController {
     }
 
     @IBAction func denyAction(_ sender: AnyObject) {
-        guard let notification = notification, let enrollment = AppDelegate.enrollment else {
+        guard let notification = notification, let enrollment = AppDelegate.state else {
             return self.dismiss(animated: true, completion: nil)
         }
         let request = Guardian
@@ -76,7 +76,7 @@ class NotificationController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        guard let notification = notification, let _ = AppDelegate.enrollment else {
+        guard let notification = notification, let _ = AppDelegate.state else {
             return
         }
 
@@ -85,10 +85,10 @@ class NotificationController: UIViewController {
         dateLabel.text = "\(notification.startedAt)"
     }
 
-    func showError(_ title: String, _ cause: Error) {
+    func showError(_ title: String, _ cause: Swift.Error) {
         DispatchQueue.main.async { [unowned self] in
             var errorMessage = "Unknown error"
-            if let cause = cause as? GuardianError {
+            if let cause = cause as? LegacyGuardianError {
                 errorMessage = cause.description
             }
             let alert = UIAlertController(
