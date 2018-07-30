@@ -31,3 +31,14 @@ func encode<B: Encodable>(body: B, encoder: JSONEncoder = JSONEncoder()) throws 
     do { return try encoder.encode(body) }
     catch let error { throw NetworkError(code: .cannotEncodeJSON, cause: error) }
 }
+
+func nothing<E: Decodable>(_ type: E.Type, decoder: Decoder = NoContentDecoder()) throws -> E {
+    return try E(from: decoder)
+}
+
+func decode<T: Decodable>(_ type: T.Type, from data: Data?) throws -> T {
+    if let data = data {
+        return try decode(type, from: data)
+    }
+    return try nothing(type)
+}

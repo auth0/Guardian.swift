@@ -22,25 +22,6 @@
 
 import Foundation
 
-/// Default URLSession used to send requests.
-private let privateSession: URLSession =  {
-    let config = URLSessionConfiguration.ephemeral
-    config.requestCachePolicy = .reloadIgnoringLocalCacheData
-    config.urlCache = nil
-
-    return URLSession.init(configuration: config)
-}()
-
-func defaultHeaders(hasBody: Bool) throws -> [String: String] {
-    let info = Bundle(for: _BundleGrapple.classForCoder()).infoDictionary ?? [:]
-    let clientInfo = ClientInfo(info: info)
-    let telemetry = try clientInfo?.asHeader() ?? [:]
-    let content = hasBody ? ["Content-Type": "application/json"] : [:]
-    return telemetry.merging(content) { _, new in new }
-}
-
-class _BundleGrapple: NSObject {}
-
 public struct NetworkOperation<T: Encodable, E: Decodable>: Operation {
 
     let request: URLRequest
@@ -147,8 +128,7 @@ public struct NetworkOperation<T: Encodable, E: Decodable>: Operation {
             return .failure(cause: error)
         }
 
-        let payloadData = httpResponse.noContent && data == nil ? Data() : data
-        guard let data = payloadData else {
+        guard httpResponse.noContent || data != nil else {
             return .failure(cause: NetworkError(code: .missingResponse, statusCode: statusCode))
         }
 
@@ -157,12 +137,7 @@ public struct NetworkOperation<T: Encodable, E: Decodable>: Operation {
         }
 
         do {
-            let body: E
-            if httpResponse.noContent {
-                body = try E(from: NoContentDecoder())
-            } else {
-                body = try decode(E.self, from: data)
-            }
+            let body = try decode(E.self, from: data)
             return .success(payload: body)
         } catch let error {
             return .failure(cause: NetworkError(code: .invalidResponse, statusCode: statusCode, cause: error))
@@ -175,6 +150,8 @@ public struct NetworkOperation<T: Encodable, E: Decodable>: Operation {
     }
 }
 
+// MARK:- Events
+
 struct NetworkRequestEvent: RequestEvent {
     let request: URLRequest
 }
@@ -185,6 +162,7 @@ struct NetworkResponseEvent: ResponseEvent {
     let rateLimit: RateLimit?
 }
 
+// MARK:- Debugging
 
 extension NetworkOperation: CustomStringConvertible, CustomDebugStringConvertible {
     public var description: String {
@@ -206,3 +184,27 @@ extension NetworkOperation: CustomStringConvertible, CustomDebugStringConvertibl
     }
 
 }
+
+// MARK:- Bundle Hook
+
+class _BundleGrapple: NSObject {}
+
+// MARK:- Defaults
+
+/// Default URLSession used to send requests.
+private let privateSession: URLSession =  {
+    let config = URLSessionConfiguration.ephemeral
+    config.requestCachePolicy = .reloadIgnoringLocalCacheData
+    config.urlCache = nil
+
+    return URLSession.init(configuration: config)
+}()
+
+func defaultHeaders(hasBody: Bool) throws -> [String: String] {
+    let info = Bundle(for: _BundleGrapple.classForCoder()).infoDictionary ?? [:]
+    let clientInfo = ClientInfo(info: info)
+    let telemetry = try clientInfo?.asHeader() ?? [:]
+    let content = hasBody ? ["Content-Type": "application/json"] : [:]
+    return telemetry.merging(content) { _, new in new }
+}
+

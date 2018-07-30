@@ -22,6 +22,7 @@
 
 import Foundation
 
+/// Used when there is no Data and status is 204
 struct NoContentDecoder: Decoder {
     var codingPath: [CodingKey] = []
 

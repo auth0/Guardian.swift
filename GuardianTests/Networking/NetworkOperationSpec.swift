@@ -210,6 +210,14 @@ class NetworkOperationSpec: QuickSpec {
                 expect(request.result).toEventually(beSuccess())
             }
 
+            it("should ignore data when status is 204 with text/plain mime type") {
+                session.a0_response = http(statusCode: 204, headers: ["Content-Type": "text/plain"])
+                session.a0_data = basicJSONString.data(using: .utf8)
+                let request: SyncRequest<NoContent> = SyncRequest(session: session)
+                request.start()
+                expect(request.result).toEventually(beSuccess())
+            }
+
             it("should succeed with payload") {
                 session.a0_response = http(statusCode: 200)
                 session.a0_data = basicJSONString.data(using: .utf8)

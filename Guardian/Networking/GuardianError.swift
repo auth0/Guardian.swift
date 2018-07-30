@@ -24,12 +24,9 @@ import Foundation
 
 private let internalErrorMessage = "a0.guardian.internal.unknown_error"
 private let invalidPayloadMessage = "a0.guardian.internal.invalid_payload"
-private let invalidResponseMessage = "a0.guardian.internal.invalid_response"
-private let failedRequestMessage = "a0.guardian.internal.unknown_server_error"
 private let invalidEnrollmentUriMessage = "a0.guardian.internal.invalid_enrollment_uri"
 private let invalidBase32SecretMessage = "a0.guardian.internal.invalid_base32_secret"
-private let invalidPublicKeyMessage = "a0.guardian.internal.invalid_public_key"
-private let invalidPrivateKeyMessage = "a0.guardian.internal.invalid_private_key"
+private let invalidJWKMessage = "a0.guardian.internal.invalid_jwk"
 private let invalidOTPAlgorithmMessage = "a0.guardian.internal.invalid_otp_algorithm"
 private let invalidNotificationActionIdentifierMessage = "a0.guardian.internal.invalid_notification_action_identifier"
 private let invalidAsymmetricKeyMessage = "a0.guardian.internal.invalid.assymmetric.key"
@@ -70,7 +67,7 @@ public class GuardianError: Error, CustomStringConvertible {
      */
     public var errorCode: String {
         guard let errorCode = self.info?["errorCode"] as? String else {
-            return failedRequestMessage
+            return internalErrorMessage
         }
         return errorCode;
     }
@@ -89,20 +86,12 @@ internal extension GuardianError {
         return GuardianError(string: internalErrorMessage)
     }
 
-    static var failedRequest: GuardianError {
-        return GuardianError(string: failedRequestMessage)
-    }
-
     static var invalidBase32Secret: GuardianError {
         return GuardianError(string: invalidBase32SecretMessage)
     }
 
-    static var invalidPublicKey: GuardianError {
-        return GuardianError(string: invalidPublicKeyMessage)
-    }
-
-    static var invalidPrivateKey: GuardianError {
-        return GuardianError(string: invalidPrivateKeyMessage)
+    static var invalidJWK: GuardianError {
+        return GuardianError(string: invalidJWKMessage)
     }
 
     static var invalidOTPAlgorithm: GuardianError {
@@ -111,18 +100,6 @@ internal extension GuardianError {
 
     static var invalidPayload: GuardianError {
         return GuardianError(string: invalidPayloadMessage)
-    }
-
-    static func invalidPayload(cause: Error) -> GuardianError {
-        return GuardianError(string: invalidPayloadMessage, cause: cause)
-    }
-
-    static var invalidResponse: GuardianError {
-        return GuardianError(string: invalidResponseMessage)
-    }
-
-    static func invalidResponse(withStatus status: Int) -> GuardianError {
-        return GuardianError(string: invalidResponseMessage, statusCode: status)
     }
 
     static var invalidEnrollmentUri: GuardianError {
