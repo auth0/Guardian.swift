@@ -23,13 +23,13 @@
 import Foundation
 
 public struct GuardianError: Swift.Error {
-    let code: Code
-    let description: String
-    let info: [String: Any]
-    let cause: Swift.Error?
+    public let code: String
+    public let description: String
+    public let info: [String: Any]
+    public let cause: Swift.Error?
 
     init(code: Code, description: String? = nil, info: [String: Any] = [:], cause: Swift.Error? = nil) {
-        self.code = code
+        self.code = code.rawValue
         self.description = description ?? code.rawValue
         self.info = info
         self.cause = cause
@@ -48,10 +48,63 @@ public struct GuardianError: Swift.Error {
         case notFoundPrivateKey = "a0.guardian.internal.no.private_key"
         case cannotSignTransactionChallenge = "a0.guardian.internal.cannot.sign_challenge"
     }
+
 }
 
 extension GuardianError: Decodable {
     public init(from decoder: Decoder) throws {
-        throw DecodingError.dataCorrupted(DecodingError.Context(codingPath: [], debugDescription: "NOT IMPLEMENTED"))
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let code = try container.decode(String.self, forKey: .code)
+        let description = try container.decodeIfPresent(String.self, forKey: .description) ?? code
+        let remainderContainer = try decoder.container(keyedBy: AdditionalDataCodingKeys.self)
+        let info = remainderContainer.decodeUnknownKeyValues(exclude: CodingKeys.self)
+        self.code = code
+        self.description = description
+        self.info = info
+        self.cause = nil
     }
+
+    enum CodingKeys: String, CodingKey {
+        case code = "errorCode"
+        case description = "description"
+    }
+}
+
+private struct AdditionalDataCodingKeys: CodingKey {
+    var stringValue: String
+    init?(stringValue: String) {
+        self.stringValue = stringValue
+    }
+
+    var intValue: Int?
+    init?(intValue: Int) {
+        self.intValue = intValue
+        self.stringValue = String(intValue)
+    }
+}
+
+    extension KeyedDecodingContainer where Key == AdditionalDataCodingKeys {
+        func decodeUnknownKeyValues<T: CodingKey>(exclude keyedBy: T.Type) -> [String: Any] {
+            var data = [String: Any]()
+
+            for key in allKeys {
+                if keyedBy.init(stringValue: key.stringValue) == nil {
+                    if let value = try? decode(String.self, forKey: key) {
+                        data[key.stringValue] = value
+                    } else if let value = try? decode(Bool.self, forKey: key) {
+                        data[key.stringValue] = value
+                    } else if let value = try? decode(Int.self, forKey: key) {
+                        data[key.stringValue] = value
+                    } else if let value = try? decode(Double.self, forKey: key) {
+                        data[key.stringValue] = value
+                    } else if let value = try? decode(Float.self, forKey: key) {
+                        data[key.stringValue] = value
+                    } else {
+                        print("Key \(key.stringValue) type not supported")
+                    }
+                }
+            }
+
+            return data
+        }
 }

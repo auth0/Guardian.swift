@@ -29,83 +29,145 @@ class JWTSpec: QuickSpec {
 
     override func spec() {
 
-        describe("JWT with RS256") {
+        var signingKey: SigningKey!
+        var verificationKey: AsymmetricPublicKey!
 
-            let signingKey = try! DataRSAPrivateKey(data: Keys.shared.privateKey)
-            let verificationKey = try! AsymmetricPublicKey(privateKey: signingKey.secKey)
-            let anotherVerificationKey = try! AsymmetricPublicKey(privateKey: DataRSAPrivateKey.new().secKey)
+        beforeEach {
+            signingKey = try! DataRSAPrivateKey.new()
+            verificationKey = try! AsymmetricPublicKey(privateKey: signingKey.secKey)
+        }
 
-            describe("encode with hardcoded key") {
+        describe("signature") {
 
-                var jwt: String?
+            var jwt: JWT<TestClaimSet>?
 
-                beforeEach {
-                    jwt = try? JWT.encode(claims: ["field": "value"], signingKey: signingKey.secKey)
+            describe("RS256") {
+
+                describe("test keys") {
+                    let aToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJmaWVsZCI6InZhbHVlIn0.eBuXdca1vVkJKG8af4TAkokhFU_xnflc7Cx1FyIEQksS5sqsVxFTV_LTgytJCHJUlLCHzcUzTrNLJCNM8-yN0ft274fcuM3MsbQJIsPKyhoZKqu9TLRqeBJNm984shcGaXIb-Get7tsUU-riYf2V5kIHNj6q0Dn46VG8yzdWagCOOryU2kk5Ohdkytk-LHDSsrGWqRYv4eT6y_WGYuMK7NJISMMl9Q-pkwcFo3D3wa2QUMoVsKvlIe4GV9YTP5HHizSaQGENClpvvtoGpgCRE1j44a1hj6CN-p5ZnFxVf98o0ntiJcUo6DTKufb7JGzyFq0HyZoXiIKFMpRjw7Od0A"
+                    let signingKey = try! DataRSAPrivateKey(data: Keys.shared.privateKey)
+                    let verificationKey = try! AsymmetricPublicKey(privateKey: signingKey.secKey)
+                    let anotherVerificationKey = try! AsymmetricPublicKey(privateKey: DataRSAPrivateKey.new().secKey)
+
+                    beforeEach {
+                        jwt = try? JWT(claimSet: TestClaimSet(field: "value"), key: signingKey.secKey)
+                    }
+
+                    it("should match hardcoded jwt") {
+                        expect(jwt?.string).to(equal(aToken))
+                    }
+
+                    it("should match header part") {
+                        expect(jwt?.parts[0]).to(equal("eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9"))
+                    }
+
+                    it("should match claims part") {
+                        expect(jwt?.parts[1]).to(equal("eyJmaWVsZCI6InZhbHVlIn0"))
+                    }
+
+                    it("should match signature part") {
+                        expect(jwt?.parts[2]).to(equal("eBuXdca1vVkJKG8af4TAkokhFU_xnflc7Cx1FyIEQksS5sqsVxFTV_LTgytJCHJUlLCHzcUzTrNLJCNM8-yN0ft274fcuM3MsbQJIsPKyhoZKqu9TLRqeBJNm984shcGaXIb-Get7tsUU-riYf2V5kIHNj6q0Dn46VG8yzdWagCOOryU2kk5Ohdkytk-LHDSsrGWqRYv4eT6y_WGYuMK7NJISMMl9Q-pkwcFo3D3wa2QUMoVsKvlIe4GV9YTP5HHizSaQGENClpvvtoGpgCRE1j44a1hj6CN-p5ZnFxVf98o0ntiJcUo6DTKufb7JGzyFq0HyZoXiIKFMpRjw7Od0A"))
+                    }
+
+                    it("should verify successfuly with correct key") {
+                        expect {
+                            let jwt: JWT<TestClaimSet>? = try? JWT(string: aToken)
+                            return try jwt?.verify(with: verificationKey.secKey)
+                        }.to(beTrue())
+                    }
+
+                    it("should fail verify with incorrect key") {
+                        expect {
+                            let jwt: JWT<TestClaimSet>? = try? JWT(string: aToken)
+                            return try jwt?.verify(with: anotherVerificationKey.secKey)
+                        }.to(beFalse())
+                    }
                 }
 
-                it("should not return nil") {
-                    expect(jwt).toNot(beNil())
+                describe("random keys") {
+
+                    var token: String!
+
+                    beforeEach {
+                        let jwt: JWT<TestClaimSet> = try! JWT(claimSet: TestClaimSet(field: UUID().uuidString), key: signingKey.secKey)
+                        token = jwt.string
+                    }
+
+                    it("should verify") {
+                        let jwt: JWT<TestClaimSet>! = try? JWT(string: token)
+                        expect(try? jwt.verify(with: verificationKey.secKey)).to(beTrue())
+                    }
+
+                    it("should fail verify with incorrect key") {
+                        let jwt: JWT<TestClaimSet>! = try? JWT(string: token)
+                        let anotherSigningKey = try! DataRSAPrivateKey.new()
+                        let anotherVerificationKey = try! AsymmetricPublicKey(privateKey: anotherSigningKey.secKey)
+                        expect(try? jwt.verify(with: anotherVerificationKey.secKey)).to(beFalse())
+                    }
                 }
 
-                it("should match hardcoded jwt") {
-                    expect(jwt!).to(equal("eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJmaWVsZCI6InZhbHVlIn0.fxZ42chl-gGSNLT9LfJbnXsN7dliEGw-iA7CHzbmUsUb9-Ha0StKTXvh0iXJKQFxGMddGPFPOiN7FSTn3aVKYPNwrgIomsZXgYsw6gbs6yFD4aU7SSKYUAel0-rsr77lIcsALihZesuiEyerrZjypyOn-c2MJZE0ZIWaBaMXBQiGXm0MaUaeVkO4pFhO6pUTITIj5w0LkeK0SuzttgIGPbbmsQELMMocHEEqLNF0hMbSFjqjfXvWPUk8uH-uKawn1rhEK9Q6EdLO6bm8lm93WSpuiuR83zd7L88hZxHzbYnvBKQyzV4tKd4e1MvdAvuSEsdJnoTu933nR4SJzEYViA"))
-                }
+            }
+        }
 
-                it("should verify successfuly with correct key") {
-                    let claims = try? JWT.verify(string: jwt!, publicKey: verificationKey.secKey)
-                    expect(claims).toNot(beNil())
-                }
+        describe("guardian claims") {
 
-                it("should fail verify with incorrect key") {
-                    let claims = try? JWT.verify(string: jwt!, publicKey: anotherVerificationKey.secKey)
-                    expect(claims).to(beNil())
-                }
+            typealias GuardianJWT = JWT<GuardianClaimSet>
+
+            var claims: GuardianClaimSet!
+
+            beforeEach {
+                claims = GuardianClaimSet(subject: UUID().uuidString, issuer: UUID().uuidString, audience: UUID().uuidString, expireAt: Date(), issuedAt: Date(), status: false, reason: UUID().uuidString)
             }
 
-            describe("encode with generated keys") {
+            it("should create instance") {
+                expect(try? GuardianJWT(claimSet: claims, key: signingKey.secKey)).toNot(beNil())
+            }
 
-                let jwt = try? JWT.encode(claims: ["string": "hello", "number": 7, "boolean": true],
-                                          signingKey: signingKey.secKey)
+            it("should create jwt") {
+                expect(try? GuardianJWT(claimSet: claims, key: signingKey.secKey).string).toNot(beEmpty())
+            }
 
-                it("should not return nil") {
+            it("should have correct alg") {
+                expect(try? GuardianJWT(claimSet: claims, key: signingKey.secKey).header.algorithm).to(equal(.rs256))
+            }
+
+            it("should have correct type") {
+                expect(try? GuardianJWT(claimSet: claims, key: signingKey.secKey).header.type).to(equal("JWT"))
+            }
+
+            it("should have signature") {
+                expect(try? GuardianJWT(claimSet: claims, key: signingKey.secKey).signature).toNot(beEmpty())
+            }
+
+            describe("string token") {
+
+                let aToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE1MzI5OTAwNzQsImF1dGgwX2d1YXJkaWFuX3JlYXNvbiI6ImhhY2tlZCIsImF1dGgwX2d1YXJkaWFuX2FjY2VwdGVkIjpmYWxzZSwic3ViIjoiMzgxMzNGM0ItNTY2Mi00MzYxLUIyMTItQkRFQkJDODZDNUZGIiwiYXV0aDBfZ3VhcmRpYW5fbWV0aG9kIjoicHVzaCIsImV4cCI6MTUzMjk5MDE1MCwiYXVkIjoiOUU4QjNGNjYtOTAxRC00QjM2LUJGNkItMTFDRkNBRkMwMUExIiwiaXNzIjoiRUE3RThDMzAtREQ4Ny00M0IwLTg0MEEtMzc2MTUzMkU2ODkzIn0.g28ieoHqXkYlqZ8clIlIsPac04x9a8c0XEkFzvr17sOfnZUxnswUXm2J8Rf7syZ9zs_nW5WPS4o357FSAb1DA-CYQ_tzmFVE3rEqZ_KT0n2tnxMNw6G_fULIivdpan17gOb3jTjyDmfQBcodIhuOrglPDiA-AUNYEdqE8KYgNLBn0hRhfVw2L7PnQYSwdu-hAZgiIqqCSLQ5BdalyKk87LALoXpn5RH_CWbEjU6NSUb3h62gI7aIZpwqCww0ehp--IUBj-NBmFB4fFNOYOKC38RxV2bTIyK1QbwLmvv02Hj5WiVBt-KzZ8xAptmxWwsG7axYTYRYpFqbi6pkiWUzUw"
+
+                it("should verify") {
+                    let jwt = try! GuardianJWT(string: aToken)
+                    let key = try! AsymmetricPublicKey(privateKey: DataRSAPrivateKey(data: Keys.shared.privateKey).secKey).secKey
+                    expect(try? jwt.verify(with: key)).to(beTrue())
+                }
+
+                var jwt: GuardianJWT?
+
+                beforeEach {
+                    jwt = try? GuardianJWT(string: aToken)
+                }
+
+                it("should parse token") {
                     expect(jwt).toNot(beNil())
                 }
 
-                describe("should verify successfuly with correct key") {
-
-                    let claims = try? JWT.verify(string: jwt!, publicKey: verificationKey.secKey)
-
-                    it("should not be nil") {
-                        expect(claims).toNot(beNil())
-                    }
-
-                    describe("should contain fields") {
-
-                        it("with string") {
-                            let value = claims?["string"] as? String
-                            expect(value).toNot(beNil())
-                            expect(value).to(equal("hello"))
-                        }
-
-                        it("with number") {
-                            let value = claims?["number"] as? Double
-                            expect(value).toNot(beNil())
-                            expect(value).to(equal(7))
-                        }
-
-                        it("with boolean") {
-                            let value = claims?["boolean"] as? Bool
-                            expect(value).toNot(beNil())
-                            expect(value).to(equal(true))
-                        }
-                    }
-                }
-
-                it("should fail verify with incorrect key") {
-                    let claims = try? JWT.verify(string: jwt!, publicKey: anotherVerificationKey.secKey)
-                    expect(claims).to(beNil())
+                it("should have correct claims") {
+                    let claims = GuardianClaimSet(subject: "38133F3B-5662-4361-B212-BDEBBC86C5FF", issuer: "EA7E8C30-DD87-43B0-840A-3761532E6893", audience: "9E8B3F66-901D-4B36-BF6B-11CFCAFC01A1", expireAt: Date(timeIntervalSince1970: 1532990150), issuedAt: Date(timeIntervalSince1970: 1532990074), status: false, reason: "hacked")
+                    expect(jwt?.claimSet).to(equal(claims))
                 }
             }
         }
     }
+}
+
+struct TestClaimSet: Codable {
+    let field: String
 }

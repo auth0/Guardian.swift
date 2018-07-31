@@ -74,7 +74,7 @@ struct OneTimePasswordGenerator: TOTP, HOTP {
 
     init(parameters: OTPParameters) throws {
         self.parameters = parameters
-        guard let secret = Base32.decode(string: parameters.base32Secret) else { throw LegacyGuardianError.invalidBase32Secret }
+        guard let secret = Base32.decode(string: parameters.base32Secret) else { throw GuardianError(code: .invalidOTPSecret) }
         self.hmac = parameters.algorithm.hmac(secret: secret)
     }
 

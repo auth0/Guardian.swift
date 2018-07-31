@@ -1,6 +1,6 @@
 // JWT.swift
 //
-// Copyright (c) 2016 Auth0 (http://auth0.com)
+// Copyright (c) 2018 Auth0 (http://auth0.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,54 +22,133 @@
 
 import Foundation
 
-struct JWT {
+struct JWT<S: Codable> {
 
-    static func encode(claims: [String: Any],
-                       signingKey: SecKey) throws -> String {
-        let header = [
-            "alg": "RS256",
-            "typ": "JWT"
-        ]
-        let jsonHeader = try JSONSerialization.data(withJSONObject: header, options: [])
-        let jsonPayload = try JSONSerialization.data(withJSONObject: claims, options: [])
-        let message = jsonHeader.base64URLEncodedString() + "." + jsonPayload.base64URLEncodedString()
+    enum Algorithm: String, Codable {
+        case rs256 = "RS256"
 
-        guard let data = message.data(using: .utf8) else {
-            throw GuardianError(code: .cannotSignTransactionChallenge, description: "invalid jwt payload")
+        func sign(value: Data, key: SecKey) throws -> Data {
+            switch self {
+            case .rs256:
+                guard let sha256 = A0SHA(algorithm: "sha256"),
+                    let rsa = A0RSA(key: key) else {
+                    throw JWT.Error.cannotSign
+                }
+                let hash = sha256.hash(value)
+                return rsa.sign(hash)
+            }
         }
-        guard let sha256 = A0SHA(algorithm: "sha256"), let rsa = A0RSA(key: signingKey) else {
-            throw GuardianError(code: .cannotSignTransactionChallenge, description: "invalid sign algorithm")
+
+        func verify(signature: Data, with value: Data, using key: SecKey) throws -> Bool {
+            switch self {
+            case .rs256:
+                guard let sha256 = A0SHA(algorithm: "sha256"),
+                    let rsa = A0RSA(key: key) else {
+                        throw JWT.Error.cannotVerify
+                }
+                let hash = sha256.hash(value)
+                return rsa.verify(hash, signature: signature)
+            }
         }
-        let hash = sha256.hash(data)
-        let signature = rsa.sign(hash)
-        return message + "." + signature.base64URLEncodedString()
     }
 
-    static func verify(string: String,
-                       publicKey: SecKey) throws -> [String: Any] {
-        let components = string.components(separatedBy: ".")
-        guard components.count == 3,
-            let jsonHeader = Data(base64URLEncoded: components[0]),
-            let header = (try? JSONSerialization.jsonObject(with: jsonHeader, options: [])) as? [String: Any],
-            let alg = header["alg"] as? String, alg == "RS256",
-            let typ = header["typ"] as? String, typ == "JWT",
-            let jsonClaims = Data(base64URLEncoded: components[1]),
-            let claims = (try? JSONSerialization.jsonObject(with: jsonClaims, options: [])) as? [String: Any],
-            let signature = Data(base64URLEncoded: components[2])
-            else {
-                throw GuardianError(code: .cannotSignTransactionChallenge, description: "invalid jwt")
+    struct Header: Codable {
+        let algorithm: Algorithm
+        let type: String = "JWT"
+
+        enum CodingKeys: String, CodingKey {
+            case type = "typ"
+            case algorithm = "alg"
         }
-        guard let sha256 = A0SHA(algorithm: "sha256"), let rsa = A0RSA(key: publicKey) else {
-            throw GuardianError(code: .cannotSignTransactionChallenge, description: "invalid sign algorithm")
+    }
+
+    enum Error: String, Swift.Error {
+        case invalid
+        case badHeader
+        case badClaims
+        case badSignature
+        case badSigningKey
+        case badVerificationKey
+        case cannotSign
+        case cannotVerify
+    }
+
+    let header: Header
+    let claimSet: S
+    let signature: Data
+    let parts: [String]
+
+    init(claimSet: S, algorithm: JWT.Algorithm = .rs256, key: SecKey) throws {
+        let header = Header(algorithm: algorithm)
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .secondsSince1970
+        let headerPart = try encoder.encode(header).base64URLEncodedString()
+        let claimSetPart = try encoder.encode(claimSet).base64URLEncodedString()
+        let signableParts = "\(headerPart).\(claimSetPart)"
+        guard let value = signableParts.data(using: .utf8) else {
+            throw JWT.Error.cannotSign
         }
-        let message = components[0] + "." + components[1]
-        guard let data = message.data(using: .utf8) else {
-            throw GuardianError(code: .cannotSignTransactionChallenge, description: "invalid jwt payload")
+        let signature = try algorithm.sign(value: value, key: key)
+        let signaturePart = signature.base64URLEncodedString()
+        self.header = header
+        self.claimSet = claimSet
+        self.signature = signature
+        self.parts = [headerPart, claimSetPart, signaturePart]
+    }
+
+    init(string: String) throws {
+        let parts = string.components(separatedBy: ".")
+        guard parts.count == 3 else {
+            throw JWT.Error.invalid
         }
-        let hash = sha256.hash(data)
-        guard true == rsa.verify(hash, signature: signature) else {
-            throw GuardianError(code: .cannotSignTransactionChallenge, description: "invalid jwt signature")
+        guard let headerData = Data(base64URLEncoded: parts[0]),
+            let claimSetData = Data(base64URLEncoded: parts[1]),
+            let signature = Data(base64URLEncoded: parts[2]) else {
+                throw JWT.Error.invalid
         }
-        return claims
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .secondsSince1970
+
+        self.header = try decoder.decode(Header.self, from: headerData)
+        self.claimSet = try decoder.decode(S.self, from: claimSetData)
+        self.signature = signature
+        self.parts = parts
+    }
+
+    func verify(with key: SecKey) throws -> Bool {
+        guard let data = "\(parts[0]).\(parts[1])".data(using: .utf8) else {
+            throw JWT.Error.cannotVerify
+        }
+        return try self.header.algorithm.verify(signature: self.signature, with: data, using: key)
+    }
+
+    var string: String {
+        return self.parts.joined(separator: ".")
     }
 }
+
+struct GuardianClaimSet: Codable, Equatable {
+    let subject: String
+    let issuer: String
+    let audience: String
+    let expireAt: Date
+    let issuedAt: Date
+    let method: String = "push"
+    let status: Bool
+    let reason: String?
+
+    enum CodingKeys: String, CodingKey {
+        case subject = "sub"
+        case issuer = "iss"
+        case audience = "aud"
+        case expireAt = "exp"
+        case issuedAt = "iat"
+
+        case method = "auth0_guardian_method"
+        case status = "auth0_guardian_accepted"
+        case reason = "auth0_guardian_reason"
+    }
+}
+
+

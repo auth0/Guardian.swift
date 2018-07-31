@@ -88,7 +88,7 @@ class NotificationController: UIViewController {
     func showError(_ title: String, _ cause: Swift.Error) {
         DispatchQueue.main.async { [unowned self] in
             var errorMessage = "Unknown error"
-            if let cause = cause as? LegacyGuardianError {
+            if let cause = cause as? GuardianError {
                 errorMessage = cause.description
             }
             let alert = UIAlertController(

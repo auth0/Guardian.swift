@@ -241,7 +241,7 @@ class AuthenticationSpec: QuickSpec {
                     Guardian.authentication(forDomain: Domain, device: device)
                         .handleAction(withIdentifier: "com.auth0.notification.authentication.something", notification: notification)
                         .start { result in
-                            expect(result).to(haveGuardianError(withErrorCode: "a0.guardian.internal.invalid_notification_action_identifier"))
+                            expect(result).to(haveGuardianError(withErrorCode: "a0.guardian.internal.invalid.notification_action_identifier"))
                             done()
                     }
                 }
@@ -446,7 +446,7 @@ class AuthenticationSpec: QuickSpec {
                         Guardian.authentication(url: ValidURL, device: device)
                             .handleAction(withIdentifier: "com.auth0.notification.authentication.something", notification: notification)
                             .start { result in
-                                expect(result).to(haveGuardianError(withErrorCode: "a0.guardian.internal.invalid_notification_action_identifier"))
+                                expect(result).to(haveGuardianError(withErrorCode: "a0.guardian.internal.invalid.notification_action_identifier"))
                                 done()
                         }
                     }
@@ -467,31 +467,24 @@ struct MockAuthenticationDevice: AuthenticationDevice {
 }
 
 func checkJWT(request: URLRequest, accepted: Bool, reason: String? = nil, challenge: String = ValidNotificationChallenge, verificationKey: AsymmetricPublicKey) -> Bool {
-    let currentTime = Int(Date().timeIntervalSince1970)
+    let currentTime = Date()
     if let payload = request.a0_payload,
         let challengeResponse = payload["challenge_response"] as? String,
-        let claims = try? JWT.verify(string: challengeResponse, publicKey: verificationKey.secKey),
-        let aud = claims["aud"] as? String,
-        aud == "https://tenant.guardian.auth0.com/also/works/in/appliance/api/resolve-transaction",
-        let sub = claims["sub"] as? String,
-        sub == challenge,
-        let iss = claims["iss"] as? String,
-        iss == EnrolledDevice.vendorIdentifier,
-        let iat = claims["iat"] as? Int,
-        iat <= currentTime,
-        iat >= currentTime - 5,
-        let exp = claims["exp"] as? Int,
-        exp <= currentTime + 30,
-        exp >= currentTime + 25,
-        let method = claims["auth0_guardian_method"] as? String,
-        method == "push",
-        let isAccepted = claims["auth0_guardian_accepted"] as? Bool,
-        isAccepted == accepted
+        let jwt: JWT<GuardianClaimSet> = try? JWT(string: challengeResponse),
+        let verified = try? jwt.verify(with: verificationKey.secKey),
+        verified == true,
+        jwt.claimSet.audience == "https://tenant.guardian.auth0.com/also/works/in/appliance/api/resolve-transaction",
+        jwt.claimSet.subject == challenge,
+        jwt.claimSet.issuer == EnrolledDevice.vendorIdentifier,
+        jwt.claimSet.issuedAt <= currentTime,
+        jwt.claimSet.issuedAt >= currentTime.addingTimeInterval(-5),
+        jwt.claimSet.expireAt <= currentTime.addingTimeInterval(30),
+        jwt.claimSet.expireAt >= currentTime.addingTimeInterval(25),
+        jwt.claimSet.method == "push",
+        jwt.claimSet.status == accepted
     {
         if let reason = reason {
-            if let actualReason = claims["auth0_guardian_reason"] as? String {
-                return actualReason == reason
-            }
+            return jwt.claimSet.reason == reason
         } else {
             return true
         }

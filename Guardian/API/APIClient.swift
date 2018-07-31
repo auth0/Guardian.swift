@@ -28,11 +28,11 @@ struct PushCredentials: Codable {
 }
 
 public struct RSAPublicJWK: Codable {
-    public let keyType = "RSA"
-    public let usage = "sig"
-    public let algorithm = "RS256"
-    public let modulus: String
-    public let exponent: String
+    let keyType = "RSA"
+    let usage = "sig"
+    let algorithm = "RS256"
+    let modulus: String
+    let exponent: String
 
     enum CodingKeys: String, CodingKey {
         case keyType = "kty"
@@ -94,7 +94,7 @@ struct APIClient: API {
         do {
             let headers = ["Authorization": "Ticket id=\"\(enrollmentTicket)\""]
             guard let jwk = verificationKey.jwk else {
-                throw LegacyGuardianError.invalidJWK
+                throw GuardianError(code: .invalidJWK)
             }
 
             let device = Device(identifier: identifier, name: name, pushCredentials: PushCredentials(token: notificationToken), publicKey: jwk)
