@@ -22,19 +22,6 @@
 
 import Foundation
 
-public struct UpdatedDevice: Codable {
-
-    let identifier: String?
-    let name: String?
-    let pushCredentials: PushCredentials?
-
-    enum CodingKeys: String, CodingKey {
-        case identifier
-        case name
-        case pushCredentials = "push_credentials"
-    }
-}
-
 struct DeviceAPIClient: DeviceAPI {
     let url: URL
     let token: String

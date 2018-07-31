@@ -22,65 +22,6 @@
 
 import Foundation
 
-struct PushCredentials: Codable {
-    let service = "APNS"
-    let token: String
-}
-
-public struct RSAPublicJWK: Codable {
-    let keyType = "RSA"
-    let usage = "sig"
-    let algorithm = "RS256"
-    let modulus: String
-    let exponent: String
-
-    enum CodingKeys: String, CodingKey {
-        case keyType = "kty"
-        case usage = "use"
-        case algorithm = "alg"
-        case modulus = "n"
-        case exponent = "e"
-    }
-}
-
-public struct Device: Encodable {
-    let identifier: String
-    let name: String
-    let pushCredentials: PushCredentials
-    let publicKey: RSAPublicJWK
-
-    enum CodingKeys: String, CodingKey {
-        case identifier
-        case name
-        case pushCredentials = "push_credentials"
-        case publicKey = "public_key"
-    }
-}
-
-public struct Enrollment: Decodable{
-    let identifier: String
-    let token: String
-    let userId: String
-    let issuer: String
-    let totp: OTPParameters?
-
-    enum CodingKeys: String, CodingKey {
-        case identifier = "id"
-        case token
-        case userId = "user_id"
-        case issuer
-        case totp
-    }
-}
-
-public struct Transaction: Codable {
-    let challengeResponse: String
-
-    enum CodingKeys: String, CodingKey {
-        case challengeResponse = "challenge_response"
-    }
-}
-
 struct APIClient: API {
 
     let baseUrl: URL
