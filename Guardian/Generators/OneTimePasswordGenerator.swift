@@ -23,13 +23,13 @@
 import Foundation
 
 public protocol TOTP {
-    func stringCode(time: TimeInterval) -> String
+    func stringCode(time: TimeInterval, formatter: NumberFormatter?) -> String
     func code(time: TimeInterval) -> Int
 }
 
-extension TOTP {
-    public func stringCode() -> String {
-        return self.stringCode(time: Date().timeIntervalSince1970)
+public extension TOTP {
+    public func stringCode(time: TimeInterval = Date().timeIntervalSince1970, formatter: NumberFormatter? = nil) -> String {
+        return self.stringCode(time: time, formatter: formatter)
     }
 
     public func code() -> Int {
@@ -38,7 +38,7 @@ extension TOTP {
 }
 
 public protocol HOTP {
-    func stringCode(counter: Int) -> String
+    func stringCode(counter: Int, formatter: NumberFormatter?) -> String
     func code(counter: Int) -> Int
 }
 
@@ -96,9 +96,9 @@ struct OneTimePasswordGenerator: TOTP, HOTP {
         return Int(hash)
     }
 
-    func stringCode(counter: Int) -> String {
+    func stringCode(counter: Int, formatter: NumberFormatter? = nil) -> String {
         let code = self.code(counter: counter)
-        return format(code: code, digits: self.parameters.digits)
+        return format(code: code, digits: self.parameters.digits, formatter: formatter)
     }
 
     func code(time: TimeInterval) -> Int {
@@ -106,17 +106,19 @@ struct OneTimePasswordGenerator: TOTP, HOTP {
         return self.code(counter: steps)
     }
 
-    func stringCode(time: TimeInterval) -> String {
+    func stringCode(time: TimeInterval, formatter: NumberFormatter? = nil) -> String {
         let steps = timeSteps(from: time, period: self.parameters.period)
         let code = self.code(counter: steps)
-        return format(code: code, digits: self.parameters.digits)
+        return format(code: code, digits: self.parameters.digits, formatter: formatter)
     }
 
     private func timeSteps(from time: TimeInterval, period: Int) -> Int {
         return Int(time / Double(self.parameters.period))
     }
 
-    private func format(code: Int, digits: Int) -> String {
-        return String(format: "%0\(digits)d", code)
+    private func format(code: Int, digits: Int, formatter: NumberFormatter?) -> String {
+        let defaultFormatted = String(format: "%0\(digits)d", code)
+        guard let formatter = formatter else { return defaultFormatted }
+        return formatter.string(from: NSNumber(value: code)) ?? defaultFormatted
     }
 }
