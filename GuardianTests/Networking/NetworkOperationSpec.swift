@@ -202,6 +202,14 @@ class NetworkOperationSpec: QuickSpec {
                 expect(request.result).toEventually(beSuccess())
             }
 
+            it("should allow 204 with empty Data") {
+                session.a0_response = http(statusCode: 204)
+                session.a0_data = Data()
+                let request: SyncRequest<NoContent> = SyncRequest(session: session)
+                request.start()
+                expect(request.result).toEventually(beSuccess())
+            }
+
             it("should ignore data when status is 204") {
                 session.a0_response = http(statusCode: 204)
                 session.a0_data = basicJSONString.data(using: .utf8)
