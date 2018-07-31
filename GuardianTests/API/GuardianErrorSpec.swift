@@ -28,6 +28,14 @@ class GuardianErrorSpec: QuickSpec {
 
     override func spec() {
 
+        it("should build with required attributes") {
+            expect(GuardianError(code: .invalidNotificationActionIdentifier).code).to(equal(GuardianError.Code.invalidNotificationActionIdentifier.rawValue))
+        }
+
+        it("should build with default description") {
+            expect(GuardianError(code: .invalidNotificationActionIdentifier).description).to(equal(GuardianError.Code.invalidNotificationActionIdentifier.rawValue))
+        }
+
         describe("Decodable") {
 
             let decoder = JSONDecoder()
@@ -75,7 +83,7 @@ class GuardianErrorSpec: QuickSpec {
                 expect(try? decoder.decode(GuardianError.self, from: minimalJSON).description).to(equal(description))
             }
 
-            it("should load extra information") {
+            it("should load extra string field") {
                 let code = UUID().uuidString
                 let randomValue = UUID().uuidString
                 let minimalJSON = """
@@ -85,6 +93,55 @@ class GuardianErrorSpec: QuickSpec {
                 }
                 """.data(using: .utf8)!
                 expect(try? decoder.decode(GuardianError.self, from: minimalJSON).info["field"] as? String).to(equal(randomValue))
+            }
+
+            it("should load extra int field") {
+                let code = UUID().uuidString
+                let randomValue = Int(arc4random())
+                let minimalJSON = """
+                {
+                    "errorCode": "\(code)",
+                    "field": \(randomValue)
+                }
+                """.data(using: .utf8)!
+                expect(try? decoder.decode(GuardianError.self, from: minimalJSON).info["field"] as? Int).to(equal(randomValue))
+            }
+
+            it("should load extra double field") {
+                let code = UUID().uuidString
+                let randomValue = Double(Date().timeIntervalSince1970)
+                let minimalJSON = """
+                {
+                    "errorCode": "\(code)",
+                    "field": \(randomValue)
+                }
+                """.data(using: .utf8)!
+                expect{
+                    let field = try! decoder.decode(GuardianError.self, from: minimalJSON).info["field"]
+                    return field as? Double
+                }.to(beCloseTo(randomValue, within: 0.01))
+            }
+
+            it("should not load extra unknown type field") {
+                let code = UUID().uuidString
+                let minimalJSON = """
+                {
+                    "errorCode": "\(code)",
+                    "field": {}
+                }
+                """.data(using: .utf8)!
+                expect(try! decoder.decode(GuardianError.self, from: minimalJSON).info["field"]).to(beNil())
+            }
+
+            it("should load extra int field") {
+                let code = UUID().uuidString
+                let minimalJSON = """
+                {
+                    "errorCode": "\(code)",
+                    "field": true
+                }
+                """.data(using: .utf8)!
+                expect(try! decoder.decode(GuardianError.self, from: minimalJSON).info["field"] as? Bool).to(beTrue())
             }
         }
     }
