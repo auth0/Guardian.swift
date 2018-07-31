@@ -1,12 +1,12 @@
 # Guardian.swift (iOS)
 
-[![CI Status](http://img.shields.io/travis/auth0/Guardian.swift.svg?style=flat-square)](https://travis-ci.org/auth0/Guardian.swift)
+[![CircleCI](https://img.shields.io/circleci/project/github/auth0/Guardian.swift.svg?style=flat-square)](https://circleci.com/gh/auth0/Guardian.swift)
 [![Coverage Status](https://img.shields.io/codecov/c/github/auth0/Guardian.swift/master.svg?style=flat-square)](https://codecov.io/github/auth0/Guardian.swift)
 [![Version](https://img.shields.io/cocoapods/v/Guardian.svg?style=flat-square)](http://cocoadocs.org/docsets/Guardian)
 [![License](https://img.shields.io/cocoapods/l/Guardian.svg?style=flat-square)](http://cocoadocs.org/docsets/Guardian)
 [![Platform](https://img.shields.io/cocoapods/p/Guardian.svg?style=flat-square)](http://cocoadocs.org/docsets/Guardian)
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat-square)](https://github.com/Carthage/Carthage)
-![Swift 3.0](https://img.shields.io/badge/Swift-3.0-orange.svg?style=flat-square)
+![Swift 4.1](https://img.shields.io/badge/Swift-4.1-orange.svg?style=flat-square)
 
 [Guardian](https://auth0.com/docs/multifactor-authentication/guardian) is Auth0's multi-factor
 authentication (MFA) service that provides a simple, safe way for you to implement MFA.
@@ -20,7 +20,7 @@ multi-factor authentication from your app.
 
 ## Requirements
 
-iOS 9.3+ and Swift 3 is required in order to use Guardian.
+iOS 10+ and Swift 4.1 is required in order to use Guardian.
 
 ## Before getting started
 
@@ -36,7 +36,7 @@ Guardian.swift is available through [CocoaPods](http://cocoapods.org).
 To install it, simply add the following line to your Podfile:
 
 ```ruby
-pod 'Guardian', '~> 0.5.0'
+pod 'Guardian', '~> 1.0.0'
 ```
 
 #### Carthage
@@ -44,7 +44,7 @@ pod 'Guardian', '~> 0.5.0'
 In your Cartfile add this line
 
 ```
-github "auth0/Guardian.swift" ~> 0.5.0
+github "auth0/Guardian.swift" ~> 1.0.0
 ```
 
 ## Usage
@@ -70,7 +70,7 @@ For an enrollment you need the following things, besides your Guardian Domain:
 
 - Enrollment Uri: The value encoded in the QR Code scanned from Guardian Web Widget or in your enrollment ticket sent to you, e.g. by email.
 - APNS Token: Apple APNS token for the device and **MUST** be a `String`containing the 64 bytes (expressed in hexadecimal format)
-- Key Pair: A RSA (Private/Public) key pair used to assert your identity with Auth0 Guardian
+- Signing & Verification Key: A RSA (Private/Public) key pair used to assert your identity with Auth0 Guardian
 
 > In case your app is not yet using push notifications or you're not familiar with it, you should check their [docs](https://developer.apple.com/go/?id=push-notifications).
 
@@ -81,11 +81,13 @@ Guardian
         .enroll(forDomain: "{YOUR_GUARDIAN_DOMAIN}",
                 usingUri: "{ENROLLMENT_URI}",
                 notificationToken: "{APNS_TOKEN}",
-                keyPair: keyPair)
+                signingKey: signingKey,
+                verificationKey: verificationKey
+                )
         .start { result in
             switch result {
-            case .success(let enrollment):
-                // success, we have the enrollment data available
+            case .success(let enrolledDevice):
+                // success, we have the enrollment device data available
             case .failure(let cause):
                 // something failed, check cause to see what went wrong
             }
@@ -94,20 +96,44 @@ Guardian
 
 On success you'll obtain the enrollment information, that should be secured stored in your application. This information includes the enrollment identifier, and the token for Guardian API associated to your device for updating or deleting your enrollment.
 
-#### RSA key pair
+#### Signing & Verification Keys
 
-Guardian.swift provides a convenience class to generate an RSA key pair and store it in iOS Keychain.
+Guardian.swift provides a convenience class to generate a signing key 
 
 ```swift
-let rsaKeyPair = RSAKeyPair.new(
-    usingPublicTag: "com.auth0.guardian.enroll.public",
-    privateTag: "com.auth0.guardian.enroll.private"
-    )
+let signingKey = try DataRSAPrivateKey.new()
+```
+
+this key only exists in memory but you can obtain its `Data` representation and store securely e.g. in an encrypted SQLiteDB
+
+```swift
+// Store data
+let data = signingKey.data
+// performthe storage
+
+// Load from Storage
+let loadedKey = try DataRSAPrivateKey(data: data)
+```
+
+But if you just want to store inside iOS Keychain
+
+```swift
+let signingKey = try KeychainRSAPrivateKey.new(with: "com.myapp.mytag")
+```
+
+It will create it and store it automatically under the supplied tag, if you want to retrieve it using the tag
+
+```swift
+let signingKey = try KeychainRSAPrivateKey(tag: "com.myapp.mytag")
 ```
 
 > The tags should be unique since it's the identifier of each key inside iOS Keychain.
 
-> Since the keys are already secured stored inside iOS Keychain, you olny need to store the identifiers
+and for the verification key, we can just obtain it from any `SigningKey` like this
+
+```swift
+let verificationKey = try signingKey.verificationKey()
+```
 
 ### Allow a login request
 
@@ -122,13 +148,25 @@ if let notification = Guardian.notification(from: userInfo) {
 ```
 
 Once you have the notification instance, you can easily allow the authentication request by using
-the `allow` method. You'll also need the enrollment that you obtained previously.
+the `allow` method. You'll also need some information from the enrolled device that you obtained previously.
 In case you have more than one enrollment, you'll have to find the one that has the same `id` as the
 notification (the `enrollmentId` property).
 
+When you have the information, `device` parameter is anything that implements the protocol  `AuthenticatedDevice`
+
+```swift
+struct Authenticator: Guardian.AuthenticationDevice {
+    let signingKey: SigningKey
+    let localIdentifier: String
+}
+```
+> Local identifier is the local id of the device, by default on enroll  `UIDevice.current.identifierForVendor`
+
+Then just call
+
 ```swift
 Guardian
-        .authentication(forDomain: "{YOUR_GUARDIAN_DOMAIN}", andEnrollment: enrollment)
+        .authentication(forDomain: "{YOUR_GUARDIAN_DOMAIN}", device: device)
         .allow(notification: notification)
         .start { result in
             switch result {
@@ -147,7 +185,7 @@ you want. The reject reason will be available in the guardian logs.
 
 ```swift
 Guardian
-        .authentication(forDomain: "{YOUR_GUARDIAN_DOMAIN}", andEnrollment: enrollment)
+        .authentication(forDomain: "{YOUR_GUARDIAN_DOMAIN}", device: device)
         .reject(notification: notification)
         // or reject(notification: notification, withReason: "hacked")
         .start { result in

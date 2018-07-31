@@ -1,5 +1,27 @@
 # Change Log
 
+## [1.0.0](https://github.com/auth0/Guardian.swift/tree/1.0.0) (2018-07-31)
+[Full Changelog](https://github.com/auth0/Guardian.swift/compare/0.5.0...1.0.0)
+
+**Added**
+- Allow to send custom NumberFormatter for otp [\#76](https://github.com/auth0/Guardian.swift/pull/76) ([hzalaz](https://github.com/hzalaz))
+- Add OTP Generators [\#71](https://github.com/auth0/Guardian.swift/pull/71) ([hzalaz](https://github.com/hzalaz))
+
+**Changed**
+- Rename Enrollment to EnrolledDevice [\#72](https://github.com/auth0/Guardian.swift/pull/72) ([hzalaz](https://github.com/hzalaz))
+
+**Fixed**
+- Allow 204 reponse that has Data object empty [\#75](https://github.com/auth0/Guardian.swift/pull/75) ([hzalaz](https://github.com/hzalaz))
+
+**Breaking changes**
+- Rework GuardianError [\#74](https://github.com/auth0/Guardian.swift/pull/74) ([hzalaz](https://github.com/hzalaz))
+- Rework Network Layer [\#73](https://github.com/auth0/Guardian.swift/pull/73) ([hzalaz](https://github.com/hzalaz))
+- Now the session should be configured per request. [\#70](https://github.com/auth0/Guardian.swift/pull/70) ([hzalaz](https://github.com/hzalaz))
+- Refactor Key handling for enroll and resolve  [\#69](https://github.com/auth0/Guardian.swift/pull/69) ([hzalaz](https://github.com/hzalaz))
+- Refactor notification handling [\#68](https://github.com/auth0/Guardian.swift/pull/68) ([hzalaz](https://github.com/hzalaz))
+- Remove ObjectiveC bindings and support [\#67](https://github.com/auth0/Guardian.swift/pull/67) ([hzalaz](https://github.com/hzalaz))
+- Remove iOS 9 support [\#65](https://github.com/auth0/Guardian.swift/pull/65) ([hzalaz](https://github.com/hzalaz))
+
 ## [0.5.0](https://github.com/auth0/Guardian.swift/tree/0.5.0) (2018-07-19)
 [Full Changelog](https://github.com/auth0/Guardian.swift/compare/0.4.0...0.5.0)
 **Closed issues**
