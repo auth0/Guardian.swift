@@ -104,12 +104,12 @@ public struct NetworkOperation<T: Encodable, E: Decodable>: Operation {
             return callback(.failure(cause: cause))
         }
         let task = self.session.dataTask(with: request) {
-            callback(self.handle(data: $0, response: $1, error: $2))
+            callback(self.handle(payload: $0, response: $1, error: $2))
         }
         task.resume()
     }
 
-    func handle(data: Data?, response: URLResponse?, error: Swift.Error?) -> Result<E> {
+    func handle(payload: Data?, response: URLResponse?, error: Swift.Error?) -> Result<E> {
         if let error = error {
             return .failure(cause: NetworkError(code: .failedRequest, cause: error))
         }
@@ -118,17 +118,17 @@ public struct NetworkOperation<T: Encodable, E: Decodable>: Operation {
             return .failure(cause: NetworkError(code: .failedRequest))
         }
 
-        let responseEvent = NetworkResponseEvent(data: data, response: httpResponse, rateLimit: RateLimit(response: httpResponse))
+        let responseEvent = NetworkResponseEvent(data: payload, response: httpResponse, rateLimit: RateLimit(response: httpResponse))
         self.observer.response?(responseEvent)
 
         let statusCode = httpResponse.statusCode
         guard (200..<300).contains(statusCode) else {
-            let error: Swift.Error = self.errorMapper(httpResponse, data)
-                ?? NetworkError(statusCode: statusCode, description: message(from: httpResponse, data: data))
+            let error: Swift.Error = self.errorMapper(httpResponse, payload)
+                ?? NetworkError(statusCode: statusCode, description: message(from: httpResponse, data: payload))
             return .failure(cause: error)
         }
 
-        guard httpResponse.noContent || data != nil else {
+        guard httpResponse.noContent || payload != nil else {
             return .failure(cause: NetworkError(code: .missingResponse, statusCode: statusCode))
         }
 
@@ -137,7 +137,7 @@ public struct NetworkOperation<T: Encodable, E: Decodable>: Operation {
         }
 
         do {
-            let body = try decode(E.self, from: data)
+            let body = try decode(E.self, from: payload)
             return .success(payload: body)
         } catch let error {
             return .failure(cause: NetworkError(code: .invalidResponse, statusCode: statusCode, cause: error))

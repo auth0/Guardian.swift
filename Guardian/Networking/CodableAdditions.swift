@@ -37,7 +37,7 @@ func nothing<E: Decodable>(_ type: E.Type, decoder: Decoder = NoContentDecoder()
 }
 
 func decode<T: Decodable>(_ type: T.Type, from data: Data?) throws -> T {
-    if let data = data {
+    if let data = data, data.count > 0 {
         return try decode(type, from: data)
     }
     return try nothing(type)
