@@ -139,11 +139,11 @@ public struct OTPParameters: Codable {
         case period
     }
 
-    public init(base32Secret: String, algorithm: HMACAlgorithm = .sha1, digits: Int =  6, period: Int = 30) {
+    public init(base32Secret: String, algorithm: HMACAlgorithm? = nil, digits: Int? = nil, period: Int? = nil) {
         self.base32Secret = base32Secret
-        self.algorithm = algorithm
-        self.digits = digits
-        self.period = period
+        self.algorithm = algorithm ?? .sha1
+        self.digits = digits ?? 6
+        self.period = period ?? 30
     }
 
 }

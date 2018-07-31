@@ -69,6 +69,16 @@ class OneTimePasswordGeneratorSpec: QuickSpec {
                     expect(otp.stringCode(time: 49)).to(equal(otp.code(time: 49).description)) // Picked time that generates a number with 6 digits and no 0 prefix in string
                 }
 
+                it("should allow custom format for string code") {
+                    let formatter = NumberFormatter()
+                    formatter.usesGroupingSeparator = true
+                    formatter.groupingSeparator = " "
+                    formatter.groupingSize = 3
+                    formatter.minimumIntegerDigits = 6
+                    formatter.paddingCharacter = "0"
+                    expect(otp.stringCode(time: 49, formatter: formatter)).to(equal("287 082"))
+                }
+
                 context("sha1") {
                     let key = "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ"
                     let alg = HMACAlgorithm.sha1
@@ -121,8 +131,19 @@ class OneTimePasswordGeneratorSpec: QuickSpec {
                     }
 
                     it("should return code '\(code)' for counter '\(counter)'") {
-                        expect(otp.stringCode(counter: counter)).to(equal(code))
+                        expect(otp.stringCode(counter: counter, formatter: nil)).to(equal(code))
                     }
+                }
+
+                it("should allow custom format for string code") {
+                    let formatter = NumberFormatter()
+                    formatter.usesGroupingSeparator = true
+                    formatter.groupingSeparator = " "
+                    formatter.groupingSize = 3
+                    formatter.minimumIntegerDigits = 6
+                    formatter.paddingCharacter = "0"
+                    let otp = try! Guardian.hotp(base32Secret: "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ", algorithm: .sha1, digits: 6)
+                    expect(otp.stringCode(counter: 0, formatter: formatter)).to(equal("755 224"))
                 }
 
                 context("sha1") {
