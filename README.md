@@ -15,7 +15,7 @@ authentication (MFA) service that provides a simple, safe way for you to impleme
 well as enterprise identity providers such as Active Directory, LDAP, Google Apps and Salesforce.
 
 This SDK allows you to integrate Auth0's Guardian multi-factor service in your own app, transforming
-it in the second factor itself. Your users will get all the benefits of our frictionless
+it into the second factor itself. Your users will get all the benefits of our frictionless
 multi-factor authentication from your app.
 
 ## Requirements
@@ -41,7 +41,7 @@ pod 'Guardian', '~> 1.0.0'
 
 #### Carthage
 
-In your Cartfile add this line
+In your Cartfile, add this line
 
 ```
 github "auth0/Guardian.swift" ~> 1.0.0
@@ -49,7 +49,7 @@ github "auth0/Guardian.swift" ~> 1.0.0
 
 ## Usage
 
-`Guardian` is the core of the SDK. To get things going you'll have to import the library:
+`Guardian` is the core of the SDK. To get things going, you'll have to import the library:
 
 ```swift
 import Guardian
@@ -69,12 +69,12 @@ you'll need it to provide the second factor required to verify the identity.
 For an enrollment you need the following things, besides your Guardian Domain:
 
 - Enrollment Uri: The value encoded in the QR Code scanned from Guardian Web Widget or in your enrollment ticket sent to you, e.g. by email.
-- APNS Token: Apple APNS token for the device and **MUST** be a `String`containing the 64 bytes (expressed in hexadecimal format)
-- Signing & Verification Key: A RSA (Private/Public) key pair used to assert your identity with Auth0 Guardian
+- APNS Token: Apple APNS token for the device and **MUST** be a `String`containing the 64 bytes (expressed in hexadecimal format).
+- Signing & Verification Key: A RSA (Private/Public) key pair used to assert your identity with Auth0 Guardian.
 
 > In case your app is not yet using push notifications or you're not familiar with it, you should check their [docs](https://developer.apple.com/go/?id=push-notifications).
 
-after your have all of them, you can enroll your device
+After having all of them, you can enroll your device.
 
 ```swift
 Guardian
@@ -94,17 +94,17 @@ Guardian
         }
 ```
 
-On success you'll obtain the enrollment information, that should be secured stored in your application. This information includes the enrollment identifier, and the token for Guardian API associated to your device for updating or deleting your enrollment.
+On success, you'll obtain the enrollment information, that should be secured stored in your application. This information includes the enrollment identifier and the token for Guardian API associated to your device for updating or deleting your enrollment.
 
 #### Signing & Verification Keys
 
-Guardian.swift provides a convenience class to generate a signing key 
+Guardian.swift provides a convenience class to generate a signing key :
 
 ```swift
 let signingKey = try DataRSAPrivateKey.new()
 ```
 
-this key only exists in memory but you can obtain its `Data` representation and store securely e.g. in an encrypted SQLiteDB
+This key only exists in memory but you can obtain its `Data` representation and store securely e.g. in an encrypted SQLiteDB.
 
 ```swift
 // Store data
@@ -115,13 +115,13 @@ let data = signingKey.data
 let loadedKey = try DataRSAPrivateKey(data: data)
 ```
 
-But if you just want to store inside iOS Keychain
+But if you just want to store inside iOS Keychain,
 
 ```swift
 let signingKey = try KeychainRSAPrivateKey.new(with: "com.myapp.mytag")
 ```
 
-It will create it and store it automatically under the supplied tag, if you want to retrieve it using the tag
+it will create it and store it automatically under the supplied tag.If you want to retrieve it using the tag :
 
 ```swift
 let signingKey = try KeychainRSAPrivateKey(tag: "com.myapp.mytag")
@@ -129,7 +129,7 @@ let signingKey = try KeychainRSAPrivateKey(tag: "com.myapp.mytag")
 
 > The tags should be unique since it's the identifier of each key inside iOS Keychain.
 
-and for the verification key, we can just obtain it from any `SigningKey` like this
+and for the verification key, you can just obtain it from any `SigningKey` like this :
 
 ```swift
 let verificationKey = try signingKey.verificationKey()
@@ -137,7 +137,7 @@ let verificationKey = try signingKey.verificationKey()
 
 ### Allow a login request
 
-Once you have the enrollment in place, you will receive a push notification every time the user has to validate his identity with MFA.
+Once you have the enrollment in place, you will receive a push notification every time the user has to validate their identity with MFA.
 
 Guardian provides a method to parse the data received from APNs and return a `Notification` instance ready to be used.
 
@@ -200,7 +200,7 @@ Guardian
 
 ### Unenroll
 
-If you want to delete an enrollment -for example if you want to disable MFA- you can make the
+If you want to delete an enrollment, for example, if you want to disable MFA- you can make the
 following request:
 
 ```swift
@@ -224,7 +224,7 @@ Auth0 helps you to:
 
 * Add authentication with [multiple authentication sources](https://docs.auth0.com/identityproviders),
 either social like **Google, Facebook, Microsoft Account, LinkedIn, GitHub, Twitter, Box, Salesforce,
-amont others**, or enterprise identity systems like **Windows Azure AD, Google Apps, Active Directory,
+among others**, or enterprise identity systems like **Windows Azure AD, Google Apps, Active Directory,
 ADFS or any SAML Identity Provider**.
 * Add authentication through more traditional
 **[username/password databases](https://docs.auth0.com/mysql-connection-tutorial)**.
