@@ -74,7 +74,7 @@ For an enrollment you need the following things, besides your Guardian Domain:
 
 > In case your app is not yet using push notifications or you're not familiar with it, you should check their [docs](https://developer.apple.com/go/?id=push-notifications).
 
-after your have all of them, you can enroll your device
+After your have all of them, you can enroll your device
 
 ```swift
 Guardian
@@ -98,13 +98,13 @@ On success you'll obtain the enrollment information, that should be secured stor
 
 #### Signing & Verification Keys
 
-Guardian.swift provides a convenience class to generate a signing key 
+Guardian.swift provides a convenience class to generate a signing key:
 
 ```swift
 let signingKey = try DataRSAPrivateKey.new()
 ```
 
-this key only exists in memory but you can obtain its `Data` representation and store securely e.g. in an encrypted SQLiteDB
+This key only exists in memory but you can obtain its `Data` representation and store securely e.g. in an encrypted SQLiteDB
 
 ```swift
 // Store data
