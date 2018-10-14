@@ -29,11 +29,11 @@ public protocol TOTP {
 
 public extension TOTP {
     public func stringCode(time: TimeInterval = Date().timeIntervalSince1970, formatter: NumberFormatter? = nil) -> String {
-        return self.stringCode(time: time, formatter: formatter)
+        return stringCode(time: time, formatter: formatter)
     }
 
     public func code() -> Int {
-        return self.code(time: Date().timeIntervalSince1970)
+        return code(time: Date().timeIntervalSince1970)
     }
 }
 
@@ -64,7 +64,7 @@ public enum HMACAlgorithm: String, Codable {
     case sha512
 
     func hmac(secret: Data) -> A0HMAC {
-        return A0HMAC(algorithm: self.rawValue, key: secret)!
+        return A0HMAC(algorithm: rawValue, key: secret)!
     }
 }
 
@@ -89,7 +89,7 @@ struct OneTimePasswordGenerator: TOTP, HOTP {
             let value = start.withMemoryRebound(to: UInt32.self, capacity: 1) { $0 }
             var hash = UInt32(bigEndian: value.pointee)
             hash &= 0x7fffffff
-            hash = hash % UInt32(pow(10, Float(self.parameters.digits)))
+            hash = hash % UInt32(pow(10, Float(parameters.digits)))
             return hash
         }
 
@@ -98,22 +98,22 @@ struct OneTimePasswordGenerator: TOTP, HOTP {
 
     func stringCode(counter: Int, formatter: NumberFormatter? = nil) -> String {
         let code = self.code(counter: counter)
-        return format(code: code, digits: self.parameters.digits, formatter: formatter)
+        return format(code: code, digits: parameters.digits, formatter: formatter)
     }
 
     func code(time: TimeInterval) -> Int {
-        let steps = timeSteps(from: time, period: self.parameters.period)
-        return self.code(counter: steps)
+        let steps = timeSteps(from: time, period: parameters.period)
+        return code(counter: steps)
     }
 
     func stringCode(time: TimeInterval, formatter: NumberFormatter? = nil) -> String {
-        let steps = timeSteps(from: time, period: self.parameters.period)
+        let steps = timeSteps(from: time, period: parameters.period)
         let code = self.code(counter: steps)
-        return format(code: code, digits: self.parameters.digits, formatter: formatter)
+        return format(code: code, digits: parameters.digits, formatter: formatter)
     }
 
     private func timeSteps(from time: TimeInterval, period: Int) -> Int {
-        return Int(time / Double(self.parameters.period))
+        return Int(time / Double(parameters.period))
     }
 
     private func format(code: Int, digits: Int, formatter: NumberFormatter?) -> String {

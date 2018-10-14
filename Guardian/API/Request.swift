@@ -50,7 +50,7 @@ public struct Request<T: Encodable, E: Decodable>: Operation {
     }
 
     public func start(callback: @escaping (Result<E>) -> ()) {
-        self.request.start(callback: callback)
+        request.start(callback: callback)
     }
 
     public func on(request: OnRequestEvent? = nil, response: OnResponseEvent? = nil) -> Request<T, E> {
@@ -70,6 +70,6 @@ public struct Request<T: Encodable, E: Decodable>: Operation {
         return Request(request: request)
     }
 
-    public var description: String { return self.request.description }
-    public var debugDescription: String { return self.request.debugDescription }
+    public var description: String { return request.description }
+    public var debugDescription: String { return request.debugDescription }
 }

@@ -47,11 +47,11 @@ struct AuthenticationLocation: Location, CustomDebugStringConvertible, CustomStr
     }
 
     var description: String {
-        return "\(self.name ?? "Unknown") (\(String(describing: self.latitude)), \(String(describing: self.longitude)))"
+        return "\(name ?? "Unknown") (\(String(describing: latitude)), \(String(describing: longitude)))"
     }
 
     var debugDescription: String {
-        return self.description
+        return description
     }
 
 }

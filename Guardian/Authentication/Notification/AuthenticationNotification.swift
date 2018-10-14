@@ -28,20 +28,20 @@ struct AuthenticationNotification: Notification, CustomDebugStringConvertible, C
     let enrollmentId: String
     let transactionToken: String
     let challenge: String
+    let startedAt: Date
     let source: Source?
     let location: Location?
-    let startedAt: Date
 
-    init(domain: String, enrollmentId: String, transactionToken: String, challenge: String, startedAt: Date, source: Source?, location: Location?) {
-        self.domain = domain
-        self.enrollmentId = enrollmentId
-        self.transactionToken = transactionToken
-        self.challenge = challenge
-        self.source = source
-        self.location = location
-        self.startedAt = startedAt
+    var description: String {
+        return "enrollmentId: <\(enrollmentId)> txToken: <\(transactionToken)> challenge: <\(challenge)> startedAt: \(startedAt)"
     }
 
+    var debugDescription: String {
+        return "domain: <\(domain)> enrollmentId: <\(enrollmentId)> txToken: <\(transactionToken)> challenge: <\(challenge)> source: <\(String(describing: source))> location: <\(String(describing: location))> startedAt: \(startedAt)"
+    }
+}
+
+extension AuthenticationNotification {
     init?(userInfo: [AnyHashable: Any]) {
         guard
             let json = userInfo as? [String: Any],
@@ -65,13 +65,5 @@ struct AuthenticationNotification: Notification, CustomDebugStringConvertible, C
         let location = AuthenticationLocation(fromJSON: mfa["l"])
 
         self.init(domain: domain, enrollmentId: enrollmentId, transactionToken: token, challenge: challenge, startedAt: startedAt, source: source, location: location)
-    }
-
-    var description: String {
-        return "enrollmentId: <\(self.enrollmentId)> txToken: <\(self.transactionToken)> challenge: <\(self.challenge)> startedAt: \(self.startedAt)"
-    }
-
-    var debugDescription: String {
-        return "domain: <\(self.domain)> enrollmentId: <\(self.enrollmentId)> txToken: <\(self.transactionToken)> challenge: <\(self.challenge)> source: <\(String(describing: self.source))> location: <\(String(describing: self.location))> startedAt: \(self.startedAt)"
     }
 }

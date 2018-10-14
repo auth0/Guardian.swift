@@ -25,19 +25,19 @@ import Foundation
 
 extension HTTPURLResponse {
     var isJSON: Bool {
-        return self.mimeType == "application/json"
+        return mimeType == "application/json"
     }
 
     var isText: Bool {
-        return self.mimeType == "text/plain"
+        return mimeType == "text/plain"
     }
 
     var noContent: Bool {
-        return self.statusCode == 204
+        return statusCode == 204
     }
 
     func value(forHeader name: String) -> String? {
-        let headers = self.allHeaderFields
+        let headers = allHeaderFields
         return (headers[name] ?? headers[name.lowercased()]) as? String
     }
 }

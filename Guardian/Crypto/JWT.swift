@@ -120,11 +120,11 @@ struct JWT<S: Codable> {
         guard let data = "\(parts[0]).\(parts[1])".data(using: .utf8) else {
             throw JWT.Error.cannotVerify
         }
-        return try self.header.algorithm.verify(signature: self.signature, with: data, using: key)
+        return try header.algorithm.verify(signature: signature, with: data, using: key)
     }
 
     var string: String {
-        return self.parts.joined(separator: ".")
+        return parts.joined(separator: ".")
     }
 }
 

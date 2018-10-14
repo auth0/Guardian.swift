@@ -34,15 +34,14 @@ public protocol ASNPublicKeyDecodable: PublicKeyDataConvertible {
 extension ASNPublicKeyDecodable {
 
     public var attributes: PublicKeyAttributes? {
-        let asn = { (bytes: UnsafePointer<UInt8>) -> PublicKeyAttributes? in
+        return data?.withUnsafeBytes { (bytes: UnsafePointer<UInt8>) in
             guard bytes.pointee == 0x30 else { return nil }
-            let (modulusBytes, totalLength) = self.length(from: bytes + 1)
-            guard totalLength > 0, let (exponentBytes, modulus) = self.data(from: modulusBytes) else { return nil }
-            guard let (end, exponent) = self.data(from: exponentBytes) else { return nil }
+            let (modulusBytes, totalLength) = length(from: bytes + 1)
+            guard totalLength > 0, let (exponentBytes, modulus) = data(from: modulusBytes) else { return nil }
+            guard let (end, exponent) = data(from: exponentBytes) else { return nil }
             guard abs(end.distance(to: modulusBytes)) == totalLength else { return nil }
             return PublicKeyAttributes(modulus: modulus, exponent: exponent)
         }
-        return self.data?.withUnsafeBytes(asn)
     }
 
     private func length(from bytes: UnsafePointer<UInt8>) -> (UnsafePointer<UInt8>, Int) {
@@ -70,7 +69,7 @@ extension ASNPublicKeyDecodable {
 extension VerificationKey where Self: ASNPublicKeyDecodable {
 
     public var jwk: RSAPublicJWK? {
-        guard let attributes = self.attributes else { return nil }
+        guard let attributes = attributes else { return nil }
         return RSAPublicJWK(modulus: attributes.modulus.base64URLEncodedString(), exponent: attributes.exponent.base64URLEncodedString())
     }
 }

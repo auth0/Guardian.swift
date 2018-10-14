@@ -37,7 +37,7 @@ public struct AsymmetricPublicKey {
 }
 
 extension AsymmetricPublicKey: VerificationKey, PublicKeyDataConvertible, ASNPublicKeyDecodable {
-    public var data: Data? { return try? export(key: self.secKey) }
+    public var data: Data? { return try? export(key: secKey) }
 }
 
 extension SigningKey {
@@ -47,6 +47,6 @@ extension SigningKey {
      - throws: `GuardianError` if the key cannot be obtained
     */
     public func verificationKey() throws -> VerificationKey {
-        return try AsymmetricPublicKey(privateKey: self.secKey)
+        return try AsymmetricPublicKey(privateKey: secKey)
     }
 }

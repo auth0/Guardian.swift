@@ -360,9 +360,7 @@ struct MockResponse: Decodable, Equatable {
 }
 
 struct MockError: Swift.Error, Equatable {
-    let id: UUID
-
-    init() { self.id = UUID() }
+    let id = UUID()
 }
 
 class SyncRequest<T: Decodable> {
@@ -377,8 +375,8 @@ class SyncRequest<T: Decodable> {
     }
 
     init(request: NetworkOperation<[String: String], T>) {
-        self.request = request
-        self.request = self.request.on(request: { [weak self] r in
+        self.request = request // must initialize variable `self.request` first
+        self.request = request.on(request: { [weak self] r in
             self?.requestEvent = r
             }, response: { [weak self] r in
                 self?.responseEvent = r
@@ -386,7 +384,7 @@ class SyncRequest<T: Decodable> {
     }
 
     public func mapError(transform: @escaping (HTTPURLResponse, Data?) -> Swift.Error?) -> SyncRequest<T> {
-        self.request = self.request.mapError(transform: transform)
+        request = request.mapError(transform: transform)
         return self
     }
 
@@ -395,8 +393,8 @@ class SyncRequest<T: Decodable> {
         return self
     }
 
-    func start() -> () {
-        self.request.start { self.result = $0 }
+    func start() {
+        request.start { [unowned self] in self.result = $0 }
     }
 }
 

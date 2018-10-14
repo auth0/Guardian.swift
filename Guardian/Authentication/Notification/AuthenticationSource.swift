@@ -65,14 +65,14 @@ struct AuthenticationSource: Source, CustomDebugStringConvertible, CustomStringC
     }
 
     var description: String {
-        let osName = self.os?.name ?? "Unknown OS"
-        let osVersion = self.os?.version != nil ? "(\(String(describing: self.os?.version))" : ""
-        let browserName = self.browser?.name ?? "Unknown Browser"
-        let browserVersion = self.browser?.version != nil ? "(\(String(describing: self.browser?.version))" : ""
+        let osName = os?.name ?? "Unknown OS"
+        let osVersion = os?.version ?? ""
+        let browserName = browser?.name ?? "Unknown Browser"
+        let browserVersion = browser?.version ?? ""
         return "\(osName) \(osVersion)".trimmingCharacters(in: .whitespaces) + " \(browserName) \(browserVersion)".trimmingCharacters(in: .whitespaces)
     }
 
     var debugDescription: String {
-        return self.description
+        return description
     }
 }

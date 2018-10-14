@@ -462,7 +462,7 @@ struct MockAuthenticationDevice: AuthenticationDevice {
     let signingKey: SigningKey
 
     var verificationKey: AsymmetricPublicKey {
-        return try! AsymmetricPublicKey(privateKey: self.signingKey.secKey)
+        return try! AsymmetricPublicKey(privateKey: signingKey.secKey)
     }
 }
 
