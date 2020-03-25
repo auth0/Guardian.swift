@@ -31,7 +31,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     static var pushToken: String? = nil
     var window: UIWindow?
 
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 
         let guardianCategory = Guardian.AuthenticationCategory.default
 
@@ -104,7 +104,7 @@ extension AppDelegate {
             if newValue == nil {
                 GuardianState.delete()
             } else {
-                try? newValue?.save()
+                ((try? newValue?.save()) as ()??)
             }
         }
     }

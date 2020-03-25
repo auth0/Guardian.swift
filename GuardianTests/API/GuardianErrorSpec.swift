@@ -92,7 +92,7 @@ class GuardianErrorSpec: QuickSpec {
                     "field": "\(randomValue)"
                 }
                 """.data(using: .utf8)!
-                expect(try? decoder.decode(GuardianError.self, from: minimalJSON).info["field"] as? String).to(equal(randomValue))
+                expect(((try? decoder.decode(GuardianError.self, from: minimalJSON).info["field"] as? String) as String??)).to(equal(randomValue))
             }
 
             it("should load extra int field") {
@@ -104,7 +104,7 @@ class GuardianErrorSpec: QuickSpec {
                     "field": \(randomValue)
                 }
                 """.data(using: .utf8)!
-                expect(try? decoder.decode(GuardianError.self, from: minimalJSON).info["field"] as? Int).to(equal(randomValue))
+                expect(((try? decoder.decode(GuardianError.self, from: minimalJSON).info["field"] as? Int) as Int??)).to(equal(randomValue))
             }
 
             it("should load extra double field") {
