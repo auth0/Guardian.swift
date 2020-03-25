@@ -32,12 +32,12 @@ class GuardianSpec: QuickSpec {
 
         beforeEach {
             stub(condition: { _ in return true }) { _ in
-                return OHHTTPStubsResponse.init(error: NSError(domain: "com.auth0", code: -99999, userInfo: nil))
+                return HTTPStubsResponse.init(error: NSError(domain: "com.auth0", code: -99999, userInfo: nil))
                 }.name = "YOU SHALL NOT PASS!"
         }
         
         afterEach {
-            OHHTTPStubs.removeAllStubs()
+            HTTPStubs.removeAllStubs()
         }
 
         describe("api(forDomain:)") {
@@ -189,7 +189,7 @@ class GuardianSpec: QuickSpec {
                         let json = [
                             "notTheRequiredField": "someValue",
                             ]
-                        return OHHTTPStubsResponse(jsonObject: json, statusCode: 200, headers: ["Content-Type": "application/json"])
+                        return HTTPStubsResponse(jsonObject: json, statusCode: 200, headers: ["Content-Type": "application/json"])
                     }.name = "Invalid enroll response"
                 waitUntil(timeout: Timeout) { done in
                     Guardian
@@ -308,7 +308,7 @@ class GuardianSpec: QuickSpec {
                         let json = [
                             "notTheRequiredField": "someValue",
                             ]
-                        return OHHTTPStubsResponse(jsonObject: json, statusCode: 200, headers: ["Content-Type": "application/json"])
+                        return HTTPStubsResponse(jsonObject: json, statusCode: 200, headers: ["Content-Type": "application/json"])
                     }.name = "Invalid enroll response"
                 waitUntil(timeout: Timeout) { done in
                     Guardian

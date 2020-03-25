@@ -35,14 +35,14 @@ class AuthenticationSpec: QuickSpec {
 
         beforeEach {
             stub(condition: { _ in return true }) { _ in
-                return OHHTTPStubsResponse.init(error: NSError(domain: "com.auth0", code: -99999, userInfo: nil))
+                return HTTPStubsResponse.init(error: NSError(domain: "com.auth0", code: -99999))
                 }.name = "YOU SHALL NOT PASS!"
             signingKey = try! DataRSAPrivateKey.new()
             device = MockAuthenticationDevice(localIdentifier: UIDevice.current.identifierForVendor!.uuidString, signingKey: signingKey)
         }
 
         afterEach {
-            OHHTTPStubs.removeAllStubs()
+            HTTPStubs.removeAllStubs()
         }
 
         describe("allow with RSA") {
