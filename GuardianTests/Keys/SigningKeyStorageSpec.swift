@@ -78,7 +78,7 @@ class KeychainBot {
     func clean(by tag: String? = nil) {
         if let tag = tag {
             remove(with: tag)
-            guard let index = self.tags.index(of: tag) else { return }
+            guard let index = self.tags.firstIndex(of: tag) else { return }
             self.tags.remove(at: index)
         } else {
             self.tags.forEach { self.remove(with: $0) }
