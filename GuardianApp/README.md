@@ -7,9 +7,7 @@ authentication (MFA) service that provides a simple, safe way for you to impleme
 [Auth0](https://auth0.com) is an authentication broker that supports social identity providers as
 well as enterprise identity providers such as Active Directory, LDAP, Google Apps and Salesforce.
 
-This SDK allows you to integrate Auth0's Guardian multi-factor service in your own app, transforming
-it in the second factor itself. Your users will get all the benefits of our frictionless
-multi-factor authentication from your app.
+This is the sample app that demonstrates how to integrate the Auth0's Guardian SDK into your own app
 
 ## Requirements
 
