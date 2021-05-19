@@ -296,7 +296,7 @@ class APIClientSpec: QuickSpec {
                 }.name = "Valid updated enrollment"
             }
             
-            it("should delete enrollment") {
+            it("should update enrollment") {
                 waitUntil(timeout: Timeout) { done in
                     client
                         .device(forEnrollmentId: ValidEnrollmentId, userId: ValidUserId, signingKey: signingKey)
