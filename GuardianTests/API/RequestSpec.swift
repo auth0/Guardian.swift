@@ -63,7 +63,8 @@ class RequestSpec: QuickSpec {
             }
 
             it("should register for response events") {
-                let request: Request<String, String> = Request.new(method: .get, url: url)
+                session.a0_response = http(statusCode: 200)
+                let request: Request<String, String> = Request.new(method: .get, url: url).withURLSession(session)
                 waitUntil { done in
                     request
                         .on(response: { _ in done() })

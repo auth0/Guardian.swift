@@ -153,7 +153,7 @@ class APIClientSpec: QuickSpec {
             }
         }
 
-        describe("delete enrollment") {
+        describe("delete enrollment with opaque token") {
             
             beforeEach {
                 stub(condition: isDeleteEnrollment(baseUrl: ValidURL)) { _ in
@@ -205,8 +205,29 @@ class APIClientSpec: QuickSpec {
                 }
             }
         }
-        
-        describe("update enrollment") {
+
+        describe("delete enrollment with JWT token") {
+            beforeEach {
+                stub(condition: isDeleteEnrollment(baseUrl: ValidURL, enrollmentId: ValidEnrollmentId)
+                    && hasBearerJWTToken(withSub: ValidUserId, iss: ValidDeviceIdentifier, aud: ValidURL.absoluteString)) { _ in
+                    return successResponse()
+                }.name = "Valid delete enrollment"
+            }
+            
+            it("should delete enrollment") {
+                waitUntil(timeout: Timeout) { done in
+                    client
+                        .device(forEnrollmentId: ValidEnrollmentId, userId: ValidUserId, enrolledDevice: TestAuthenticationDevice(signingKey: signingKey))
+                        .delete()
+                        .start { result in
+                            expect(result).to(beSuccess())
+                            done()
+                    }
+                }
+            }
+        }
+
+        describe("update enrollment with opaque token") {
             
             beforeEach {
                 stub(condition: isUpdateEnrollment(baseUrl: ValidURL)) { _ in
@@ -260,5 +281,33 @@ class APIClientSpec: QuickSpec {
                 }
             }
         }
+
+        describe("update enrollment with JWT token") {
+            beforeEach {
+                stub(condition: isUpdateEnrollment(baseUrl: ValidURL, enrollmentId: ValidEnrollmentId)
+                    && hasBearerJWTToken(withSub: ValidUserId, iss: ValidDeviceIdentifier, aud: ValidURL.absoluteString)) { req in
+                    let payload = req.a0_payload
+                    let pushCredentials = payload?["push_credentials"] as? [String: String]
+                    return deviceResponse(enrollmentId: ValidEnrollmentId, deviceIdentifier: payload?["identifier"] as? String, name: payload?["name"] as? String, service: pushCredentials?["service"], notificationToken: pushCredentials?["token"])
+                }.name = "Valid updated enrollment"
+            }
+            
+            it("should delete enrollment") {
+                waitUntil(timeout: Timeout) { done in
+                    client
+                        .device(forEnrollmentId: ValidEnrollmentId, userId: ValidUserId, enrolledDevice: TestAuthenticationDevice(signingKey: signingKey))
+                        .update(localIdentifier: ValidDeviceIdentifier, name: ValidDeviceName, notificationToken: ValidNotificationToken)
+                        .start { result in
+                            expect(result).to(beUpdatedDevice(deviceIdentifier: ValidDeviceIdentifier, deviceName: ValidDeviceName, notificationService: ValidNotificationService, notificationToken: ValidNotificationToken))
+                            done()
+                    }
+                }
+            }
+        }
     }
+}
+
+struct TestAuthenticationDevice: AuthenticationDevice {
+    var signingKey: SigningKey
+    var localIdentifier: String = ValidDeviceIdentifier
 }

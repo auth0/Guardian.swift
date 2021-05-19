@@ -47,6 +47,7 @@ public struct GuardianError: Swift.Error {
         case failedStoreAsymmetricKey = "a0.guardian.internal.failed.store_assymmetric_key"
         case notFoundPrivateKey = "a0.guardian.internal.no.private_key"
         case cannotSignTransactionChallenge = "a0.guardian.internal.cannot.sign_challenge"
+        case cannotSignToken = "a0.guardian.internal.cannot.sign_token"
     }
 
 }

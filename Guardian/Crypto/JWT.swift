@@ -128,6 +128,22 @@ struct JWT<S: Codable> {
     }
 }
 
+struct BasicClaimSet: Codable, Equatable {
+    let subject: String
+    let issuer: String
+    let audience: String
+    let expireAt: Date
+    let issuedAt: Date
+
+    enum CodingKeys: String, CodingKey {
+        case subject = "sub"
+        case issuer = "iss"
+        case audience = "aud"
+        case expireAt = "exp"
+        case issuedAt = "iat"
+    }
+}
+
 struct GuardianClaimSet: Codable, Equatable {
     let subject: String
     let issuer: String
@@ -150,5 +166,3 @@ struct GuardianClaimSet: Codable, Equatable {
         case reason = "auth0_guardian_reason"
     }
 }
-
-
