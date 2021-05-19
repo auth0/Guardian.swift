@@ -120,15 +120,15 @@ public protocol API {
     ```
     Guardian
        .api(forDomain: "tenant.guardian.auth0.com")
-       .device(forEnrollmentId: enrollment.id, userId: userId, enrolledDevice: enrolledDevice)
+       .device(forEnrollmentId: enrollment.id, userId: userId, signingKey: signingKey)
        .create() // or update/delete
     ```
 
     - parameter forEnrollmentId: the enrollment id
     - parameter userId:          the user id
-    - parameter enrolledDevice:  the enrolled device that will be used to generate the JWT token
+    - parameter signingKey:      the key that will be used to sign the JWT token
     
     - returns: a DeviceAPI instance
     */
-    func device(forEnrollmentId enrollmentId: String, userId: String, enrolledDevice: AuthenticationDevice) -> DeviceAPI
+    func device(forEnrollmentId enrollmentId: String, userId: String, signingKey: SigningKey) -> DeviceAPI
 }

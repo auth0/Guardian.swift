@@ -210,7 +210,7 @@ class APIClientSpec: QuickSpec {
             beforeEach {
                 stub(condition: isDeleteEnrollment(baseUrl: ValidURL, enrollmentId: ValidEnrollmentId)
                     && hasBearerJWTToken(withSub: ValidUserId,
-                                         iss: ValidDeviceIdentifier,
+                                         iss: ValidEnrollmentId,
                                          aud: ValidURL.appendingPathComponent(DeviceAPIClient.path).absoluteString)) { _ in
                     return successResponse()
                 }.name = "Valid delete enrollment"
@@ -219,7 +219,7 @@ class APIClientSpec: QuickSpec {
             it("should delete enrollment") {
                 waitUntil(timeout: Timeout) { done in
                     client
-                        .device(forEnrollmentId: ValidEnrollmentId, userId: ValidUserId, enrolledDevice: TestAuthenticationDevice(signingKey: signingKey))
+                        .device(forEnrollmentId: ValidEnrollmentId, userId: ValidUserId, signingKey: signingKey)
                         .delete()
                         .start { result in
                             expect(result).to(beSuccess())
@@ -288,7 +288,7 @@ class APIClientSpec: QuickSpec {
             beforeEach {
                 stub(condition: isUpdateEnrollment(baseUrl: ValidURL, enrollmentId: ValidEnrollmentId)
                         && hasBearerJWTToken(withSub: ValidUserId,
-                                             iss: ValidDeviceIdentifier,
+                                             iss: ValidEnrollmentId,
                                              aud: ValidURL.appendingPathComponent(DeviceAPIClient.path).absoluteString)) { req in
                     let payload = req.a0_payload
                     let pushCredentials = payload?["push_credentials"] as? [String: String]
@@ -299,7 +299,7 @@ class APIClientSpec: QuickSpec {
             it("should delete enrollment") {
                 waitUntil(timeout: Timeout) { done in
                     client
-                        .device(forEnrollmentId: ValidEnrollmentId, userId: ValidUserId, enrolledDevice: TestAuthenticationDevice(signingKey: signingKey))
+                        .device(forEnrollmentId: ValidEnrollmentId, userId: ValidUserId, signingKey: signingKey)
                         .update(localIdentifier: ValidDeviceIdentifier, name: ValidDeviceName, notificationToken: ValidNotificationToken)
                         .start { result in
                             expect(result).to(beUpdatedDevice(deviceIdentifier: ValidDeviceIdentifier, deviceName: ValidDeviceName, notificationService: ValidNotificationService, notificationToken: ValidNotificationToken))
@@ -309,9 +309,4 @@ class APIClientSpec: QuickSpec {
             }
         }
     }
-}
-
-struct TestAuthenticationDevice: AuthenticationDevice {
-    var signingKey: SigningKey
-    var localIdentifier: String = ValidDeviceIdentifier
 }
