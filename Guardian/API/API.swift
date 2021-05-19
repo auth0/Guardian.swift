@@ -115,7 +115,7 @@ public protocol API {
     notification token or to delete the device, unenrolling/disabling this
     device as a second factor.
     This method will generate a signed JWT token to authenticate with the
-    API, instead of using an existing token,
+    API, instead of using an existing token.
     
     ```
     Guardian
