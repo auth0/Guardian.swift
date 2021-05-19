@@ -105,8 +105,10 @@ public protocol API {
      - parameter forEnrollmentId: the enrollment id
      - parameter token:           the token that will be used to authenticate
      
+     - warning: this method is deprecated in favor of `device(forEnrollmentId:userId:signingKey:)`
      - returns: a DeviceAPI instance
      */
+    @available(*, deprecated, message: "see device(forEnrollmentId:userId:signingKey:)")
     func device(forEnrollmentId id: String, token: String) -> DeviceAPI
 
     /**
