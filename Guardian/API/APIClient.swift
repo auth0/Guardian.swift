@@ -61,7 +61,7 @@ struct APIClient: API {
         let currentTime = Date()
         let claims = BasicClaimSet(
             subject: userId,
-            issuer: enrolledDevice.localIdentifier,
+            issuer: enrollmentId,
             audience: self.baseUrl.appendingPathComponent(DeviceAPIClient.path).absoluteString,
             expireAt: currentTime.addingTimeInterval(responseExpiration),
             issuedAt: currentTime
