@@ -209,7 +209,9 @@ class APIClientSpec: QuickSpec {
         describe("delete enrollment with JWT token") {
             beforeEach {
                 stub(condition: isDeleteEnrollment(baseUrl: ValidURL, enrollmentId: ValidEnrollmentId)
-                    && hasBearerJWTToken(withSub: ValidUserId, iss: ValidDeviceIdentifier, aud: ValidURL.absoluteString)) { _ in
+                    && hasBearerJWTToken(withSub: ValidUserId,
+                                         iss: ValidDeviceIdentifier,
+                                         aud: ValidURL.appendingPathComponent(DeviceAPIClient.path).absoluteString)) { _ in
                     return successResponse()
                 }.name = "Valid delete enrollment"
             }
@@ -285,7 +287,9 @@ class APIClientSpec: QuickSpec {
         describe("update enrollment with JWT token") {
             beforeEach {
                 stub(condition: isUpdateEnrollment(baseUrl: ValidURL, enrollmentId: ValidEnrollmentId)
-                    && hasBearerJWTToken(withSub: ValidUserId, iss: ValidDeviceIdentifier, aud: ValidURL.absoluteString)) { req in
+                        && hasBearerJWTToken(withSub: ValidUserId,
+                                             iss: ValidDeviceIdentifier,
+                                             aud: ValidURL.appendingPathComponent(DeviceAPIClient.path).absoluteString)) { req in
                     let payload = req.a0_payload
                     let pushCredentials = payload?["push_credentials"] as? [String: String]
                     return deviceResponse(enrollmentId: ValidEnrollmentId, deviceIdentifier: payload?["identifier"] as? String, name: payload?["name"] as? String, service: pushCredentials?["service"], notificationToken: pushCredentials?["token"])
