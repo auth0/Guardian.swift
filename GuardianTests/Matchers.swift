@@ -66,7 +66,7 @@ func hasBearerToken(_ token: String) -> OHHTTPStubsTestBlock {
     }
 }
 
-func hasBearerJWTToken(withSub sub: String, iss: String, aud: String) -> OHHTTPStubsTestBlock {
+func hasBearerJWTToken(withSub sub: String, iss: String, aud: String, validFor duration: TimeInterval) -> OHHTTPStubsTestBlock {
     return { request in
         guard let token = request.value(forHTTPHeaderField: "Authorization")?.split(separator: " ").last,
             let jwt = try? JWT<BasicClaimSet>(string: String(token)),
@@ -77,7 +77,8 @@ func hasBearerJWTToken(withSub sub: String, iss: String, aud: String) -> OHHTTPS
 
         guard jwt.claimSet.subject == sub,
             jwt.claimSet.issuer == iss,
-            jwt.claimSet.audience == aud else {
+            jwt.claimSet.audience == aud,
+            jwt.claimSet.expireAt.timeIntervalSince(jwt.claimSet.issuedAt) == duration else {
                 return false
         }
 

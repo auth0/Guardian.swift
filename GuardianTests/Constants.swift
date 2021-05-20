@@ -43,11 +43,9 @@ let ValidPeriod = 29
 let ValidTransactionToken = "aValidTransactionToken"
 let RejectReason = "aRejectReason"
 let ValidChallengeResponse = "aValidChallengeResponse"
-
+let ValidBasicJWTDuration: TimeInterval = 60 * 60 * 2
 let ValidDeviceIdentifier = "aValidDeviceIdentifier"
 let ValidDeviceName = "aValidDeviceName"
 let ValidNotificationService = "APNS"
 let DeviceAccountToken = UUID().uuidString
 let ValidNotificationChallenge = "aValidNotificationChallenge"
-
-
