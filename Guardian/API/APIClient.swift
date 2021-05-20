@@ -57,7 +57,7 @@ struct APIClient: API {
     }
 
     func device(forEnrollmentId enrollmentId: String, userId: String, signingKey: SigningKey) -> DeviceAPI {
-        let responseExpiration: TimeInterval = 60 * 2 // 2 hs
+        let responseExpiration: TimeInterval = 60 * 60 * 2 // 2 hs
         let currentTime = Date()
         let claims = BasicClaimSet(
             subject: userId,
