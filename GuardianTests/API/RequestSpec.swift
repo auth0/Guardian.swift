@@ -85,10 +85,13 @@ class RequestSpec: QuickSpec {
                         }
                         .start { result in
                             expect({
-                                guard case .failure(let actual as MockError) = result, error == actual else {
-                                    return .failed(reason: "not a failure with mapped error")
+                                let result: (() -> ToSucceedResult)? = {
+                                    guard case .failure(let actual as MockError) = result, error == actual else {
+                                        return .failed(reason: "not a failure with mapped error")
+                                    }
+                                    return .succeeded
                                 }
-                                return .succeeded
+                                return result
                             }).to(succeed())
                         }
                 }

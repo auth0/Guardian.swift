@@ -211,7 +211,8 @@ class APIClientSpec: QuickSpec {
                 stub(condition: isDeleteEnrollment(baseUrl: ValidURL, enrollmentId: ValidEnrollmentId)
                     && hasBearerJWTToken(withSub: ValidUserId,
                                          iss: ValidEnrollmentId,
-                                         aud: ValidURL.appendingPathComponent(DeviceAPIClient.path).absoluteString)) { _ in
+                                         aud: ValidURL.appendingPathComponent(DeviceAPIClient.path).absoluteString,
+                                         validFor: ValidBasicJWTDuration)) { _ in
                     return successResponse()
                 }.name = "Valid delete enrollment"
             }
@@ -289,7 +290,8 @@ class APIClientSpec: QuickSpec {
                 stub(condition: isUpdateEnrollment(baseUrl: ValidURL, enrollmentId: ValidEnrollmentId)
                         && hasBearerJWTToken(withSub: ValidUserId,
                                              iss: ValidEnrollmentId,
-                                             aud: ValidURL.appendingPathComponent(DeviceAPIClient.path).absoluteString)) { req in
+                                             aud: ValidURL.appendingPathComponent(DeviceAPIClient.path).absoluteString,
+                                             validFor: ValidBasicJWTDuration)) { req in
                     let payload = req.a0_payload
                     let pushCredentials = payload?["push_credentials"] as? [String: String]
                     return deviceResponse(enrollmentId: ValidEnrollmentId, deviceIdentifier: payload?["identifier"] as? String, name: payload?["name"] as? String, service: pushCredentials?["service"], notificationToken: pushCredentials?["token"])

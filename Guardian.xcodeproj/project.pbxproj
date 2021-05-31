@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -34,6 +34,16 @@
 		23D3E4401D91BEA200F3FDE2 /* Base32Spec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23D3E43F1D91BEA200F3FDE2 /* Base32Spec.swift */; };
 		23FE50831D949EC400407A1D /* Guardian.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F2037CD1D5E1E3E0005D2E2 /* Guardian.framework */; };
 		23FE50841D949EC400407A1D /* Guardian.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5F2037CD1D5E1E3E0005D2E2 /* Guardian.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		5C19E55D266515A600F167EC /* SimpleKeychain.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C19E55B266515A600F167EC /* SimpleKeychain.xcframework */; };
+		5C19E55E266515A600F167EC /* SimpleKeychain.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5C19E55B266515A600F167EC /* SimpleKeychain.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		5C19E55F266515A600F167EC /* QRCodeReader.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C19E55C266515A600F167EC /* QRCodeReader.xcframework */; };
+		5C19E560266515A600F167EC /* QRCodeReader.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5C19E55C266515A600F167EC /* QRCodeReader.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		5C19E564266515D100F167EC /* Nimble.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C19E561266515D000F167EC /* Nimble.xcframework */; };
+		5C19E565266515D100F167EC /* OHHTTPStubs.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C19E562266515D100F167EC /* OHHTTPStubs.xcframework */; };
+		5C19E566266515D100F167EC /* Quick.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C19E563266515D100F167EC /* Quick.xcframework */; };
+		5C19E567266515DF00F167EC /* Nimble.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5C19E561266515D000F167EC /* Nimble.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		5C19E568266515DF00F167EC /* OHHTTPStubs.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5C19E562266515D100F167EC /* OHHTTPStubs.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		5C19E569266515DF00F167EC /* Quick.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5C19E563266515D100F167EC /* Quick.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5F07A58521092C7D00819FA2 /* ClientInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F07A58421092C7D00819FA2 /* ClientInfo.swift */; };
 		5F07A58721092F2300819FA2 /* ClientInfoSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F07A58621092F2300819FA2 /* ClientInfoSpec.swift */; };
 		5F07A589210A57C200819FA2 /* Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F07A588210A57C200819FA2 /* Events.swift */; };
@@ -42,7 +52,6 @@
 		5F07A58F210A6E5900819FA2 /* NoContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F07A58E210A6E5900819FA2 /* NoContent.swift */; };
 		5F07A591210A6E8400819FA2 /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F07A590210A6E8400819FA2 /* NetworkError.swift */; };
 		5F07A593210F567900819FA2 /* State.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F07A592210F567900819FA2 /* State.swift */; };
-		5F07A595210F5CCA00819FA2 /* SimpleKeychain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F07A594210F5CC900819FA2 /* SimpleKeychain.framework */; };
 		5F07A597210F672200819FA2 /* NoContentDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F07A596210F672200819FA2 /* NoContentDecoder.swift */; };
 		5F07A599210F6D1900819FA2 /* Operation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F07A598210F6D1900819FA2 /* Operation.swift */; };
 		5F07A59B210F779300819FA2 /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F07A59A210F779300819FA2 /* Request.swift */; };
@@ -81,13 +90,6 @@
 		5F2037F31D5E22590005D2E2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5F2037F11D5E22590005D2E2 /* Main.storyboard */; };
 		5F2037F51D5E22590005D2E2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5F2037F41D5E22590005D2E2 /* Assets.xcassets */; };
 		5F2037F81D5E22590005D2E2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5F2037F61D5E22590005D2E2 /* LaunchScreen.storyboard */; };
-		5F2038011D5E40C70005D2E2 /* Quick.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F2037FE1D5E40C70005D2E2 /* Quick.framework */; };
-		5F2038021D5E40C70005D2E2 /* OHHTTPStubs.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F2037FF1D5E40C70005D2E2 /* OHHTTPStubs.framework */; };
-		5F2038031D5E40C70005D2E2 /* Nimble.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F2038001D5E40C70005D2E2 /* Nimble.framework */; };
-		5F2038081D5E40ED0005D2E2 /* Quick.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5F2037FE1D5E40C70005D2E2 /* Quick.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		5F2038091D5E40EE0005D2E2 /* OHHTTPStubs.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5F2037FF1D5E40C70005D2E2 /* OHHTTPStubs.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		5F20380A1D5E40EE0005D2E2 /* Nimble.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5F2038001D5E40C70005D2E2 /* Nimble.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		5F2C3FB420F50C8D001DA713 /* QRCodeReader.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F2C3FB320F50C8D001DA713 /* QRCodeReader.framework */; };
 		5F6133892101273300BCC182 /* AuthenticationCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F6133882101273300BCC182 /* AuthenticationCategory.swift */; };
 		5F61338B2101286200BCC182 /* AuthenticationNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F61338A2101286200BCC182 /* AuthenticationNotification.swift */; };
 		5F61338D2101289E00BCC182 /* AuthenticationSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F61338C2101289E00BCC182 /* AuthenticationSource.swift */; };
@@ -134,6 +136,8 @@
 			dstSubfolderSpec = 10;
 			files = (
 				23FE50841D949EC400407A1D /* Guardian.framework in Embed Frameworks */,
+				5C19E55E266515A600F167EC /* SimpleKeychain.xcframework in Embed Frameworks */,
+				5C19E560266515A600F167EC /* QRCodeReader.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -144,9 +148,9 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				5F2038081D5E40ED0005D2E2 /* Quick.framework in CopyFiles */,
-				5F2038091D5E40EE0005D2E2 /* OHHTTPStubs.framework in CopyFiles */,
-				5F20380A1D5E40EE0005D2E2 /* Nimble.framework in CopyFiles */,
+				5C19E567266515DF00F167EC /* Nimble.xcframework in CopyFiles */,
+				5C19E568266515DF00F167EC /* OHHTTPStubs.xcframework in CopyFiles */,
+				5C19E569266515DF00F167EC /* Quick.xcframework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -180,6 +184,11 @@
 		23C67AEB1D81D6A400A38A2E /* MockNSURLSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockNSURLSession.swift; sourceTree = "<group>"; };
 		23C67AED1D81EF5300A38A2E /* EnrolledDevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnrolledDevice.swift; sourceTree = "<group>"; };
 		23D3E43F1D91BEA200F3FDE2 /* Base32Spec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Base32Spec.swift; sourceTree = "<group>"; };
+		5C19E55B266515A600F167EC /* SimpleKeychain.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = SimpleKeychain.xcframework; path = Carthage/Build/SimpleKeychain.xcframework; sourceTree = "<group>"; };
+		5C19E55C266515A600F167EC /* QRCodeReader.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = QRCodeReader.xcframework; path = Carthage/Build/QRCodeReader.xcframework; sourceTree = "<group>"; };
+		5C19E561266515D000F167EC /* Nimble.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Nimble.xcframework; path = Carthage/Build/Nimble.xcframework; sourceTree = "<group>"; };
+		5C19E562266515D100F167EC /* OHHTTPStubs.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = OHHTTPStubs.xcframework; path = Carthage/Build/OHHTTPStubs.xcframework; sourceTree = "<group>"; };
+		5C19E563266515D100F167EC /* Quick.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Quick.xcframework; path = Carthage/Build/Quick.xcframework; sourceTree = "<group>"; };
 		5F07A58421092C7D00819FA2 /* ClientInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientInfo.swift; sourceTree = "<group>"; };
 		5F07A58621092F2300819FA2 /* ClientInfoSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientInfoSpec.swift; sourceTree = "<group>"; };
 		5F07A588210A57C200819FA2 /* Events.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Events.swift; sourceTree = "<group>"; };
@@ -188,7 +197,6 @@
 		5F07A58E210A6E5900819FA2 /* NoContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoContent.swift; sourceTree = "<group>"; };
 		5F07A590210A6E8400819FA2 /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
 		5F07A592210F567900819FA2 /* State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = State.swift; sourceTree = "<group>"; };
-		5F07A594210F5CC900819FA2 /* SimpleKeychain.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SimpleKeychain.framework; path = Carthage/Build/iOS/SimpleKeychain.framework; sourceTree = "<group>"; };
 		5F07A596210F672200819FA2 /* NoContentDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoContentDecoder.swift; sourceTree = "<group>"; };
 		5F07A598210F6D1900819FA2 /* Operation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Operation.swift; sourceTree = "<group>"; };
 		5F07A59A210F779300819FA2 /* Request.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Request.swift; sourceTree = "<group>"; };
@@ -233,16 +241,12 @@
 		5F2037F41D5E22590005D2E2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5F2037F71D5E22590005D2E2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		5F2037F91D5E22590005D2E2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		5F2037FE1D5E40C70005D2E2 /* Quick.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quick.framework; path = Carthage/Build/iOS/Quick.framework; sourceTree = "<group>"; };
-		5F2037FF1D5E40C70005D2E2 /* OHHTTPStubs.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OHHTTPStubs.framework; path = Carthage/Build/iOS/OHHTTPStubs.framework; sourceTree = "<group>"; };
-		5F2038001D5E40C70005D2E2 /* Nimble.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Nimble.framework; path = Carthage/Build/iOS/Nimble.framework; sourceTree = "<group>"; };
 		5F20380C1D5E421F0005D2E2 /* Cartfile.resolved */ = {isa = PBXFileReference; lastKnownFileType = text; path = Cartfile.resolved; sourceTree = "<group>"; };
 		5F20380D1D5E421F0005D2E2 /* Cartfile.private */ = {isa = PBXFileReference; lastKnownFileType = text; path = Cartfile.private; sourceTree = "<group>"; };
 		5F20380E1D5E421F0005D2E2 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		5F20380F1D5E421F0005D2E2 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		5F2038111D5E42AD0005D2E2 /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		5F2038181D5E46210005D2E2 /* Gemfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Gemfile; sourceTree = "<group>"; };
-		5F2C3FB320F50C8D001DA713 /* QRCodeReader.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QRCodeReader.framework; path = Carthage/Build/iOS/QRCodeReader.framework; sourceTree = "<group>"; };
 		5F6133882101273300BCC182 /* AuthenticationCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationCategory.swift; sourceTree = "<group>"; };
 		5F61338A2101286200BCC182 /* AuthenticationNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationNotification.swift; sourceTree = "<group>"; };
 		5F61338C2101289E00BCC182 /* AuthenticationSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationSource.swift; sourceTree = "<group>"; };
@@ -267,10 +271,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5F2038021D5E40C70005D2E2 /* OHHTTPStubs.framework in Frameworks */,
-				5F2038011D5E40C70005D2E2 /* Quick.framework in Frameworks */,
 				5F2037D81D5E1E3E0005D2E2 /* Guardian.framework in Frameworks */,
-				5F2038031D5E40C70005D2E2 /* Nimble.framework in Frameworks */,
+				5C19E564266515D100F167EC /* Nimble.xcframework in Frameworks */,
+				5C19E565266515D100F167EC /* OHHTTPStubs.xcframework in Frameworks */,
+				5C19E566266515D100F167EC /* Quick.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -279,8 +283,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				23FE50831D949EC400407A1D /* Guardian.framework in Frameworks */,
-				5F2C3FB420F50C8D001DA713 /* QRCodeReader.framework in Frameworks */,
-				5F07A595210F5CCA00819FA2 /* SimpleKeychain.framework in Frameworks */,
+				5C19E55D266515A600F167EC /* SimpleKeychain.xcframework in Frameworks */,
+				5C19E55F266515A600F167EC /* QRCodeReader.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -517,11 +521,11 @@
 		5F2037FD1D5E40A90005D2E2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				5F07A594210F5CC900819FA2 /* SimpleKeychain.framework */,
-				5F2C3FB320F50C8D001DA713 /* QRCodeReader.framework */,
-				5F2037FE1D5E40C70005D2E2 /* Quick.framework */,
-				5F2037FF1D5E40C70005D2E2 /* OHHTTPStubs.framework */,
-				5F2038001D5E40C70005D2E2 /* Nimble.framework */,
+				5C19E561266515D000F167EC /* Nimble.xcframework */,
+				5C19E562266515D100F167EC /* OHHTTPStubs.xcframework */,
+				5C19E563266515D100F167EC /* Quick.xcframework */,
+				5C19E55C266515A600F167EC /* QRCodeReader.xcframework */,
+				5C19E55B266515A600F167EC /* SimpleKeychain.xcframework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -624,7 +628,6 @@
 				5F2037E81D5E22590005D2E2 /* Frameworks */,
 				5F2037E91D5E22590005D2E2 /* Resources */,
 				23FE50851D949EC400407A1D /* Embed Frameworks */,
-				5F2C3FB520F50D74001DA713 /* Carthage */,
 			);
 			buildRules = (
 			);
@@ -675,6 +678,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -720,25 +724,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		5F2C3FB520F50D74001DA713 /* Carthage */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/Carthage/Build/iOS/QRCodeReader.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/SimpleKeychain.framework",
-			);
-			name = Carthage;
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "/usr/local/bin/carthage copy-frameworks";
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		5F2037C81D5E1E3E0005D2E2 /* Sources */ = {
@@ -977,7 +962,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -998,7 +984,11 @@
 				INFOPLIST_FILE = Guardian/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.sdk.Guardian;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1021,7 +1011,11 @@
 				INFOPLIST_FILE = Guardian/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.sdk.Guardian;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1040,7 +1034,11 @@
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
 				INFOPLIST_FILE = GuardianTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.GuardianTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -1059,7 +1057,11 @@
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
 				INFOPLIST_FILE = GuardianTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.GuardianTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
@@ -1082,7 +1084,10 @@
 				);
 				INFOPLIST_FILE = GuardianApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.guardian.sample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "32df3887-3767-4b67-84a6-144aaf2ef2f2";
@@ -1109,7 +1114,10 @@
 				);
 				INFOPLIST_FILE = GuardianApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.guardian.sample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "32df3887-3767-4b67-84a6-144aaf2ef2f2";
