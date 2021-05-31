@@ -16,6 +16,7 @@ jobs:
       - LANG: en_US.UTF-8
       - FL_OUTPUT_DIR: output
       - FASTLANE_EXPLICIT_OPEN_SIMULATOR: 2
+        HOMEBREW_NO_AUTO_UPDATE: 1
 
     # Define the steps required to build the project.
     steps:
