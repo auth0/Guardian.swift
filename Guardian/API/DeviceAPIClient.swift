@@ -23,11 +23,13 @@
 import Foundation
 
 struct DeviceAPIClient: DeviceAPI {
+    static let path: String = "api/device-accounts"
+
     let url: URL
     let token: String
     
     init(baseUrl: URL, id: String, token: String) {
-        self.url = baseUrl.appendingPathComponent("api/device-accounts/\(id)")
+        self.url = baseUrl.appendingPathComponent(DeviceAPIClient.path).appendingPathComponent(id)
         self.token = token
     }
     

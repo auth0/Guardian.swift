@@ -26,7 +26,7 @@ platform :ios do
   end
 
   private_lane :dependencies do
-    carthage(platform: "iOS", use_binaries: false, cache_builds: true)
+    carthage(platform: "iOS", use_binaries: false, cache_builds: true, use_xcframeworks: true)
   end
 
   lane :bootstrap do |options|

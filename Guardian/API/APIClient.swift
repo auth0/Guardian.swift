@@ -55,4 +55,20 @@ struct APIClient: API {
     func device(forEnrollmentId id: String, token: String) -> DeviceAPI {
         return DeviceAPIClient(baseUrl: baseUrl, id: id, token: token)
     }
+
+    func device(forEnrollmentId enrollmentId: String, userId: String, signingKey: SigningKey) -> DeviceAPI {
+        let responseExpiration: TimeInterval = 60 * 60 * 2 // 2 hs
+        let currentTime = Date()
+        let claims = BasicClaimSet(
+            subject: userId,
+            issuer: enrollmentId,
+            audience: self.baseUrl.appendingPathComponent(DeviceAPIClient.path).absoluteString,
+            expireAt: currentTime.addingTimeInterval(responseExpiration),
+            issuedAt: currentTime
+        )
+        let jwt = try? JWT(claimSet: claims, key: signingKey.secKey)
+        
+        return DeviceAPIClient(baseUrl: baseUrl, id: enrollmentId, token: jwt?.string ?? "")
+    }
+
 }

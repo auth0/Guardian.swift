@@ -109,6 +109,63 @@ class JWTSpec: QuickSpec {
             }
         }
 
+        describe("basic claims") {
+
+            typealias BasicJWT = JWT<BasicClaimSet>
+
+            var claims: BasicClaimSet!
+
+            beforeEach {
+                claims = BasicClaimSet(subject: UUID().uuidString, issuer: UUID().uuidString, audience: UUID().uuidString, expireAt: Date(), issuedAt: Date())
+            }
+
+            it("should create instance") {
+                expect(try? BasicJWT(claimSet: claims, key: signingKey.secKey)).toNot(beNil())
+            }
+
+            it("should create jwt") {
+                expect(try? BasicJWT(claimSet: claims, key: signingKey.secKey).string).toNot(beEmpty())
+            }
+
+            it("should have correct alg") {
+                expect(try? BasicJWT(claimSet: claims, key: signingKey.secKey).header.algorithm).to(equal(.rs256))
+            }
+
+            it("should have correct type") {
+                expect(try? BasicJWT(claimSet: claims, key: signingKey.secKey).header.type).to(equal("JWT"))
+            }
+
+            it("should have signature") {
+                expect(try? BasicJWT(claimSet: claims, key: signingKey.secKey).signature).toNot(beEmpty())
+            }
+
+            describe("string token") {
+
+                let aToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE1MzI5OTAwNzQsImF1dGgwX2d1YXJkaWFuX3JlYXNvbiI6ImhhY2tlZCIsImF1dGgwX2d1YXJkaWFuX2FjY2VwdGVkIjpmYWxzZSwic3ViIjoiMzgxMzNGM0ItNTY2Mi00MzYxLUIyMTItQkRFQkJDODZDNUZGIiwiYXV0aDBfZ3VhcmRpYW5fbWV0aG9kIjoicHVzaCIsImV4cCI6MTUzMjk5MDE1MCwiYXVkIjoiOUU4QjNGNjYtOTAxRC00QjM2LUJGNkItMTFDRkNBRkMwMUExIiwiaXNzIjoiRUE3RThDMzAtREQ4Ny00M0IwLTg0MEEtMzc2MTUzMkU2ODkzIn0.g28ieoHqXkYlqZ8clIlIsPac04x9a8c0XEkFzvr17sOfnZUxnswUXm2J8Rf7syZ9zs_nW5WPS4o357FSAb1DA-CYQ_tzmFVE3rEqZ_KT0n2tnxMNw6G_fULIivdpan17gOb3jTjyDmfQBcodIhuOrglPDiA-AUNYEdqE8KYgNLBn0hRhfVw2L7PnQYSwdu-hAZgiIqqCSLQ5BdalyKk87LALoXpn5RH_CWbEjU6NSUb3h62gI7aIZpwqCww0ehp--IUBj-NBmFB4fFNOYOKC38RxV2bTIyK1QbwLmvv02Hj5WiVBt-KzZ8xAptmxWwsG7axYTYRYpFqbi6pkiWUzUw"
+
+                it("should verify") {
+                    let jwt = try! BasicJWT(string: aToken)
+                    let key = try! AsymmetricPublicKey(privateKey: DataRSAPrivateKey(data: Keys.shared.privateKey).secKey).secKey
+                    expect(try? jwt.verify(with: key)).to(beTrue())
+                }
+
+                var jwt: BasicJWT?
+
+                beforeEach {
+                    jwt = try? BasicJWT(string: aToken)
+                }
+
+                it("should parse token") {
+                    expect(jwt).toNot(beNil())
+                }
+
+                it("should have correct claims") {
+                    let claims = BasicClaimSet(subject: "38133F3B-5662-4361-B212-BDEBBC86C5FF", issuer: "EA7E8C30-DD87-43B0-840A-3761532E6893", audience: "9E8B3F66-901D-4B36-BF6B-11CFCAFC01A1", expireAt: Date(timeIntervalSince1970: 1532990150), issuedAt: Date(timeIntervalSince1970: 1532990074))
+                    expect(jwt?.claimSet).to(equal(claims))
+                }
+            }
+        }
+
         describe("guardian claims") {
 
             typealias GuardianJWT = JWT<GuardianClaimSet>

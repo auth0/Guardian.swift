@@ -63,7 +63,8 @@ class RequestSpec: QuickSpec {
             }
 
             it("should register for response events") {
-                let request: Request<String, String> = Request.new(method: .get, url: url)
+                session.a0_response = http(statusCode: 200)
+                let request: Request<String, String> = Request.new(method: .get, url: url).withURLSession(session)
                 waitUntil { done in
                     request
                         .on(response: { _ in done() })
@@ -84,10 +85,13 @@ class RequestSpec: QuickSpec {
                         }
                         .start { result in
                             expect({
-                                guard case .failure(let actual as MockError) = result, error == actual else {
-                                    return .failed(reason: "not a failure with mapped error")
+                                let result: (() -> ToSucceedResult)? = {
+                                    guard case .failure(let actual as MockError) = result, error == actual else {
+                                        return .failed(reason: "not a failure with mapped error")
+                                    }
+                                    return .succeeded
                                 }
-                                return .succeeded
+                                return result
                             }).to(succeed())
                         }
                 }

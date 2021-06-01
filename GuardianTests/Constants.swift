@@ -25,7 +25,7 @@ import Foundation
 @testable import Guardian
 
 let Domain = "tenant.guardian.auth0.com/also/works/in/appliance/"
-let Timeout: TimeInterval = 2
+let Timeout: DispatchTimeInterval = .seconds(2)
 
 let ValidURL = URL(string: "https://\(Domain)")!
 let ValidTransactionId = UUID().uuidString
@@ -43,11 +43,9 @@ let ValidPeriod = 29
 let ValidTransactionToken = "aValidTransactionToken"
 let RejectReason = "aRejectReason"
 let ValidChallengeResponse = "aValidChallengeResponse"
-
+let ValidBasicJWTDuration: TimeInterval = 60 * 60 * 2
 let ValidDeviceIdentifier = "aValidDeviceIdentifier"
 let ValidDeviceName = "aValidDeviceName"
 let ValidNotificationService = "APNS"
 let DeviceAccountToken = UUID().uuidString
 let ValidNotificationChallenge = "aValidNotificationChallenge"
-
-

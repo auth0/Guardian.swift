@@ -105,7 +105,32 @@ public protocol API {
      - parameter forEnrollmentId: the enrollment id
      - parameter token:           the token that will be used to authenticate
      
+     - warning: this method is deprecated in favor of `device(forEnrollmentId:userId:signingKey:)`
      - returns: a DeviceAPI instance
      */
+    @available(*, deprecated, message: "see device(forEnrollmentId:userId:signingKey:)")
     func device(forEnrollmentId id: String, token: String) -> DeviceAPI
+
+    /**
+    Returns a DeviceAPI to manage the device data about an enrollment.
+    This allows to change the name of the device, to update the push
+    notification token or to delete the device, unenrolling/disabling this
+    device as a second factor.
+    This method will generate a signed JWT token to authenticate with the
+    API, instead of using an existing token.
+    
+    ```
+    Guardian
+       .api(forDomain: "tenant.guardian.auth0.com")
+       .device(forEnrollmentId: enrollment.id, userId: userId, signingKey: signingKey)
+       .create() // or update/delete
+    ```
+
+    - parameter forEnrollmentId: the enrollment id
+    - parameter userId:          the user id
+    - parameter signingKey:      the key that will be used to sign the JWT token
+    
+    - returns: a DeviceAPI instance
+    */
+    func device(forEnrollmentId enrollmentId: String, userId: String, signingKey: SigningKey) -> DeviceAPI
 }

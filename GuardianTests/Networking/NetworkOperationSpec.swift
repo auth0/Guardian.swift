@@ -89,21 +89,23 @@ class NetworkOperationSpec: QuickSpec {
 
             it("should have a request with telemetry header and client info") {
                 expect({
-                    let key = "Auth0-Client"
-                    let version = Bundle.main.infoDictionary!["CFBundleShortVersionString"] as! String
-                    let expected = ClientInfo(name: "Guardian.swift", version: version)
-                    let decoder = JSONDecoder()
-                    guard let value = new().request.value(forHTTPHeaderField: key) else {
-                        return .failed(reason: "missing auth0-client value")
+                    let result: (() -> ToSucceedResult)? = {
+                        let key = "Auth0-Client"
+                        let version = Bundle.main.infoDictionary!["CFBundleShortVersionString"] as! String
+                        let expected = ClientInfo(name: "Guardian.swift", version: version)
+                        let decoder = JSONDecoder()
+                        guard let value = new().request.value(forHTTPHeaderField: key) else {
+                            return .failed(reason: "missing auth0-client value")
+                        }
+                        guard let data = Data(base64URLEncoded: value), let actual = try? decoder.decode(ClientInfo.self, from: data) else {
+                            return .failed(reason: "invalid auth0-client value \(value)")
+                        }
+                        guard actual == expected else {
+                            return .failed(reason: "expected auth0-client with \(expected) but got \(actual)")
+                        }
+                        return .succeeded
                     }
-                    guard let data = Data(base64URLEncoded: value), let actual = try? decoder.decode(ClientInfo.self, from: data) else {
-                        return .failed(reason: "invalid auth0-client value \(value)")
-                    }
-                    guard actual == expected else {
-                        return .failed(reason: "expected auth0-client with \(expected) but got \(actual)")
-                    }
-                    return .succeeded
-
+                    return result
                 }).to(succeed())
             }
 

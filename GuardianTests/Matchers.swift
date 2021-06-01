@@ -66,6 +66,26 @@ func hasBearerToken(_ token: String) -> OHHTTPStubsTestBlock {
     }
 }
 
+func hasBearerJWTToken(withSub sub: String, iss: String, aud: String, validFor duration: TimeInterval) -> OHHTTPStubsTestBlock {
+    return { request in
+        guard let token = request.value(forHTTPHeaderField: "Authorization")?.split(separator: " ").last,
+            let jwt = try? JWT<BasicClaimSet>(string: String(token)),
+            let key = try? AsymmetricPublicKey(privateKey: DataRSAPrivateKey(data: Keys.shared.privateKey).secKey).secKey,
+            (try? jwt.verify(with: key)) != nil else {
+                return false
+        }
+
+        guard jwt.claimSet.subject == sub,
+            jwt.claimSet.issuer == iss,
+            jwt.claimSet.audience == aud,
+            jwt.claimSet.expireAt.timeIntervalSince(jwt.claimSet.issuedAt) == duration else {
+                return false
+        }
+
+        return true
+    }
+}
+
 func hasTicketAuth(_ ticket: String) -> OHHTTPStubsTestBlock {
     return { request in
         return request.value(forHTTPHeaderField: "Authorization") == "Ticket id=\"\(ticket)\""
@@ -75,8 +95,8 @@ func hasTicketAuth(_ ticket: String) -> OHHTTPStubsTestBlock {
 func isUrl(from baseUrl: URL, containingPathStartingWith path: String) -> OHHTTPStubsTestBlock {
     return { req in
         let partialUrl = baseUrl.appendingPathComponent(path).absoluteString
-        guard let url = req.url?.absoluteString
-            , let range = url.range(of: partialUrl) else {
+        guard let url = req.url?.absoluteString,
+            let range = url.range(of: partialUrl) else {
             return false
         }
         return range.lowerBound == path.startIndex
