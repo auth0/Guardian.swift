@@ -1,5 +1,11 @@
 # Change Log
 
+## [1.1.0](https://github.com/auth0/Guardian.swift/tree/1.1.0) (2021-06-01)
+[Full Changelog](https://github.com/auth0/Guardian.swift/compare/1.0.0...1.1.0)
+
+**Changed**
+- Use JWT tokens when updating and deleting enrolled devices [SDK-2560] [\#91](https://github.com/auth0/Guardian.swift/pull/91) ([Widcket](https://github.com/Widcket))
+
 ## [1.0.0](https://github.com/auth0/Guardian.swift/tree/1.0.0) (2018-07-31)
 [Full Changelog](https://github.com/auth0/Guardian.swift/compare/0.5.0...1.0.0)
 
