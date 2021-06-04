@@ -9,14 +9,14 @@ jobs:
 
     # Specify the Xcode version to use.
     macos:
-      xcode: "12.4.0"
+      xcode: "12.5.0"
     working_directory: /Users/distiller/project
     environment:
       - LC_ALL: en_US.UTF-8
       - LANG: en_US.UTF-8
       - FL_OUTPUT_DIR: output
       - FASTLANE_EXPLICIT_OPEN_SIMULATOR: 2
-        HOMEBREW_NO_AUTO_UPDATE: 1
+      - HOMEBREW_NO_AUTO_UPDATE: 1
 
     # Define the steps required to build the project.
     steps:
@@ -51,8 +51,8 @@ jobs:
       # Download iOS Dependencies
       - restore_cache:
           keys:
-            - guardian.swift-carthage-v1-{{ checksum "Cartfile.resolved" }}
-            - guardian.swift-carthage-v1-
+            - guardian.swift-carthage-v2-{{ checksum "Cartfile.resolved" }}
+            - guardian.swift-carthage-v2-
 
       # Run tests.
       - run:
@@ -65,7 +65,7 @@ jobs:
           command: bash <(curl -s https://codecov.io/bash) -J 'Guardian'
 
       - save_cache:
-          key: guardian.swift-carthage-v1-{{ checksum "Cartfile.resolved" }}
+          key: guardian.swift-carthage-v2-{{ checksum "Cartfile.resolved" }}
           paths:
             - Carthage/Build
 
