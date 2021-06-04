@@ -113,8 +113,8 @@ public struct AuthenticationCategory {
 
     private init(identifier: String) {
         self.identifier = identifier
-        self.allow = Action(identifier: "\(self.identifier).accept")
-        self.reject = Action(identifier: "\(self.identifier).reject")
+        self.allow = Action(identifier: "\(identifier).accept")
+        self.reject = Action(identifier: "\(identifier).reject")
     }
 
     private static let defaultIdentifier = "com.auth0.notification.authentication"

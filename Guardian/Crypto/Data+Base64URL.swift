@@ -36,7 +36,7 @@ extension Data {
 
     func base64URLEncodedString() -> String {
         // use URL safe encoding and remove padding
-        return self.base64EncodedString()
+        return base64EncodedString()
             .replacingOccurrences(of: "/", with: "_")
             .replacingOccurrences(of: "+", with: "-")
             .replacingOccurrences(of: "=", with: "")

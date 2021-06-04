@@ -78,7 +78,7 @@ public struct NetworkOperation<T: Encodable, E: Decodable>: Operation {
     */
     public func on(request: OnRequestEvent? = nil, response: OnResponseEvent? = nil) -> NetworkOperation<T, E> {
         var newSelf = self
-        newSelf.observer = NetworkObserver(request: request ?? self.observer.request, response: response ?? self.observer.response)
+        newSelf.observer = NetworkObserver(request: request ?? observer.request, response: response ?? observer.response)
         return newSelf
     }
 
@@ -99,11 +99,11 @@ public struct NetworkOperation<T: Encodable, E: Decodable>: Operation {
      - parameter callback: the termination callback, where the result is received
      */
     public func start(callback: @escaping (Result<E>) -> ()) {
-        self.observer.request?(NetworkRequestEvent(request: request))
-        if let cause = self.error {
+        observer.request?(NetworkRequestEvent(request: request))
+        if let cause = error {
             return callback(.failure(cause: cause))
         }
-        let task = self.session.dataTask(with: request) {
+        let task = session.dataTask(with: request) {
             callback(self.handle(payload: $0, response: $1, error: $2))
         }
         task.resume()
@@ -119,11 +119,11 @@ public struct NetworkOperation<T: Encodable, E: Decodable>: Operation {
         }
 
         let responseEvent = NetworkResponseEvent(data: payload, response: httpResponse, rateLimit: RateLimit(response: httpResponse))
-        self.observer.response?(responseEvent)
+        observer.response?(responseEvent)
 
         let statusCode = httpResponse.statusCode
         guard (200..<300).contains(statusCode) else {
-            let error: Swift.Error = self.errorMapper(httpResponse, payload)
+            let error: Swift.Error = errorMapper(httpResponse, payload)
                 ?? NetworkError(statusCode: statusCode, description: message(from: httpResponse, data: payload))
             return .failure(cause: error)
         }
@@ -166,16 +166,16 @@ struct NetworkResponseEvent: ResponseEvent {
 
 extension NetworkOperation: CustomStringConvertible, CustomDebugStringConvertible {
     public var description: String {
-        return "\(self.request.httpMethod!) \(self.request.url!.absoluteString)"
+        return "\(request.httpMethod!) \(request.url!.absoluteString)"
     }
 
     public var debugDescription: String {
-        var description = "\(self.request.httpMethod!) \(self.request.url!.absoluteString)\n"
-        self.request.allHTTPHeaderFields?.forEach { description.append("\($0): \($1)\n") }
+        var description = "\(request.httpMethod!) \(request.url!.absoluteString)\n"
+        request.allHTTPHeaderFields?.forEach { description.append("\($0): \($1)\n") }
         description.append("\n")
         let encoder = JSONEncoder()
         encoder.outputFormatting = .prettyPrinted
-        if let payload = self.body,
+        if let payload = body,
             let data = try? encode(body: payload, encoder: encoder),
             let json = String(data: data, encoding: .utf8) {
             description.append(json.replacingOccurrences(of: "\\n", with: "\n"))

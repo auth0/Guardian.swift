@@ -36,7 +36,7 @@ struct GuardianState: Codable {
         let encoder = JSONEncoder()
         let data = try encoder.encode(self)
         let keychain = A0SimpleKeychain()
-        keychain.setData(data, forKey: self.localIdentifier)
+        keychain.setData(data, forKey: localIdentifier)
     }
 
     static func delete(by identifier: String = UIDevice.current.identifierForVendor!.uuidString) {
@@ -56,6 +56,6 @@ struct GuardianState: Codable {
 
 extension GuardianState: AuthenticationDevice {
     var signingKey: SigningKey {
-        return try! KeychainRSAPrivateKey(tag: self.keyTag)
+        return try! KeychainRSAPrivateKey(tag: keyTag)
     }
 }

@@ -53,12 +53,12 @@ public class EnrollRequest: Operation {
         } else if let enrollmentUri = enrollmentUri, let parameters = parameters(fromUri: enrollmentUri), let enrollmentTxId = parameters["enrollment_tx_id"] {
             ticket = enrollmentTxId
         } else {
-            let url = self.api.baseUrl.appendingPathComponent("api/enroll")
-            self.request = Request(method: .post, url: url, error: GuardianError(code: .invalidErollmentUri))
+            let url = api.baseUrl.appendingPathComponent("api/enroll")
+            request = Request(method: .post, url: url, error: GuardianError(code: .invalidErollmentUri))
             return
         }
 
-        self.request = api.enroll(withTicket: ticket, identifier: EnrolledDevice.vendorIdentifier, name: EnrolledDevice.deviceName, notificationToken: notificationToken, verificationKey: self.verificationKey)
+        request = api.enroll(withTicket: ticket, identifier: EnrolledDevice.vendorIdentifier, name: EnrolledDevice.deviceName, notificationToken: notificationToken, verificationKey: verificationKey)
     }
 
     public func on(request: OnRequestEvent? = nil, response: OnResponseEvent? = nil) -> Self {
@@ -67,21 +67,21 @@ public class EnrollRequest: Operation {
     }
 
     public func withURLSession(_ session: URLSession) -> Self {
-        self.request = self.request.withURLSession(session)
+        request = request.withURLSession(session)
         return self
     }
 
     public func mapError(transform: @escaping (HTTPURLResponse, Data?) -> Swift.Error?) -> Self {
-        self.request = self.request.mapError(transform: transform)
+        request = request.mapError(transform: transform)
         return self
     }
 
     public var description: String {
-        return self.request.description
+        return request.description
     }
 
     public var debugDescription: String {
-        return self.request.debugDescription
+        return request.debugDescription
     }
 
     /**
@@ -91,14 +91,14 @@ public class EnrollRequest: Operation {
      received
      */
     public func start(callback: @escaping (Result<EnrolledDevice>) -> ()) {
-        self.request.start { result in
-                switch result {
-                case .failure(let cause):
-                    callback(.failure(cause: cause))
-                case .success(let payload):
-                    let enrollment = EnrolledDevice(id: payload.identifier, userId: payload.userId, deviceToken: payload.token, notificationToken: self.notificationToken, signingKey: self.signingKey, totp: payload.totp)
-                    callback(.success(payload: enrollment))
-                }
+        request.start { [notificationToken, signingKey] result in
+            switch result {
+            case .failure(let cause):
+                callback(.failure(cause: cause))
+            case .success(let payload):
+                let enrollment = EnrolledDevice(id: payload.identifier, userId: payload.userId, deviceToken: payload.token, notificationToken: notificationToken, signingKey: signingKey, totp: payload.totp)
+                callback(.success(payload: enrollment))
+            }
         }
     }
 }
@@ -117,12 +117,12 @@ func parameters(fromUri uri: String) -> [String: String]? {
 private extension Collection where Iterator.Element == URLQueryItem {
 
     func asDictionary() -> [String: String] {
-        return self.reduce([:], { (dict, item) in
+        return reduce([:]) { (dict, item) in
             var values = dict
             if let value = item.value {
                 values[item.name] = value
             }
             return values
-        })
+        }
     }
 }

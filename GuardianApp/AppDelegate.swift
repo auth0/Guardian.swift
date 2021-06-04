@@ -91,7 +91,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     var rootController: UIViewController? {
-        return self.window?.rootViewController
+        return window?.rootViewController
     }
 }
 

@@ -37,11 +37,10 @@ class MockNSURLSession: URLSession {
     }
     
     override func dataTask(with request: URLRequest, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> URLSessionDataTask {
-        self.a0_request = request
-        let task: () -> Void = {
+        a0_request = request
+        return MockTask {
             completionHandler(self.a0_data, self.a0_response, self.a0_error)
         }
-        return MockTask(completionHandler: task)
     }
 }
 

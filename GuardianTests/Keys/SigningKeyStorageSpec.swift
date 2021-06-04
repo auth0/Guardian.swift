@@ -71,18 +71,18 @@ class KeychainBot {
 
     func newTag() -> String {
         let tag = "a0.guardian.test.\(UUID().uuidString)"
-        self.tags.append(tag)
+        tags.append(tag)
         return tag
     }
 
     func clean(by tag: String? = nil) {
         if let tag = tag {
             remove(with: tag)
-            guard let index = self.tags.index(of: tag) else { return }
-            self.tags.remove(at: index)
+            guard let index = tags.index(of: tag) else { return }
+            tags.remove(at: index)
         } else {
-            self.tags.forEach { self.remove(with: $0) }
-            self.tags.removeAll()
+            tags.forEach(remove)
+            tags.removeAll()
         }
     }
 

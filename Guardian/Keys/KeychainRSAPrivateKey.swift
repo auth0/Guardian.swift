@@ -28,20 +28,6 @@ public struct KeychainRSAPrivateKey: SigningKey {
     public let tag: String
     public let secKey: SecKey
 
-    /**
-     Creates a new instance looking for a Keychain backed Private Key
-     - parameter tag: identifier that will be used to locate the key
-     - throws: `GuardianError` if the key is not found
-    */
-    public init(tag: String) throws {
-        self.init(tag: tag, secKey: try retrieveKey(of: tag))
-    }
-
-    init(tag: String, secKey: SecKey) {
-        self.tag = tag
-        self.secKey = secKey
-    }
-
     /// Available types of key accessibility in the keychain
     public enum Accessibility {
         /// key available after one device unlock after restart (allows backups)
@@ -61,5 +47,16 @@ public struct KeychainRSAPrivateKey: SigningKey {
                 return kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly
             }
         }
+    }
+}
+
+extension KeychainRSAPrivateKey {
+    /**
+     Creates a new instance looking for a Keychain backed Private Key
+     - parameter tag: identifier that will be used to locate the key
+     - throws: `GuardianError` if the key is not found
+     */
+    public init(tag: String) throws {
+        self.init(tag: tag, secKey: try retrieveKey(of: tag))
     }
 }

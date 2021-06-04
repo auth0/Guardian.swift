@@ -30,19 +30,16 @@ struct ClientInfo: Codable, Equatable {
     let name: String
     let version: String
 
-    init(name: String, version: String) {
-        self.name = name
-        self.version = version
-    }
-
-    init?(info: [String: Any]) {
-        guard let version = info[infoEntryName] as? String else { return nil }
-        self.init(name: libraryName, version: version)
-    }
-
     func asHeader() throws -> [String: String] {
         let encoder = JSONEncoder()
         let value = try encoder.encode(self).base64URLEncodedString()
         return [headerName: value]
+    }
+}
+
+extension ClientInfo {
+    init?(info: [String: Any]) {
+        guard let version = info[infoEntryName] as? String else { return nil }
+        self.init(name: libraryName, version: version)
     }
 }

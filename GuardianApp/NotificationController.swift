@@ -33,13 +33,13 @@ class NotificationController: UIViewController {
 
     @IBAction func allowAction(_ sender: AnyObject) {
         guard let notification = notification, let enrollment = AppDelegate.state else {
-            return self.dismiss(animated: true, completion: nil)
+            return dismiss(animated: true, completion: nil)
         }
         let request = Guardian
             .authentication(forDomain: AppDelegate.guardianDomain, device: enrollment)
             .allow(notification: notification)
         debugPrint(request)
-        request.start { result in
+        request.start { [unowned self] result in
                 print(result)
                 switch result {
                 case .success:
@@ -54,13 +54,13 @@ class NotificationController: UIViewController {
 
     @IBAction func denyAction(_ sender: AnyObject) {
         guard let notification = notification, let enrollment = AppDelegate.state else {
-            return self.dismiss(animated: true, completion: nil)
+            return dismiss(animated: true, completion: nil)
         }
         let request = Guardian
             .authentication(forDomain: AppDelegate.guardianDomain, device: enrollment)
             .reject(notification: notification)
         debugPrint(request)
-        request.start { result in
+        request.start { [unowned self] result in
                 print(result)
                 switch result {
                 case .success:

@@ -26,12 +26,8 @@ struct APIClient: API {
 
     let baseUrl: URL
 
-    init(baseUrl: URL) {
-        self.baseUrl = baseUrl
-    }
-
     func enroll(withTicket enrollmentTicket: String, identifier: String, name: String, notificationToken: String, verificationKey: VerificationKey) -> Request<Device, Enrollment> {
-        let url = self.baseUrl.appendingPathComponent("api/enroll")
+        let url = baseUrl.appendingPathComponent("api/enroll")
         do {
             let headers = ["Authorization": "Ticket id=\"\(enrollmentTicket)\""]
             guard let jwk = verificationKey.jwk else {
@@ -48,7 +44,7 @@ struct APIClient: API {
 
     func resolve(transaction transactionToken: String, withChallengeResponse challengeResponse: String) -> Request<Transaction, NoContent> {
         let transaction = Transaction(challengeResponse: challengeResponse)
-        let url = self.baseUrl.appendingPathComponent("api/resolve-transaction")
+        let url = baseUrl.appendingPathComponent("api/resolve-transaction")
         return Request.new(method: .post, url: url, headers: ["Authorization": "Bearer \(transactionToken)"], body: transaction)
     }
 

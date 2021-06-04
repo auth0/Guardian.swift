@@ -74,7 +74,7 @@ class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
 
     // MARK: - QRCodeReader Delegate Methods
     func reader(_ reader: QRCodeReaderViewController, didScanResult result: QRCodeReaderResult) {
-        self.dismiss(animated: true) { [unowned self] in
+        dismiss(animated: true) {
 
             guard let signingKey = try? KeychainRSAPrivateKey.new(with: ViewController.RSA_KEY_PRIVATE_TAG),
                 let verificationKey = try? signingKey.verificationKey() else { return }
@@ -88,7 +88,7 @@ class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
                     let body = String(data: data, encoding: .utf8) ?? "INVALID BODY"
                     print(body)
                 })
-                .start { result in
+                .start { [unowned self] result in
                     switch result {
                     case .failure(let cause):
                         self.showError("Enroll failed", cause)
@@ -101,7 +101,7 @@ class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
     }
 
     func readerDidCancel(_ reader: QRCodeReaderViewController) {
-        self.dismiss(animated: true, completion: nil)
+        dismiss(animated: true, completion: nil)
     }
 
     fileprivate func createReader() -> QRCodeReaderViewController {
