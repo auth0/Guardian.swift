@@ -28,11 +28,11 @@ public protocol TOTP {
 }
 
 public extension TOTP {
-    public func stringCode(time: TimeInterval = Date().timeIntervalSince1970, formatter: NumberFormatter? = nil) -> String {
+    func stringCode(time: TimeInterval = Date().timeIntervalSince1970, formatter: NumberFormatter? = nil) -> String {
         return self.stringCode(time: time, formatter: formatter)
     }
 
-    public func code() -> Int {
+    func code() -> Int {
         return self.code(time: Date().timeIntervalSince1970)
     }
 }
