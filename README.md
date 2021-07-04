@@ -6,7 +6,7 @@
 [![License](https://img.shields.io/cocoapods/l/Guardian.svg?style=flat-square)](http://cocoadocs.org/docsets/Guardian)
 [![Platform](https://img.shields.io/cocoapods/p/Guardian.svg?style=flat-square)](http://cocoadocs.org/docsets/Guardian)
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat-square)](https://github.com/Carthage/Carthage)
-![Swift 4.1](https://img.shields.io/badge/Swift-4.1-orange.svg?style=flat-square)
+![Swift 5](https://img.shields.io/badge/Swift-5-orange.svg?style=flat-square)
 
 [Guardian](https://auth0.com/docs/multifactor-authentication/guardian) is Auth0's multi-factor
 authentication (MFA) service that provides a simple, safe way for you to implement MFA.
@@ -20,7 +20,7 @@ multi-factor authentication from your app.
 
 ## Requirements
 
-iOS 10+ and Swift 4.1 is required in order to use Guardian.
+iOS 10+ and Swift 5 is required in order to use Guardian.
 
 ## Before getting started
 
