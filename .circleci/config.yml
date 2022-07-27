@@ -58,7 +58,7 @@ jobs:
           command: bundle exec fastlane ios ci
 
       # Code Coverage
-      - codecov/upload
+      - codecov/upload:
         file: './fastlane/test_output/report.junit'
       - save_cache:
           key: guardian.swift-carthage-v2-{{ checksum "Cartfile.resolved" }}
