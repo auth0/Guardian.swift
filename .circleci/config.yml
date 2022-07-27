@@ -59,7 +59,7 @@ jobs:
 
       - run:
           name: Generate coverage report
-          command: bundle exec slather coverage -x --output-directory output --arch x86_64 --scheme Guardian-iOS Guardian.xcodeproj
+          command: bundle exec slather coverage -x --output-directory output --arch x86_64 --scheme Guardian Guardian.xcodeproj
 
       - codecov/upload:
           file: output/cobertura.xml
