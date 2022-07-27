@@ -59,7 +59,7 @@ jobs:
 
       # Code Coverage
       - codecov/upload:
-        file: output/scan/report.junit
+        file: /Users/distiller/project/output/scan/report.junit
 
       - save_cache:
           key: guardian.swift-carthage-v2-{{ checksum "Cartfile.resolved" }}
