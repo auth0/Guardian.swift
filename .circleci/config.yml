@@ -59,7 +59,7 @@ jobs:
 
       # Code Coverage
       - codecov/upload:
-        file: fastlane/test_output/report.junit
+        file: output/scan/report.junit
 
       - save_cache:
           key: guardian.swift-carthage-v2-{{ checksum "Cartfile.resolved" }}
