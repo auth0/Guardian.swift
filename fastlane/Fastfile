@@ -40,7 +40,8 @@ platform :ios do
     scan(
       scheme: "Guardian",
       skip_slack: true,
-      clean: true
+      clean: true,
+      code_coverage: true
     )
   end
 

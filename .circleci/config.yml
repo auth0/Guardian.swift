@@ -1,9 +1,7 @@
-# .circleci/config.yml
+version: 2.1
+orbs:
+  codecov: codecov/codecov@3
 
-# Specify the config version - version 2 is latest.
-version: 2
-
-# Define the jobs for the current project.
 jobs:
   build-and-test:
 
@@ -59,10 +57,12 @@ jobs:
           name: Run tests
           command: bundle exec fastlane ios ci
 
-      # Code Coverage
       - run:
-          name: Codecov.io
-          command: bash <(curl -s https://codecov.io/bash) -J 'Guardian'
+          name: Generate coverage report
+          command: bundle exec slather coverage -x --output-directory output --arch x86_64 --scheme Guardian Guardian.xcodeproj
+
+      - codecov/upload:
+          file: output/cobertura.xml
 
       - save_cache:
           key: guardian.swift-carthage-v2-{{ checksum "Cartfile.resolved" }}
