@@ -2,4 +2,4 @@ github "AliSoftware/OHHTTPStubs" ~> 8.0
 github "Quick/Nimble" ~> 9.2
 github "Quick/Quick" ~> 2.2
 github "yannickl/QRCodeReader.swift" >= 8.2.0
-github "auth0/SimpleKeychain"
+github "auth0/SimpleKeychain" == 0.12.2
