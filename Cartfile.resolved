@@ -1,5 +1,5 @@
 github "AliSoftware/OHHTTPStubs" "8.0.0"
-github "Quick/Nimble" "v9.2.0"
+github "Quick/Nimble" "v9.2.1"
 github "Quick/Quick" "v2.2.1"
 github "auth0/SimpleKeychain" "0.12.2"
 github "yannickl/QRCodeReader.swift" "10.1.1"
