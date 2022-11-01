@@ -37,7 +37,7 @@
     return self;
 }
 
-- (NSData *)sign:(NSData *)plainData {
+- (NSData *)sign_ios_15_or_earlier:(NSData *)plainData {
     size_t signedHashBytesSize = SecKeyGetBlockSize(self.key);
     uint8_t signedHashBytes[signedHashBytesSize];
     memset(signedHashBytes, 0x0, signedHashBytesSize);
@@ -58,7 +58,51 @@
     return signedHash;
 }
 
+- (NSData *)sign_ios_16_or_later:(NSData *)plainData {
+    
+    CFDataRef dataToSign = CFDataCreate(NULL, plainData.bytes, plainData.length);
+    CFDataRef signature = SecKeyCreateSignature(self.key,
+                                                kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA256,
+                                                dataToSign,
+                                                nil);
+    CFRelease(dataToSign);
+    if (!signature) {
+        return nil;
+    }
+        
+    return [NSData dataWithBytes: CFDataGetBytePtr(signature)
+                          length:(NSUInteger)CFDataGetLength(signature)];
+}
+
+- (NSData *)sign:(NSData *)plainData {
+    if (@available(iOS 16, *)) {
+        // iOS 16 or later
+        return [self sign_ios_16_or_later: plainData];
+    }
+
+    // iOS 15 or earlier
+    return [self sign_ios_15_or_earlier: plainData];
+}
+
 - (Boolean)verify:(NSData *)plainData signature:(NSData *)signature {
+    
+    if (@available(iOS 16, *)) {
+        // iOS 16 or later
+        CFDataRef plainDataRef = CFDataCreate(NULL, plainData.bytes, plainData.length);
+        CFDataRef signatureRef = CFDataCreate(NULL, signature.bytes, signature.length);
+
+        Boolean verified = SecKeyVerifySignature(self.key,
+                                                 kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA256,
+                                                 plainDataRef,
+                                                 signatureRef,
+                                                 nil);
+        CFRelease(plainDataRef);
+        CFRelease(signatureRef);
+        
+        return verified;
+    }
+    
+    // iOS 15 or earlier
     OSStatus result = SecKeyRawVerify(self.key,
                                       kSecPaddingPKCS1SHA256,
                                       plainData.bytes,
