@@ -62,7 +62,7 @@
     
     CFDataRef dataToSign = CFDataCreate(NULL, plainData.bytes, plainData.length);
     CFDataRef signature = SecKeyCreateSignature(self.key,
-                                                kSecKeyAlgorithmRSASignatureMessagePKCS1v15SHA256,
+                                                kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA256,
                                                 dataToSign,
                                                 nil);
     CFRelease(dataToSign);
@@ -92,7 +92,7 @@
         CFDataRef signatureRef = CFDataCreate(NULL, signature.bytes, signature.length);
 
         Boolean verified = SecKeyVerifySignature(self.key,
-                                                 kSecKeyAlgorithmRSASignatureMessagePKCS1v15SHA256,
+                                                 kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA256,
                                                  plainDataRef,
                                                  signatureRef,
                                                  nil);
