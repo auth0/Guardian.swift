@@ -69,12 +69,9 @@
     if (!signature) {
         return nil;
     }
-    
-    const UInt8* signedHashBytes = CFDataGetBytePtr(signature);
-    const CFIndex length  = CFDataGetLength(signature);
-    
-    return [NSData dataWithBytes:signedHashBytes
-                          length:(NSUInteger)length];
+        
+    return [NSData dataWithBytes: CFDataGetBytePtr(signature)
+                          length:(NSUInteger)CFDataGetLength(signature)];
 }
 
 - (NSData *)sign:(NSData *)plainData {
