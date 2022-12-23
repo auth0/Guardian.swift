@@ -57,7 +57,7 @@ struct AuthenticationNotification: Notification, CustomDebugStringConvertible, C
         guard
             let mfa = json["mfa"] as? [String: Any],
             let enrollmentId = mfa["dai"] as? String,
-            let token = mfa["txtkn"] as? String,
+            let transactionToken = mfa["txtkn"] as? String,
             let when = mfa["d"] as? String,
             let startedAt = formatter.date(from: when),
             let domain = mfa["sh"] as? String,
@@ -67,7 +67,7 @@ struct AuthenticationNotification: Notification, CustomDebugStringConvertible, C
         let source = AuthenticationSource(fromJSON: mfa["s"])
         let location = AuthenticationLocation(fromJSON: mfa["l"])
 
-        self.init(domain: domain, enrollmentId: enrollmentId, transactionToken: token, transactionLinkingId: transactionLinkingId, challenge: challenge, startedAt: startedAt, source: source, location: location)
+        self.init(domain: domain, enrollmentId: enrollmentId, transactionToken: transactionToken, transactionLinkingId: transactionLinkingId, challenge: challenge, startedAt: startedAt, source: source, location: location)
     }
 
     var description: String {
