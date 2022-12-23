@@ -27,15 +27,17 @@ struct AuthenticationNotification: Notification, CustomDebugStringConvertible, C
     let domain: String
     let enrollmentId: String
     let transactionToken: String
+    let transactionLinkingId: String?
     let challenge: String
     let source: Source?
     let location: Location?
     let startedAt: Date
 
-    init(domain: String, enrollmentId: String, transactionToken: String, challenge: String, startedAt: Date, source: Source?, location: Location?) {
+    init(domain: String, enrollmentId: String, transactionToken: String, transactionLinkingId: String? = nil, challenge: String, startedAt: Date, source: Source?, location: Location?) {
         self.domain = domain
         self.enrollmentId = enrollmentId
         self.transactionToken = transactionToken
+        self.transactionLinkingId = transactionLinkingId
         self.challenge = challenge
         self.source = source
         self.location = location
@@ -55,16 +57,17 @@ struct AuthenticationNotification: Notification, CustomDebugStringConvertible, C
         guard
             let mfa = json["mfa"] as? [String: Any],
             let enrollmentId = mfa["dai"] as? String,
-            let token = mfa["txtkn"] as? String,
+            let transactionToken = mfa["txtkn"] as? String,
             let when = mfa["d"] as? String,
             let startedAt = formatter.date(from: when),
             let domain = mfa["sh"] as? String,
             let challenge = mfa["c"] as? String
             else { return nil }
+        let transactionLinkingId = mfa["txlnkid"] as? String
         let source = AuthenticationSource(fromJSON: mfa["s"])
         let location = AuthenticationLocation(fromJSON: mfa["l"])
 
-        self.init(domain: domain, enrollmentId: enrollmentId, transactionToken: token, challenge: challenge, startedAt: startedAt, source: source, location: location)
+        self.init(domain: domain, enrollmentId: enrollmentId, transactionToken: transactionToken, transactionLinkingId: transactionLinkingId, challenge: challenge, startedAt: startedAt, source: source, location: location)
     }
 
     var description: String {

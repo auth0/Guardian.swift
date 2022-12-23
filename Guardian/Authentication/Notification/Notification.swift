@@ -53,6 +53,12 @@ public protocol Notification {
     var transactionToken: String { get }
 
     /**
+     The transaction linking id, used to correlate the notification with
+     an ongoing authorization transaction
+     */
+    var transactionLinkingId: String? { get }
+
+    /**
      The challenge sent by the server. The same challenge, signed, should be 
      sent back when trying to allow or reject an authentication request
      */

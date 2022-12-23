@@ -57,6 +57,10 @@ class NotificationSpec: QuickSpec {
                     expect(notification?.transactionToken).to(equal("random_tx_token"))
                 }
 
+                it("should have tx linking id") {
+                    expect(notification?.transactionLinkingId).to(equal("tx_VJGBI87d093cnl03"))
+                }
+
                 it("should have challenge") {
                     expect(notification?.challenge).to(equal("random_challenge"))
                 }
@@ -130,8 +134,13 @@ class NotificationSpec: QuickSpec {
                 }
 
                 it("should fail without tx id") {
-                    notification = AuthenticationNotification(userInfo: payload(token: nil))
+                    notification = AuthenticationNotification(userInfo: payload(transactionToken: nil))
                     expect(notification).to(beNil())
+                }
+
+                it("should not fail without tx linking id") {
+                    notification = AuthenticationNotification(userInfo: payload(transactionLinkingId: nil))
+                    expect(notification).toNot(beNil())
                 }
 
                 it("should fail without challenge") {
@@ -160,7 +169,8 @@ func payload(
              browserVersion: String? = "9.0.3",
              os: String? = "Mac OS",
              osVersion: String? = "10.11.3",
-             token: String? = "random_tx_token",
+             transactionToken: String? = "random_tx_token",
+             transactionLinkingId: String? = "tx_VJGBI87d093cnl03",
              challenge: String? = "random_challenge",
              startedAt: String? = "2015-12-17T19:53:31.000Z",
              host: String? = "samples.auth0.com",
@@ -181,8 +191,11 @@ func payload(
     if device != nil {
         payload["mfa"]!["dai"] = device
     }
-    if token != nil {
-        payload["mfa"]!["txtkn"] = token
+    if transactionToken != nil {
+        payload["mfa"]!["txtkn"] = transactionToken
+    }
+    if transactionLinkingId != nil {
+        payload["mfa"]!["txlnkid"] = transactionLinkingId
     }
     if challenge != nil {
         payload["mfa"]!["c"] = challenge
