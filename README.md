@@ -55,10 +55,14 @@ github "auth0/Guardian.swift" ~> 1.1.0
 import Guardian
 ```
 
-Then you'll need the Auth0 Guarduan domain for your account:
-
+Set the auth0 domain for your tenant:
 ```swift
-let domain = "{YOUR_ACCOUNT_NAME}.guardian.auth0.com"
+let domain = "<AUTH0_TENANT_DOMAIN>/appliance-mfa"
+```
+
+alternatively you can use the custom domain if you configured one:
+```swift
+let domain = "<CUSTOM_DOMAIN>/appliance-mfa"
 ```
 
 ### Enroll
