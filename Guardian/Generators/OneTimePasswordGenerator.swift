@@ -82,17 +82,13 @@ struct OneTimePasswordGenerator: TOTP, HOTP {
         var c = UInt64(counter).bigEndian
         let buffer = Data(bytes: &c, count: MemoryLayout<UInt64>.size);
         let digestData = hmac.sign(buffer)
-        let hash = digestData.withUnsafeBytes { (bytes: UnsafePointer<UInt8>) -> UInt32 in
-            let last = bytes.advanced(by: hmac.digestLength - 1)
-            let offset = last.pointee & 0x0f
-            let start = bytes.advanced(by: Int(offset))
-            let value = start.withMemoryRebound(to: UInt32.self, capacity: 1) { $0 }
-            var hash = UInt32(bigEndian: value.pointee)
-            hash &= 0x7fffffff
-            hash = hash % UInt32(pow(10, Float(self.parameters.digits)))
-            return hash
-        }
-
+        let length = MemoryLayout<UInt32>.size
+        // digestData.count - 1 will always be >0, because digestData depends on algorythm and can be only 20, 32, or 64.
+        let offset = Int(digestData[digestData.count - 1] & 0x0f)
+        // offset is always <=15, length is always 4, so prefix will always be within digestData count.
+        var hash = digestData.dropFirst(offset).prefix(length).reduce(0, { $0 << 8 | UInt32($1) })
+        hash &= 0x7fffffff
+        hash = hash % UInt32(pow(10, Float(self.parameters.digits)))
         return Int(hash)
     }
 
