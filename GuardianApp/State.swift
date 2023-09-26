@@ -28,9 +28,9 @@ struct GuardianState: Codable {
 
     let identifier: String
     let localIdentifier: String
-    let token: String
     let keyTag: String
     let otp: OTPParameters?
+    let userId: String
 
     func save() throws {
         let encoder = JSONEncoder()

@@ -93,7 +93,7 @@ class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
                     case .failure(let cause):
                         self.showError("Enroll failed", cause)
                     case .success(let enrollment):
-                        AppDelegate.state = GuardianState(identifier: enrollment.id, localIdentifier: enrollment.localIdentifier, token: enrollment.deviceToken, keyTag: signingKey.tag, otp: enrollment.totp)
+                        AppDelegate.state = GuardianState(identifier: enrollment.id, localIdentifier: enrollment.localIdentifier, keyTag: signingKey.tag, otp: enrollment.totp, userId: enrollment.userId)
                     }
                     self.updateView()
             }
@@ -119,7 +119,7 @@ class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
         if let enrollment = AppDelegate.state {
             let request = Guardian
                 .api(forDomain: AppDelegate.guardianDomain)
-                .device(forEnrollmentId: enrollment.identifier, token: enrollment.token)
+                .device(forEnrollmentId: enrollment.identifier, userId: enrollment.userId, signingKey: enrollment.signingKey)
                 .delete()
             debugPrint(request)
             request.start { [unowned self] result in
