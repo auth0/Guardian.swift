@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.2.0](https://github.com/auth0/Guardian.swift/tree/1.1.0) (2023-10-31)
+[Full Changelog](https://github.com/auth0/Guardian.swift/compare/1.0.0...1.2.0)
+
+**Changed**
+- Add support for transaction linking id 
+- Add support for custom domain (demo app example).
+
 ## [1.1.0](https://github.com/auth0/Guardian.swift/tree/1.1.0) (2021-06-01)
 [Full Changelog](https://github.com/auth0/Guardian.swift/compare/1.0.0...1.1.0)
 
