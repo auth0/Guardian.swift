@@ -651,19 +651,19 @@
 				TargetAttributes = {
 					5F2037CC1D5E1E3E0005D2E2 = {
 						CreatedOnToolsVersion = 7.3.1;
-						LastSwiftMigration = 0940;
+						LastSwiftMigration = 1250;
 						ProvisioningStyle = Manual;
 					};
 					5F2037D61D5E1E3E0005D2E2 = {
 						CreatedOnToolsVersion = 7.3.1;
 						DevelopmentTeam = 86WQXF56BC;
-						LastSwiftMigration = 0940;
+						LastSwiftMigration = 1250;
 						TestTargetID = 5F2037EA1D5E22590005D2E2;
 					};
 					5F2037EA1D5E22590005D2E2 = {
 						CreatedOnToolsVersion = 7.3.1;
 						DevelopmentTeam = 86WQXF56BC;
-						LastSwiftMigration = 0940;
+						LastSwiftMigration = 1250;
 						ProvisioningStyle = Manual;
 						SystemCapabilities = {
 							com.apple.Push = {
@@ -994,7 +994,7 @@
 				SKIP_INSTALL = YES;
 				SWIFT_INSTALL_OBJC_HEADER = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -1020,7 +1020,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_INSTALL_OBJC_HEADER = NO;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -1039,7 +1039,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.GuardianTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GuardianApp.app/GuardianApp";
 			};
 			name = Debug;
@@ -1058,7 +1058,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.GuardianTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GuardianApp.app/GuardianApp";
 			};
 			name = Release;
@@ -1088,7 +1088,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "match Development com.auth0.guardian.sample";
 				SWIFT_INSTALL_OBJC_HEADER = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
@@ -1117,7 +1117,7 @@
 				PROVISIONING_PROFILE = "32df3887-3767-4b67-84a6-144aaf2ef2f2";
 				PROVISIONING_PROFILE_SPECIFIER = "match Development com.auth0.guardian.sample";
 				SWIFT_INSTALL_OBJC_HEADER = NO;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
