@@ -7,7 +7,7 @@ jobs:
 
     # Specify the Xcode version to use.
     macos:
-      xcode: "12.5.1"
+      xcode: "15.0.0"
     working_directory: /Users/distiller/project
     environment:
       - LC_ALL: en_US.UTF-8
