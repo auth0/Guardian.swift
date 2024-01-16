@@ -94,3 +94,12 @@ public struct UpdatedDevice: Codable {
     }
 }
 
+public struct Auth0TelemetryInfo: Codable, Equatable {
+    let appName: String
+    let appVersion: String
+    
+    public init(name: String, version: String) {
+        self.appName = name
+        self.appVersion = version
+    }
+}
