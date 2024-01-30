@@ -22,7 +22,6 @@
 
 import Quick
 import Nimble
-import OHHTTPStubs
 
 @testable import Guardian
 

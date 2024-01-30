@@ -21,11 +21,9 @@
 // THE SOFTWARE.
 
 import UIKit
-import AVFoundation
 import Guardian
-import QRCodeReader
 
-class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
+class ViewController: UIViewController {
 
     private static let RSA_KEY_PUBLIC_TAG = "PUBLIC_TAG"
     private static let RSA_KEY_PRIVATE_TAG = "PRIVATE_TAG"
@@ -39,80 +37,7 @@ class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
-
         updateView()
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-
-    @IBAction func scanAction(_ sender: AnyObject) {
-        if let _ = AppDelegate.pushToken {
-            if let supports = try? QRCodeReader.supportsMetadataObjectTypes(), supports {
-                let reader = createReader()
-                reader.modalPresentationStyle = .formSheet
-                reader.delegate               = self
-
-                reader.completionBlock = { (result: QRCodeReaderResult?) in
-                    if let result = result {
-                        print("Completion with result: \(result.value) of type \(result.metadataType)")
-                    }
-                }
-
-                present(reader, animated: true, completion: nil)
-            } else {
-                let alert = UIAlertController(title: "Error", message: "Reader not supported by the current device", preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
-                
-                present(alert, animated: true, completion: nil)
-            }
-        }
-    }
-
-    // MARK: - QRCodeReader Delegate Methods
-    func reader(_ reader: QRCodeReaderViewController, didScanResult result: QRCodeReaderResult) {
-        self.dismiss(animated: true) { [unowned self] in
-
-            guard let signingKey = try? KeychainRSAPrivateKey.new(with: ViewController.RSA_KEY_PRIVATE_TAG),
-                let verificationKey = try? signingKey.verificationKey() else { return }
-
-            let request = Guardian
-                .enroll(forDomain: AppDelegate.guardianDomain, usingUri: result.value, notificationToken: AppDelegate.pushToken!, signingKey: signingKey, verificationKey: verificationKey)
-            debugPrint(request)
-            request
-                .on(response: { event in
-                    guard let data = event.data else { return }
-                    let body = String(data: data, encoding: .utf8) ?? "INVALID BODY"
-                    print(body)
-                })
-                .start { result in
-                    switch result {
-                    case .failure(let cause):
-                        self.showError("Enroll failed", cause)
-                    case .success(let enrollment):
-                        AppDelegate.state = GuardianState(identifier: enrollment.id, localIdentifier: enrollment.localIdentifier, keyTag: signingKey.tag, otp: enrollment.totp, userId: enrollment.userId)
-                    }
-                    self.updateView()
-            }
-        }
-    }
-
-    func readerDidCancel(_ reader: QRCodeReaderViewController) {
-        self.dismiss(animated: true, completion: nil)
-    }
-
-    fileprivate func createReader() -> QRCodeReaderViewController {
-        let builder = QRCodeReaderViewControllerBuilder { builder in
-            builder.reader = QRCodeReader(metadataObjectTypes: [AVMetadataObject.ObjectType.qr])
-            builder.showSwitchCameraButton = false
-            builder.showTorchButton = false
-            builder.showCancelButton = true
-        }
-        
-        return QRCodeReaderViewController(builder: builder)
     }
 
     @IBAction func unenrollAction(_ sender: AnyObject) {
@@ -125,7 +50,7 @@ class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
             request.start { [unowned self] result in
                     switch result {
                     case .failure(let cause):
-                        self.showError("Unenroll failed", cause)
+                        self.showError(title: "Unenroll failed", cause: cause)
                     case .success:
                         AppDelegate.state = nil
                     }
@@ -146,21 +71,89 @@ class ViewController: UIViewController, QRCodeReaderViewControllerDelegate {
             self.enrollmentView.isHidden = !haveEnrollment
         }
     }
-
-    func showError(_ title: String, _ cause: Swift.Error) {
+    
+    private func showError(title: String, message: String) {
         DispatchQueue.main.async { [unowned self] in
-            var errorMessage = "Unknown error"
-            if let cause = cause as? GuardianError {
-                errorMessage = cause.description
-            }
             let alert = UIAlertController(
                 title: title,
-                message: errorMessage,
+                message: message,
                 preferredStyle: .alert
             )
             alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
             self.present(alert, animated: true, completion: nil)
         }
     }
+
+    private func showError(title: String, cause: Swift.Error) {
+        var errorMessage = "Unknown error"
+        if let cause = cause as? GuardianError {
+            errorMessage = cause.description
+        }
+        showError(title: title, message: errorMessage)
+    }
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        guard
+            segue.identifier == "PresentQRCodeReader",
+            let qrReaderVC = segue.destination as? QRCodeReaderViewController
+        else { return }
+        
+        qrReaderVC.delegate = self
+    }
+    
+    override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
+        guard identifier == "PresentQRCodeReader" else { return false }
+            
+        guard AppDelegate.pushToken != nil else {
+            showError(title: "Error", message: "Push token is empty")
+            return false
+        }
+        
+        return true
+    }
 }
 
+extension ViewController: QRCodeReaderViewControllerDelegate {
+    func qrCodeViewDidScan(qrCodeValue: String) {
+        print("QR scanned with result:\n\(qrCodeValue)")
+        self.dismiss(animated: true) { [unowned self] in
+
+            guard let signingKey = try? KeychainRSAPrivateKey.new(with: ViewController.RSA_KEY_PRIVATE_TAG),
+                let verificationKey = try? signingKey.verificationKey() else { return }
+
+            let request = Guardian.enroll(
+                forDomain: AppDelegate.guardianDomain,
+                usingUri: qrCodeValue,
+                notificationToken: AppDelegate.pushToken!,
+                signingKey: signingKey,
+                verificationKey: verificationKey)
+            
+            debugPrint(request)
+            request
+                .on(response: { event in
+                    guard let data = event.data else { return }
+                    let body = String(data: data, encoding: .utf8) ?? "INVALID BODY"
+                    print(body)
+                })
+                .start { result in
+                    switch result {
+                    case .failure(let cause):
+                        self.showError(title: "Enroll failed", cause: cause)
+                    case .success(let enrollment):
+                        AppDelegate.state = GuardianState(identifier: enrollment.id, localIdentifier: enrollment.localIdentifier, keyTag: signingKey.tag, otp: enrollment.totp, userId: enrollment.userId)
+                    }
+                    self.updateView()
+            }
+        }
+    }
+    
+    func qrCodeViewDidCancel() {
+        dismiss(animated: true)
+    }
+    
+    func qrCodeViewDidFail() {
+        dismiss(animated: false) { [weak self] in
+            self?.showError(title: "Error", message: "Camera usage not supported by the current device")
+        }
+    }
+}
