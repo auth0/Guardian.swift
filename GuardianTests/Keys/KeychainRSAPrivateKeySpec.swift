@@ -26,7 +26,7 @@ import Guardian
 
 class KeychainRSAPrivateKeySpec: QuickSpec {
 
-    override func spec() {
+    override class func spec() {
 
         describe("init(tag:)") {
 

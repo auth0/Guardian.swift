@@ -21,9 +21,9 @@
 // THE SOFTWARE.
 
 import Foundation
-import OHHTTPStubs
 import Guardian
-
+/*
+ AB TODO: 
 func enrollmentInfoResponse(withDeviceAccountToken deviceAccountToken: String) -> OHHTTPStubsResponse {
     let json = [
         "device_account_token": deviceAccountToken,
@@ -78,3 +78,4 @@ func errorResponse(statusCode: Int32, errorCode: String, message: String, error:
 func successResponse(statusCode: Int32 = 200) -> OHHTTPStubsResponse {
     return OHHTTPStubsResponse(jsonObject: [:], statusCode: statusCode, headers: ["Content-Type": "application/json"])
 }
+*/

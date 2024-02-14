@@ -28,7 +28,7 @@ let info = ["CFBundleShortVersionString": "1.0.0"]
 
 class ClientInfoSpec: QuickSpec {
 
-    override func spec() {
+    override class func spec() {
 
         describe("init(info:)") {
             it("should create a new instance") {

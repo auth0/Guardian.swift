@@ -25,7 +25,7 @@ import Nimble
 import Guardian
 
 class DataRSAPrivateKeyCreationSpec: QuickSpec {
-    override func spec() {
+    override class func spec() {
 
         describe("new") {
 

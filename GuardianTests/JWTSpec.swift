@@ -27,7 +27,7 @@ import Nimble
 
 class JWTSpec: QuickSpec {
 
-    override func spec() {
+    override class func spec() {
 
         var signingKey: SigningKey!
         var verificationKey: AsymmetricPublicKey!

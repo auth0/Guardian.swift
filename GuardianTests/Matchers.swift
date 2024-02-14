@@ -21,12 +21,12 @@
 // THE SOFTWARE.
 
 import Foundation
-import OHHTTPStubs
 import Nimble
 
 @testable import Guardian
-
-func hasAtLeast(_ parameters: [String: String]) -> OHHTTPStubsTestBlock {
+/*
+ AB TODO: 
+func hasAtLeast(_ parameters: [String: String]) -> Bool {
     return { request in
         guard let payload = request.a0_payload else { return false }
         let entries = parameters.filter { (key, _) in payload.contains { (name, _) in  key == name } }
@@ -36,7 +36,7 @@ func hasAtLeast(_ parameters: [String: String]) -> OHHTTPStubsTestBlock {
     }
 }
 
-func hasField(_ field: String, withParameters parameters: [String: String]) -> OHHTTPStubsTestBlock {
+func hasField(_ field: String, withParameters parameters: [String: String]) -> Bool {
     return { request in
         guard
             let payload = request.a0_payload,
@@ -49,24 +49,24 @@ func hasField(_ field: String, withParameters parameters: [String: String]) -> O
     }
 }
 
-func hasNoneOf(_ names: [String]) -> OHHTTPStubsTestBlock {
+func hasNoneOf(_ names: [String]) -> Bool {
     return { request in
         guard let payload = request.a0_payload else { return false }
         return payload.filter { names.contains($0.0) }.isEmpty
     }
 }
 
-func hasNoneOf(_ parameters: [String: String]) -> OHHTTPStubsTestBlock {
+func hasNoneOf(_ parameters: [String: String]) -> Bool {
     return !hasAtLeast(parameters)
 }
 
-func hasBearerToken(_ token: String) -> OHHTTPStubsTestBlock {
+func hasBearerToken(_ token: String) -> Bool {
     return { request in
         return request.value(forHTTPHeaderField: "Authorization") == "Bearer \(token)"
     }
 }
 
-func hasBearerJWTToken(withSub sub: String, iss: String, aud: String, validFor duration: TimeInterval) -> OHHTTPStubsTestBlock {
+func hasBearerJWTToken(withSub sub: String, iss: String, aud: String, validFor duration: TimeInterval) -> Bool {
     return { request in
         guard let token = request.value(forHTTPHeaderField: "Authorization")?.split(separator: " ").last,
             let jwt = try? JWT<BasicClaimSet>(string: String(token)),
@@ -86,13 +86,13 @@ func hasBearerJWTToken(withSub sub: String, iss: String, aud: String, validFor d
     }
 }
 
-func hasTicketAuth(_ ticket: String) -> OHHTTPStubsTestBlock {
+func hasTicketAuth(_ ticket: String) -> Bool {
     return { request in
         return request.value(forHTTPHeaderField: "Authorization") == "Ticket id=\"\(ticket)\""
     }
 }
 
-func isUrl(from baseUrl: URL, containingPathStartingWith path: String) -> OHHTTPStubsTestBlock {
+func isUrl(from baseUrl: URL, containingPathStartingWith path: String) -> Bool {
     return { req in
         let partialUrl = baseUrl.appendingPathComponent(path).absoluteString
         guard let url = req.url?.absoluteString,
@@ -103,37 +103,37 @@ func isUrl(from baseUrl: URL, containingPathStartingWith path: String) -> OHHTTP
     }
 }
 
-func isUrl(from baseUrl: URL, endingWithPathComponent pathComponent: String) -> OHHTTPStubsTestBlock {
+func isUrl(from baseUrl: URL, endingWithPathComponent pathComponent: String) -> Bool {
     return { req in
         return req.url == baseUrl.appendingPathComponent(pathComponent)
     }
 }
 
 
-func isEnrollmentInfo(baseUrl: URL) -> OHHTTPStubsTestBlock {
+func isEnrollmentInfo(baseUrl: URL) -> Bool {
     return isScheme("https") && isMethodPOST() && isUrl(from: baseUrl, endingWithPathComponent: "api/enrollment-info")
 }
 
-func isMobileEnroll(baseUrl: URL) -> OHHTTPStubsTestBlock {
+func isMobileEnroll(baseUrl: URL) -> Bool {
     return isScheme("https") && isMethodPOST() && isUrl(from: baseUrl, endingWithPathComponent: "api/enroll")
 }
 
-func isResolveTransaction(baseUrl: URL) -> OHHTTPStubsTestBlock {
+func isResolveTransaction(baseUrl: URL) -> Bool {
     return isScheme("https") && isMethodPOST() && isUrl(from: baseUrl, endingWithPathComponent: "api/resolve-transaction")
 }
 
-func isEnrollment(baseUrl: URL, enrollmentId: String? = nil) -> OHHTTPStubsTestBlock {
+func isEnrollment(baseUrl: URL, enrollmentId: String? = nil) -> Bool {
     if let enrollmentId = enrollmentId {
         return isUrl(from: baseUrl, endingWithPathComponent: "api/device-accounts/\(enrollmentId)")
     }
     return isUrl(from: baseUrl, containingPathStartingWith: "api/device-accounts/")
 }
 
-func isDeleteEnrollment(baseUrl: URL, enrollmentId: String? = nil) -> OHHTTPStubsTestBlock {
+func isDeleteEnrollment(baseUrl: URL, enrollmentId: String? = nil) -> Bool {
     return isMethodDELETE() && isEnrollment(baseUrl: baseUrl, enrollmentId: enrollmentId)
 }
 
-func isUpdateEnrollment(baseUrl: URL, enrollmentId: String? = nil) -> OHHTTPStubsTestBlock {
+func isUpdateEnrollment(baseUrl: URL, enrollmentId: String? = nil) -> Bool {
     return isMethodPATCH() && isEnrollment(baseUrl: baseUrl, enrollmentId: enrollmentId)
 }
 
@@ -285,3 +285,4 @@ extension URLRequest {
         return object as? [String: Any]
     }
 }
+*/
