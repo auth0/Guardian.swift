@@ -71,8 +71,7 @@ class RequestSpec: QuickSpec {
                         .start { _ in }
                 }
             }
-/*
- AB TODO: 
+
             it("should allow to map errors") {
                 let error = MockError()
                 session.a0_response = http(statusCode: 400)
@@ -86,18 +85,15 @@ class RequestSpec: QuickSpec {
                         }
                         .start { result in
                             expect({
-                                let result: (() -> ToSucceedResult)? = {
-                                    guard case .failure(let actual as MockError) = result, error == actual else {
-                                        return .failed(reason: "not a failure with mapped error")
-                                    }
-                                    return .succeeded
+                                guard case .failure(let actual as MockError) = result, error == actual else {
+                                    return .failed(reason: "not a failure with mapped error")
                                 }
-                                return result
+                                return .succeeded
                             }).to(succeed())
                         }
                 }
             }
-*/
+
             it("should delegate description") {
                 let r: Request<[String: String], String> = Request.new(method: .post, url: url)
                 expect(r.description).to(equal(r.request.description))
