@@ -52,17 +52,6 @@ func errorResponse(statusCode: Int, errorCode: String, message: String, error: S
     return MockURLResponse(jsonObject: ["errorCode": errorCode, "message": message, "statusCode": "\(statusCode)", "error": error ?? message], statusCode: statusCode, headers: ["Content-Type": "application/json"])
 }
 
-/*
- AB TODO: 
-func enrollmentInfoResponse(withDeviceAccountToken deviceAccountToken: String) -> OHHTTPStubsResponse {
-    let json = [
-        "device_account_token": deviceAccountToken,
-    ]
-    
-    return OHHTTPStubsResponse(jsonObject: json, statusCode: 200, headers: ["Content-Type": "application/json"])
-}
- */
-
 func deviceResponse(enrollmentId id: String?, deviceIdentifier: String?, name: String?, service: String?, notificationToken: String?) -> MockURLResponse {
     let json: [String : Any] = [
         "id": id ?? "",

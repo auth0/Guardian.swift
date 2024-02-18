@@ -184,36 +184,7 @@ func beUpdatedDevice(deviceIdentifier: String?, deviceName: String?, notificatio
 
     }
 }
-/*
- AB TODO:
 
-func hasNoneOf(_ names: [String]) -> Bool {
-    return { request in
-        guard let payload = request.a0_payload else { return false }
-        return payload.filter { names.contains($0.0) }.isEmpty
-    }
-}
-
-func hasNoneOf(_ parameters: [String: String]) -> Bool {
-    return !hasAtLeast(parameters)
-}
-
-func isEnrollmentInfo(baseUrl: URL) -> Bool {
-    return isScheme("https") && isMethodPOST() && isUrl(from: baseUrl, endingWithPathComponent: "api/enrollment-info")
-}
-
-func haveDeviceAccountToken(_ deviceAccountToken: String?) -> Predicate<Result<[String: String]>> {
-    return Predicate.define("be a successful enrollment info result with") { actualExpression, msg -> PredicateResult in
-        let message = msg.appended(details: String(describing: deviceAccountToken))
-        if let actual = try actualExpression.evaluate(), case .success(let result) = actual {
-            if let token = result["device_account_token"] {
-                return PredicateResult(status: PredicateStatus(bool: deviceAccountToken == token), message: message)
-            }
-        }
-        return PredicateResult(status: .fail, message: message)
-    }
-}
-*/
 func haveEnrollment(withBaseUrl baseURL: URL, enrollmentId: String, deviceToken: String, notificationToken: String, issuer: String, userId: String, signingKey: SigningKey, base32Secret: String, algorithm: HMACAlgorithm, digits: Int, period: Int) -> Nimble.Predicate<Result<EnrolledDevice>> {
     return Predicate.define("be an enrollment with") { expression, msg -> PredicateResult in
         let message = msg.appended(details: " <baseUrl: \(baseURL)>" +
@@ -258,42 +229,7 @@ func haveGuardianError<T>(withErrorCode errorCode: String? = nil) -> Nimble.Pred
         return PredicateResult(status: .fail, message: message)
     }
 }
-/*
-func haveNSError<T>(withErrorCode errorCode: Int? = nil) -> Predicate<Result<T>> {
-    return Predicate.define("be an NSError") { expression, msg -> PredicateResult in
-        var message = msg
-        if let errorCode = errorCode {
-            message = message.appended(details: " with <code: \(errorCode)>")
-        }
-        if let actual = try expression.evaluate(), case .failure(let cause) = actual {
-            let error = cause as NSError
-            let status = errorCode == nil || errorCode == error.code
-            return PredicateResult(bool: status, message: message)
-        }
-        return PredicateResult(status: .fail, message: message)
-    }
-}
 
-func haveError<T, E>(_ error: E) -> Predicate<Result<T>> where E: Swift.Error, E: Equatable {
-    return Predicate.define("fail with <error: \(error)>") { expression, msg -> PredicateResult in
-        if let actual = try expression.evaluate(), case .failure(let cause) = actual {
-            if let cause = cause as? E {
-                return PredicateResult(bool: cause == error, message: msg)
-            }
-        }
-        return PredicateResult(status: .fail, message: msg)
-    }
-}
- 
-func beSuccess(withData data: [String: String]) -> Nimble.Predicate<Result<[String: String]>> {
-    return Nimble.Predicate.define("be a success response with <payload: \(data)>") { expression, msg -> PredicateResult in
-        if let actual = try expression.evaluate(), case .success(let payload) = actual {
-            return PredicateResult(bool: data == payload, message: msg)
-        }
-        return PredicateResult(status: .fail, message: msg)
-    }
-}
-*/
 extension URLRequest {
     var a0_payload: [String: Any]? {
         guard let bodyStream = self.httpBodyStream else { return nil }
