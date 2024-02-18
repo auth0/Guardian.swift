@@ -28,16 +28,18 @@ import Nimble
 class GuardianSpec: QuickSpec {
     
     override class func spec() {
-/*
- AB TODO: 
+
         beforeEach {
-            stub(condition: { _ in return true }) { _ in
-                return OHHTTPStubsResponse.init(error: NSError(domain: "com.auth0", code: -99999, userInfo: nil))
-                }.name = "YOU SHALL NOT PASS!"
+            MockURLProtocol.startInterceptingRequests()
+            MockURLProtocol.stub(
+                name: "YOU SHALL NOT PASS!",
+                condition: { _ in return true },
+                error: NSError(domain: "com.auth0", code: -99999, userInfo: nil)
+            )
         }
         
         afterEach {
-            OHHTTPStubs.removeAllStubs()
+            MockURLProtocol.stopInterceptingRequests()
         }
 
         describe("api(forDomain:)") {
@@ -91,33 +93,40 @@ class GuardianSpec: QuickSpec {
                 signingKey = try! DataRSAPrivateKey(data: keys.privateKey)
                 verificationKey = try! signingKey.verificationKey()
 
-                stub(condition: isMobileEnroll(baseUrl: ValidURL)
-                    && hasTicketAuth(ValidTransactionId)
-                    && hasAtLeast([
-                        "identifier": UIDevice.current.identifierForVendor!.uuidString,
-                        "name": UIDevice.current.name
-                        ])
-                    && hasField("push_credentials", withParameters: [
-                        "service": ValidNotificationService,
-                        "token": ValidNotificationToken
-                        ])
-                    && hasField("public_key", withParameters: [
-                        "alg": keys.jwk.algorithm,
-                        "e": keys.jwk.exponent,
-                        "use": keys.jwk.usage,
-                        "kty": keys.jwk.keyType,
-                        "n": keys.jwk.modulus
-                        ])) { _ in
-                            return enrollResponse(enrollmentId: ValidEnrollmentId,
-                                                  url: ValidURL.absoluteString,
-                                                  userId: ValidUserId,
-                                                  issuer: ValidIssuer,
-                                                  token: ValidEnrollmentToken,
-                                                  totpSecret: ValidBase32Secret,
-                                                  totpAlgorithm: ValidAlgorithm,
-                                                  totpDigits: ValidDigits,
-                                                  totpPeriod: ValidPeriod)
-                    }.name = "Valid enrollment"
+                MockURLProtocol.stub(
+                    name: "Valid enrollment",
+                    condition:
+                        isMobileEnroll(baseUrl: ValidURL)
+                        && hasTicketAuth(ValidTransactionId)
+                        && hasAtLeast([
+                            "identifier": UIDevice.current.identifierForVendor!.uuidString,
+                            "name": UIDevice.current.name
+                            ])
+                        && hasField("push_credentials", withParameters: [
+                            "service": ValidNotificationService,
+                            "token": ValidNotificationToken
+                            ])
+                        && hasField("public_key", withParameters: [
+                            "alg": keys.jwk.algorithm,
+                            "e": keys.jwk.exponent,
+                            "use": keys.jwk.usage,
+                            "kty": keys.jwk.keyType,
+                            "n": keys.jwk.modulus
+                            ]),
+                    response: { _ in
+                        enrollResponse(
+                            enrollmentId: ValidEnrollmentId,
+                            url: ValidURL.absoluteString,
+                            userId: ValidUserId,
+                            issuer: ValidIssuer,
+                            token: ValidEnrollmentToken,
+                            totpSecret: ValidBase32Secret,
+                            totpAlgorithm: ValidAlgorithm,
+                            totpDigits: ValidDigits,
+                            totpPeriod: ValidPeriod
+                        )
+                    }
+                )
             }
 
             it("should succeed when enrollmentUri is valid") {
@@ -169,10 +178,15 @@ class GuardianSpec: QuickSpec {
             }
 
             it("should fail when enrollment transaction is invalid") {
-                stub(condition: isMobileEnroll(baseUrl: ValidURL)
-                    && !hasTicketAuth(ValidTransactionId)) { _ in
+                MockURLProtocol.stub(
+                    name: "Enrollment transaction not found",
+                    condition:
+                        isMobileEnroll(baseUrl: ValidURL)
+                        && !hasTicketAuth(ValidTransactionId),
+                    response: { _ in
                         return errorResponse(statusCode: 404, errorCode: "enrollment_transaction_not_found", message: "Not found")
-                    }.name = "Enrollment transaction not found"
+                    }
+                )
                 waitUntil(timeout: Timeout) { done in
                     Guardian
                         .enroll(forDomain: Domain, usingTicket: "someInvalidTransactionId", notificationToken: ValidNotificationToken, signingKey: signingKey, verificationKey: verificationKey)
@@ -184,13 +198,19 @@ class GuardianSpec: QuickSpec {
             }
 
             it("should fail when enrollment transaction is valid but response is invalid") {
-                stub(condition: isMobileEnroll(baseUrl: ValidURL)
-                    && hasTicketAuth(ValidTransactionId)) { _ in
-                        let json = [
-                            "notTheRequiredField": "someValue",
-                            ]
-                        return OHHTTPStubsResponse(jsonObject: json, statusCode: 200, headers: ["Content-Type": "application/json"])
-                    }.name = "Invalid enroll response"
+                MockURLProtocol.stub(
+                    name: "Invalid enroll response",
+                    condition: 
+                        isMobileEnroll(baseUrl: ValidURL)
+                        && hasTicketAuth(ValidTransactionId),
+                    response: { _ in
+                        MockURLResponse(
+                            jsonObject: ["notTheRequiredField": "someValue"],
+                            statusCode: 200,
+                            headers: ["Content-Type": "application/json"]
+                        )
+                    }
+                )
                 waitUntil(timeout: Timeout) { done in
                     Guardian
                         .enroll(forDomain: Domain, usingTicket: ValidTransactionId, notificationToken: ValidNotificationToken, signingKey: signingKey, verificationKey: verificationKey)
@@ -212,33 +232,39 @@ class GuardianSpec: QuickSpec {
             beforeEach {
                 signingKey = try! DataRSAPrivateKey(data: keys.privateKey)
                 verificationKey = try! signingKey.verificationKey()
-                stub(condition: isMobileEnroll(baseUrl: ValidURL)
-                    && hasTicketAuth(ValidTransactionId)
-                    && hasAtLeast([
-                        "identifier": UIDevice.current.identifierForVendor!.uuidString,
-                        "name": UIDevice.current.name
-                        ])
-                    && hasField("push_credentials", withParameters: [
-                        "service": ValidNotificationService,
-                        "token": ValidNotificationToken
-                        ])
-                    && hasField("public_key", withParameters: [
-                        "alg": keys.jwk.algorithm,
-                        "e": keys.jwk.exponent,
-                        "use": keys.jwk.usage,
-                        "kty": keys.jwk.keyType,
-                        "n": keys.jwk.modulus
-                        ])) { _ in
-                            return enrollResponse(enrollmentId: ValidEnrollmentId,
-                                                  url: ValidURL.absoluteString,
-                                                  userId: ValidUserId,
-                                                  issuer: ValidIssuer,
-                                                  token: ValidEnrollmentToken,
-                                                  totpSecret: ValidBase32Secret,
-                                                  totpAlgorithm: ValidAlgorithm,
-                                                  totpDigits: ValidDigits,
-                                                  totpPeriod: ValidPeriod)
-                    }.name = "Valid enrollment"
+                MockURLProtocol.stub(
+                    name: "Valid enrollment",
+                    condition:
+                        isMobileEnroll(baseUrl: ValidURL)
+                        && hasTicketAuth(ValidTransactionId)
+                        && hasAtLeast([
+                            "identifier": UIDevice.current.identifierForVendor!.uuidString,
+                            "name": UIDevice.current.name
+                            ])
+                        && hasField("push_credentials", withParameters: [
+                            "service": ValidNotificationService,
+                            "token": ValidNotificationToken
+                            ])
+                        && hasField("public_key", withParameters: [
+                            "alg": keys.jwk.algorithm,
+                            "e": keys.jwk.exponent,
+                            "use": keys.jwk.usage,
+                            "kty": keys.jwk.keyType,
+                            "n": keys.jwk.modulus
+                            ]),
+                    response: { _ in
+                        enrollResponse(enrollmentId: ValidEnrollmentId,
+                            url: ValidURL.absoluteString,
+                            userId: ValidUserId,
+                            issuer: ValidIssuer,
+                            token: ValidEnrollmentToken,
+                            totpSecret: ValidBase32Secret,
+                            totpAlgorithm: ValidAlgorithm,
+                            totpDigits: ValidDigits,
+                            totpPeriod: ValidPeriod
+                        )
+                    }
+                )
             }
 
             it("should succeed when enrollmentUri is valid") {
@@ -288,10 +314,15 @@ class GuardianSpec: QuickSpec {
             }
 
             it("should fail when enrollment transaction is invalid") {
-                stub(condition: isMobileEnroll(baseUrl: ValidURL)
-                    && !hasTicketAuth(ValidTransactionId)) { _ in
-                        return errorResponse(statusCode: 404, errorCode: "enrollment_transaction_not_found", message: "Not found")
-                    }.name = "Enrollment transaction not found"
+                MockURLProtocol.stub(
+                    name: "Enrollment transaction not found",
+                    condition: 
+                        isMobileEnroll(baseUrl: ValidURL)
+                        && !hasTicketAuth(ValidTransactionId),
+                    response: { _ in
+                        errorResponse(statusCode: 404, errorCode: "enrollment_transaction_not_found", message: "Not found")
+                    }
+                )
                 waitUntil(timeout: Timeout) { done in
                     Guardian
                         .enroll(url: ValidURL, usingTicket: "someInvalidTransactionId", notificationToken: ValidNotificationToken, signingKey: signingKey, verificationKey: verificationKey)
@@ -303,13 +334,15 @@ class GuardianSpec: QuickSpec {
             }
 
             it("should fail when enrollment transaction is valid but response is invalid") {
-                stub(condition: isMobileEnroll(baseUrl: ValidURL)
-                    && hasTicketAuth(ValidTransactionId)) { _ in
-                        let json = [
-                            "notTheRequiredField": "someValue",
-                            ]
-                        return OHHTTPStubsResponse(jsonObject: json, statusCode: 200, headers: ["Content-Type": "application/json"])
-                    }.name = "Invalid enroll response"
+                MockURLProtocol.stub(
+                    name: "Invalid enroll response",
+                    condition: 
+                        isMobileEnroll(baseUrl: ValidURL)
+                        && hasTicketAuth(ValidTransactionId),
+                    response: { _ in
+                        MockURLResponse(jsonObject: ["notTheRequiredField": "someValue"], statusCode: 200, headers: ["Content-Type": "application/json"])
+                    }
+                )
                 waitUntil(timeout: Timeout) { done in
                     Guardian
                         .enroll(url: ValidURL, usingTicket: ValidTransactionId, notificationToken: ValidNotificationToken, signingKey: signingKey, verificationKey: verificationKey)
@@ -320,7 +353,6 @@ class GuardianSpec: QuickSpec {
                 }
             }
         }
- */
     }
 }
 

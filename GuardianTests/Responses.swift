@@ -22,31 +22,8 @@
 
 import Foundation
 import Guardian
-/*
- AB TODO: 
-func enrollmentInfoResponse(withDeviceAccountToken deviceAccountToken: String) -> OHHTTPStubsResponse {
-    let json = [
-        "device_account_token": deviceAccountToken,
-    ]
-    
-    return OHHTTPStubsResponse(jsonObject: json, statusCode: 200, headers: ["Content-Type": "application/json"])
-}
 
-func deviceResponse(enrollmentId id: String?, deviceIdentifier: String?, name: String?, service: String?, notificationToken: String?) -> OHHTTPStubsResponse {
-    let json: [String : Any] = [
-        "id": id ?? "",
-        "identifier": deviceIdentifier ?? "",
-        "name": name ?? "",
-        "push_credentials": [
-            "service": service ?? "",
-            "token": notificationToken ?? ""
-        ]
-    ]
-    
-    return OHHTTPStubsResponse(jsonObject: json, statusCode: 200, headers: ["Content-Type": "application/json"])
-}
-
-func enrollResponse(enrollmentId id: String?, url: String?, userId: String?, issuer: String?, token: String?, totpSecret: String? = nil, totpAlgorithm: HMACAlgorithm? = nil, totpDigits: Int? = nil, totpPeriod: Int? = nil, recoveryCode: String? = nil) -> OHHTTPStubsResponse {
+func enrollResponse(enrollmentId id: String?, url: String?, userId: String?, issuer: String?, token: String?, totpSecret: String? = nil, totpAlgorithm: HMACAlgorithm? = nil, totpDigits: Int? = nil, totpPeriod: Int? = nil, recoveryCode: String? = nil) -> MockURLResponse {
     var json: [String : Any] = [
         "id": id ?? "",
         "url": url ?? "",
@@ -68,14 +45,38 @@ func enrollResponse(enrollmentId id: String?, url: String?, userId: String?, iss
         json["recovery_code"] = recoveryCode
     }
 
+    return MockURLResponse(jsonObject: json, statusCode: 200, headers: ["Content-Type": "application/json"])
+}
+
+func errorResponse(statusCode: Int, errorCode: String, message: String, error: String? = nil) -> MockURLResponse {
+    return MockURLResponse(jsonObject: ["errorCode": errorCode, "message": message, "statusCode": "\(statusCode)", "error": error ?? message], statusCode: statusCode, headers: ["Content-Type": "application/json"])
+}
+
+/*
+ AB TODO: 
+func enrollmentInfoResponse(withDeviceAccountToken deviceAccountToken: String) -> OHHTTPStubsResponse {
+    let json = [
+        "device_account_token": deviceAccountToken,
+    ]
+    
     return OHHTTPStubsResponse(jsonObject: json, statusCode: 200, headers: ["Content-Type": "application/json"])
 }
+ */
 
-func errorResponse(statusCode: Int32, errorCode: String, message: String, error: String? = nil) -> OHHTTPStubsResponse {
-    return OHHTTPStubsResponse(jsonObject: ["errorCode": errorCode, "message": message, "statusCode": "\(statusCode)", "error": error ?? message], statusCode: statusCode, headers: ["Content-Type": "application/json"])
+func deviceResponse(enrollmentId id: String?, deviceIdentifier: String?, name: String?, service: String?, notificationToken: String?) -> MockURLResponse {
+    let json: [String : Any] = [
+        "id": id ?? "",
+        "identifier": deviceIdentifier ?? "",
+        "name": name ?? "",
+        "push_credentials": [
+            "service": service ?? "",
+            "token": notificationToken ?? ""
+        ]
+    ]
+    
+    return MockURLResponse(jsonObject: json, statusCode: 200, headers: ["Content-Type": "application/json"])
 }
 
-func successResponse(statusCode: Int32 = 200) -> OHHTTPStubsResponse {
-    return OHHTTPStubsResponse(jsonObject: [:], statusCode: statusCode, headers: ["Content-Type": "application/json"])
+func successResponse(statusCode: Int = 200) -> MockURLResponse {
+    return MockURLResponse(jsonObject: [:], statusCode: statusCode, headers: ["Content-Type": "application/json"])
 }
-*/

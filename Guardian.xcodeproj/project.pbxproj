@@ -98,6 +98,9 @@
 		5FAE6729210250E300F149A3 /* AsymmetricPublicKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FAE6728210250E300F149A3 /* AsymmetricPublicKey.swift */; };
 		5FF42BA521091AD10082459F /* NetworkOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FF42BA421091AD10082459F /* NetworkOperation.swift */; };
 		5FF42BA821091F150082459F /* NetworkOperationSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FF42BA721091F150082459F /* NetworkOperationSpec.swift */; };
+		ED1E39A52B7E6C1300E8609A /* MockURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1E39A42B7E6C1300E8609A /* MockURLProtocol.swift */; };
+		ED1E39A72B822A2500E8609A /* MockURLResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1E39A62B822A2500E8609A /* MockURLResponse.swift */; };
+		ED1E39A92B82A9B100E8609A /* MockURLProtocolCondition.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1E39A82B82A9B100E8609A /* MockURLProtocolCondition.swift */; };
 		ED7B279F2B682A2700788920 /* QRCodeReaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED7B279E2B682A2700788920 /* QRCodeReaderViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -250,6 +253,9 @@
 		5FAE6728210250E300F149A3 /* AsymmetricPublicKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsymmetricPublicKey.swift; sourceTree = "<group>"; };
 		5FF42BA421091AD10082459F /* NetworkOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkOperation.swift; sourceTree = "<group>"; };
 		5FF42BA721091F150082459F /* NetworkOperationSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkOperationSpec.swift; sourceTree = "<group>"; };
+		ED1E39A42B7E6C1300E8609A /* MockURLProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockURLProtocol.swift; sourceTree = "<group>"; };
+		ED1E39A62B822A2500E8609A /* MockURLResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockURLResponse.swift; sourceTree = "<group>"; };
+		ED1E39A82B82A9B100E8609A /* MockURLProtocolCondition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockURLProtocolCondition.swift; sourceTree = "<group>"; };
 		ED7B279E2B682A2700788920 /* QRCodeReaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeReaderViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -291,6 +297,9 @@
 				2374A9F41D67339E00737F2E /* Matchers.swift */,
 				23C67AEB1D81D6A400A38A2E /* MockNSURLSession.swift */,
 				5F1604E921066B2B00B0F25B /* Keys+Utils.swift */,
+				ED1E39A42B7E6C1300E8609A /* MockURLProtocol.swift */,
+				ED1E39A62B822A2500E8609A /* MockURLResponse.swift */,
+				ED1E39A82B82A9B100E8609A /* MockURLProtocolCondition.swift */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
@@ -769,6 +778,8 @@
 				5F1604D3210661D700B0F25B /* KeychainRSAPrivateKeyCreationSpec.swift in Sources */,
 				5F1604D5210662CF00B0F25B /* DataRSAPrivateKeyCreationSpec.swift in Sources */,
 				5F1604EA21066B2B00B0F25B /* Keys+Utils.swift in Sources */,
+				ED1E39A52B7E6C1300E8609A /* MockURLProtocol.swift in Sources */,
+				ED1E39A72B822A2500E8609A /* MockURLResponse.swift in Sources */,
 				5F1DB45F1DA4757800264437 /* Constants.swift in Sources */,
 				5F07A58721092F2300819FA2 /* ClientInfoSpec.swift in Sources */,
 				5F1604EE210673E700B0F25B /* ASNPublicKeyDecodableSpec.swift in Sources */,
@@ -776,6 +787,7 @@
 				2374A9F51D67339E00737F2E /* Matchers.swift in Sources */,
 				23C67AEC1D81D6A400A38A2E /* MockNSURLSession.swift in Sources */,
 				5F1604FB2107AF2800B0F25B /* OneTimePasswordGeneratorSpec.swift in Sources */,
+				ED1E39A92B82A9B100E8609A /* MockURLProtocolCondition.swift in Sources */,
 				5F1604C92106493600B0F25B /* SigningKeyStorageSpec.swift in Sources */,
 				5F7969341DDABDDE006AC7BA /* AuthenticationSpec.swift in Sources */,
 				5F07A5AC210FD09F00819FA2 /* GuardianErrorSpec.swift in Sources */,

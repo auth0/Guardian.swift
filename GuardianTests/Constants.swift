@@ -21,11 +21,12 @@
 // THE SOFTWARE.
 
 import Foundation
+import Nimble
 
 @testable import Guardian
 
 let Domain = "tenant.guardian.auth0.com/also/works/in/appliance/"
-let Timeout: DispatchTimeInterval = .seconds(2)
+let Timeout: NimbleTimeInterval = .seconds(2)
 
 let ValidURL = URL(string: "https://\(Domain)")!
 let ValidTransactionId = UUID().uuidString

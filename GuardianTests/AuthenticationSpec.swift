@@ -28,36 +28,47 @@ import Nimble
 class AuthenticationSpec: QuickSpec {
 
     override class func spec() {
-/*
- AB TODO: 
+
         var signingKey: SigningKey!
         var device: MockAuthenticationDevice!
 
         beforeEach {
-            stub(condition: { _ in return true }) { _ in
-                return OHHTTPStubsResponse.init(error: NSError(domain: "com.auth0", code: -99999, userInfo: nil))
-                }.name = "YOU SHALL NOT PASS!"
+            MockURLProtocol.startInterceptingRequests()
+            MockURLProtocol.stub(
+                name: "YOU SHALL NOT PASS!",
+                condition: { _ in return true },
+                error: NSError(domain: "com.auth0", code: -99999, userInfo: nil)
+            )
             signingKey = try! DataRSAPrivateKey.new()
             device = MockAuthenticationDevice(localIdentifier: UIDevice.current.identifierForVendor!.uuidString, signingKey: signingKey)
         }
 
         afterEach {
-            OHHTTPStubs.removeAllStubs()
+            MockURLProtocol.stopInterceptingRequests()
         }
 
         describe("allow with RSA") {
 
             beforeEach {
-                stub(condition: isResolveTransaction(baseUrl: ValidURL)) { _ in
-                    return errorResponse(statusCode: 404, errorCode: "invalid_token", message: "Invalid transaction token")
-                    }.name = "Missing authentication"
-                stub(condition: isResolveTransaction(baseUrl: ValidURL)
-                    && hasBearerToken(ValidTransactionToken)) { req in
+                MockURLProtocol.stub(
+                    name:"Missing authentication",
+                    condition: isResolveTransaction(baseUrl: ValidURL),
+                    response: { _ in
+                        errorResponse(statusCode: 404, errorCode: "invalid_token", message: "Invalid transaction token")
+                    }
+                )
+                MockURLProtocol.stub(
+                    name: "Checking challenge_response",
+                    condition: 
+                        isResolveTransaction(baseUrl: ValidURL)
+                        && hasBearerToken(ValidTransactionToken),
+                    response: { req in
                         if checkJWT(request: req, accepted: true, verificationKey: device.verificationKey) {
                             return successResponse()
                         }
                         return errorResponse(statusCode: 401, errorCode: "invalid_token", message: "Invalid challenge_response")
-                    }.name = "Checking challenge_response"
+                    }
+                )
             }
 
             it("should succeed when notification and enrollment is valid") {
@@ -109,30 +120,44 @@ class AuthenticationSpec: QuickSpec {
                 }
             }
         }
-
+        
         describe("reject with RSA") {
 
             beforeEach {
-                stub(condition: isResolveTransaction(baseUrl: ValidURL)) { _ in
-                    return errorResponse(statusCode: 404, errorCode: "invalid_token", message: "Invalid transaction token")
-                    }.name = "Missing authentication"
-                stub(condition: isResolveTransaction(baseUrl: ValidURL)
-                    && hasBearerToken(ValidTransactionToken)) { req in
+                MockURLProtocol.stub(
+                    name: "Missing authentication",
+                    condition: isResolveTransaction(baseUrl: ValidURL),
+                    response: { _ in
+                        errorResponse(statusCode: 404, errorCode: "invalid_token", message: "Invalid transaction token")
+                    }
+                )
+                MockURLProtocol.stub(
+                    name: "Checking challenge_response",
+                    condition:
+                        isResolveTransaction(baseUrl: ValidURL)
+                        && hasBearerToken(ValidTransactionToken),
+                    response: { req in
                         if checkJWT(request: req, accepted: false, reason: RejectReason, verificationKey: device.verificationKey) {
                             return successResponse()
                         }
                         return errorResponse(statusCode: 401, errorCode: "invalid_token", message: "Invalid challenge_response")
-                    }.name = "Checking challenge_response"
+                    }
+                )
             }
 
             it("without reason should succeed when notification and enrollment is valid") {
-                stub(condition: isResolveTransaction(baseUrl: ValidURL)
-                    && hasBearerToken(ValidTransactionToken)) { req in
+                MockURLProtocol.stub(
+                    name: "Checking challenge_response",
+                    condition: 
+                        isResolveTransaction(baseUrl: ValidURL)
+                        && hasBearerToken(ValidTransactionToken),
+                    response: { req in
                         if checkJWT(request: req, accepted: false, verificationKey: device.verificationKey) {
                             return successResponse()
                         }
                         return errorResponse(statusCode: 401, errorCode: "invalid_token", message: "Invalid challenge_response")
-                    }.name = "Checking challenge_response"
+                    }
+                )
 
                 let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, challenge: ValidNotificationChallenge, startedAt: Date(), source: nil, location: nil)
                 waitUntil(timeout: Timeout) { done in
@@ -198,13 +223,18 @@ class AuthenticationSpec: QuickSpec {
         describe("handleAction") {
 
             it("should allow when identifier is com.auth0.notification.authentication.accept") {
-                stub(condition: isResolveTransaction(baseUrl: ValidURL)
-                    && hasBearerToken(ValidTransactionToken)) { req in
+                MockURLProtocol.stub(
+                    name: "Checking challenge_response",
+                    condition:
+                        isResolveTransaction(baseUrl: ValidURL)
+                        && hasBearerToken(ValidTransactionToken),
+                    response: { req in
                         if checkJWT(request: req, accepted: true, verificationKey: device.verificationKey) {
                             return successResponse()
                         }
                         return errorResponse(statusCode: 401, errorCode: "invalid_token", message: "Invalid challenge_response")
-                    }.name = "Checking challenge_response"
+                    }
+                )
                 let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, challenge: ValidNotificationChallenge, startedAt: Date(), source: nil, location: nil)
                 waitUntil(timeout: Timeout) { done in
                     Guardian.authentication(forDomain: Domain, device: device)
@@ -217,13 +247,18 @@ class AuthenticationSpec: QuickSpec {
             }
 
             it("should reject when identifier is com.auth0.notification.authentication.reject") {
-                stub(condition: isResolveTransaction(baseUrl: ValidURL)
-                    && hasBearerToken(ValidTransactionToken)) { req in
+                MockURLProtocol.stub(
+                    name: "Checking challenge_response",
+                    condition:
+                        isResolveTransaction(baseUrl: ValidURL)
+                        && hasBearerToken(ValidTransactionToken),
+                    response: { req in
                         if checkJWT(request: req, accepted: false, verificationKey: device.verificationKey) {
                             return successResponse()
                         }
                         return errorResponse(statusCode: 401, errorCode: "invalid_token", message: "Invalid challenge_response")
-                    }.name = "Checking challenge_response"
+                    }
+                )
                 let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, challenge: ValidNotificationChallenge, startedAt: Date(), source: nil, location: nil)
                 waitUntil(timeout: Timeout) { done in
                     Guardian.authentication(forDomain: Domain, device: device)
@@ -253,16 +288,25 @@ class AuthenticationSpec: QuickSpec {
             describe("allow with RSA") {
 
                 beforeEach {
-                    stub(condition: isResolveTransaction(baseUrl: ValidURL)) { _ in
-                        return errorResponse(statusCode: 404, errorCode: "invalid_token", message: "Invalid transaction token")
-                        }.name = "Missing authentication"
-                    stub(condition: isResolveTransaction(baseUrl: ValidURL)
-                        && hasBearerToken(ValidTransactionToken)) { req in
+                    MockURLProtocol.stub(
+                        name: "Missing authentication",
+                        condition: isResolveTransaction(baseUrl: ValidURL),
+                        response : { _ in
+                            errorResponse(statusCode: 404, errorCode: "invalid_token", message: "Invalid transaction token")
+                        }
+                    )
+                    MockURLProtocol.stub(
+                        name: "Checking challenge_response",
+                        condition: 
+                            isResolveTransaction(baseUrl: ValidURL)
+                            && hasBearerToken(ValidTransactionToken),
+                        response: { req in
                             if checkJWT(request: req, accepted: true, verificationKey: device.verificationKey) {
                                 return successResponse()
                             }
                             return errorResponse(statusCode: 401, errorCode: "invalid_token", message: "Invalid challenge_response")
-                        }.name = "Checking challenge_response"
+                        }
+                    )
                 }
 
                 it("should succeed when notification and enrollment is valid") {
@@ -318,26 +362,40 @@ class AuthenticationSpec: QuickSpec {
             describe("reject with RSA") {
 
                 beforeEach {
-                    stub(condition: isResolveTransaction(baseUrl: ValidURL)) { _ in
-                        return errorResponse(statusCode: 404, errorCode: "invalid_token", message: "Invalid transaction token")
-                        }.name = "Missing authentication"
-                    stub(condition: isResolveTransaction(baseUrl: ValidURL)
-                        && hasBearerToken(ValidTransactionToken)) { req in
+                    MockURLProtocol.stub(
+                        name: "Missing authentication",
+                        condition: isResolveTransaction(baseUrl: ValidURL),
+                        response: { _ in
+                            errorResponse(statusCode: 404, errorCode: "invalid_token", message: "Invalid transaction token")
+                        }
+                    )
+                    MockURLProtocol.stub(
+                        name: "Checking challenge_response",
+                        condition:
+                            isResolveTransaction(baseUrl: ValidURL)
+                            && hasBearerToken(ValidTransactionToken),
+                        response: { req in
                             if checkJWT(request: req, accepted: false, reason: RejectReason, verificationKey: device.verificationKey) {
                                 return successResponse()
                             }
                             return errorResponse(statusCode: 401, errorCode: "invalid_token", message: "Invalid challenge_response")
-                        }.name = "Checking challenge_response"
+                        }
+                    )
                 }
 
                 it("without reason should succeed when notification and enrollment is valid") {
-                    stub(condition: isResolveTransaction(baseUrl: ValidURL)
-                        && hasBearerToken(ValidTransactionToken)) { req in
+                    MockURLProtocol.stub(
+                        name: "Checking challenge_response",
+                        condition:
+                            isResolveTransaction(baseUrl: ValidURL)
+                            && hasBearerToken(ValidTransactionToken),
+                        response: { req in
                             if checkJWT(request: req, accepted: false, verificationKey: device.verificationKey) {
                                 return successResponse()
                             }
                             return errorResponse(statusCode: 401, errorCode: "invalid_token", message: "Invalid challenge_response")
-                        }.name = "Checking challenge_response"
+                        }
+                    )
 
                     let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, challenge: ValidNotificationChallenge, startedAt: Date(), source: nil, location: nil)
                     waitUntil(timeout: Timeout) { done in
@@ -403,13 +461,18 @@ class AuthenticationSpec: QuickSpec {
             describe("handleAction") {
 
                 it("should allow when identifier is com.auth0.notification.authentication.accept") {
-                    stub(condition: isResolveTransaction(baseUrl: ValidURL)
-                        && hasBearerToken(ValidTransactionToken)) { req in
+                    MockURLProtocol.stub(
+                        name: "Checking challenge_response",
+                        condition:
+                            isResolveTransaction(baseUrl: ValidURL)
+                            && hasBearerToken(ValidTransactionToken),
+                        response: { req in
                             if checkJWT(request: req, accepted: true, verificationKey: device.verificationKey) {
                                 return successResponse()
                             }
                             return errorResponse(statusCode: 401, errorCode: "invalid_token", message: "Invalid challenge_response")
-                        }.name = "Checking challenge_response"
+                        }
+                    )
                     let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, challenge: ValidNotificationChallenge, startedAt: Date(), source: nil, location: nil)
                     waitUntil(timeout: Timeout) { done in
                         Guardian.authentication(url: ValidURL, device: device)
@@ -422,13 +485,18 @@ class AuthenticationSpec: QuickSpec {
                 }
 
                 it("should reject when identifier is com.auth0.notification.authentication.reject") {
-                    stub(condition: isResolveTransaction(baseUrl: ValidURL)
-                        && hasBearerToken(ValidTransactionToken)) { req in
+                    MockURLProtocol.stub(
+                        name: "Checking challenge_response",
+                        condition:
+                            isResolveTransaction(baseUrl: ValidURL)
+                            && hasBearerToken(ValidTransactionToken),
+                        response: { req in
                             if checkJWT(request: req, accepted: false, verificationKey: device.verificationKey) {
                                 return successResponse()
                             }
                             return errorResponse(statusCode: 401, errorCode: "invalid_token", message: "Invalid challenge_response")
-                        }.name = "Checking challenge_response"
+                        }
+                    )
                     let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, challenge: ValidNotificationChallenge, startedAt: Date(), source: nil, location: nil)
                     waitUntil(timeout: Timeout) { done in
                         Guardian.authentication(url: ValidURL, device: device)
@@ -454,7 +522,6 @@ class AuthenticationSpec: QuickSpec {
             }
 
         }
- */
     }
 }
 
@@ -466,8 +533,7 @@ struct MockAuthenticationDevice: AuthenticationDevice {
         return try! AsymmetricPublicKey(privateKey: self.signingKey.secKey)
     }
 }
-/*
- AB TODO:
+
 func checkJWT(request: URLRequest, accepted: Bool, reason: String? = nil, challenge: String = ValidNotificationChallenge, verificationKey: AsymmetricPublicKey) -> Bool {
     let currentTime = Date()
     if let payload = request.a0_payload,
@@ -493,4 +559,3 @@ func checkJWT(request: URLRequest, accepted: Bool, reason: String? = nil, challe
     }
     return false
 }
-*/
