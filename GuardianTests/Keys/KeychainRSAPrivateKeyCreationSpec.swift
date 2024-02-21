@@ -25,7 +25,7 @@ import Nimble
 import Guardian
 
 class KeychainRSAPrivateKeyCreationSpec: QuickSpec {
-    override func spec() {
+    override class func spec() {
 
         describe("new(with:)") {
 

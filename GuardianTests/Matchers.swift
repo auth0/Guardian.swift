@@ -21,12 +21,54 @@
 // THE SOFTWARE.
 
 import Foundation
-import OHHTTPStubs
 import Nimble
 
 @testable import Guardian
 
-func hasAtLeast(_ parameters: [String: String]) -> OHHTTPStubsTestBlock {
+func isMobileEnroll(baseUrl: URL) -> MockURLProtocolCondition {
+    return isScheme("https") && isMethodPOST() && isUrl(from: baseUrl, endingWithPathComponent: "api/enroll")
+}
+
+func isMethodPOST() -> MockURLProtocolCondition {
+  return { $0.httpMethod == "POST" }
+}
+
+func isMethodDELETE() -> MockURLProtocolCondition {
+  return { $0.httpMethod == "DELETE" }
+}
+
+func isMethodPATCH() -> MockURLProtocolCondition {
+  return { $0.httpMethod == "PATCH" }
+}
+
+func isScheme(_ scheme: String) -> MockURLProtocolCondition {
+  return { request in request.url?.scheme == scheme }
+}
+
+func isUrl(from baseUrl: URL, containingPathStartingWith path: String) -> MockURLProtocolCondition {
+    return { req in
+        let partialUrl = baseUrl.appendingPathComponent(path).absoluteString
+        guard let url = req.url?.absoluteString,
+            let range = url.range(of: partialUrl) else {
+            return false
+        }
+        return range.lowerBound == path.startIndex
+    }
+}
+
+func isUrl(from baseUrl: URL, endingWithPathComponent pathComponent: String) -> MockURLProtocolCondition {
+    return { req in
+        return req.url == baseUrl.appendingPathComponent(pathComponent)
+    }
+}
+
+func hasTicketAuth(_ ticket: String) -> MockURLProtocolCondition {
+    return { request in
+        return request.value(forHTTPHeaderField: "Authorization") == "Ticket id=\"\(ticket)\""
+    }
+}
+
+func hasAtLeast(_ parameters: [String: String]) -> MockURLProtocolCondition {
     return { request in
         guard let payload = request.a0_payload else { return false }
         let entries = parameters.filter { (key, _) in payload.contains { (name, _) in  key == name } }
@@ -36,7 +78,7 @@ func hasAtLeast(_ parameters: [String: String]) -> OHHTTPStubsTestBlock {
     }
 }
 
-func hasField(_ field: String, withParameters parameters: [String: String]) -> OHHTTPStubsTestBlock {
+func hasField(_ field: String, withParameters parameters: [String: String]) -> MockURLProtocolCondition {
     return { request in
         guard
             let payload = request.a0_payload,
@@ -49,24 +91,28 @@ func hasField(_ field: String, withParameters parameters: [String: String]) -> O
     }
 }
 
-func hasNoneOf(_ names: [String]) -> OHHTTPStubsTestBlock {
-    return { request in
-        guard let payload = request.a0_payload else { return false }
-        return payload.filter { names.contains($0.0) }.isEmpty
-    }
+func isResolveTransaction(baseUrl: URL) -> MockURLProtocolCondition {
+    return isScheme("https") && isMethodPOST() && isUrl(from: baseUrl, endingWithPathComponent: "api/resolve-transaction")
 }
 
-func hasNoneOf(_ parameters: [String: String]) -> OHHTTPStubsTestBlock {
-    return !hasAtLeast(parameters)
-}
-
-func hasBearerToken(_ token: String) -> OHHTTPStubsTestBlock {
+func hasBearerToken(_ token: String) -> MockURLProtocolCondition {
     return { request in
         return request.value(forHTTPHeaderField: "Authorization") == "Bearer \(token)"
     }
 }
 
-func hasBearerJWTToken(withSub sub: String, iss: String, aud: String, validFor duration: TimeInterval) -> OHHTTPStubsTestBlock {
+func isDeleteEnrollment(baseUrl: URL, enrollmentId: String? = nil) -> MockURLProtocolCondition {
+    return isMethodDELETE() && isEnrollment(baseUrl: baseUrl, enrollmentId: enrollmentId)
+}
+
+func isEnrollment(baseUrl: URL, enrollmentId: String? = nil) -> MockURLProtocolCondition {
+    if let enrollmentId = enrollmentId {
+        return isUrl(from: baseUrl, endingWithPathComponent: "api/device-accounts/\(enrollmentId)")
+    }
+    return isUrl(from: baseUrl, containingPathStartingWith: "api/device-accounts/")
+}
+
+func hasBearerJWTToken(withSub sub: String, iss: String, aud: String, validFor duration: TimeInterval) -> MockURLProtocolCondition {
     return { request in
         guard let token = request.value(forHTTPHeaderField: "Authorization")?.split(separator: " ").last,
             let jwt = try? JWT<BasicClaimSet>(string: String(token)),
@@ -86,70 +132,11 @@ func hasBearerJWTToken(withSub sub: String, iss: String, aud: String, validFor d
     }
 }
 
-func hasTicketAuth(_ ticket: String) -> OHHTTPStubsTestBlock {
-    return { request in
-        return request.value(forHTTPHeaderField: "Authorization") == "Ticket id=\"\(ticket)\""
-    }
-}
-
-func isUrl(from baseUrl: URL, containingPathStartingWith path: String) -> OHHTTPStubsTestBlock {
-    return { req in
-        let partialUrl = baseUrl.appendingPathComponent(path).absoluteString
-        guard let url = req.url?.absoluteString,
-            let range = url.range(of: partialUrl) else {
-            return false
-        }
-        return range.lowerBound == path.startIndex
-    }
-}
-
-func isUrl(from baseUrl: URL, endingWithPathComponent pathComponent: String) -> OHHTTPStubsTestBlock {
-    return { req in
-        return req.url == baseUrl.appendingPathComponent(pathComponent)
-    }
-}
-
-
-func isEnrollmentInfo(baseUrl: URL) -> OHHTTPStubsTestBlock {
-    return isScheme("https") && isMethodPOST() && isUrl(from: baseUrl, endingWithPathComponent: "api/enrollment-info")
-}
-
-func isMobileEnroll(baseUrl: URL) -> OHHTTPStubsTestBlock {
-    return isScheme("https") && isMethodPOST() && isUrl(from: baseUrl, endingWithPathComponent: "api/enroll")
-}
-
-func isResolveTransaction(baseUrl: URL) -> OHHTTPStubsTestBlock {
-    return isScheme("https") && isMethodPOST() && isUrl(from: baseUrl, endingWithPathComponent: "api/resolve-transaction")
-}
-
-func isEnrollment(baseUrl: URL, enrollmentId: String? = nil) -> OHHTTPStubsTestBlock {
-    if let enrollmentId = enrollmentId {
-        return isUrl(from: baseUrl, endingWithPathComponent: "api/device-accounts/\(enrollmentId)")
-    }
-    return isUrl(from: baseUrl, containingPathStartingWith: "api/device-accounts/")
-}
-
-func isDeleteEnrollment(baseUrl: URL, enrollmentId: String? = nil) -> OHHTTPStubsTestBlock {
-    return isMethodDELETE() && isEnrollment(baseUrl: baseUrl, enrollmentId: enrollmentId)
-}
-
-func isUpdateEnrollment(baseUrl: URL, enrollmentId: String? = nil) -> OHHTTPStubsTestBlock {
+func isUpdateEnrollment(baseUrl: URL, enrollmentId: String? = nil) -> MockURLProtocolCondition {
     return isMethodPATCH() && isEnrollment(baseUrl: baseUrl, enrollmentId: enrollmentId)
 }
 
-func haveDeviceAccountToken(_ deviceAccountToken: String?) -> Predicate<Result<[String: String]>> {
-    return Predicate.define("be a successful enrollment info result with") { actualExpression, msg -> PredicateResult in
-        let message = msg.appended(details: String(describing: deviceAccountToken))
-        if let actual = try actualExpression.evaluate(), case .success(let result) = actual {
-            if let token = result["device_account_token"] {
-                return PredicateResult(status: PredicateStatus(bool: deviceAccountToken == token), message: message)
-            }
-        }
-        return PredicateResult(status: .fail, message: message)
-    }
-}
-
-func beUpdatedDevice(deviceIdentifier: String?, deviceName: String?, notificationService: String?, notificationToken: String?) -> Predicate<Result<UpdatedDevice>> {
+func beUpdatedDevice(deviceIdentifier: String?, deviceName: String?, notificationService: String?, notificationToken: String?) -> Nimble.Predicate<Result<UpdatedDevice>> {
     return Predicate.define("be a updated device result with") { expression, msg -> PredicateResult in
         var message = msg
         if let deviceIdentifier = deviceIdentifier {
@@ -198,7 +185,7 @@ func beUpdatedDevice(deviceIdentifier: String?, deviceName: String?, notificatio
     }
 }
 
-func haveEnrollment(withBaseUrl baseURL: URL, enrollmentId: String, deviceToken: String, notificationToken: String, issuer: String, userId: String, signingKey: SigningKey, base32Secret: String, algorithm: HMACAlgorithm, digits: Int, period: Int) -> Predicate<Result<EnrolledDevice>> {
+func haveEnrollment(withBaseUrl baseURL: URL, enrollmentId: String, deviceToken: String, notificationToken: String, issuer: String, userId: String, signingKey: SigningKey, base32Secret: String, algorithm: HMACAlgorithm, digits: Int, period: Int) -> Nimble.Predicate<Result<EnrolledDevice>> {
     return Predicate.define("be an enrollment with") { expression, msg -> PredicateResult in
         let message = msg.appended(details: " <baseUrl: \(baseURL)>" +
             " <id: \(enrollmentId)>" +
@@ -227,8 +214,8 @@ func haveEnrollment(withBaseUrl baseURL: URL, enrollmentId: String, deviceToken:
     }
 }
 
-func haveGuardianError<T>(withErrorCode errorCode: String? = nil) -> Predicate<Result<T>> {
-    return Predicate.define("be a Guardian error response with") { expression, msg -> PredicateResult in
+func haveGuardianError<T>(withErrorCode errorCode: String? = nil) -> Nimble.Predicate<Result<T>> {
+    return Nimble.Predicate.define("be a Guardian error response with") { expression, msg -> PredicateResult in
         var message = msg
         if let errorCode = errorCode {
             message = message.appended(details: " <errorCode: \(errorCode)>")
@@ -243,45 +230,75 @@ func haveGuardianError<T>(withErrorCode errorCode: String? = nil) -> Predicate<R
     }
 }
 
-func haveNSError<T>(withErrorCode errorCode: Int? = nil) -> Predicate<Result<T>> {
-    return Predicate.define("be an NSError") { expression, msg -> PredicateResult in
-        var message = msg
-        if let errorCode = errorCode {
-            message = message.appended(details: " with <code: \(errorCode)>")
-        }
-        if let actual = try expression.evaluate(), case .failure(let cause) = actual {
-            let error = cause as NSError
-            let status = errorCode == nil || errorCode == error.code
-            return PredicateResult(bool: status, message: message)
-        }
-        return PredicateResult(status: .fail, message: message)
-    }
-}
-
-func haveError<T, E>(_ error: E) -> Predicate<Result<T>> where E: Swift.Error, E: Equatable {
-    return Predicate.define("fail with <error: \(error)>") { expression, msg -> PredicateResult in
-        if let actual = try expression.evaluate(), case .failure(let cause) = actual {
-            if let cause = cause as? E {
-                return PredicateResult(bool: cause == error, message: msg)
-            }
-        }
-        return PredicateResult(status: .fail, message: msg)
-    }
-}
-
-func beSuccess(withData data: [String: String]) -> Predicate<Result<[String: String]>> {
-    return Predicate.define("be a success response with <payload: \(data)>") { expression, msg -> PredicateResult in
-        if let actual = try expression.evaluate(), case .success(let payload) = actual {
-            return PredicateResult(bool: data == payload, message: msg)
-        }
-        return PredicateResult(status: .fail, message: msg)
-    }
-}
-
 extension URLRequest {
     var a0_payload: [String: Any]? {
-        guard let data = (self as NSURLRequest).ohhttpStubs_HTTPBody() else { return nil }
-        let object = try? JSONSerialization.jsonObject(with: data, options: [])
-        return object as? [String: Any]
+        guard let bodyStream = self.httpBodyStream else { return nil }
+
+        bodyStream.open()
+
+        let bufferSize: Int = 16
+        let buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: bufferSize)
+        var data = Data()
+
+        while bodyStream.hasBytesAvailable {
+            let readDat = bodyStream.read(buffer, maxLength: bufferSize)
+            data.append(buffer, count: readDat)
+        }
+
+        buffer.deallocate()
+        bodyStream.close()
+
+        let jsonObject = try? JSONSerialization.jsonObject(with: data, options: JSONSerialization.ReadingOptions.allowFragments)
+        return  jsonObject as? [String : Any]
+    }
+}
+
+
+func beSuccess<T: Equatable>(with payload: T) -> Nimble.Predicate<Result<T>> {
+    return Predicate.define("be a success result with \(payload)") { exp, msg in
+        guard let result = try exp.evaluate(), case .success(let actual) = result else {
+            return PredicateResult(status: .doesNotMatch, message: msg)
+        }
+        return PredicateResult(bool: actual == payload, message: msg)
+    }
+}
+
+func beSuccess<T>() -> Nimble.Predicate<Result<T>> {
+    return Predicate.define("be a success result of \(T.self)") { exp, msg in
+        guard let result = try exp.evaluate(), case .success = result else {
+            return PredicateResult(status: .doesNotMatch, message: msg)
+        }
+        return PredicateResult(status: .matches, message: msg)
+    }
+}
+
+func beFailure<T>() -> Nimble.Predicate<Result<T>> {
+    return Predicate.define("be a failure result of network operation") { exp, msg in
+        guard let result = try exp.evaluate(), case .failure = result else {
+            return PredicateResult(status: .doesNotMatch, message: msg)
+        }
+        return PredicateResult(status: .matches, message: msg)
+    }
+}
+
+func beFailure<T>(with cause: MockError) -> Nimble.Predicate<Result<T>> {
+    return Predicate.define("be a failure result of network operation w/ error \(cause)") { exp, msg in
+        guard let result = try exp.evaluate(),
+            case .failure(let actual) = result,
+            let error = actual as? MockError else {
+                return PredicateResult(status: .doesNotMatch, message: msg)
+        }
+        return PredicateResult(bool: error == cause, message: msg)
+    }
+}
+
+func beFailure<T>(with cause: NetworkError) -> Nimble.Predicate<Result<T>> {
+    return Predicate.define("be a failure result of network operation w/ error \(cause)") { exp, msg in
+        guard let result = try exp.evaluate(),
+            case .failure(let actual) = result,
+            let error = actual as? NetworkError else {
+                return PredicateResult(status: .doesNotMatch, message: msg)
+        }
+        return PredicateResult(bool: error == cause, message: msg)
     }
 }

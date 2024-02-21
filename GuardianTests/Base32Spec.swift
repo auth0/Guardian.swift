@@ -27,7 +27,7 @@ import Nimble
 
 class Base32Spec: QuickSpec {
 
-    override func spec() {
+    override class func spec() {
 
         describe("base32") {
 
@@ -59,13 +59,32 @@ class Base32Spec: QuickSpec {
                     let b: UInt8 = 0x62
                     let a: UInt8 = 0x61
                     let r: UInt8 = 0x72
-                    itBehavesLike(validBase32Encoding) { ["encoded": ""                , "decoded": Data(bytes: UnsafePointer<UInt8>([]), count: 0)] }
-                    itBehavesLike(validBase32Encoding) { ["encoded": "MY======"        , "decoded": Data(bytes: UnsafePointer<UInt8>([f]), count: 1)] }
-                    itBehavesLike(validBase32Encoding) { ["encoded": "MZXQ===="        , "decoded": Data(bytes: UnsafePointer<UInt8>([f,o]), count: 2)] }
-                    itBehavesLike(validBase32Encoding) { ["encoded": "MZXW6==="        , "decoded": Data(bytes: UnsafePointer<UInt8>([f,o,o]), count: 3)] }
-                    itBehavesLike(validBase32Encoding) { ["encoded": "MZXW6YQ="        , "decoded": Data(bytes: UnsafePointer<UInt8>([f,o,o,b]), count: 4)] }
-                    itBehavesLike(validBase32Encoding) { ["encoded": "MZXW6YTB"        , "decoded": Data(bytes: UnsafePointer<UInt8>([f,o,o,b,a]), count: 5)] }
-                    itBehavesLike(validBase32Encoding) { ["encoded": "MZXW6YTBOI======", "decoded": Data(bytes: UnsafePointer<UInt8>([f,o,o,b,a,r]), count: 6)] }
+                    
+                    itBehavesLike(validBase32Encoding) { [
+                        "encoded": "",
+                        "decoded": Data([])
+                    ] }
+                    itBehavesLike(validBase32Encoding) { [
+                        "encoded": "MY======",
+                        "decoded": Data([f])
+                    ] }
+                    itBehavesLike(validBase32Encoding) { [
+                        "encoded": "MZXQ====", "decoded": Data([f,o])
+                    ] }
+                    itBehavesLike(validBase32Encoding) { [
+                        "encoded": "MZXW6===", "decoded": Data([f,o,o])
+                    ] }
+                    itBehavesLike(validBase32Encoding) { [
+                        "encoded": "MZXW6YQ=",
+                        "decoded": Data([f,o,o,b])
+                    ] }
+                    itBehavesLike(validBase32Encoding) { [
+                        "encoded": "MZXW6YTB", "decoded": Data([f,o,o,b,a])
+                    ] }
+                    itBehavesLike(validBase32Encoding) { [
+                        "encoded": "MZXW6YTBOI======",
+                        "decoded": Data([f,o,o,b,a,r])
+                    ] }
                 }
             }
         }

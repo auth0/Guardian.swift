@@ -26,7 +26,7 @@ import Nimble
 
 class NoContentSpec: QuickSpec {
 
-    override func spec() {
+    override class func spec() {
 
         describe("Decodable") {
 

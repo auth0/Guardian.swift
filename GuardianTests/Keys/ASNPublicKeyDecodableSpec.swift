@@ -26,7 +26,7 @@ import Nimble
 
 class ASNPublicKeyDecodableSpec: QuickSpec {
 
-    override func spec() {
+    override class func spec() {
 
         let keys = Keys.shared
         let privateKey = try! DataRSAPrivateKey(data: keys.privateKey)
