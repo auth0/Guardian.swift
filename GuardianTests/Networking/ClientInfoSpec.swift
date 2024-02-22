@@ -60,9 +60,18 @@ class ClientInfoSpec: QuickSpec {
             }
 
             it("should have the correct header value") {
-                expect(try? clientInfo.asHeader().values).to(contain("eyJuYW1lIjoiR3VhcmRpYW4uc3dpZnQiLCJ2ZXJzaW9uIjoiMS4wLjAifQ"))
-            }
+                let decoder = JSONDecoder()
 
+                let value = try? clientInfo.asHeader().values.first
+                
+                expect(value).toNot(beNil())
+                
+                let data = Data(base64URLEncoded: value!!)
+                let decoded = try? decoder.decode(ClientInfo.self, from: data!)
+                
+                expect(decoded?.name).to(equal("Guardian.swift"))
+                expect(decoded?.version).to(equal("1.0.0"))
+            }
         }
     }
 }
