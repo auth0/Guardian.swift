@@ -26,7 +26,7 @@ import Nimble
 
 class NoContentDecoderSpec: QuickSpec {
 
-    override func spec() {
+    override class func spec() {
 
         describe("fail all operations") {
 

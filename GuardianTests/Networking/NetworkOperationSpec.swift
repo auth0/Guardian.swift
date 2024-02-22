@@ -128,7 +128,13 @@ class NetworkOperationSpec: QuickSpec {
                         }
                         return .succeeded
                     }
-                    return result
+                    guard let data = Data(base64URLEncoded: value), let actual = try? decoder.decode(ClientInfo.self, from: data) else {
+                        return .failed(reason: "invalid auth0-client value \(value)")
+                    }
+                    guard actual == expected else {
+                        return .failed(reason: "expected auth0-client with \(expected) but got \(actual)")
+                    }
+                    return .succeeded
                 }).to(succeed())
             }
 
@@ -267,7 +273,7 @@ class NetworkOperationSpec: QuickSpec {
                 expect(request.result).toEventually(beSuccess(with: response))
             }
         }
-
+        
         describe("on(request:, response:)") {
             var session: MockNSURLSession!
             var request: SyncRequest<[String: String]>!
@@ -370,9 +376,7 @@ class NetworkOperationSpec: QuickSpec {
                     .start()
                 expect(request.result).toEventually(beFailure(with: NetworkError(statusCode: 400)))
             }
-
         }
-
     }
 }
 
@@ -422,54 +426,5 @@ class SyncRequest<T: Decodable> {
 
     func start() -> () {
         self.request.start { self.result = $0 }
-    }
-}
-
-func beSuccess<T: Equatable>(with payload: T) -> Predicate<Result<T>> {
-    return Predicate.define("be a success result with \(payload)") { exp, msg in
-        guard let result = try exp.evaluate(), case .success(let actual) = result else {
-            return PredicateResult(status: .doesNotMatch, message: msg)
-        }
-        return PredicateResult(bool: actual == payload, message: msg)
-    }
-}
-
-func beSuccess<T>() -> Predicate<Result<T>> {
-    return Predicate.define("be a success result of \(T.self)") { exp, msg in
-        guard let result = try exp.evaluate(), case .success = result else {
-            return PredicateResult(status: .doesNotMatch, message: msg)
-        }
-        return PredicateResult(status: .matches, message: msg)
-    }
-}
-
-func beFailure<T>() -> Predicate<Result<T>> {
-    return Predicate.define("be a failure result of network operation") { exp, msg in
-        guard let result = try exp.evaluate(), case .failure = result else {
-            return PredicateResult(status: .doesNotMatch, message: msg)
-        }
-        return PredicateResult(status: .matches, message: msg)
-    }
-}
-
-func beFailure<T>(with cause: MockError) -> Predicate<Result<T>> {
-    return Predicate.define("be a failure result of network operation w/ error \(cause)") { exp, msg in
-        guard let result = try exp.evaluate(),
-            case .failure(let actual) = result,
-            let error = actual as? MockError else {
-                return PredicateResult(status: .doesNotMatch, message: msg)
-        }
-        return PredicateResult(bool: error == cause, message: msg)
-    }
-}
-
-func beFailure<T>(with cause: NetworkError) -> Predicate<Result<T>> {
-    return Predicate.define("be a failure result of network operation w/ error \(cause)") { exp, msg in
-        guard let result = try exp.evaluate(),
-            case .failure(let actual) = result,
-            let error = actual as? NetworkError else {
-                return PredicateResult(status: .doesNotMatch, message: msg)
-        }
-        return PredicateResult(bool: error == cause, message: msg)
     }
 }

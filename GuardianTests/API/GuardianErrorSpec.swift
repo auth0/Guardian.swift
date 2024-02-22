@@ -26,7 +26,7 @@ import Nimble
 
 class GuardianErrorSpec: QuickSpec {
 
-    override func spec() {
+    override class func spec() {
 
         it("should build with required attributes") {
             expect(GuardianError(code: .invalidNotificationActionIdentifier).code).to(equal(GuardianError.Code.invalidNotificationActionIdentifier.rawValue))

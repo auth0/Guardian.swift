@@ -26,7 +26,7 @@ import Guardian
 
 class EnrolledDeviceSpec: QuickSpec {
 
-    override func spec() {
+    override class func spec() {
 
         describe("init(id:, deviceToken:, notificationToken:, signingKey:, totp:)") {
 

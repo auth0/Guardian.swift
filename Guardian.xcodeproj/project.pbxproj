@@ -36,13 +36,9 @@
 		23FE50841D949EC400407A1D /* Guardian.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5F2037CD1D5E1E3E0005D2E2 /* Guardian.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5C19E55D266515A600F167EC /* SimpleKeychain.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C19E55B266515A600F167EC /* SimpleKeychain.xcframework */; };
 		5C19E55E266515A600F167EC /* SimpleKeychain.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5C19E55B266515A600F167EC /* SimpleKeychain.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		5C19E55F266515A600F167EC /* QRCodeReader.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C19E55C266515A600F167EC /* QRCodeReader.xcframework */; };
-		5C19E560266515A600F167EC /* QRCodeReader.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5C19E55C266515A600F167EC /* QRCodeReader.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5C19E564266515D100F167EC /* Nimble.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C19E561266515D000F167EC /* Nimble.xcframework */; };
-		5C19E565266515D100F167EC /* OHHTTPStubs.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C19E562266515D100F167EC /* OHHTTPStubs.xcframework */; };
 		5C19E566266515D100F167EC /* Quick.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C19E563266515D100F167EC /* Quick.xcframework */; };
 		5C19E567266515DF00F167EC /* Nimble.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5C19E561266515D000F167EC /* Nimble.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		5C19E568266515DF00F167EC /* OHHTTPStubs.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5C19E562266515D100F167EC /* OHHTTPStubs.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5C19E569266515DF00F167EC /* Quick.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5C19E563266515D100F167EC /* Quick.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5F07A58521092C7D00819FA2 /* ClientInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F07A58421092C7D00819FA2 /* ClientInfo.swift */; };
 		5F07A58721092F2300819FA2 /* ClientInfoSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F07A58621092F2300819FA2 /* ClientInfoSpec.swift */; };
@@ -102,6 +98,10 @@
 		5FAE6729210250E300F149A3 /* AsymmetricPublicKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FAE6728210250E300F149A3 /* AsymmetricPublicKey.swift */; };
 		5FF42BA521091AD10082459F /* NetworkOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FF42BA421091AD10082459F /* NetworkOperation.swift */; };
 		5FF42BA821091F150082459F /* NetworkOperationSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FF42BA721091F150082459F /* NetworkOperationSpec.swift */; };
+		ED1E39A52B7E6C1300E8609A /* MockURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1E39A42B7E6C1300E8609A /* MockURLProtocol.swift */; };
+		ED1E39A72B822A2500E8609A /* MockURLResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1E39A62B822A2500E8609A /* MockURLResponse.swift */; };
+		ED1E39A92B82A9B100E8609A /* MockURLProtocolCondition.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1E39A82B82A9B100E8609A /* MockURLProtocolCondition.swift */; };
+		ED7B279F2B682A2700788920 /* QRCodeReaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED7B279E2B682A2700788920 /* QRCodeReaderViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -137,7 +137,6 @@
 			files = (
 				23FE50841D949EC400407A1D /* Guardian.framework in Embed Frameworks */,
 				5C19E55E266515A600F167EC /* SimpleKeychain.xcframework in Embed Frameworks */,
-				5C19E560266515A600F167EC /* QRCodeReader.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -149,7 +148,6 @@
 			dstSubfolderSpec = 10;
 			files = (
 				5C19E567266515DF00F167EC /* Nimble.xcframework in CopyFiles */,
-				5C19E568266515DF00F167EC /* OHHTTPStubs.xcframework in CopyFiles */,
 				5C19E569266515DF00F167EC /* Quick.xcframework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -185,9 +183,7 @@
 		23C67AED1D81EF5300A38A2E /* EnrolledDevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnrolledDevice.swift; sourceTree = "<group>"; };
 		23D3E43F1D91BEA200F3FDE2 /* Base32Spec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Base32Spec.swift; sourceTree = "<group>"; };
 		5C19E55B266515A600F167EC /* SimpleKeychain.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = SimpleKeychain.xcframework; path = Carthage/Build/SimpleKeychain.xcframework; sourceTree = "<group>"; };
-		5C19E55C266515A600F167EC /* QRCodeReader.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = QRCodeReader.xcframework; path = Carthage/Build/QRCodeReader.xcframework; sourceTree = "<group>"; };
 		5C19E561266515D000F167EC /* Nimble.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Nimble.xcframework; path = Carthage/Build/Nimble.xcframework; sourceTree = "<group>"; };
-		5C19E562266515D100F167EC /* OHHTTPStubs.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = OHHTTPStubs.xcframework; path = Carthage/Build/OHHTTPStubs.xcframework; sourceTree = "<group>"; };
 		5C19E563266515D100F167EC /* Quick.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Quick.xcframework; path = Carthage/Build/Quick.xcframework; sourceTree = "<group>"; };
 		5F07A58421092C7D00819FA2 /* ClientInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientInfo.swift; sourceTree = "<group>"; };
 		5F07A58621092F2300819FA2 /* ClientInfoSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientInfoSpec.swift; sourceTree = "<group>"; };
@@ -257,6 +253,10 @@
 		5FAE6728210250E300F149A3 /* AsymmetricPublicKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsymmetricPublicKey.swift; sourceTree = "<group>"; };
 		5FF42BA421091AD10082459F /* NetworkOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkOperation.swift; sourceTree = "<group>"; };
 		5FF42BA721091F150082459F /* NetworkOperationSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkOperationSpec.swift; sourceTree = "<group>"; };
+		ED1E39A42B7E6C1300E8609A /* MockURLProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockURLProtocol.swift; sourceTree = "<group>"; };
+		ED1E39A62B822A2500E8609A /* MockURLResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockURLResponse.swift; sourceTree = "<group>"; };
+		ED1E39A82B82A9B100E8609A /* MockURLProtocolCondition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockURLProtocolCondition.swift; sourceTree = "<group>"; };
+		ED7B279E2B682A2700788920 /* QRCodeReaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeReaderViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -273,7 +273,6 @@
 			files = (
 				5F2037D81D5E1E3E0005D2E2 /* Guardian.framework in Frameworks */,
 				5C19E564266515D100F167EC /* Nimble.xcframework in Frameworks */,
-				5C19E565266515D100F167EC /* OHHTTPStubs.xcframework in Frameworks */,
 				5C19E566266515D100F167EC /* Quick.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -284,7 +283,6 @@
 			files = (
 				23FE50831D949EC400407A1D /* Guardian.framework in Frameworks */,
 				5C19E55D266515A600F167EC /* SimpleKeychain.xcframework in Frameworks */,
-				5C19E55F266515A600F167EC /* QRCodeReader.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -299,6 +297,9 @@
 				2374A9F41D67339E00737F2E /* Matchers.swift */,
 				23C67AEB1D81D6A400A38A2E /* MockNSURLSession.swift */,
 				5F1604E921066B2B00B0F25B /* Keys+Utils.swift */,
+				ED1E39A42B7E6C1300E8609A /* MockURLProtocol.swift */,
+				ED1E39A62B822A2500E8609A /* MockURLResponse.swift */,
+				ED1E39A82B82A9B100E8609A /* MockURLProtocolCondition.swift */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
@@ -514,6 +515,7 @@
 				5F2037F91D5E22590005D2E2 /* Info.plist */,
 				234B25B11D9DA37D00078FA0 /* NotificationController.swift */,
 				5F07A592210F567900819FA2 /* State.swift */,
+				ED7B279E2B682A2700788920 /* QRCodeReaderViewController.swift */,
 			);
 			path = GuardianApp;
 			sourceTree = "<group>";
@@ -522,9 +524,7 @@
 			isa = PBXGroup;
 			children = (
 				5C19E561266515D000F167EC /* Nimble.xcframework */,
-				5C19E562266515D100F167EC /* OHHTTPStubs.xcframework */,
 				5C19E563266515D100F167EC /* Quick.xcframework */,
-				5C19E55C266515A600F167EC /* QRCodeReader.xcframework */,
 				5C19E55B266515A600F167EC /* SimpleKeychain.xcframework */,
 			);
 			name = Frameworks;
@@ -656,15 +656,12 @@
 					};
 					5F2037D61D5E1E3E0005D2E2 = {
 						CreatedOnToolsVersion = 7.3.1;
-						DevelopmentTeam = 86WQXF56BC;
 						LastSwiftMigration = 0940;
 						TestTargetID = 5F2037EA1D5E22590005D2E2;
 					};
 					5F2037EA1D5E22590005D2E2 = {
 						CreatedOnToolsVersion = 7.3.1;
-						DevelopmentTeam = 86WQXF56BC;
 						LastSwiftMigration = 0940;
-						ProvisioningStyle = Manual;
 						SystemCapabilities = {
 							com.apple.Push = {
 								enabled = 1;
@@ -781,6 +778,8 @@
 				5F1604D3210661D700B0F25B /* KeychainRSAPrivateKeyCreationSpec.swift in Sources */,
 				5F1604D5210662CF00B0F25B /* DataRSAPrivateKeyCreationSpec.swift in Sources */,
 				5F1604EA21066B2B00B0F25B /* Keys+Utils.swift in Sources */,
+				ED1E39A52B7E6C1300E8609A /* MockURLProtocol.swift in Sources */,
+				ED1E39A72B822A2500E8609A /* MockURLResponse.swift in Sources */,
 				5F1DB45F1DA4757800264437 /* Constants.swift in Sources */,
 				5F07A58721092F2300819FA2 /* ClientInfoSpec.swift in Sources */,
 				5F1604EE210673E700B0F25B /* ASNPublicKeyDecodableSpec.swift in Sources */,
@@ -788,6 +787,7 @@
 				2374A9F51D67339E00737F2E /* Matchers.swift in Sources */,
 				23C67AEC1D81D6A400A38A2E /* MockNSURLSession.swift in Sources */,
 				5F1604FB2107AF2800B0F25B /* OneTimePasswordGeneratorSpec.swift in Sources */,
+				ED1E39A92B82A9B100E8609A /* MockURLProtocolCondition.swift in Sources */,
 				5F1604C92106493600B0F25B /* SigningKeyStorageSpec.swift in Sources */,
 				5F7969341DDABDDE006AC7BA /* AuthenticationSpec.swift in Sources */,
 				5F07A5AC210FD09F00819FA2 /* GuardianErrorSpec.swift in Sources */,
@@ -812,6 +812,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				234B25B21D9DA37D00078FA0 /* NotificationController.swift in Sources */,
+				ED7B279F2B682A2700788920 /* QRCodeReaderViewController.swift in Sources */,
 				5F2037F01D5E22590005D2E2 /* ViewController.swift in Sources */,
 				5F2037EE1D5E22590005D2E2 /* AppDelegate.swift in Sources */,
 				5F07A593210F567900819FA2 /* State.swift in Sources */,
@@ -1028,6 +1029,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 86WQXF56BC;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = GuardianTests/Info.plist;
@@ -1038,6 +1041,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.GuardianTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GuardianApp.app/GuardianApp";
@@ -1048,6 +1052,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 86WQXF56BC;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = GuardianTests/Info.plist;
@@ -1058,6 +1064,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.GuardianTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GuardianApp.app/GuardianApp";
 			};
@@ -1070,8 +1077,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = GuardianApp/GuardianApp.entitlements;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Mobile AuthZero (X5BFYSM6EU)";
-				DEVELOPMENT_TEAM = 86WQXF56BC;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 86WQXF56BC;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/**",
@@ -1085,7 +1095,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.guardian.sample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "32df3887-3767-4b67-84a6-144aaf2ef2f2";
-				PROVISIONING_PROFILE_SPECIFIER = "match Development com.auth0.guardian.sample";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Guardian SDK Sample App";
 				SWIFT_INSTALL_OBJC_HEADER = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
@@ -1100,8 +1111,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = GuardianApp/GuardianApp.entitlements;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Mobile AuthZero (X5BFYSM6EU)";
-				DEVELOPMENT_TEAM = 86WQXF56BC;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 86WQXF56BC;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/**",
@@ -1115,7 +1129,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.guardian.sample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "32df3887-3767-4b67-84a6-144aaf2ef2f2";
-				PROVISIONING_PROFILE_SPECIFIER = "match Development com.auth0.guardian.sample";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Guardian SDK Sample App";
 				SWIFT_INSTALL_OBJC_HEADER = NO;
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = 1;

@@ -26,7 +26,7 @@ import Guardian
 
 class OneTimePasswordGeneratorSpec: QuickSpec {
 
-    override func spec() {
+    override class func spec() {
         describe("totp") {
 
             let period = 30

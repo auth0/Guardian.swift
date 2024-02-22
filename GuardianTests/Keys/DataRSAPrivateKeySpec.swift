@@ -26,7 +26,7 @@ import Guardian
 
 class DataRSAPrivateKeySpec: QuickSpec {
 
-    override func spec() {
+    override class func spec() {
 
         let keys = Keys.shared
         

@@ -25,7 +25,7 @@ import Nimble
 import Guardian
 
 class SigningKeyStorageSpec: QuickSpec {
-    override func spec() {
+    override class func spec() {
         describe("storeInKeychain(with:, accessible:)") {
 
             var tag: String!

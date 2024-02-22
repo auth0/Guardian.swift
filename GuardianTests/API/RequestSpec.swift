@@ -27,7 +27,7 @@ import Nimble
 
 class RequestSpec: QuickSpec {
 
-    override func spec() {
+    override class func spec() {
         let url = URL(string: "https://auth0.com")!
 
         describe("wrapping") {
@@ -85,13 +85,10 @@ class RequestSpec: QuickSpec {
                         }
                         .start { result in
                             expect({
-                                let result: (() -> ToSucceedResult)? = {
-                                    guard case .failure(let actual as MockError) = result, error == actual else {
-                                        return .failed(reason: "not a failure with mapped error")
-                                    }
-                                    return .succeeded
+                                guard case .failure(let actual as MockError) = result, error == actual else {
+                                    return .failed(reason: "not a failure with mapped error")
                                 }
-                                return result
+                                return .succeeded
                             }).to(succeed())
                         }
                 }

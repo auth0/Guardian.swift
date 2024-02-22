@@ -26,7 +26,7 @@ import Nimble
 @testable import Guardian
 
 class NotificationSpec: QuickSpec {
-    override func spec() {
+    override class func spec() {
 
         describe("init") {
 
