@@ -26,11 +26,11 @@ import Nimble
 
 let url = URL(string: "https://auth0.com")!
 class NetworkOperationSpec: QuickSpec {
-    final let mockAuth0TelemetryInfo = Auth0TelemetryInfo(name: "Guardian", version: "1.2.3")
-    
-    override func spec() {
+    override class func spec() {
+        
+        let mockAuth0TelemetryInfo = Auth0TelemetryInfo(name: "Guardian", version: "1.2.3")
 
-        func new(method: HTTPMethod = .get, url: URL = url, headers: [String: String] = [:], body: [String: String]? = nil, telemetryInfo: Auth0TelemetryInfo? = self.mockAuth0TelemetryInfo) -> NetworkOperation<[String: String], String> {
+        func new(method: HTTPMethod = .get, url: URL = url, headers: [String: String] = [:], body: [String: String]? = nil, telemetryInfo: Auth0TelemetryInfo? = mockAuth0TelemetryInfo) -> NetworkOperation<[String: String], String> {
             return try! NetworkOperation(method: method, url: url, headers: headers, body: body, telemetryInfo: telemetryInfo)
         }
 
@@ -90,7 +90,6 @@ class NetworkOperationSpec: QuickSpec {
 
             it("should have a request with telemetry header and client info [1]") {
                 expect({
-                    let result: (() -> ToSucceedResult)? = {
                         let key = "Auth0-Client"
                         let version = Bundle.main.infoDictionary!["CFBundleShortVersionString"] as! String
                         let expected = ClientInfo(name: "Guardian.swift", version: version)
@@ -105,28 +104,17 @@ class NetworkOperationSpec: QuickSpec {
                             return .failed(reason: "expected auth0-client with \(expected) but got \(actual)")
                         }
                         return .succeeded
-                    }
-                    return result
                 }).to(succeed())
             }
             
             it("should have a request with telemetry header and client info [2]") {
                 expect({
-                    let result: (() -> ToSucceedResult)? = {
-                        let key = "Auth0-Client"
-                        let version = Bundle.main.infoDictionary!["CFBundleShortVersionString"] as! String
-                        let expected = ClientInfo(name: "Guardian.swift", version: version, telemetryInfo: self.mockAuth0TelemetryInfo)
-                        let decoder = JSONDecoder()
-                        guard let value = new().request.value(forHTTPHeaderField: key) else {
-                            return .failed(reason: "missing auth0-client value")
-                        }
-                        guard let data = Data(base64URLEncoded: value), let actual = try? decoder.decode(ClientInfo.self, from: data) else {
-                            return .failed(reason: "invalid auth0-client value \(value)")
-                        }
-                        guard actual == expected else {
-                            return .failed(reason: "expected auth0-client with \(expected) but got \(actual)")
-                        }
-                        return .succeeded
+                    let key = "Auth0-Client"
+                    let version = Bundle.main.infoDictionary!["CFBundleShortVersionString"] as! String
+                    let expected = ClientInfo(name: "Guardian.swift", version: version, telemetryInfo: mockAuth0TelemetryInfo)
+                    let decoder = JSONDecoder()
+                    guard let value = new().request.value(forHTTPHeaderField: key) else {
+                        return .failed(reason: "missing auth0-client value")
                     }
                     guard let data = Data(base64URLEncoded: value), let actual = try? decoder.decode(ClientInfo.self, from: data) else {
                         return .failed(reason: "invalid auth0-client value \(value)")
