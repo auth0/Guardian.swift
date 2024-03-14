@@ -25,9 +25,11 @@ import Foundation
 struct APIClient: API {
 
     let baseUrl: URL
+    let telemetryInfo: Auth0TelemetryInfo?
 
-    init(baseUrl: URL) {
+    init(baseUrl: URL, telemetryInfo: Auth0TelemetryInfo? = nil) {
         self.baseUrl = baseUrl
+        self.telemetryInfo = telemetryInfo
     }
 
     func enroll(withTicket enrollmentTicket: String, identifier: String, name: String, notificationToken: String, verificationKey: VerificationKey) -> Request<Device, Enrollment> {
@@ -39,7 +41,7 @@ struct APIClient: API {
             }
 
             let device = Device(identifier: identifier, name: name, pushCredentials: PushCredentials(token: notificationToken), publicKey: jwk)
-            return Request.new(method: .post, url: url, headers: headers, body: device)
+            return Request.new(method: .post, url: url, headers: headers, body: device, telemetryInfo: self.telemetryInfo)
         }
         catch let error {
             return Request(method: .post, url: url, error: error)
@@ -49,11 +51,11 @@ struct APIClient: API {
     func resolve(transaction transactionToken: String, withChallengeResponse challengeResponse: String) -> Request<Transaction, NoContent> {
         let transaction = Transaction(challengeResponse: challengeResponse)
         let url = self.baseUrl.appendingPathComponent("api/resolve-transaction")
-        return Request.new(method: .post, url: url, headers: ["Authorization": "Bearer \(transactionToken)"], body: transaction)
+        return Request.new(method: .post, url: url, headers: ["Authorization": "Bearer \(transactionToken)"], body: transaction, telemetryInfo: self.telemetryInfo)
     }
 
     func device(forEnrollmentId id: String, token: String) -> DeviceAPI {
-        return DeviceAPIClient(baseUrl: baseUrl, id: id, token: token)
+        return DeviceAPIClient(baseUrl: baseUrl, id: id, token: token, telemetryInfo: self.telemetryInfo)
     }
 
     func device(forEnrollmentId enrollmentId: String, userId: String, signingKey: SigningKey) -> DeviceAPI {
@@ -68,7 +70,7 @@ struct APIClient: API {
         )
         let jwt = try? JWT(claimSet: claims, key: signingKey.secKey)
         
-        return DeviceAPIClient(baseUrl: baseUrl, id: enrollmentId, token: jwt?.string ?? "")
+        return DeviceAPIClient(baseUrl: baseUrl, id: enrollmentId, token: jwt?.string ?? "", telemetryInfo: self.telemetryInfo)
     }
 
 }
