@@ -57,12 +57,12 @@ import Guardian
 
 Set the auth0 domain for your tenant:
 ```swift
-let domain = "<AUTH0_TENANT_DOMAIN>/appliance-mfa"
+let domain = "https://<tenant>.<locality>.auth0.com/appliance-mfa"
 ```
 
 alternatively you can use the custom domain if you configured one:
 ```swift
-let domain = "<CUSTOM_DOMAIN>/appliance-mfa"
+let domain = "https://<custom>/appliance-mfa"
 ```
 
 ### Enroll
