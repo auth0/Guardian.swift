@@ -31,9 +31,9 @@ let errorBuilder = { (response: HTTPURLResponse, data: Data?) -> Swift.Error? in
 public struct Request<T: Encodable, E: Decodable>: Operation {
     let request: NetworkOperation<T, E>
 
-    static func new(method: HTTPMethod, url: URL, headers: [String: String] = [:], body: T? = nil) -> Request<T, E>{
+    static func new(method: HTTPMethod, url: URL, headers: [String: String] = [:], body: T? = nil, telemetryInfo: Auth0TelemetryInfo? = nil) -> Request<T, E>{
         do {
-            let request: NetworkOperation<T, E> = try NetworkOperation(method: method, url: url, headers: headers, body: body).mapError(transform: errorBuilder)
+            let request: NetworkOperation<T, E> = try NetworkOperation(method: method, url: url, headers: headers, body: body, telemetryInfo: telemetryInfo).mapError(transform: errorBuilder)
             return Request(request: request)
         } catch let error {
             return Request(method: method, url: url, error: error)

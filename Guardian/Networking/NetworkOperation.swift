@@ -39,11 +39,11 @@ public struct NetworkOperation<T: Encodable, E: Decodable>: Operation {
         self.error = error
     }
 
-    init(method: HTTPMethod, url: URL, headers: [String: String] = [:], body: T? = nil) throws {
+    init(method: HTTPMethod, url: URL, headers: [String: String] = [:], body: T? = nil, telemetryInfo: Auth0TelemetryInfo? = nil) throws {
         var request = URLRequest(url: url)
         request.httpMethod = method.rawValue.uppercased()
         headers
-            .merging(try defaultHeaders(hasBody: body != nil)) { old, _ in return old }
+            .merging(try defaultHeaders(hasBody: body != nil, telemetryInfo: telemetryInfo)) { old, _ in return old }
             .forEach { request.setValue($0.value, forHTTPHeaderField: $0.key) }
 
         if let body = body { // Fail if its 'GET'
@@ -200,9 +200,9 @@ private let privateSession: URLSession =  {
     return URLSession.init(configuration: config)
 }()
 
-func defaultHeaders(hasBody: Bool) throws -> [String: String] {
+func defaultHeaders(hasBody: Bool, telemetryInfo: Auth0TelemetryInfo? = nil) throws -> [String: String] {
     let info = Bundle(for: _BundleGrapple.classForCoder()).infoDictionary ?? [:]
-    let clientInfo = ClientInfo(info: info)
+    let clientInfo = ClientInfo(info: info, telemetryInfo: telemetryInfo)
     let telemetry = try clientInfo?.asHeader() ?? [:]
     let content = hasBody ? ["Content-Type": "application/json"] : [:]
     return telemetry.merging(content) { _, new in new }

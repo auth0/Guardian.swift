@@ -29,15 +29,17 @@ private let infoEntryName = "CFBundleShortVersionString"
 struct ClientInfo: Codable, Equatable {
     let name: String
     let version: String
+    let env: Auth0TelemetryInfo?
 
-    init(name: String, version: String) {
+    init(name: String, version: String, telemetryInfo: Auth0TelemetryInfo? = nil) {
         self.name = name
         self.version = version
+        self.env = telemetryInfo
     }
 
-    init?(info: [String: Any]) {
+    init?(info: [String: Any], telemetryInfo: Auth0TelemetryInfo? = nil) {
         guard let version = info[infoEntryName] as? String else { return nil }
-        self.init(name: libraryName, version: version)
+        self.init(name: libraryName, version: version, telemetryInfo: telemetryInfo)
     }
 
     func asHeader() throws -> [String: String] {

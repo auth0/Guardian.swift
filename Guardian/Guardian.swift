@@ -30,13 +30,14 @@ import Foundation
  ```
 
  - parameter forDomain: domain or URL of your Guardian server
+ - parameter telemetryInfo:   information about the app, used for internal auth0 analitycs purposes
 
  - returns: an Guardian API client
  
  - seealso: Guardian.API
  */
-public func api(forDomain domain: String) -> API {
-    return api(url: url(from: domain)!)
+public func api(forDomain domain: String, telemetryInfo: Auth0TelemetryInfo? = nil) -> API {
+    return api(url: url(from: domain)!, telemetryInfo: telemetryInfo)
 }
 
 /**
@@ -47,13 +48,14 @@ public func api(forDomain domain: String) -> API {
  ```
 
  - parameter url:       URL of your Guardian server
+ - parameter telemetryInfo:   information about the app, used for internal auth0 analitycs purposes
 
  - returns: an Guardian API client
 
  - seealso: Guardian.API
  */
-public func api(url: URL) -> API {
-    return APIClient(baseUrl: url)
+public func api(url: URL, telemetryInfo: Auth0TelemetryInfo? = nil) -> API {
+    return APIClient(baseUrl: url, telemetryInfo: telemetryInfo)
 }
 
 /**
@@ -67,13 +69,14 @@ public func api(url: URL) -> API {
 
  - parameter forDomain:     domain or URL of your Guardian server
  - parameter device:        the enrolled device that will be used to handle authentication
+ - parameter telemetryInfo:       information about the app, used for internal auth0 analitycs purposes
 
  - returns: an `Authentication` instance
  
  - seealso: Guardian.Authentication
  */
-public func authentication(forDomain domain: String, device: AuthenticationDevice) -> Authentication {
-    let client = api(forDomain: domain)
+public func authentication(forDomain domain: String, device: AuthenticationDevice, telemetryInfo: Auth0TelemetryInfo? = nil) -> Authentication {
+    let client = api(forDomain: domain, telemetryInfo: telemetryInfo)
     return RSAAuthentication(api: client, device: device)
 }
 
@@ -89,14 +92,15 @@ public func authentication(forDomain domain: String, device: AuthenticationDevic
 
  - parameter url:           URL of your Guardian server
  - parameter device:        the enrolled device that will be used to handle authentication
+ - parameter telemetryInfo:       information about the app, used for internal auth0 analitycs purposes
 
 
  - returns: an `Authentication` instance
 
  - seealso: Guardian.Authentication
  */
-public func authentication(url: URL, device: AuthenticationDevice) -> Authentication {
-    let client = api(url: url)
+public func authentication(url: URL, device: AuthenticationDevice, telemetryInfo: Auth0TelemetryInfo? = nil) -> Authentication {
+    let client = api(url: url, telemetryInfo: telemetryInfo)
     return RSAAuthentication(api: client, device: device)
 }
 
@@ -153,11 +157,12 @@ public func authentication(url: URL, device: AuthenticationDevice) -> Authentica
  - parameter notificationToken: the APNS token of the device
  - parameter signingKey:        the signing key for Guardian AuthN responses
  - parameter verificationKey:        the verification key for Guardian AuthN responses
- 
+ - parameter telemetryInfo:           information about the app, used for internal auth0 analitycs purposes
+
  - returns: a request to create an enrollment
  */
-public func enroll(forDomain domain: String, usingUri uri: String, notificationToken: String, signingKey: SigningKey, verificationKey: VerificationKey) -> EnrollRequest {
-    let client = api(forDomain: domain)
+public func enroll(forDomain domain: String, usingUri uri: String, notificationToken: String, signingKey: SigningKey, verificationKey: VerificationKey, telemetryInfo: Auth0TelemetryInfo? = nil) -> EnrollRequest {
+    let client = api(forDomain: domain, telemetryInfo: telemetryInfo)
     return EnrollRequest(api: client, enrollmentUri: uri, notificationToken: notificationToken, verificationKey: verificationKey, signingKey: signingKey)
 }
 
@@ -214,11 +219,12 @@ public func enroll(forDomain domain: String, usingUri uri: String, notificationT
  - parameter notificationToken: the APNS token of the device
  - parameter signingKey:        the signing key for Guardian AuthN responses
  - parameter verificationKey:        the verification key for Guardian AuthN responses
+ - parameter telemetryInfo:           information about the app, used for internal auth0 analitycs purposes
 
  - returns: a request to create an enrollment
  */
-public func enroll(url: URL, usingUri uri: String, notificationToken: String, signingKey: SigningKey, verificationKey: VerificationKey) -> EnrollRequest {
-    let client = api(url: url)
+public func enroll(url: URL, usingUri uri: String, notificationToken: String, signingKey: SigningKey, verificationKey: VerificationKey, telemetryInfo: Auth0TelemetryInfo? = nil) -> EnrollRequest {
+    let client = api(url: url, telemetryInfo: telemetryInfo)
     return EnrollRequest(api: client, enrollmentUri: uri, notificationToken: notificationToken, verificationKey: verificationKey, signingKey: signingKey)
 }
 
@@ -275,11 +281,12 @@ public func enroll(url: URL, usingUri uri: String, notificationToken: String, si
  - parameter notificationToken: the APNS token of the device
  - parameter signingKey:        the signing key for Guardian AuthN responses
  - parameter verificationKey:        the verification key for Guardian AuthN responses
+ - parameter telemetryInfo:           information about the app, used for internal auth0 analitycs purposes
 
  - returns: a request to create an enrollment
  */
-public func enroll(forDomain domain: String, usingTicket ticket: String, notificationToken: String, signingKey: SigningKey, verificationKey: VerificationKey) -> EnrollRequest {
-    let client = api(forDomain: domain)
+public func enroll(forDomain domain: String, usingTicket ticket: String, notificationToken: String, signingKey: SigningKey, verificationKey: VerificationKey, telemetryInfo: Auth0TelemetryInfo? = nil) -> EnrollRequest {
+    let client = api(forDomain: domain, telemetryInfo: telemetryInfo)
     return EnrollRequest(api: client, enrollmentTicket: ticket, notificationToken: notificationToken, verificationKey: verificationKey, signingKey: signingKey)
 }
 
@@ -337,11 +344,12 @@ public func enroll(forDomain domain: String, usingTicket ticket: String, notific
  - parameter notificationToken: the APNS token of the device
  - parameter signingKey:        the signing key for Guardian AuthN responses
  - parameter verificationKey:        the verification key for Guardian AuthN responses
+ - parameter telemetryInfo:           information about the app, used for internal auth0 analitycs purposes
 
  - returns: a request to create an enrollment
  */
-public func enroll(url: URL, usingTicket ticket: String, notificationToken: String, signingKey: SigningKey, verificationKey: VerificationKey) -> EnrollRequest {
-    let client = api(url: url)
+public func enroll(url: URL, usingTicket ticket: String, notificationToken: String, signingKey: SigningKey, verificationKey: VerificationKey, telemetryInfo: Auth0TelemetryInfo? = nil) -> EnrollRequest {
+    let client = api(url: url, telemetryInfo: telemetryInfo)
     return EnrollRequest(api: client, enrollmentTicket: ticket, notificationToken: notificationToken, verificationKey: verificationKey, signingKey: signingKey)
 }
 

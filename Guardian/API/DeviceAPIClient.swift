@@ -27,14 +27,16 @@ struct DeviceAPIClient: DeviceAPI {
 
     let url: URL
     let token: String
+    let telemetryInfo: Auth0TelemetryInfo?
     
-    init(baseUrl: URL, id: String, token: String) {
+    init(baseUrl: URL, id: String, token: String, telemetryInfo: Auth0TelemetryInfo? = nil) {
         self.url = baseUrl.appendingPathComponent(DeviceAPIClient.path).appendingPathComponent(id)
         self.token = token
+        self.telemetryInfo = telemetryInfo
     }
     
     func delete() -> Request<NoContent, NoContent> {
-        return Request.new(method: .delete, url: url, headers: ["Authorization": "Bearer \(token)"])
+        return Request.new(method: .delete, url: url, headers: ["Authorization": "Bearer \(token)"], telemetryInfo: self.telemetryInfo)
     }
     
     func update(localIdentifier identifier: String? = nil, name: String? = nil, notificationToken: String? = nil) -> Request<UpdatedDevice, UpdatedDevice> {
@@ -45,6 +47,6 @@ struct DeviceAPIClient: DeviceAPI {
             credentials = nil
         }
         let update = UpdatedDevice(identifier: identifier, name: name, pushCredentials: credentials)
-        return Request.new(method: .patch, url: url, headers: ["Authorization": "Bearer \(token)"], body: update)
+        return Request.new(method: .patch, url: url, headers: ["Authorization": "Bearer \(token)"], body: update, telemetryInfo: self.telemetryInfo)
     }
 }
