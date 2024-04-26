@@ -113,7 +113,7 @@ public protocol Authentication {
 }
 
 public extension Authentication {
-    public func reject(notification: Notification, withReason reason: String? = nil) -> Request<Transaction, NoContent> {
+    func reject(notification: Notification, withReason reason: String? = nil) -> Request<Transaction, NoContent> {
         return self.reject(notification: notification, withReason: reason)
     }
 }

@@ -89,6 +89,6 @@ class Base32 {
             }
         }
 
-        return Data(bytes: UnsafePointer<UInt8>(decodedBytes), count: decodedBaseIndex)
+        return Data(decodedBytes.prefix(decodedBaseIndex))
     }
 }
