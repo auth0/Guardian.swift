@@ -1,5 +1,11 @@
 # Change Log
 
+## [1.4.0](https://github.com/auth0/Guardian.swift/tree/1.4.0) (2024-04-29)
+[Full Changelog](https://github.com/auth0/Guardian.swift/compare/1.3.0...1.4.0)
+
+**Changed**
+- Add privacy manifest
+
 ## [1.3.0](https://github.com/auth0/Guardian.swift/tree/1.3.0) (2024-03-15)
 [Full Changelog](https://github.com/auth0/Guardian.swift/compare/1.2.0...1.3.0)
 
