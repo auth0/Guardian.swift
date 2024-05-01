@@ -49,8 +49,12 @@ class OneTimePasswordGeneratorSpec: QuickSpec {
                         otp = try! Guardian.totp(base32Secret: base32Secret, algorithm: algorithm, digits: 8, period: period)
                     }
 
-                    it("should return code '\(code)' for counter '\(counter)'") {
+                    it("should return string code '\(code)' for counter '\(counter)'") {
                         expect(otp.stringCode(time: TimeInterval(counter))).to(equal(code))
+                    }
+                    
+                    it("should return code '\(code)' for counter '\(counter)'") {
+                        expect(otp.code(time: TimeInterval(counter))).to(equal(Int(code) ?? 0))
                     }
                 }
 
