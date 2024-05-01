@@ -32,8 +32,8 @@ public extension TOTP {
         return self.stringCode(time: time, formatter: formatter)
     }
 
-    func code() -> Int {
-        return self.code(time: Date().timeIntervalSince1970)
+    func code(time: TimeInterval = Date().timeIntervalSince1970) -> Int {
+        return self.code(time: time)
     }
 }
 
