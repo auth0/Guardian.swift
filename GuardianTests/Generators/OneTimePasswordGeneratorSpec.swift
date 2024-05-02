@@ -68,6 +68,10 @@ class OneTimePasswordGeneratorSpec: QuickSpec {
                 it("should generate the same string and int code for the same time") {
                     expect(otp.stringCode(time: 49)).to(equal(otp.code(time: 49).description)) // Picked time that generates a number with 6 digits and no 0 prefix in string
                 }
+                
+                it("should generate the same code for functions code() and code(time: Date().timeIntervalSince1970)") {
+                    expect(otp.code(time: Date().timeIntervalSince1970)).to(equal(otp.code()))
+                }
 
                 it("should allow custom format for string code") {
                     let formatter = NumberFormatter()

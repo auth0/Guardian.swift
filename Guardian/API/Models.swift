@@ -23,7 +23,7 @@
 import Foundation
 
 struct PushCredentials: Codable {
-    let service = "APNS"
+    private(set) var service = "APNS"
     let token: String
 }
 
