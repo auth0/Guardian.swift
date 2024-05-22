@@ -1,5 +1,13 @@
 # Change Log
 
+## [1.4.1](https://github.com/auth0/Guardian.swift/tree/1.4.1) (2024-05-22)
+[Full Changelog](https://github.com/auth0/Guardian.swift/compare/1.4.0...1.4.1)
+
+
+**Changed**
+- Fix bug with TOTP to enable builds with Xcode 15.2+
+
+
 ## [1.4.0](https://github.com/auth0/Guardian.swift/tree/1.4.0) (2024-04-29)
 [Full Changelog](https://github.com/auth0/Guardian.swift/compare/1.3.0...1.4.0)
 
