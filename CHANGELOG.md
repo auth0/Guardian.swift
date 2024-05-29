@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.4.2](https://github.com/auth0/Guardian.swift/tree/1.4.1) (2024-05-29)
+[Full Changelog](https://github.com/auth0/Guardian.swift/compare/1.4.1...1.4.2)
+
+**Changed**
+- Fix bug with the privacy manifest
+
+
 ## [1.4.1](https://github.com/auth0/Guardian.swift/tree/1.4.1) (2024-05-22)
 [Full Changelog](https://github.com/auth0/Guardian.swift/compare/1.4.0...1.4.1)
 

@@ -36,7 +36,7 @@ Guardian.swift is available through [CocoaPods](http://cocoapods.org).
 To install it, simply add the following line to your Podfile:
 
 ```ruby
-pod 'Guardian', '~> 1.4.1'
+pod 'Guardian', '~> 1.4.2'
 ```
 
 #### Carthage
@@ -44,7 +44,7 @@ pod 'Guardian', '~> 1.4.1'
 In your Cartfile add this line
 
 ```
-github "auth0/Guardian.swift" ~> 1.4.1
+github "auth0/Guardian.swift" ~> 1.4.2
 ```
 
 ## Usage
