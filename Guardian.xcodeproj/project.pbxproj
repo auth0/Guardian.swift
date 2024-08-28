@@ -258,6 +258,7 @@
 		ED1E39A62B822A2500E8609A /* MockURLResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockURLResponse.swift; sourceTree = "<group>"; };
 		ED1E39A82B82A9B100E8609A /* MockURLProtocolCondition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockURLProtocolCondition.swift; sourceTree = "<group>"; };
 		ED7B279E2B682A2700788920 /* QRCodeReaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeReaderViewController.swift; sourceTree = "<group>"; };
+		ED8B7C982C7F5AA200CBCF8C /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 		EDABB91E2BA0CB6C00623911 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -536,6 +537,7 @@
 		5F20380B1D5E41E20005D2E2 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
+				ED8B7C982C7F5AA200CBCF8C /* Package.swift */,
 				5F2038181D5E46210005D2E2 /* Gemfile */,
 				5F2038111D5E42AD0005D2E2 /* .gitignore */,
 				5F20380C1D5E421F0005D2E2 /* Cartfile.resolved */,
