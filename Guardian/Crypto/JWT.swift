@@ -35,7 +35,10 @@ struct JWT<S: Codable> {
                     throw JWT.Error.cannotSign
                 }
                 let hash = sha256.hash(value)
-                return rsa.sign(hash)
+                guard let data = rsa.sign(hash) else {
+                    throw JWT.Error.cannotSign
+                }
+                return data
             }
         }
 

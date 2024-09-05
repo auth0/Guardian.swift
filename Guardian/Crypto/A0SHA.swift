@@ -1,9 +1,48 @@
+// AOSHA.swift
 //
-//  A0SHA.swift
-//  Guardian
+// Copyright (c) 2016 Auth0 (http://auth0.com)
 //
-//  Created by Artem Bakanov on 03/09/2024.
-//  Copyright © 2024 Auth0. All rights reserved.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 //
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 
 import Foundation
+import CommonCrypto
+
+struct A0SHA {
+    private let digestLength: Int
+    
+    init?(algorithm: String) {
+        let alg = algorithm.lowercased()
+        switch alg {
+        case "sha256":
+            digestLength = Int(CC_SHA256_DIGEST_LENGTH)
+        default:
+            return nil
+        }
+    }
+    
+    func hash(_ data: Data) -> Data {
+        var hashBytes = [UInt8](repeating: 0, count: digestLength)
+        
+        data.withUnsafeBytes { data in
+            _ = CC_SHA256(data.baseAddress, CC_LONG(data.count), &hashBytes)
+        }
+
+        return Data(hashBytes)
+    }
+}
