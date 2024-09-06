@@ -665,10 +665,9 @@
 			};
 			buildConfigurationList = 5F2037C71D5E1E3E0005D2E2 /* Build configuration list for PBXProject "Guardian" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				English,
 				en,
 				Base,
 			);
