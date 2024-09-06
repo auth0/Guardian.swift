@@ -644,17 +644,17 @@
 				TargetAttributes = {
 					5F2037CC1D5E1E3E0005D2E2 = {
 						CreatedOnToolsVersion = 7.3.1;
-						LastSwiftMigration = 0940;
+						LastSwiftMigration = 1540;
 						ProvisioningStyle = Manual;
 					};
 					5F2037D61D5E1E3E0005D2E2 = {
 						CreatedOnToolsVersion = 7.3.1;
-						LastSwiftMigration = 0940;
+						LastSwiftMigration = 1540;
 						TestTargetID = 5F2037EA1D5E22590005D2E2;
 					};
 					5F2037EA1D5E22590005D2E2 = {
 						CreatedOnToolsVersion = 7.3.1;
-						LastSwiftMigration = 0940;
+						LastSwiftMigration = 1540;
 						SystemCapabilities = {
 							com.apple.Push = {
 								enabled = 1;
@@ -989,7 +989,7 @@
 				SKIP_INSTALL = YES;
 				SWIFT_INSTALL_OBJC_HEADER = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -1015,7 +1015,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_INSTALL_OBJC_HEADER = NO;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -1038,7 +1038,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GuardianApp.app/GuardianApp";
 			};
 			name = Debug;
@@ -1061,7 +1061,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.GuardianTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GuardianApp.app/GuardianApp";
 			};
 			name = Release;
@@ -1095,7 +1095,7 @@
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Guardian SDK Sample App";
 				SWIFT_INSTALL_OBJC_HEADER = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
@@ -1128,7 +1128,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Guardian SDK Sample App";
 				SWIFT_INSTALL_OBJC_HEADER = NO;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
