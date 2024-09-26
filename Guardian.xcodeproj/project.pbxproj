@@ -254,6 +254,7 @@
 		ED9C56832C87437C00FCB048 /* A0RSA.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = A0RSA.swift; sourceTree = "<group>"; };
 		ED9C56852C874A7C00FCB048 /* A0SHA.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = A0SHA.swift; sourceTree = "<group>"; };
 		EDABB91E2BA0CB6C00623911 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		EDE454672CA568AC00C3077A /* Guardian.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = Guardian.xctestplan; path = ../../Guardian.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -494,6 +495,7 @@
 				233F75281D93076600B8C15C /* NotificationSpec.swift */,
 				5F1DB45C1DA4750F00264437 /* AuthenticationSpec.swift */,
 				2331BFEC1DD52ED50047F1D4 /* JWTSpec.swift */,
+				EDE454672CA568AC00C3077A /* Guardian.xctestplan */,
 			);
 			path = GuardianTests;
 			sourceTree = "<group>";
@@ -640,7 +642,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastSwiftUpdateCheck = 0810;
-				LastUpgradeCheck = 1540;
+				LastUpgradeCheck = 1600;
 				ORGANIZATIONNAME = Auth0;
 				TargetAttributes = {
 					5F2037CC1D5E1E3E0005D2E2 = {
@@ -1079,7 +1081,6 @@
 		5F2037FA1D5E22590005D2E2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = GuardianApp/GuardianApp.entitlements;
@@ -1113,7 +1114,6 @@
 		5F2037FB1D5E22590005D2E2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = GuardianApp/GuardianApp.entitlements;
