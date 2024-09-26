@@ -254,7 +254,7 @@
 		ED9C56832C87437C00FCB048 /* A0RSA.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = A0RSA.swift; sourceTree = "<group>"; };
 		ED9C56852C874A7C00FCB048 /* A0SHA.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = A0SHA.swift; sourceTree = "<group>"; };
 		EDABB91E2BA0CB6C00623911 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		EDE454672CA568AC00C3077A /* Guardian.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = Guardian.xctestplan; path = ../../Guardian.xctestplan; sourceTree = "<group>"; };
+		EDE454672CA568AC00C3077A /* GuardianTestPlan.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = GuardianTestPlan.xctestplan; path = ../../GuardianTestPlan.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -495,7 +495,7 @@
 				233F75281D93076600B8C15C /* NotificationSpec.swift */,
 				5F1DB45C1DA4750F00264437 /* AuthenticationSpec.swift */,
 				2331BFEC1DD52ED50047F1D4 /* JWTSpec.swift */,
-				EDE454672CA568AC00C3077A /* Guardian.xctestplan */,
+				EDE454672CA568AC00C3077A /* GuardianTestPlan.xctestplan */,
 			);
 			path = GuardianTests;
 			sourceTree = "<group>";

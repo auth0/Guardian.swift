@@ -39,7 +39,7 @@
       </MacroExpansion>
       <TestPlans>
          <TestPlanReference
-            reference = "container:../Guardian.xctestplan"
+            reference = "container:../GuardianTestPlan.xctestplan"
             default = "YES">
          </TestPlanReference>
       </TestPlans>
