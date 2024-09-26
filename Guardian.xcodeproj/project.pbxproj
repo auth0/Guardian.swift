@@ -254,7 +254,7 @@
 		ED9C56832C87437C00FCB048 /* A0RSA.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = A0RSA.swift; sourceTree = "<group>"; };
 		ED9C56852C874A7C00FCB048 /* A0SHA.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = A0SHA.swift; sourceTree = "<group>"; };
 		EDABB91E2BA0CB6C00623911 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		EDF15CBD2CA5A42100170C76 /* GuardianTestPlan.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = GuardianTestPlan.xctestplan; sourceTree = "<group>"; };
+		EDF15CBF2CA5AB0000170C76 /* GuardianTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = GuardianTests.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -481,6 +481,7 @@
 		5F2037DB1D5E1E3E0005D2E2 /* GuardianTests */ = {
 			isa = PBXGroup;
 			children = (
+				EDF15CBF2CA5AB0000170C76 /* GuardianTests.xctestplan */,
 				5F07A5A1210F9A0700819FA2 /* API */,
 				5F07A59E210F988500819FA2 /* Enrollment */,
 				5FF42BA621091EF20082459F /* Networking */,
@@ -495,7 +496,6 @@
 				233F75281D93076600B8C15C /* NotificationSpec.swift */,
 				5F1DB45C1DA4750F00264437 /* AuthenticationSpec.swift */,
 				2331BFEC1DD52ED50047F1D4 /* JWTSpec.swift */,
-				EDF15CBD2CA5A42100170C76 /* GuardianTestPlan.xctestplan */,
 			);
 			path = GuardianTests;
 			sourceTree = "<group>";
