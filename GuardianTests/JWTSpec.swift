@@ -39,7 +39,6 @@ class JWTSpec: QuickSpec {
 
         describe("signature") {
 
-            var jwt: JWT<TestClaimSet>?
 
             describe("RS256") {
 
@@ -49,9 +48,7 @@ class JWTSpec: QuickSpec {
                     let verificationKey = try! AsymmetricPublicKey(privateKey: signingKey.secKey)
                     let anotherVerificationKey = try! AsymmetricPublicKey(privateKey: DataRSAPrivateKey.new().secKey)
 
-                    beforeEach {
-                        jwt = try? JWT(claimSet: TestClaimSet(field: "value"), key: signingKey.secKey)
-                    }
+                    let jwt = try? JWT(claimSet: TestClaimSet(field: "value"), key: signingKey.secKey)
 
                     it("should match hardcoded jwt") {
                         expect(jwt?.string).to(equal(aToken))
