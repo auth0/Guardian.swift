@@ -29,6 +29,10 @@ func isMobileEnroll(baseUrl: URL) -> MockURLProtocolCondition {
     return isScheme("https") && isMethodPOST() && isUrl(from: baseUrl, endingWithPathComponent: "api/enroll")
 }
 
+func isMethodGET() -> MockURLProtocolCondition {
+  return { $0.httpMethod == "GET" }
+}
+
 func isMethodPOST() -> MockURLProtocolCondition {
   return { $0.httpMethod == "POST" }
 }
@@ -101,6 +105,18 @@ func hasBearerToken(_ token: String) -> MockURLProtocolCondition {
     }
 }
 
+func hasDPoPToken(_ token: String) -> MockURLProtocolCondition {
+    return { request in
+        return request.value(forHTTPHeaderField: "Authorization") == "MFA-DPoP \(token)"
+    }
+}
+
+func hasDPoPAssertion(_ assertion: String) -> MockURLProtocolCondition {
+    return { request in
+        return request.value(forHTTPHeaderField: "MFA-DPoP") == assertion
+    }
+}
+
 func isDeleteEnrollment(baseUrl: URL, enrollmentId: String? = nil) -> MockURLProtocolCondition {
     return isMethodDELETE() && isEnrollment(baseUrl: baseUrl, enrollmentId: enrollmentId)
 }
@@ -134,6 +150,11 @@ func hasBearerJWTToken(withSub sub: String, iss: String, aud: String, validFor d
 
 func isUpdateEnrollment(baseUrl: URL, enrollmentId: String? = nil) -> MockURLProtocolCondition {
     return isMethodPATCH() && isEnrollment(baseUrl: baseUrl, enrollmentId: enrollmentId)
+}
+
+
+func isGetConsent(baseUrl: URL, consentId: String) -> MockURLProtocolCondition {
+    return isScheme("https") && isMethodGET() && isUrl(from: baseUrl, endingWithPathComponent: "rich-consents/\(consentId)")
 }
 
 func beUpdatedDevice(deviceIdentifier: String?, deviceName: String?, notificationService: String?, notificationToken: String?) -> Nimble.Predicate<Result<UpdatedDevice>> {

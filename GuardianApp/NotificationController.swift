@@ -30,6 +30,9 @@ class NotificationController: UIViewController {
     @IBOutlet var browserLabel: UILabel!
     @IBOutlet var locationLabel: UILabel!
     @IBOutlet var dateLabel: UILabel!
+    
+    @IBOutlet var consentDetailsView: UIStackView!
+    @IBOutlet var bindingMessageLabel: UILabel!
 
     @IBAction func allowAction(_ sender: AnyObject) {
         guard let notification = notification, let enrollment = AppDelegate.state else {
@@ -76,13 +79,38 @@ class NotificationController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        guard let notification = notification, let _ = AppDelegate.state else {
+        guard let notification = notification, let enrollment = AppDelegate.state else {
             return
         }
 
         browserLabel.text = notification.source?.browser?.name ?? "Unknown"
         locationLabel.text = notification.location?.name ?? "Unknown"
         dateLabel.text = "\(notification.startedAt)"
+        self.consentDetailsView.isHidden = true
+        
+        guard let consentId = notification.transactionLinkingId else {
+            return
+        }
+        
+        Guardian
+            .consent(forDomain: AppDelegate.guardianDomain, device: enrollment)
+            .get(consentId: consentId, notificationToken: notification.transactionToken)
+            .start{ [unowned self] result in
+                switch result {
+                case .failure(let cause):
+                    print("Fetch consent failed: \(cause)")
+                case .success(let payload):
+                    updateBindingMessage(bindingMessage: payload.requestedDetails.bindingMessage)
+            }
+        }
+        
+    }
+    
+    func updateBindingMessage(bindingMessage:String) {
+        DispatchQueue.main.async { [unowned self] in
+            self.consentDetailsView.isHidden = false
+            self.bindingMessageLabel.text = bindingMessage
+        }
     }
 
     func showError(_ title: String, _ cause: Swift.Error) {

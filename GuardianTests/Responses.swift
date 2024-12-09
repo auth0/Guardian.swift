@@ -66,6 +66,21 @@ func deviceResponse(enrollmentId id: String?, deviceIdentifier: String?, name: S
     return MockURLResponse(jsonObject: json, statusCode: 200, headers: ["Content-Type": "application/json"])
 }
 
+func consentResponse() -> MockURLResponse {
+    let json: [String : Any] = [
+        "id": "",
+        "created_at": "",
+        "expires_at": "",
+        "requested_details": [
+            "audience": "",
+            "scope": [],
+            "binding_message": ""
+        ]
+    ]
+    
+    return MockURLResponse(jsonObject: json, statusCode: 200, headers: ["Content-Type": "application/json"])
+}
+
 func successResponse(statusCode: Int = 200) -> MockURLResponse {
     return MockURLResponse(jsonObject: [:], statusCode: statusCode, headers: ["Content-Type": "application/json"])
 }

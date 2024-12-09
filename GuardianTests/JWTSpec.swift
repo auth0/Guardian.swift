@@ -219,6 +219,97 @@ class JWTSpec: QuickSpec {
                 }
             }
         }
+        
+        describe("header") {
+            describe("init(algorithm:)") {
+                let header = JWT<TestClaimSet>.Header(algorithm: .rs256);
+                
+                it("should create instance") {
+                    expect(header).toNot(beNil())
+                }
+                
+                it("should set correct algorithm") {
+                    expect(header.algorithm).to(equal(.rs256))
+                }
+                
+                it("should default type to JWT") {
+                    expect(header.type).to(equal("JWT"))
+                }
+                
+                it("should not set jwk by default") {
+                    expect(header.jwk).to(beNil())
+                }
+            }
+            
+            describe("init(algorithm: type: jwk:)") {
+                let key = RSAPublicJWK(modulus: "1", exponent: "2")
+                let header = JWT<TestClaimSet>.Header(algorithm: .rs256, type: "dpop+jwt", jwk: key);
+                
+                it("should create instance") {
+                    expect(header).toNot(beNil())
+                }
+                
+                it("should set correct algorithm") {
+                    expect(header.algorithm).to(equal(.rs256))
+                }
+                
+                it("should default type to JWT") {
+                    expect(header.type).to(equal("dpop+jwt"))
+                }
+                
+                it("should not set jwk by default") {
+                    expect(header.jwk).to(equal(key))
+                }
+            }
+            
+            describe("encode") {
+                describe("without jwks") {
+                    let header = JWT<TestClaimSet>.Header(algorithm: .rs256)
+                    let encoder = JSONEncoder()
+                    let jsonString = String(data: try! encoder.encode(header), encoding: .utf8)
+                    
+                    it("should only encode the that are set") {
+                        expect(jsonString).to(contain(#""alg":"RS256""#))
+                        expect(jsonString).to(contain(#""typ":"JWT""#))
+                    }
+                }
+                
+                describe("with jwks") {
+                    let key = RSAPublicJWK(modulus: "1", exponent: "2")
+                    let header = JWT<TestClaimSet>.Header(algorithm: .rs256, type: "dpop+jwt", jwk: key);
+                    let encoder = JSONEncoder()
+                    let jsonString = String(data: try! encoder.encode(header), encoding: .utf8)
+                    
+                    it("should encode the all keys") {
+                        expect(jsonString).to(contain(#""alg":"RS256""#))
+                        expect(jsonString).to(contain(#""typ":"dpop+jwt""#))
+                        expect(jsonString).to(contain(#""jwk":"#))
+                    }
+                }
+            }
+            
+            describe("DPoP claims") {
+                let claims = DPoPClaimSet(
+                        httpURI: "auth0.com",
+                        httpMethod: "GET",
+                        accessTokenHash: "1234",
+                        jti: "nonce",
+                        issuedAt: Date.init(timeIntervalSince1970: 0)
+                    )
+
+                let encoder = JSONEncoder()
+                encoder.dateEncodingStrategy = .secondsSince1970
+                let jsonString = String(data: try! encoder.encode(claims), encoding: .utf8)
+                
+                it("should encode the all keys") {
+                    expect(jsonString).to(contain(#""htu":"auth0.com""#))
+                    expect(jsonString).to(contain(#""htm":"GET""#))
+                    expect(jsonString).to(contain(#""ath":"1234""#))
+                    expect(jsonString).to(contain(#""jti":"nonce"#))
+                    expect(jsonString).to(contain(#""iat":0"#))
+                }
+            }
+        }
     }
 }
 

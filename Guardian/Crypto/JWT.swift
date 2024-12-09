@@ -51,14 +51,22 @@ struct JWT<S: Codable> {
             }
         }
     }
-
+    
     struct Header: Codable {
         let algorithm: Algorithm
-        let type: String = "JWT"
+        let type: String
+        let jwk: RSAPublicJWK? // Optional field
 
         enum CodingKeys: String, CodingKey {
             case type = "typ"
             case algorithm = "alg"
+            case jwk
+        }
+        
+        init(algorithm: Algorithm, type: String = "JWT", jwk: RSAPublicJWK? = nil) {
+            self.algorithm = algorithm
+            self.type = type
+            self.jwk = jwk
         }
     }
 
@@ -80,15 +88,20 @@ struct JWT<S: Codable> {
 
     init(claimSet: S, algorithm: JWT.Algorithm = .rs256, key: SecKey) throws {
         let header = Header(algorithm: algorithm)
+        try self.init(claimSet:claimSet, header: header, key: key)
+    }
+    
+    init(claimSet: S, header:Header, key: SecKey) throws {
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .secondsSince1970
+        
         let headerPart = try encoder.encode(header).base64URLEncodedString()
         let claimSetPart = try encoder.encode(claimSet).base64URLEncodedString()
         let signableParts = "\(headerPart).\(claimSetPart)"
         guard let value = signableParts.data(using: .utf8) else {
             throw JWT.Error.cannotSign
         }
-        let signature = try algorithm.sign(value: value, key: key)
+        let signature = try header.algorithm.sign(value: value, key: key)
         let signaturePart = signature.base64URLEncodedString()
         self.header = header
         self.claimSet = claimSet
@@ -164,5 +177,21 @@ struct GuardianClaimSet: Codable, Equatable {
         case method = "auth0_guardian_method"
         case status = "auth0_guardian_accepted"
         case reason = "auth0_guardian_reason"
+    }
+}
+
+struct DPoPClaimSet: Codable, Equatable {
+    let httpURI: String
+    let httpMethod: String
+    let accessTokenHash: String
+    let jti: String
+    let issuedAt: Date
+    
+    enum CodingKeys: String, CodingKey {
+        case httpURI = "htu"
+        case httpMethod = "htm"
+        case accessTokenHash = "ath"
+        case jti
+        case issuedAt = "iat"
     }
 }

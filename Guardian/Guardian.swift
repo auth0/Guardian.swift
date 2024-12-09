@@ -380,6 +380,51 @@ public func notification(from userInfo: [AnyHashable: Any]) -> Notification? {
     return AuthenticationNotification(userInfo: userInfo)
 }
 
+/**
+ Creates an consent manager for a Guardian enrollment
+
+ ```
+ let device: AuthenticationDevice = // the object you obtained when enrolling
+ let consent = Guardian
+    .consent(forDomain: "tenant.guardian.auth0.com", device: device)
+ ```
+
+ - parameter forDomain:     domain or URL of your Guardian server
+ - parameter device:        the enrolled device that will be used to handle authentication
+ - parameter telemetryInfo:       information about the app, used for internal auth0 analitycs purposes
+
+ - returns: an `ConsentAPI` instance
+ 
+ - seealso: Guardian.ConsentAPI
+ */
+public func consent(forDomain domain: String, device: AuthenticationDevice, telemetryInfo: Auth0TelemetryInfo? = nil) -> ConsentAPI {
+    return consent(url: url(from: domain)!, device: device, telemetryInfo: telemetryInfo)
+}
+
+/**
+ Creates an consent manager for a Guardian enrollment
+
+ ```
+ let device: AuthenticationDevice = // the object you obtained when enrolling
+ let authenticator = Guardian
+    .consent(url: URL(string: "https://tenant.guardian.auth0.com/")!,
+                    device: device)
+ ```
+
+ - parameter url:           URL of your Guardian server
+ - parameter device:        the enrolled device that will be used to handle authentication
+ - parameter telemetryInfo:       information about the app, used for internal auth0 analitycs purposes
+
+
+ - returns: an `ConsentAPI` instance
+
+ - seealso: Guardian.ConsentAPI
+ */
+public func consent(url: URL, device: AuthenticationDevice, telemetryInfo: Auth0TelemetryInfo? = nil) -> ConsentAPI {
+    let signingKey = device.signingKey;
+    return ConsentAPIClient(baseUrl: url, signingKey:signingKey, telemetryInfo: telemetryInfo)
+}
+
 func url(from domain: String) -> URL? {
     guard domain.hasPrefix("http") else { return URL(string: "https://\(domain)") }
     return URL(string: domain)

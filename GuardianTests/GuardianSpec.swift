@@ -353,6 +353,26 @@ class GuardianSpec: QuickSpec {
                 }
             }
         }
+        
+        describe("consent(forDomain:, device:)") {
+            let device = EnrolledDevice(id: "ID", userId: "USER_ID", deviceToken: "TOKEN", notificationToken: "TOKEN", signingKey: try! DataRSAPrivateKey.new())
+            
+            it("should return consent api with domain only") {
+                expect(Guardian.consent(forDomain: "samples.guardian.auth0.com", device: device)).toNot(beNil())
+            }
+            
+            it("should return consent api with http url") {
+                expect(Guardian.consent(forDomain: "https://samples.guardian.auth0.com", device: device)).toNot(beNil())
+            }
+        }
+
+        describe("consent(url:, device:)") {
+            let device = EnrolledDevice(id: "ID", userId: "USER_ID", deviceToken: "TOKEN", notificationToken: "TOKEN", signingKey: try! DataRSAPrivateKey.new())
+
+            it("should return authentication with http url") {
+                expect(Guardian.consent(url: URL(string: "https://samples.guardian.auth0.com")!, device: device)).toNot(beNil())
+            }
+        }
     }
 }
 
