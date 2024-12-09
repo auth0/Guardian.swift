@@ -115,6 +115,18 @@ class ConsentSpec: QuickSpec {
                         }
                 }
             }
+            
+            it("should fail when enrollment signing key is not correct") {
+                let anotherDevice = MockAuthenticationDevice(localIdentifier: UUID().uuidString, signingKey: try! DataRSAPrivateKey.new())
+                waitUntil(timeout: Timeout) { done in
+                    Guardian.consent(forDomain: AuthenticationDomain, device: anotherDevice)
+                        .get(consentId: ValidTransactionLinkingId, notificationToken: ValidTransactionToken)
+                        .start { result in
+                            expect(result).to(haveGuardianError(withErrorCode: "invalid_dpop_assertion"))
+                            done()
+                        }
+                }
+            }
         }
     }
 }
