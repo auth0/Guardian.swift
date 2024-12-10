@@ -59,7 +59,7 @@ class ConsentSpec: QuickSpec {
             it("should succeed when guardian subdomain is passed") {
                 waitUntil(timeout: Timeout) { done in
                     Guardian.consent(forDomain: "tenant.guardian.auth0.com", device: device)
-                        .get(consentId: ValidTransactionLinkingId, notificationToken: ValidTransactionToken)
+                        .fetch(consentId: ValidTransactionLinkingId, notificationToken: ValidTransactionToken)
                         .start { result in
                             expect(result).to(beSuccess())
                             done()
@@ -70,7 +70,7 @@ class ConsentSpec: QuickSpec {
             it("should succeed when canonical domain is passed") {
                 waitUntil(timeout: Timeout) { done in
                     Guardian.consent(forDomain: "tenant.auth0.com", device: device)
-                        .get(consentId: ValidTransactionLinkingId, notificationToken: ValidTransactionToken)
+                        .fetch(consentId: ValidTransactionLinkingId, notificationToken: ValidTransactionToken)
                         .start { result in
                             expect(result).to(beSuccess())
                             done()
@@ -81,7 +81,7 @@ class ConsentSpec: QuickSpec {
             it("should succeed when appliance-mfa domain is passed") {
                 waitUntil(timeout: Timeout) { done in
                     Guardian.consent(forDomain: "tenant.auth0.com/appliance-mfa", device: device)
-                        .get(consentId: ValidTransactionLinkingId, notificationToken: ValidTransactionToken)
+                        .fetch(consentId: ValidTransactionLinkingId, notificationToken: ValidTransactionToken)
                         .start { result in
                             expect(result).to(beSuccess())
                             done()
@@ -108,7 +108,7 @@ class ConsentSpec: QuickSpec {
             it("should succeed when notification and enrollment is valid") {
                 waitUntil(timeout: Timeout) { done in
                     Guardian.consent(forDomain: AuthenticationDomain, device: device)
-                        .get(consentId: ValidTransactionLinkingId, notificationToken: ValidTransactionToken)
+                        .fetch(consentId: ValidTransactionLinkingId, notificationToken: ValidTransactionToken)
                         .start { result in
                             expect(result).to(beSuccess())
                             done()
@@ -120,7 +120,7 @@ class ConsentSpec: QuickSpec {
                 let anotherDevice = MockAuthenticationDevice(localIdentifier: UUID().uuidString, signingKey: try! DataRSAPrivateKey.new())
                 waitUntil(timeout: Timeout) { done in
                     Guardian.consent(forDomain: AuthenticationDomain, device: anotherDevice)
-                        .get(consentId: ValidTransactionLinkingId, notificationToken: ValidTransactionToken)
+                        .fetch(consentId: ValidTransactionLinkingId, notificationToken: ValidTransactionToken)
                         .start { result in
                             expect(result).to(haveGuardianError(withErrorCode: "invalid_dpop_assertion"))
                             done()

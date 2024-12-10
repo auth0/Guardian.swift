@@ -39,7 +39,7 @@ struct ConsentAPIClient : ConsentAPI {
         self.publicKey = try! signingKey.verificationKey()
     }
     
-    func get(consentId:String, notificationToken: String) -> Request<NoContent, Consent> {
+    func fetch(consentId:String, notificationToken: String) -> Request<NoContent, Consent> {
         let consentURL = self.url.appendingPathComponent(consentId)
         
         do {
@@ -66,7 +66,7 @@ struct ConsentAPIClient : ConsentAPI {
             consentAPIUrl = baseUrl.deletingLastPathComponent()
         }
         
-        if baseUrl.host!.components(separatedBy: ".").contains("guardian") {
+        else if baseUrl.host!.components(separatedBy: ".").contains("guardian") {
             consentAPIUrl = URL(string: baseUrl.absoluteString.replacingOccurrences(of: "guardian.", with: ""))!
         }
         

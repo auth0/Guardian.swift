@@ -40,7 +40,7 @@ public protocol ConsentAPI {
      
      Guardian
         .consent(forDomain: "tenant.guardian.auth0.com", device: device)
-     .get(consentId: consentId, notificationToken: notification.transactionToken)
+     .fetch(consentId: consentId, notificationToken: notification.transactionToken)
      .start { result in
           switch result {
           case .success(let payload):
@@ -57,5 +57,5 @@ public protocol ConsentAPI {
                                     
      - returns: a request to execute
      */
-    func get(consentId:String, notificationToken: String) -> Request<NoContent, Consent>
+    func fetch(consentId:String, notificationToken: String) -> Request<NoContent, Consent>
 }
