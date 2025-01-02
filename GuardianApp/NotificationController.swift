@@ -31,6 +31,9 @@ class NotificationController: UIViewController {
     @IBOutlet var locationLabel: UILabel!
     @IBOutlet var dateLabel: UILabel!
     
+    @IBOutlet var denyButton: UIButton!
+    @IBOutlet var allowButton: UIButton!
+    
     @IBOutlet var consentDetailsView: UIStackView!
     @IBOutlet var bindingMessageLabel: UILabel!
 
@@ -92,9 +95,12 @@ class NotificationController: UIViewController {
             return
         }
         
+        denyButton.isHidden = true
+        allowButton.isHidden = true
+        
         Guardian
-            .consent(forDomain: AppDelegate.guardianDomain, device: enrollment)
-            .fetch(consentId: consentId, notificationToken: notification.transactionToken)
+            .consent(forDomain: AppDelegate.guardianConsentUrl)
+            .fetch(consentId: consentId, notificationToken: notification.transactionToken, signingKey: enrollment.signingKey)
             .start{ [unowned self] result in
                 switch result {
                 case .failure(let cause):
@@ -103,11 +109,12 @@ class NotificationController: UIViewController {
                     updateBindingMessage(bindingMessage: payload.requestedDetails.bindingMessage)
             }
         }
-        
     }
     
     func updateBindingMessage(bindingMessage:String) {
         DispatchQueue.main.async { [unowned self] in
+            self.denyButton.isHidden = false
+            self.allowButton.isHidden = false
             self.consentDetailsView.isHidden = false
             self.bindingMessageLabel.text = bindingMessage
         }

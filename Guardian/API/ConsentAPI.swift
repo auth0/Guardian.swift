@@ -54,8 +54,9 @@ public protocol ConsentAPI {
      - parameter consentId: the id of the consent object to fetch, this is obtained from the
                             transaction linking id of the ncoming push notification where relevant
      - parameter transactionToken: the access token obtained from the incoming push notification
+     - parameter signingKey: the private key used to sign Guardian AuthN requests
                                     
      - returns: a request to execute
      */
-    func fetch(consentId:String, notificationToken: String) -> Request<NoContent, Consent>
+    func fetch(consentId: String, notificationToken: String, signingKey: SigningKey) -> Request<NoContent, Consent>
 }

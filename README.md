@@ -209,19 +209,21 @@ rich consent record may be associated to the tranaction.
 
 To fetch the rich consent details, you can use the `consent.fetch` method.
 
+Consent url sholdn't contain 'aplliance-mfa' component. Also remove '.guardian' if you have it as part of domain.
+
 ```swift
 if let consentId = notification.transactionLinkingId {
     Guardian
-        .consent(forDomain: AppDelegate.guardianDomain, device: enrollment)
-        .fetch(consentId: consentId, notificationToken: notification.transactionToken)
-        .start{ [unowned self] result in
+        .consent(forDomain: AppDelegate.guardianConsentUrl)
+        .fetch(consentId: consentId, notificationToken: notification.transactionToken, signingKey: enrollment.signingKey)
+        .start { [unowned self] result in
             switch result {
-            case .success(let payload):
-                // present consent details to the user
             case .failure(let cause):
                 // something failed, check cause to see what went wrong
+            case .success(let payload):
+                // present consent details to the user
+            }
         }
-    }
 }
 
 ```

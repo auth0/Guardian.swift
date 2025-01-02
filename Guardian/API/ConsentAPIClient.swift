@@ -24,26 +24,22 @@ import Foundation
 import CryptoKit
 
 struct ConsentAPIClient : ConsentAPI {
-    static let path: String = "rich-consents"
+    private let path: String = "rich-consents"
     
     let url:URL
     let telemetryInfo: Auth0TelemetryInfo?
-    let privateKey: SecKey
-    let publicKey: VerificationKey
     
-    init(baseUrl: URL, signingKey:SigningKey, telemetryInfo: Auth0TelemetryInfo? = nil ) {
-        let url = ConsentAPIClient.constructConsentAPIUrl(baseUrl: baseUrl)
+    init(baseConsentUrl: URL, telemetryInfo: Auth0TelemetryInfo? = nil ) {
+        let url = baseConsentUrl.appendingPathComponent(path, isDirectory: false)
         self.url = url
         self.telemetryInfo = telemetryInfo
-        self.privateKey = signingKey.secKey
-        self.publicKey = try! signingKey.verificationKey()
     }
     
-    func fetch(consentId:String, notificationToken: String) -> Request<NoContent, Consent> {
+    func fetch(consentId:String, notificationToken: String, signingKey: SigningKey) -> Request<NoContent, Consent> {
         let consentURL = self.url.appendingPathComponent(consentId)
         
         do {
-            let dpopAssertion = try self.proofOfPossesion(url:consentURL, notificationToken:notificationToken)
+            let dpopAssertion = try self.proofOfPossesion(url: consentURL, notificationToken: notificationToken, signingKey: signingKey)
             return Request.new(
                 method: .get,
                 url: consentURL,
@@ -58,23 +54,9 @@ struct ConsentAPIClient : ConsentAPI {
             return Request(method: .get, url: consentURL, error: error)
         }
     }
-
-    private static func constructConsentAPIUrl(baseUrl: URL) -> URL {
-        var consentAPIUrl = baseUrl
-        
-        if baseUrl.lastPathComponent == "appliance-mfa" {
-            consentAPIUrl = baseUrl.deletingLastPathComponent()
-        }
-        
-        else if baseUrl.host!.components(separatedBy: ".").contains("guardian") {
-            consentAPIUrl = URL(string: baseUrl.absoluteString.replacingOccurrences(of: "guardian.", with: ""))!
-        }
-        
-        return consentAPIUrl.appendingPathComponent(ConsentAPIClient.path, isDirectory: false)
-    }
     
-    private func proofOfPossesion (url: URL, notificationToken:String) throws -> String {
-        guard let jwk = publicKey.jwk else {
+    private func proofOfPossesion (url: URL, notificationToken: String, signingKey: SigningKey) throws -> String {
+        guard let jwk = try signingKey.verificationKey().jwk else {
             throw GuardianError(code: .invalidJWK)
         }
         
@@ -88,7 +70,7 @@ struct ConsentAPIClient : ConsentAPI {
             jti: UUID().uuidString,
             issuedAt: Date())
 
-         let jwt = try JWT<DPoPClaimSet>(claimSet: claims, header: header, key: self.privateKey)
+         let jwt = try JWT<DPoPClaimSet>(claimSet: claims, header: header, key: signingKey.secKey)
          return jwt.string
     }
     

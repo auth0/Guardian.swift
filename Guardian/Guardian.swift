@@ -397,8 +397,8 @@ public func notification(from userInfo: [AnyHashable: Any]) -> Notification? {
  
  - seealso: Guardian.ConsentAPI
  */
-public func consent(forDomain domain: String, device: AuthenticationDevice, telemetryInfo: Auth0TelemetryInfo? = nil) -> ConsentAPI {
-    return consent(url: url(from: domain)!, device: device, telemetryInfo: telemetryInfo)
+public func consent(forDomain domain: String, telemetryInfo: Auth0TelemetryInfo? = nil) -> ConsentAPI {
+    consent(consentUrl: url(from: domain)!, telemetryInfo: telemetryInfo)
 }
 
 /**
@@ -412,7 +412,6 @@ public func consent(forDomain domain: String, device: AuthenticationDevice, tele
  ```
 
  - parameter url:           URL of your Guardian server
- - parameter device:        the enrolled device that will be used to handle authentication
  - parameter telemetryInfo:       information about the app, used for internal auth0 analitycs purposes
 
 
@@ -420,9 +419,8 @@ public func consent(forDomain domain: String, device: AuthenticationDevice, tele
 
  - seealso: Guardian.ConsentAPI
  */
-public func consent(url: URL, device: AuthenticationDevice, telemetryInfo: Auth0TelemetryInfo? = nil) -> ConsentAPI {
-    let signingKey = device.signingKey;
-    return ConsentAPIClient(baseUrl: url, signingKey:signingKey, telemetryInfo: telemetryInfo)
+public func consent(consentUrl: URL, telemetryInfo: Auth0TelemetryInfo? = nil) -> ConsentAPI {
+    ConsentAPIClient(baseConsentUrl: consentUrl, telemetryInfo: telemetryInfo)
 }
 
 func url(from domain: String) -> URL? {

@@ -56,32 +56,10 @@ class ConsentSpec: QuickSpec {
                 )
             }
             
-            it("should succeed when guardian subdomain is passed") {
-                waitUntil(timeout: Timeout) { done in
-                    Guardian.consent(forDomain: "tenant.guardian.auth0.com", device: device)
-                        .fetch(consentId: ValidTransactionLinkingId, notificationToken: ValidTransactionToken)
-                        .start { result in
-                            expect(result).to(beSuccess())
-                            done()
-                        }
-                }
-            }
-            
             it("should succeed when canonical domain is passed") {
                 waitUntil(timeout: Timeout) { done in
-                    Guardian.consent(forDomain: "tenant.auth0.com", device: device)
-                        .fetch(consentId: ValidTransactionLinkingId, notificationToken: ValidTransactionToken)
-                        .start { result in
-                            expect(result).to(beSuccess())
-                            done()
-                        }
-                }
-            }
-            
-            it("should succeed when appliance-mfa domain is passed") {
-                waitUntil(timeout: Timeout) { done in
-                    Guardian.consent(forDomain: "tenant.auth0.com/appliance-mfa", device: device)
-                        .fetch(consentId: ValidTransactionLinkingId, notificationToken: ValidTransactionToken)
+                    Guardian.consent(forDomain: "tenant.auth0.com")
+                        .fetch(consentId: ValidTransactionLinkingId, notificationToken: ValidTransactionToken, signingKey: signingKey)
                         .start { result in
                             expect(result).to(beSuccess())
                             done()
@@ -107,8 +85,8 @@ class ConsentSpec: QuickSpec {
             
             it("should succeed when notification and enrollment is valid") {
                 waitUntil(timeout: Timeout) { done in
-                    Guardian.consent(forDomain: AuthenticationDomain, device: device)
-                        .fetch(consentId: ValidTransactionLinkingId, notificationToken: ValidTransactionToken)
+                    Guardian.consent(forDomain: AuthenticationDomain)
+                        .fetch(consentId: ValidTransactionLinkingId, notificationToken: ValidTransactionToken, signingKey: signingKey)
                         .start { result in
                             expect(result).to(beSuccess())
                             done()
@@ -117,10 +95,9 @@ class ConsentSpec: QuickSpec {
             }
             
             it("should fail when enrollment signing key is not correct") {
-                let anotherDevice = MockAuthenticationDevice(localIdentifier: UUID().uuidString, signingKey: try! DataRSAPrivateKey.new())
                 waitUntil(timeout: Timeout) { done in
-                    Guardian.consent(forDomain: AuthenticationDomain, device: anotherDevice)
-                        .fetch(consentId: ValidTransactionLinkingId, notificationToken: ValidTransactionToken)
+                    Guardian.consent(forDomain: AuthenticationDomain)
+                        .fetch(consentId: ValidTransactionLinkingId, notificationToken: ValidTransactionToken, signingKey: try! DataRSAPrivateKey.new())
                         .start { result in
                             expect(result).to(haveGuardianError(withErrorCode: "invalid_dpop_assertion"))
                             done()

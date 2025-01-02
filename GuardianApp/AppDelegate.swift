@@ -28,6 +28,7 @@ import UserNotifications
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     static let guardianDomain = "guardian-demo.guardian.auth0.com"
+    static let guardianConsentUrl = "guardian-demo.auth0.com"
     static var pushToken: String? = nil
     var window: UIWindow?
 
