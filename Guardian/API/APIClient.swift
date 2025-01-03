@@ -23,12 +23,13 @@
 import Foundation
 
 struct APIClient: API {
-
+    private let path: 'appliance-mfa'
     let baseUrl: URL
     let telemetryInfo: Auth0TelemetryInfo?
 
     init(baseUrl: URL, telemetryInfo: Auth0TelemetryInfo? = nil) {
-        self.baseUrl = baseUrl
+        // TODO: make sure the 'appliance-mfa' path is not set to ensure backward compatibility
+        self.baseUrl = baseUrl.appendingPathComponent(path)
         self.telemetryInfo = telemetryInfo
     }
 

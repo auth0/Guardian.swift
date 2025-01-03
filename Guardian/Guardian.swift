@@ -386,7 +386,7 @@ public func notification(from userInfo: [AnyHashable: Any]) -> Notification? {
  ```
  let device: AuthenticationDevice = // the object you obtained when enrolling
  let consent = Guardian
-    .consent(forDomain: "tenant.guardian.auth0.com", device: device)
+    .consent(forDomain: "<tenant>.<region>.auth0.com", device: device)
  ```
 
  - parameter forDomain:     domain or URL of your Guardian server
@@ -407,12 +407,12 @@ public func consent(forDomain domain: String, telemetryInfo: Auth0TelemetryInfo?
  ```
  let device: AuthenticationDevice = // the object you obtained when enrolling
  let authenticator = Guardian
-    .consent(url: URL(string: "https://tenant.guardian.auth0.com/")!,
+    .consent(url: URL(string: "https://<tenant>.<region>.auth0.com/")!,
                     device: device)
  ```
 
  - parameter url:           URL of your Guardian server
- - parameter telemetryInfo:       information about the app, used for internal auth0 analitycs purposes
+ - parameter telemetryInfo:       information about the app, used for internal auth0 analytics purposes
 
 
  - returns: an `ConsentAPI` instance

@@ -42,7 +42,7 @@ class NotificationController: UIViewController {
             return self.dismiss(animated: true, completion: nil)
         }
         let request = Guardian
-            .authentication(forDomain: AppDelegate.guardianDomain, device: enrollment)
+            .authentication(forDomain: AppDelegate.tenantDomain, device: enrollment)
             .allow(notification: notification)
         debugPrint(request)
         request.start { result in
@@ -63,7 +63,7 @@ class NotificationController: UIViewController {
             return self.dismiss(animated: true, completion: nil)
         }
         let request = Guardian
-            .authentication(forDomain: AppDelegate.guardianDomain, device: enrollment)
+            .authentication(forDomain: AppDelegate.tenantDomain, device: enrollment)
             .reject(notification: notification)
         debugPrint(request)
         request.start { result in
@@ -99,7 +99,7 @@ class NotificationController: UIViewController {
         allowButton.isHidden = true
         
         Guardian
-            .consent(forDomain: AppDelegate.guardianConsentUrl)
+            .consent(forDomain: AppDelegate.tenantDomain)
             .fetch(consentId: consentId, notificationToken: notification.transactionToken, signingKey: enrollment.signingKey)
             .start{ [unowned self] result in
                 switch result {
