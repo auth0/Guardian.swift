@@ -384,13 +384,11 @@ public func notification(from userInfo: [AnyHashable: Any]) -> Notification? {
  Creates an consent manager for a Guardian enrollment
 
  ```
- let device: AuthenticationDevice = // the object you obtained when enrolling
  let consent = Guardian
-    .consent(forDomain: "<tenant>.<region>.auth0.com", device: device)
+    .consent(forDomain: "<tenant>.<region>.auth0.com")
  ```
 
  - parameter forDomain:     domain or URL of your Guardian server
- - parameter device:        the enrolled device that will be used to handle authentication
  - parameter telemetryInfo:       information about the app, used for internal auth0 analitycs purposes
 
  - returns: an `ConsentAPI` instance
@@ -405,10 +403,8 @@ public func consent(forDomain domain: String, telemetryInfo: Auth0TelemetryInfo?
  Creates an consent manager for a Guardian enrollment
 
  ```
- let device: AuthenticationDevice = // the object you obtained when enrolling
  let authenticator = Guardian
-    .consent(url: URL(string: "https://<tenant>.<region>.auth0.com/")!,
-                    device: device)
+    .consent(url: URL(string: "https://<tenant>.<region>.auth0.com/")!)
  ```
 
  - parameter url:           URL of your Guardian server

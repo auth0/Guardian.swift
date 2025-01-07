@@ -209,8 +209,6 @@ rich consent record may be associated to the transaction.
 
 To fetch the rich consent details, you can use the `consent.fetch` method.
 
-Consent url shouldn't contain 'appliance-mfa' component.
-
 ```swift
 if let consentId = notification.transactionLinkingId {
     Guardian

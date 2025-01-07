@@ -23,18 +23,17 @@
 import Foundation
 
 struct APIClient: API {
-    private let path: 'appliance-mfa'
+    private let path = "appliance-mfa"
     let baseUrl: URL
     let telemetryInfo: Auth0TelemetryInfo?
 
     init(baseUrl: URL, telemetryInfo: Auth0TelemetryInfo? = nil) {
-        // TODO: make sure the 'appliance-mfa' path is not set to ensure backward compatibility
-        self.baseUrl = baseUrl.appendingPathComponent(path)
+        self.baseUrl = baseUrl.appendingPathComponentIfNeeded(path)
         self.telemetryInfo = telemetryInfo
     }
 
     func enroll(withTicket enrollmentTicket: String, identifier: String, name: String, notificationToken: String, verificationKey: VerificationKey) -> Request<Device, Enrollment> {
-        let url = self.baseUrl.appendingPathComponent("api/enroll")
+        let url = baseUrl.appendingPathComponent("api/enroll")
         do {
             let headers = ["Authorization": "Ticket id=\"\(enrollmentTicket)\""]
             guard let jwk = verificationKey.jwk else {
@@ -51,7 +50,7 @@ struct APIClient: API {
 
     func resolve(transaction transactionToken: String, withChallengeResponse challengeResponse: String) -> Request<Transaction, NoContent> {
         let transaction = Transaction(challengeResponse: challengeResponse)
-        let url = self.baseUrl.appendingPathComponent("api/resolve-transaction")
+        let url = baseUrl.appendingPathComponent("api/resolve-transaction")
         return Request.new(method: .post, url: url, headers: ["Authorization": "Bearer \(transactionToken)"], body: transaction, telemetryInfo: self.telemetryInfo)
     }
 
@@ -65,7 +64,7 @@ struct APIClient: API {
         let claims = BasicClaimSet(
             subject: userId,
             issuer: enrollmentId,
-            audience: self.baseUrl.appendingPathComponent(DeviceAPIClient.path).absoluteString,
+            audience: baseUrl.appendingPathComponent(DeviceAPIClient.path).absoluteString,
             expireAt: currentTime.addingTimeInterval(responseExpiration),
             issuedAt: currentTime
         )
@@ -74,4 +73,10 @@ struct APIClient: API {
         return DeviceAPIClient(baseUrl: baseUrl, id: enrollmentId, token: jwt?.string ?? "", telemetryInfo: self.telemetryInfo)
     }
 
+}
+
+private extension URL {
+    func appendingPathComponentIfNeeded(_ pathComponent: String) -> URL {
+        lastPathComponent == pathComponent ? self : appendingPathComponent(pathComponent)
+    }
 }

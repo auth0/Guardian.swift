@@ -25,7 +25,7 @@ import Nimble
 
 @testable import Guardian
 
-let Domain = "tenant.guardian.auth0.com/also/works/in/appliance/"
+let Domain = "tenant.region.auth0.com"
 let Timeout: NimbleTimeInterval = .seconds(2)
 
 let ValidURL = URL(string: "https://\(Domain)")!

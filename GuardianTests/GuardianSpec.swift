@@ -54,9 +54,17 @@ class GuardianSpec: QuickSpec {
         }
 
         describe("api(url:)") {
-
+            
             it("should return api with url only") {
                 expect(Guardian.api(url: URL(string: "https://samples.guardian.auth0.com")!)).toNot(beNil())
+            }
+            
+            it("should have base url with single 'appliance-mfa' component for passed url without this component") {
+                expect(Guardian.api(url: URL(string: "https://samples.guardian.auth0.com")!).baseUrl.absoluteString).to(equal("https://samples.guardian.auth0.com/appliance-mfa"))
+            }
+            
+            it("should have base url with single 'appliance-mfa' component for passed url with this component") {
+                expect(Guardian.api(url: URL(string: "https://samples.guardian.auth0.com/appliance-mfa")!).baseUrl.absoluteString).to(equal("https://samples.guardian.auth0.com/appliance-mfa"))
             }
         }
 
