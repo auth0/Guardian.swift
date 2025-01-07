@@ -59,7 +59,7 @@ class ConsentSpec: QuickSpec {
             it("should succeed when canonical domain is passed") {
                 waitUntil(timeout: Timeout) { done in
                     Guardian.consent(forDomain: "tenant.auth0.com")
-                        .fetch(consentId: ValidTransactionLinkingId, notificationToken: ValidTransactionToken, signingKey: signingKey)
+                        .fetch(consentId: ValidTransactionLinkingId, transactionToken: ValidTransactionToken, signingKey: signingKey)
                         .start { result in
                             expect(result).to(beSuccess())
                             done()
@@ -86,7 +86,7 @@ class ConsentSpec: QuickSpec {
             it("should succeed when notification and enrollment is valid") {
                 waitUntil(timeout: Timeout) { done in
                     Guardian.consent(forDomain: AuthenticationDomain)
-                        .fetch(consentId: ValidTransactionLinkingId, notificationToken: ValidTransactionToken, signingKey: signingKey)
+                        .fetch(consentId: ValidTransactionLinkingId, transactionToken: ValidTransactionToken, signingKey: signingKey)
                         .start { result in
                             expect(result).to(beSuccess())
                             done()
@@ -97,7 +97,7 @@ class ConsentSpec: QuickSpec {
             it("should fail when enrollment signing key is not correct") {
                 waitUntil(timeout: Timeout) { done in
                     Guardian.consent(forDomain: AuthenticationDomain)
-                        .fetch(consentId: ValidTransactionLinkingId, notificationToken: ValidTransactionToken, signingKey: try! DataRSAPrivateKey.new())
+                        .fetch(consentId: ValidTransactionLinkingId, transactionToken: ValidTransactionToken, signingKey: try! DataRSAPrivateKey.new())
                         .start { result in
                             expect(result).to(haveGuardianError(withErrorCode: "invalid_dpop_assertion"))
                             done()

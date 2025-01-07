@@ -35,16 +35,16 @@ struct ConsentAPIClient : ConsentAPI {
         self.telemetryInfo = telemetryInfo
     }
     
-    func fetch(consentId:String, notificationToken: String, signingKey: SigningKey) -> Request<NoContent, Consent> {
+    func fetch(consentId:String, transactionToken: String, signingKey: SigningKey) -> Request<NoContent, Consent> {
         let consentURL = self.url.appendingPathComponent(consentId)
         
         do {
-            let dpopAssertion = try self.proofOfPossesion(url: consentURL, notificationToken: notificationToken, signingKey: signingKey)
+            let dpopAssertion = try self.proofOfPossesion(url: consentURL, transactionToken: transactionToken, signingKey: signingKey)
             return Request.new(
                 method: .get,
                 url: consentURL,
                 headers: [
-                    "Authorization": "MFA-DPoP \(notificationToken)",
+                    "Authorization": "MFA-DPoP \(transactionToken)",
                     "MFA-DPoP": dpopAssertion
                 ],
                 telemetryInfo: self.telemetryInfo
@@ -55,13 +55,13 @@ struct ConsentAPIClient : ConsentAPI {
         }
     }
     
-    private func proofOfPossesion (url: URL, notificationToken: String, signingKey: SigningKey) throws -> String {
+    private func proofOfPossesion (url: URL, transactionToken: String, signingKey: SigningKey) throws -> String {
         guard let jwk = try signingKey.verificationKey().jwk else {
             throw GuardianError(code: .invalidJWK)
         }
         
         let header = JWT<DPoPClaimSet>.Header(algorithm: .rs256, type: "dpop+jwt", jwk: jwk)
-        let tokenHash = try self.authTokenHash(transactionToken: notificationToken);
+        let tokenHash = try self.authTokenHash(transactionToken: transactionToken);
         
         let claims = DPoPClaimSet(
             httpURI: url.absoluteString,

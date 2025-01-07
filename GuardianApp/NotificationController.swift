@@ -100,7 +100,7 @@ class NotificationController: UIViewController {
         
         Guardian
             .consent(forDomain: AppDelegate.tenantDomain)
-            .fetch(consentId: consentId, notificationToken: notification.transactionToken, signingKey: enrollment.signingKey)
+            .fetch(consentId: consentId, transactionToken: notification.transactionToken, signingKey: enrollment.signingKey)
             .start{ [unowned self] result in
                 switch result {
                 case .failure(let cause):

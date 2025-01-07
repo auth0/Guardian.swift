@@ -56,5 +56,5 @@ public protocol ConsentAPI {
                                     
      - returns: a request to execute
      */
-    func fetch(consentId: String, notificationToken: String, signingKey: SigningKey) -> Request<NoContent, Consent>
+    func fetch(consentId: String, transactionToken: String, signingKey: SigningKey) -> Request<NoContent, Consent>
 }
