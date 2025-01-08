@@ -55,14 +55,14 @@ github "auth0/Guardian.swift" ~> 1.4.2
 import Guardian
 ```
 
-Set the auth0 domain for your tenant:
+Set the auth0 domains for your tenant:
 ```swift
-let domain = "https://<tenant>.<locality>.auth0.com/appliance-mfa"
+let tenantDomain      = "<tenant>.<region>.auth0.com"
 ```
 
-alternatively you can use the custom domain if you configured one:
+alternatively you can use a custom domain if you configured one in your auth0 tenant:
 ```swift
-let domain = "https://<custom>/appliance-mfa"
+let tenantDomain      = "<custom>"
 ```
 
 ### Enroll
@@ -82,7 +82,7 @@ after your have all of them, you can enroll your device
 
 ```swift
 Guardian
-        .enroll(forDomain: "{YOUR_GUARDIAN_DOMAIN}",
+        .enroll(forDomain: tenantDomain,
                 usingUri: "{ENROLLMENT_URI}",
                 notificationToken: "{APNS_TOKEN}",
                 signingKey: signingKey,
@@ -170,7 +170,7 @@ Then just call
 
 ```swift
 Guardian
-        .authentication(forDomain: "{YOUR_GUARDIAN_DOMAIN}", device: device)
+        .authentication(forDomain: tenantDomain, device: device)
         .allow(notification: notification)
         .start { result in
             switch result {
@@ -189,7 +189,7 @@ you want. The reject reason will be available in the guardian logs.
 
 ```swift
 Guardian
-        .authentication(forDomain: "{YOUR_GUARDIAN_DOMAIN}", device: device)
+        .authentication(forDomain: tenantDomain, device: device)
         .reject(notification: notification)
         // or reject(notification: notification, withReason: "hacked")
         .start { result in
@@ -205,25 +205,24 @@ Guardian
 ### Fetch rich consent details
 
 When you receive a push notification, the presence of the property `tranactionLinkingId` indicates a
-rich consent record may be associated to the tranaction.
+rich consent record may be associated to the transaction.
 
 To fetch the rich consent details, you can use the `consent.fetch` method.
 
 ```swift
 if let consentId = notification.transactionLinkingId {
     Guardian
-        .consent(forDomain: AppDelegate.guardianDomain, device: enrollment)
-        .fetch(consentId: consentId, notificationToken: notification.transactionToken)
-        .start{ [unowned self] result in
+        .consent(forDomain: tenantDomain)
+        .fetch(consentId: consentId, notificationToken: notification.transactionToken, signingKey: enrollment.signingKey)
+        .start { [unowned self] result in
             switch result {
-            case .success(let payload):
-                // present consent details to the user
             case .failure(let cause):
                 // something failed, check cause to see what went wrong
+            case .success(let payload):
+                // present consent details to the user
+            }
         }
-    }
 }
-
 ```
 
 ### Unenroll
@@ -233,7 +232,7 @@ following request:
 
 ```swift
 Guardian
-        .api(forDomain: "{YOUR_GUARDIAN_DOMAIN}")
+        .api(forDomain: tenantDomain)
         .device(forEnrollmentId: "{USER_ENROLLMENT_ID}", token: "{ENROLLMENT_DEVICE_TOKEN}")
         .delete()
         .start { result in

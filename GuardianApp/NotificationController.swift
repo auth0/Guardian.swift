@@ -31,6 +31,9 @@ class NotificationController: UIViewController {
     @IBOutlet var locationLabel: UILabel!
     @IBOutlet var dateLabel: UILabel!
     
+    @IBOutlet var denyButton: UIButton!
+    @IBOutlet var allowButton: UIButton!
+    
     @IBOutlet var consentDetailsView: UIStackView!
     @IBOutlet var bindingMessageLabel: UILabel!
 
@@ -39,7 +42,7 @@ class NotificationController: UIViewController {
             return self.dismiss(animated: true, completion: nil)
         }
         let request = Guardian
-            .authentication(forDomain: AppDelegate.guardianDomain, device: enrollment)
+            .authentication(forDomain: AppDelegate.tenantDomain, device: enrollment)
             .allow(notification: notification)
         debugPrint(request)
         request.start { result in
@@ -60,7 +63,7 @@ class NotificationController: UIViewController {
             return self.dismiss(animated: true, completion: nil)
         }
         let request = Guardian
-            .authentication(forDomain: AppDelegate.guardianDomain, device: enrollment)
+            .authentication(forDomain: AppDelegate.tenantDomain, device: enrollment)
             .reject(notification: notification)
         debugPrint(request)
         request.start { result in
@@ -92,9 +95,12 @@ class NotificationController: UIViewController {
             return
         }
         
+        denyButton.isHidden = true
+        allowButton.isHidden = true
+        
         Guardian
-            .consent(forDomain: AppDelegate.guardianDomain, device: enrollment)
-            .fetch(consentId: consentId, notificationToken: notification.transactionToken)
+            .consent(forDomain: AppDelegate.tenantDomain)
+            .fetch(consentId: consentId, transactionToken: notification.transactionToken, signingKey: enrollment.signingKey)
             .start{ [unowned self] result in
                 switch result {
                 case .failure(let cause):
@@ -103,11 +109,12 @@ class NotificationController: UIViewController {
                     updateBindingMessage(bindingMessage: payload.requestedDetails.bindingMessage)
             }
         }
-        
     }
     
     func updateBindingMessage(bindingMessage:String) {
         DispatchQueue.main.async { [unowned self] in
+            self.denyButton.isHidden = false
+            self.allowButton.isHidden = false
             self.consentDetailsView.isHidden = false
             self.bindingMessageLabel.text = bindingMessage
         }

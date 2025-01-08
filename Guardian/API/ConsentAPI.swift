@@ -26,21 +26,19 @@ import Foundation
  `ConsentAPI` lets you retrieve consent objects from auth0's rich-consents API for authentication flows that require additional consent e.g. Client Initiated Backchannel Authentication (CIBA)
  
  ```
- let device: AuthenticationDevice = // the object you obtained when enrolling
  let consent = Guardian
-    .consent(forDomain: "tenant.guardian.auth0.com", device: device)
+    .consent(forDomain: "tenant.region.auth0.com")
  ```
  */
 public protocol ConsentAPI {
     /**
      ```
-     let device: AuthenticationDevice = // the object you obtained when enrolling
      let notification: Notification = // the notification received
      let consentId = notification.transactionLinkingId
      
      Guardian
-        .consent(forDomain: "tenant.guardian.auth0.com", device: device)
-     .fetch(consentId: consentId, notificationToken: notification.transactionToken)
+        .consent(forDomain: "tenant.region.auth0.com")
+     .fetch(consentId: consentId, notificationToken: notification.transactionToken, signingKey: enrollment.signingKey)
      .start { result in
           switch result {
           case .success(let payload):
@@ -54,8 +52,9 @@ public protocol ConsentAPI {
      - parameter consentId: the id of the consent object to fetch, this is obtained from the
                             transaction linking id of the ncoming push notification where relevant
      - parameter transactionToken: the access token obtained from the incoming push notification
+     - parameter signingKey: the private key used to sign Guardian AuthN requests
                                     
      - returns: a request to execute
      */
-    func fetch(consentId:String, notificationToken: String) -> Request<NoContent, Consent>
+    func fetch(consentId: String, transactionToken: String, signingKey: SigningKey) -> Request<NoContent, Consent>
 }

@@ -54,9 +54,17 @@ class GuardianSpec: QuickSpec {
         }
 
         describe("api(url:)") {
-
+            
             it("should return api with url only") {
                 expect(Guardian.api(url: URL(string: "https://samples.guardian.auth0.com")!)).toNot(beNil())
+            }
+            
+            it("should have base url with single 'appliance-mfa' component for passed url without this component") {
+                expect(Guardian.api(url: URL(string: "https://samples.guardian.auth0.com")!).baseUrl.absoluteString).to(equal("https://samples.guardian.auth0.com/appliance-mfa"))
+            }
+            
+            it("should have base url with single 'appliance-mfa' component for passed url with this component") {
+                expect(Guardian.api(url: URL(string: "https://samples.guardian.auth0.com/appliance-mfa")!).baseUrl.absoluteString).to(equal("https://samples.guardian.auth0.com/appliance-mfa"))
             }
         }
 
@@ -354,23 +362,19 @@ class GuardianSpec: QuickSpec {
             }
         }
         
-        describe("consent(forDomain:, device:)") {
-            let device = EnrolledDevice(id: "ID", userId: "USER_ID", deviceToken: "TOKEN", notificationToken: "TOKEN", signingKey: try! DataRSAPrivateKey.new())
-            
+        describe("consent(forDomain:)") {
             it("should return consent api with domain only") {
-                expect(Guardian.consent(forDomain: "samples.guardian.auth0.com", device: device)).toNot(beNil())
+                expect(Guardian.consent(forDomain: "samples.guardian.auth0.com")).toNot(beNil())
             }
             
             it("should return consent api with http url") {
-                expect(Guardian.consent(forDomain: "https://samples.guardian.auth0.com", device: device)).toNot(beNil())
+                expect(Guardian.consent(forDomain: "https://samples.guardian.auth0.com")).toNot(beNil())
             }
         }
 
-        describe("consent(url:, device:)") {
-            let device = EnrolledDevice(id: "ID", userId: "USER_ID", deviceToken: "TOKEN", notificationToken: "TOKEN", signingKey: try! DataRSAPrivateKey.new())
-
+        describe("consent(url:)") {
             it("should return authentication with http url") {
-                expect(Guardian.consent(url: URL(string: "https://samples.guardian.auth0.com")!, device: device)).toNot(beNil())
+                expect(Guardian.consent(consentUrl: URL(string: "https://samples.guardian.auth0.com")!)).toNot(beNil())
             }
         }
     }

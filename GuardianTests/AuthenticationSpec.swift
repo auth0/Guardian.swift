@@ -541,7 +541,7 @@ func checkJWT(request: URLRequest, accepted: Bool, reason: String? = nil, challe
         let jwt: JWT<GuardianClaimSet> = try? JWT(string: challengeResponse),
         let verified = try? jwt.verify(with: verificationKey.secKey),
         verified == true,
-        jwt.claimSet.audience == "https://tenant.guardian.auth0.com/also/works/in/appliance/api/resolve-transaction",
+        jwt.claimSet.audience == "https://tenant.region.auth0.com/appliance-mfa/api/resolve-transaction",
         jwt.claimSet.subject == challenge,
         jwt.claimSet.issuer == EnrolledDevice.vendorIdentifier,
         jwt.claimSet.issuedAt <= currentTime,

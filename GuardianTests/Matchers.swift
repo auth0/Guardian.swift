@@ -26,7 +26,7 @@ import Nimble
 @testable import Guardian
 
 func isMobileEnroll(baseUrl: URL) -> MockURLProtocolCondition {
-    return isScheme("https") && isMethodPOST() && isUrl(from: baseUrl, endingWithPathComponent: "api/enroll")
+    return isScheme("https") && isMethodPOST() && isUrl(from: baseUrl, endingWithPathComponent: "appliance-mfa/api/enroll")
 }
 
 func isMethodGET() -> MockURLProtocolCondition {
@@ -61,8 +61,9 @@ func isUrl(from baseUrl: URL, containingPathStartingWith path: String) -> MockUR
 }
 
 func isUrl(from baseUrl: URL, endingWithPathComponent pathComponent: String) -> MockURLProtocolCondition {
-    return { req in
-        return req.url == baseUrl.appendingPathComponent(pathComponent)
+    { req in
+        guard let url = req.url else { return false }
+        return url.absoluteString.hasSuffix(pathComponent)
     }
 }
 
@@ -96,7 +97,7 @@ func hasField(_ field: String, withParameters parameters: [String: String]) -> M
 }
 
 func isResolveTransaction(baseUrl: URL) -> MockURLProtocolCondition {
-    return isScheme("https") && isMethodPOST() && isUrl(from: baseUrl, endingWithPathComponent: "api/resolve-transaction")
+    return isScheme("https") && isMethodPOST() && isUrl(from: baseUrl, endingWithPathComponent: "appliance-mfa/api/resolve-transaction")
 }
 
 func hasBearerToken(_ token: String) -> MockURLProtocolCondition {
@@ -123,9 +124,9 @@ func isDeleteEnrollment(baseUrl: URL, enrollmentId: String? = nil) -> MockURLPro
 
 func isEnrollment(baseUrl: URL, enrollmentId: String? = nil) -> MockURLProtocolCondition {
     if let enrollmentId = enrollmentId {
-        return isUrl(from: baseUrl, endingWithPathComponent: "api/device-accounts/\(enrollmentId)")
+        return isUrl(from: baseUrl, endingWithPathComponent: "appliance-mfa/api/device-accounts/\(enrollmentId)")
     }
-    return isUrl(from: baseUrl, containingPathStartingWith: "api/device-accounts/")
+    return isUrl(from: baseUrl, containingPathStartingWith: "appliance-mfa/api/device-accounts/")
 }
 
 func hasBearerJWTToken(withSub sub: String, iss: String, aud: String, validFor duration: TimeInterval) -> MockURLProtocolCondition {
