@@ -98,6 +98,9 @@
 		5FAE6729210250E300F149A3 /* AsymmetricPublicKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FAE6728210250E300F149A3 /* AsymmetricPublicKey.swift */; };
 		5FF42BA521091AD10082459F /* NetworkOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FF42BA421091AD10082459F /* NetworkOperation.swift */; };
 		5FF42BA821091F150082459F /* NetworkOperationSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FF42BA721091F150082459F /* NetworkOperationSpec.swift */; };
+		AB58F6102CF9EE4A00E642F6 /* ConsentAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB58F60E2CF9EE4A00E642F6 /* ConsentAPI.swift */; };
+		AB58F6112CF9EE4A00E642F6 /* ConsentAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB58F60F2CF9EE4A00E642F6 /* ConsentAPIClient.swift */; };
+		AB9381852D03359700C47B1E /* ConsentSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB9381842D03359700C47B1E /* ConsentSpec.swift */; };
 		ED1E39A52B7E6C1300E8609A /* MockURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1E39A42B7E6C1300E8609A /* MockURLProtocol.swift */; };
 		ED1E39A72B822A2500E8609A /* MockURLResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1E39A62B822A2500E8609A /* MockURLResponse.swift */; };
 		ED1E39A92B82A9B100E8609A /* MockURLProtocolCondition.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1E39A82B82A9B100E8609A /* MockURLProtocolCondition.swift */; };
@@ -254,6 +257,9 @@
 		5FAE6728210250E300F149A3 /* AsymmetricPublicKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsymmetricPublicKey.swift; sourceTree = "<group>"; };
 		5FF42BA421091AD10082459F /* NetworkOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkOperation.swift; sourceTree = "<group>"; };
 		5FF42BA721091F150082459F /* NetworkOperationSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkOperationSpec.swift; sourceTree = "<group>"; };
+		AB58F60E2CF9EE4A00E642F6 /* ConsentAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentAPI.swift; sourceTree = "<group>"; };
+		AB58F60F2CF9EE4A00E642F6 /* ConsentAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentAPIClient.swift; sourceTree = "<group>"; };
+		AB9381842D03359700C47B1E /* ConsentSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentSpec.swift; sourceTree = "<group>"; };
 		ED1E39A42B7E6C1300E8609A /* MockURLProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockURLProtocol.swift; sourceTree = "<group>"; };
 		ED1E39A62B822A2500E8609A /* MockURLResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockURLResponse.swift; sourceTree = "<group>"; };
 		ED1E39A82B82A9B100E8609A /* MockURLProtocolCondition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockURLProtocolCondition.swift; sourceTree = "<group>"; };
@@ -419,6 +425,8 @@
 			children = (
 				2377A6421D806DFA00D6FB04 /* API.swift */,
 				2374A9E01D670F5900737F2E /* APIClient.swift */,
+				AB58F60E2CF9EE4A00E642F6 /* ConsentAPI.swift */,
+				AB58F60F2CF9EE4A00E642F6 /* ConsentAPIClient.swift */,
 				2377A6401D806D9900D6FB04 /* DeviceAPI.swift */,
 				232A85D91D6BDFCA00048DF7 /* DeviceAPIClient.swift */,
 				5F07A58E210A6E5900819FA2 /* NoContent.swift */,
@@ -500,6 +508,7 @@
 				2356C82F1D88A10600B6C84A /* GuardianSpec.swift */,
 				23D3E43F1D91BEA200F3FDE2 /* Base32Spec.swift */,
 				233F75281D93076600B8C15C /* NotificationSpec.swift */,
+				AB9381842D03359700C47B1E /* ConsentSpec.swift */,
 				5F1DB45C1DA4750F00264437 /* AuthenticationSpec.swift */,
 				2331BFEC1DD52ED50047F1D4 /* JWTSpec.swift */,
 			);
@@ -756,6 +765,8 @@
 				5F07A5AA210FAF9600819FA2 /* JWT.swift in Sources */,
 				5F07A58D210A6DF000819FA2 /* CodableAdditions.swift in Sources */,
 				5F07A58521092C7D00819FA2 /* ClientInfo.swift in Sources */,
+				AB58F6102CF9EE4A00E642F6 /* ConsentAPI.swift in Sources */,
+				AB58F6112CF9EE4A00E642F6 /* ConsentAPIClient.swift in Sources */,
 				5F07A599210F6D1900819FA2 /* Operation.swift in Sources */,
 				5F1604C721063FA000B0F25B /* Keys+Generation.swift in Sources */,
 				2331C01A1DD5FC6F0047F1D4 /* Data+Base64URL.swift in Sources */,
@@ -790,6 +801,7 @@
 				2356C8301D88A10600B6C84A /* GuardianSpec.swift in Sources */,
 				2374A9F51D67339E00737F2E /* Matchers.swift in Sources */,
 				23C67AEC1D81D6A400A38A2E /* MockNSURLSession.swift in Sources */,
+				AB9381852D03359700C47B1E /* ConsentSpec.swift in Sources */,
 				5F1604FB2107AF2800B0F25B /* OneTimePasswordGeneratorSpec.swift in Sources */,
 				ED1E39A92B82A9B100E8609A /* MockURLProtocolCondition.swift in Sources */,
 				5F1604C92106493600B0F25B /* SigningKeyStorageSpec.swift in Sources */,

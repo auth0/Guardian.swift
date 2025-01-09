@@ -250,7 +250,7 @@ class APIClientSpec: QuickSpec {
                         isDeleteEnrollment(baseUrl: ValidURL, enrollmentId: ValidEnrollmentId)
                         && hasBearerJWTToken(withSub: ValidUserId,
                                              iss: ValidEnrollmentId,
-                                             aud: ValidURL.appendingPathComponent(DeviceAPIClient.path).absoluteString,
+                                             aud: ValidURL.appendingPathComponent("appliance-mfa").appendingPathComponent(DeviceAPIClient.path).absoluteString,
                                              validFor: ValidBasicJWTDuration),
                     response: { _ in
                         successResponse()
@@ -348,7 +348,7 @@ class APIClientSpec: QuickSpec {
                         isUpdateEnrollment(baseUrl: ValidURL, enrollmentId: ValidEnrollmentId)
                         && hasBearerJWTToken(withSub: ValidUserId,
                                              iss: ValidEnrollmentId,
-                                             aud: ValidURL.appendingPathComponent(DeviceAPIClient.path).absoluteString,
+                                             aud: ValidURL.appendingPathComponent("appliance-mfa").appendingPathComponent(DeviceAPIClient.path).absoluteString,
                                              validFor: ValidBasicJWTDuration),
                     response: { req in
                         let payload = req.a0_payload

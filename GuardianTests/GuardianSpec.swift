@@ -54,9 +54,31 @@ class GuardianSpec: QuickSpec {
         }
 
         describe("api(url:)") {
-
+            
             it("should return api with url only") {
                 expect(Guardian.api(url: URL(string: "https://samples.guardian.auth0.com")!)).toNot(beNil())
+            }
+        }
+        
+        describe("adding path component") {
+            it("should not add path component to url with guardian.auth0.com suffix") {
+                expect(Guardian.api(url: URL(string: "https://samples.guardian.auth0.com")!).baseUrl.absoluteString).to(equal("https://samples.guardian.auth0.com"))
+            }
+            
+            it("should not add path component to url with guardian.region.auth0.com") {
+                expect(Guardian.api(url: URL(string: "https://samples.guardian.en.auth0.com")!).baseUrl.absoluteString).to(equal("https://samples.guardian.en.auth0.com"))
+            }
+            
+            it("should not add path component to custom url without guardian with already added path component") {
+                expect(Guardian.api(url: URL(string: "https://samples.auth0.com/appliance-mfa")!).baseUrl.absoluteString).to(equal("https://samples.auth0.com/appliance-mfa"))
+            }
+            
+            it("should add path component to custom url without guardian without already added path component") {
+                expect(Guardian.api(url: URL(string: "https://samples.auth0.com")!).baseUrl.absoluteString).to(equal("https://samples.auth0.com/appliance-mfa"))
+            }
+            
+            it("should add path component to custom url with guardian without already added path component") {
+                expect(Guardian.api(url: URL(string: "https://samples.guardian.some.thing.auth0.com")!).baseUrl.absoluteString).to(equal("https://samples.guardian.some.thing.auth0.com/appliance-mfa"))
             }
         }
 
@@ -351,6 +373,22 @@ class GuardianSpec: QuickSpec {
                             done()
                     }
                 }
+            }
+        }
+        
+        describe("consent(forDomain:)") {
+            it("should return consent api with domain only") {
+                expect(Guardian.consent(forDomain: "samples.guardian.auth0.com")).toNot(beNil())
+            }
+            
+            it("should return consent api with http url") {
+                expect(Guardian.consent(forDomain: "https://samples.guardian.auth0.com")).toNot(beNil())
+            }
+        }
+
+        describe("consent(url:)") {
+            it("should return authentication with http url") {
+                expect(Guardian.consent(consentUrl: URL(string: "https://samples.guardian.auth0.com")!)).toNot(beNil())
             }
         }
     }

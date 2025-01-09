@@ -43,7 +43,7 @@ class ViewController: UIViewController {
     @IBAction func unenrollAction(_ sender: AnyObject) {
         if let enrollment = AppDelegate.state {
             let request = Guardian
-                .api(forDomain: AppDelegate.guardianDomain)
+                .api(forDomain: AppDelegate.tenantDomain)
                 .device(forEnrollmentId: enrollment.identifier, userId: enrollment.userId, signingKey: enrollment.signingKey)
                 .delete()
             debugPrint(request)
@@ -122,7 +122,7 @@ extension ViewController: QRCodeReaderViewControllerDelegate {
                 let verificationKey = try? signingKey.verificationKey() else { return }
 
             let request = Guardian.enroll(
-                forDomain: AppDelegate.guardianDomain,
+                forDomain: AppDelegate.tenantDomain,
                 usingUri: qrCodeValue,
                 notificationToken: AppDelegate.pushToken!,
                 signingKey: signingKey,

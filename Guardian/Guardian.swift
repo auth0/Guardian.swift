@@ -380,6 +380,45 @@ public func notification(from userInfo: [AnyHashable: Any]) -> Notification? {
     return AuthenticationNotification(userInfo: userInfo)
 }
 
+/**
+ Creates an consent manager for a Guardian enrollment
+
+ ```
+ let consent = Guardian
+    .consent(forDomain: "<tenant>.<region>.auth0.com")
+ ```
+
+ - parameter forDomain:     domain or URL of your Guardian server
+ - parameter telemetryInfo:       information about the app, used for internal auth0 analitycs purposes
+
+ - returns: an `ConsentAPI` instance
+ 
+ - seealso: Guardian.ConsentAPI
+ */
+public func consent(forDomain domain: String, telemetryInfo: Auth0TelemetryInfo? = nil) -> ConsentAPI {
+    consent(consentUrl: url(from: domain)!, telemetryInfo: telemetryInfo)
+}
+
+/**
+ Creates an consent manager for a Guardian enrollment
+
+ ```
+ let authenticator = Guardian
+    .consent(url: URL(string: "https://<tenant>.<region>.auth0.com/")!)
+ ```
+
+ - parameter url:           URL of your Guardian server
+ - parameter telemetryInfo:       information about the app, used for internal auth0 analytics purposes
+
+
+ - returns: an `ConsentAPI` instance
+
+ - seealso: Guardian.ConsentAPI
+ */
+public func consent(consentUrl: URL, telemetryInfo: Auth0TelemetryInfo? = nil) -> ConsentAPI {
+    ConsentAPIClient(baseConsentUrl: consentUrl, telemetryInfo: telemetryInfo)
+}
+
 func url(from domain: String) -> URL? {
     guard domain.hasPrefix("http") else { return URL(string: "https://\(domain)") }
     return URL(string: domain)

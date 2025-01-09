@@ -25,7 +25,7 @@ import Nimble
 
 @testable import Guardian
 
-let Domain = "tenant.guardian.auth0.com/also/works/in/appliance/"
+let Domain = "tenant.region.auth0.com"
 let Timeout: NimbleTimeInterval = .seconds(2)
 
 let ValidURL = URL(string: "https://\(Domain)")!
@@ -42,6 +42,7 @@ let ValidAlgorithm = HMACAlgorithm.sha1
 let ValidDigits = 7
 let ValidPeriod = 29
 let ValidTransactionToken = "aValidTransactionToken"
+let ValidTransactionTokenShah256 = "CzMD9-OOC7tzMpYDBdgrSUtmhx8Jw9cZMSf4KXVRC5A"
 let RejectReason = "aRejectReason"
 let ValidChallengeResponse = "aValidChallengeResponse"
 let ValidBasicJWTDuration: TimeInterval = 60 * 60 * 2
@@ -50,3 +51,8 @@ let ValidDeviceName = "aValidDeviceName"
 let ValidNotificationService = "APNS"
 let DeviceAccountToken = UUID().uuidString
 let ValidNotificationChallenge = "aValidNotificationChallenge"
+let ValidTransactionLinkingId = "cns_1234"
+
+
+let AuthenticationDomain = "tenant.auth0.com"
+let ValidAuthenticationURL = URL(string: "https://\(AuthenticationDomain)")!

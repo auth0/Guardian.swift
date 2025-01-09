@@ -26,7 +26,11 @@ import Nimble
 @testable import Guardian
 
 func isMobileEnroll(baseUrl: URL) -> MockURLProtocolCondition {
-    return isScheme("https") && isMethodPOST() && isUrl(from: baseUrl, endingWithPathComponent: "api/enroll")
+    return isScheme("https") && isMethodPOST() && isUrl(from: baseUrl, endingWithPathComponent: "appliance-mfa/api/enroll")
+}
+
+func isMethodGET() -> MockURLProtocolCondition {
+  return { $0.httpMethod == "GET" }
 }
 
 func isMethodPOST() -> MockURLProtocolCondition {
@@ -57,8 +61,9 @@ func isUrl(from baseUrl: URL, containingPathStartingWith path: String) -> MockUR
 }
 
 func isUrl(from baseUrl: URL, endingWithPathComponent pathComponent: String) -> MockURLProtocolCondition {
-    return { req in
-        return req.url == baseUrl.appendingPathComponent(pathComponent)
+    { req in
+        guard let url = req.url else { return false }
+        return url.absoluteString.hasSuffix(pathComponent)
     }
 }
 
@@ -92,12 +97,24 @@ func hasField(_ field: String, withParameters parameters: [String: String]) -> M
 }
 
 func isResolveTransaction(baseUrl: URL) -> MockURLProtocolCondition {
-    return isScheme("https") && isMethodPOST() && isUrl(from: baseUrl, endingWithPathComponent: "api/resolve-transaction")
+    return isScheme("https") && isMethodPOST() && isUrl(from: baseUrl, endingWithPathComponent: "appliance-mfa/api/resolve-transaction")
 }
 
 func hasBearerToken(_ token: String) -> MockURLProtocolCondition {
     return { request in
         return request.value(forHTTPHeaderField: "Authorization") == "Bearer \(token)"
+    }
+}
+
+func hasDPoPToken(_ token: String) -> MockURLProtocolCondition {
+    return { request in
+        return request.value(forHTTPHeaderField: "Authorization") == "MFA-DPoP \(token)"
+    }
+}
+
+func hasDPoPAssertion(_ assertion: String) -> MockURLProtocolCondition {
+    return { request in
+        return request.value(forHTTPHeaderField: "MFA-DPoP") == assertion
     }
 }
 
@@ -107,9 +124,9 @@ func isDeleteEnrollment(baseUrl: URL, enrollmentId: String? = nil) -> MockURLPro
 
 func isEnrollment(baseUrl: URL, enrollmentId: String? = nil) -> MockURLProtocolCondition {
     if let enrollmentId = enrollmentId {
-        return isUrl(from: baseUrl, endingWithPathComponent: "api/device-accounts/\(enrollmentId)")
+        return isUrl(from: baseUrl, endingWithPathComponent: "appliance-mfa/api/device-accounts/\(enrollmentId)")
     }
-    return isUrl(from: baseUrl, containingPathStartingWith: "api/device-accounts/")
+    return isUrl(from: baseUrl, containingPathStartingWith: "appliance-mfa/api/device-accounts/")
 }
 
 func hasBearerJWTToken(withSub sub: String, iss: String, aud: String, validFor duration: TimeInterval) -> MockURLProtocolCondition {
@@ -134,6 +151,11 @@ func hasBearerJWTToken(withSub sub: String, iss: String, aud: String, validFor d
 
 func isUpdateEnrollment(baseUrl: URL, enrollmentId: String? = nil) -> MockURLProtocolCondition {
     return isMethodPATCH() && isEnrollment(baseUrl: baseUrl, enrollmentId: enrollmentId)
+}
+
+
+func isGetConsent(baseUrl: URL, consentId: String) -> MockURLProtocolCondition {
+    return isScheme("https") && isMethodGET() && isUrl(from: baseUrl, endingWithPathComponent: "rich-consents/\(consentId)")
 }
 
 func beUpdatedDevice(deviceIdentifier: String?, deviceName: String?, notificationService: String?, notificationToken: String?) -> Nimble.Predicate<Result<UpdatedDevice>> {

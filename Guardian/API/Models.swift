@@ -27,7 +27,7 @@ struct PushCredentials: Codable {
     let token: String
 }
 
-public struct RSAPublicJWK: Codable {
+public struct RSAPublicJWK: Codable, Equatable {
     let keyType = "RSA"
     let usage = "sig"
     let algorithm = "RS256"
@@ -91,6 +91,36 @@ public struct UpdatedDevice: Codable {
         case identifier
         case name
         case pushCredentials = "push_credentials"
+    }
+}
+
+public struct ConsentRequestedDetailsEntity: Decodable {
+    public let audience: String
+    public let scope: [String]
+    public let bindingMessage: String
+    
+    enum CodingKeys: String, CodingKey {
+        case audience
+        case scope
+        case bindingMessage = "binding_message"
+    }
+}
+
+public struct Consent: Decodable {
+    
+    public let consentId: String
+    
+    public let requestedDetails: ConsentRequestedDetailsEntity
+    
+    public let createdAt: String
+    
+    public let expiresAt: String
+    
+    enum CodingKeys: String, CodingKey {
+        case consentId = "id"
+        case requestedDetails = "requested_details"
+        case createdAt = "created_at"
+        case expiresAt = "expires_at"
     }
 }
 

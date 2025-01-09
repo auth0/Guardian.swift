@@ -30,13 +30,19 @@ class NotificationController: UIViewController {
     @IBOutlet var browserLabel: UILabel!
     @IBOutlet var locationLabel: UILabel!
     @IBOutlet var dateLabel: UILabel!
+    
+    @IBOutlet var denyButton: UIButton!
+    @IBOutlet var allowButton: UIButton!
+    
+    @IBOutlet var consentDetailsView: UIStackView!
+    @IBOutlet var bindingMessageLabel: UILabel!
 
     @IBAction func allowAction(_ sender: AnyObject) {
         guard let notification = notification, let enrollment = AppDelegate.state else {
             return self.dismiss(animated: true, completion: nil)
         }
         let request = Guardian
-            .authentication(forDomain: AppDelegate.guardianDomain, device: enrollment)
+            .authentication(forDomain: AppDelegate.tenantDomain, device: enrollment)
             .allow(notification: notification)
         debugPrint(request)
         request.start { result in
@@ -57,7 +63,7 @@ class NotificationController: UIViewController {
             return self.dismiss(animated: true, completion: nil)
         }
         let request = Guardian
-            .authentication(forDomain: AppDelegate.guardianDomain, device: enrollment)
+            .authentication(forDomain: AppDelegate.tenantDomain, device: enrollment)
             .reject(notification: notification)
         debugPrint(request)
         request.start { result in
@@ -76,13 +82,42 @@ class NotificationController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        guard let notification = notification, let _ = AppDelegate.state else {
+        guard let notification = notification, let enrollment = AppDelegate.state else {
             return
         }
 
         browserLabel.text = notification.source?.browser?.name ?? "Unknown"
         locationLabel.text = notification.location?.name ?? "Unknown"
         dateLabel.text = "\(notification.startedAt)"
+        self.consentDetailsView.isHidden = true
+        
+        guard let consentId = notification.transactionLinkingId else {
+            return
+        }
+        
+        denyButton.isHidden = true
+        allowButton.isHidden = true
+        
+        Guardian
+            .consent(forDomain: AppDelegate.tenantDomain)
+            .fetch(consentId: consentId, transactionToken: notification.transactionToken, signingKey: enrollment.signingKey)
+            .start{ [unowned self] result in
+                switch result {
+                case .failure(let cause):
+                    print("Fetch consent failed: \(cause)")
+                case .success(let payload):
+                    updateBindingMessage(bindingMessage: payload.requestedDetails.bindingMessage)
+            }
+        }
+    }
+    
+    func updateBindingMessage(bindingMessage:String) {
+        DispatchQueue.main.async { [unowned self] in
+            self.denyButton.isHidden = false
+            self.allowButton.isHidden = false
+            self.consentDetailsView.isHidden = false
+            self.bindingMessageLabel.text = bindingMessage
+        }
     }
 
     func showError(_ title: String, _ cause: Swift.Error) {
