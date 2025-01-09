@@ -55,7 +55,7 @@ github "auth0/Guardian.swift" ~> 1.4.2
 import Guardian
 ```
 
-Set the auth0 domains for your tenant:
+Set the domain for your auth0 tenant:
 ```swift
 let tenantDomain      = "<tenant>.<region>.auth0.com"
 ```

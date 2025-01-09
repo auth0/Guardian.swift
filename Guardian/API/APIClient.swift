@@ -77,6 +77,11 @@ struct APIClient: API {
 
 private extension URL {
     func appendingPathComponentIfNeeded(_ pathComponent: String) -> URL {
-        lastPathComponent == pathComponent ? self : appendingPathComponent(pathComponent)
+        guard
+            lastPathComponent != pathComponent,
+            !absoluteString.hasSuffix("guardian.auth0.com"),
+            absoluteString.range(of: "guardian\\.[^\\.]*\\.auth0\\.com", options: .regularExpression) == nil
+        else { return self }
+        return appendingPathComponent(pathComponent)
     }
 }
