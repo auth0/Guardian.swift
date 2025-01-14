@@ -27,7 +27,7 @@ import UserNotifications
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-    static let tenantDomain = "https://dev-jo51o3afnh6qac8u.us.auth0.com"
+    static let tenantDomain = "https://guardian-demo.us.auth0.com"
 
     static var pushToken: String? = nil
     var window: UIWindow?

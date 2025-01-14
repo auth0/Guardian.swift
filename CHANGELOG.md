@@ -1,5 +1,11 @@
 # Change Log
 
+## [1.5.0](https://github.com/auth0/Guardian.swift/tree/1.5.0) (2025-01-13)
+[Full Changelog](https://github.com/auth0/Guardian.swift/compare/1.4.2...1.5.0)
+
+**Changed**
+- Add support for fetching rich consents
+
 ## [1.4.2](https://github.com/auth0/Guardian.swift/tree/1.4.1) (2024-05-29)
 [Full Changelog](https://github.com/auth0/Guardian.swift/compare/1.4.1...1.4.2)
 
