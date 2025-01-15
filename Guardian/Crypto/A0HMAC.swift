@@ -1,4 +1,4 @@
-// A0SHA.m
+// AOHMAC.swift
 //
 // Copyright (c) 2016 Auth0 (http://auth0.com)
 //
@@ -20,36 +20,39 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import <A0SHA.h>
-#import <CommonCrypto/CommonHMAC.h>
+import Foundation
+import CommonCrypto
 
-@interface A0SHA ()
-@property (readonly, nonatomic) NSInteger digestLength;
-@end
-
-@implementation A0SHA
-
-- (instancetype)initWithAlgorithm:(NSString *)algorithm {
-    self = [super init];
-    if (self) {
-        const NSString * alg = algorithm.lowercaseString;
-        if ([@"sha256"  isEqual: alg]) {
-            _digestLength = CC_SHA256_DIGEST_LENGTH;
-        } else {
-            return nil;
+struct A0HMAC {
+    private let digestLength: Int
+    private let algorithm: CCHmacAlgorithm
+    private let key: Data
+    
+    init?(algorithm: String, key: Data) {
+        let alg = algorithm.lowercased()
+        switch alg {
+        case "sha1":
+            self.algorithm = CCHmacAlgorithm(kCCHmacAlgSHA1)
+            digestLength = Int(CC_SHA1_DIGEST_LENGTH)
+        case "sha256":
+            self.algorithm = CCHmacAlgorithm(kCCHmacAlgSHA256)
+            digestLength = Int(CC_SHA256_DIGEST_LENGTH)
+        case "sha512":
+            self.algorithm = CCHmacAlgorithm(kCCHmacAlgSHA512)
+            digestLength = Int(CC_SHA512_DIGEST_LENGTH)
+        default:
+            return nil
         }
+        self.key = key
     }
-    return self;
+    
+    func sign(_ data: Data) -> Data {
+        var hashBytes = [UInt8](repeating: 0, count: digestLength)
+        key.withUnsafeBytes { key in
+            data.withUnsafeBytes { data in
+                CCHmac(algorithm, key.baseAddress, key.count, data.baseAddress, data.count, &hashBytes)
+            }
+        }
+        return Data(hashBytes)
+    }
 }
-
-- (NSData *)hash:(NSData *)data {
-    uint8_t hashBytes[self.digestLength];
-    memset(hashBytes, 0x0, self.digestLength);
-
-    CC_SHA256(data.bytes, (CC_LONG)data.length, hashBytes);
-
-    NSData *hash = [NSData dataWithBytes:hashBytes length:self.digestLength];
-    return hash;
-}
-
-@end

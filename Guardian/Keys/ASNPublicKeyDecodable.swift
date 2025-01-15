@@ -34,12 +34,21 @@ public protocol ASNPublicKeyDecodable: PublicKeyDataConvertible {
 extension ASNPublicKeyDecodable {
 
     public var attributes: PublicKeyAttributes? {
-        let asn = { (bytes: UnsafePointer<UInt8>) -> PublicKeyAttributes? in
-            guard bytes.pointee == 0x30 else { return nil }
+        let asn = { (buffer: UnsafeRawBufferPointer) -> PublicKeyAttributes? in
+            guard 
+                let bytes = buffer.bindMemory(to: UInt8.self).baseAddress,
+                bytes.pointee == 0x30
+            else { return nil }
+            
             let (modulusBytes, totalLength) = self.length(from: bytes + 1)
-            guard totalLength > 0, let (exponentBytes, modulus) = self.data(from: modulusBytes) else { return nil }
-            guard let (end, exponent) = self.data(from: exponentBytes) else { return nil }
-            guard abs(end.distance(to: modulusBytes)) == totalLength else { return nil }
+            
+            guard
+                totalLength > 0,
+                let (exponentBytes, modulus) = self.data(from: modulusBytes),
+                let (end, exponent) = self.data(from: exponentBytes),
+                abs(end.distance(to: modulusBytes)) == totalLength
+            else { return nil }
+            
             return PublicKeyAttributes(modulus: modulus, exponent: exponent)
         }
         return self.data?.withUnsafeBytes(asn)

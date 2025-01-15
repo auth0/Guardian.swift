@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		231687171DDA071A00B09526 /* A0SHA.h in Headers */ = {isa = PBXBuildFile; fileRef = 231687161DDA071A00B09526 /* A0SHA.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		231687191DDA07FD00B09526 /* A0SHA.m in Sources */ = {isa = PBXBuildFile; fileRef = 231687181DDA07FD00B09526 /* A0SHA.m */; };
 		232A85DA1D6BDFCA00048DF7 /* DeviceAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 232A85D91D6BDFCA00048DF7 /* DeviceAPIClient.swift */; };
 		2331C01A1DD5FC6F0047F1D4 /* Data+Base64URL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2331C0191DD5FC6F0047F1D4 /* Data+Base64URL.swift */; };
 		233F75271D92F27000B8C15C /* Notification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 233F75261D92F27000B8C15C /* Notification.swift */; };
@@ -17,8 +15,6 @@
 		234B25B21D9DA37D00078FA0 /* NotificationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 234B25B11D9DA37D00078FA0 /* NotificationController.swift */; };
 		2356C82E1D88998A00B6C84A /* EnrollRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2356C82D1D88998A00B6C84A /* EnrollRequest.swift */; };
 		2356C8301D88A10600B6C84A /* GuardianSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2356C82F1D88A10600B6C84A /* GuardianSpec.swift */; };
-		235B4B221DA3F51D00CEB5DC /* A0HMAC.m in Sources */ = {isa = PBXBuildFile; fileRef = 235B4B211DA3F51D00CEB5DC /* A0HMAC.m */; };
-		235B4B261DA3F85A00CEB5DC /* A0HMAC.h in Headers */ = {isa = PBXBuildFile; fileRef = 235B4B251DA3F85A00CEB5DC /* A0HMAC.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		237246751D7DC63B00CCF635 /* Guardian.swift in Sources */ = {isa = PBXBuildFile; fileRef = 237246741D7DC63B00CCF635 /* Guardian.swift */; };
 		2374A9E41D670F5900737F2E /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2374A9E01D670F5900737F2E /* APIClient.swift */; };
 		2374A9EB1D67175200737F2E /* APIClientSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2374A9EA1D67175200737F2E /* APIClientSpec.swift */; };
@@ -27,8 +23,6 @@
 		2374A9F51D67339E00737F2E /* Matchers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2374A9F41D67339E00737F2E /* Matchers.swift */; };
 		2377A6411D806D9900D6FB04 /* DeviceAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2377A6401D806D9900D6FB04 /* DeviceAPI.swift */; };
 		2377A6431D806DFA00D6FB04 /* API.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2377A6421D806DFA00D6FB04 /* API.swift */; };
-		23B7A0471DD4E7820038124A /* A0RSA.m in Sources */ = {isa = PBXBuildFile; fileRef = 23B7A0461DD4E7820038124A /* A0RSA.m */; };
-		23B7A0491DD4E8300038124A /* A0RSA.h in Headers */ = {isa = PBXBuildFile; fileRef = 23B7A0481DD4E8300038124A /* A0RSA.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		23C67AEC1D81D6A400A38A2E /* MockNSURLSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23C67AEB1D81D6A400A38A2E /* MockNSURLSession.swift */; };
 		23C67AEE1D81EF5300A38A2E /* EnrolledDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23C67AED1D81EF5300A38A2E /* EnrolledDevice.swift */; };
 		23D3E4401D91BEA200F3FDE2 /* Base32Spec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23D3E43F1D91BEA200F3FDE2 /* Base32Spec.swift */; };
@@ -105,6 +99,9 @@
 		ED1E39A72B822A2500E8609A /* MockURLResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1E39A62B822A2500E8609A /* MockURLResponse.swift */; };
 		ED1E39A92B82A9B100E8609A /* MockURLProtocolCondition.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1E39A82B82A9B100E8609A /* MockURLProtocolCondition.swift */; };
 		ED7B279F2B682A2700788920 /* QRCodeReaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED7B279E2B682A2700788920 /* QRCodeReaderViewController.swift */; };
+		ED9C56802C8740E700FCB048 /* A0HMAC.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED9C567E2C87297900FCB048 /* A0HMAC.swift */; };
+		ED9C56842C87437C00FCB048 /* A0RSA.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED9C56832C87437C00FCB048 /* A0RSA.swift */; };
+		ED9C56862C874A7C00FCB048 /* A0SHA.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED9C56852C874A7C00FCB048 /* A0SHA.swift */; };
 		EDABB9212BA1CB8700623911 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = EDABB91E2BA0CB6C00623911 /* PrivacyInfo.xcprivacy */; };
 /* End PBXBuildFile section */
 
@@ -159,8 +156,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		231687161DDA071A00B09526 /* A0SHA.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = A0SHA.h; sourceTree = "<group>"; };
-		231687181DDA07FD00B09526 /* A0SHA.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = A0SHA.m; sourceTree = "<group>"; };
 		232A85D91D6BDFCA00048DF7 /* DeviceAPIClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = DeviceAPIClient.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		2331BFEC1DD52ED50047F1D4 /* JWTSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JWTSpec.swift; sourceTree = "<group>"; };
 		2331C0191DD5FC6F0047F1D4 /* Data+Base64URL.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+Base64URL.swift"; sourceTree = "<group>"; };
@@ -171,18 +166,14 @@
 		234B25B11D9DA37D00078FA0 /* NotificationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationController.swift; sourceTree = "<group>"; };
 		2356C82D1D88998A00B6C84A /* EnrollRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnrollRequest.swift; sourceTree = "<group>"; };
 		2356C82F1D88A10600B6C84A /* GuardianSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GuardianSpec.swift; sourceTree = "<group>"; };
-		235B4B211DA3F51D00CEB5DC /* A0HMAC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = A0HMAC.m; sourceTree = "<group>"; };
-		235B4B251DA3F85A00CEB5DC /* A0HMAC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = A0HMAC.h; sourceTree = "<group>"; };
 		237246741D7DC63B00CCF635 /* Guardian.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Guardian.swift; sourceTree = "<group>"; };
 		2374A9E01D670F5900737F2E /* APIClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
 		2374A9EA1D67175200737F2E /* APIClientSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIClientSpec.swift; sourceTree = "<group>"; };
 		2374A9EE1D672ABD00737F2E /* Result.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Result.swift; sourceTree = "<group>"; };
 		2374A9F21D672E4F00737F2E /* Responses.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Responses.swift; sourceTree = "<group>"; };
-		2374A9F41D67339E00737F2E /* Matchers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Matchers.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		2374A9F41D67339E00737F2E /* Matchers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Matchers.swift; sourceTree = "<group>"; };
 		2377A6401D806D9900D6FB04 /* DeviceAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceAPI.swift; sourceTree = "<group>"; };
 		2377A6421D806DFA00D6FB04 /* API.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = API.swift; sourceTree = "<group>"; };
-		23B7A0461DD4E7820038124A /* A0RSA.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = A0RSA.m; sourceTree = "<group>"; };
-		23B7A0481DD4E8300038124A /* A0RSA.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = A0RSA.h; sourceTree = "<group>"; };
 		23C67AEB1D81D6A400A38A2E /* MockNSURLSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockNSURLSession.swift; sourceTree = "<group>"; };
 		23C67AED1D81EF5300A38A2E /* EnrolledDevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnrolledDevice.swift; sourceTree = "<group>"; };
 		23D3E43F1D91BEA200F3FDE2 /* Base32Spec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Base32Spec.swift; sourceTree = "<group>"; };
@@ -264,7 +255,12 @@
 		ED1E39A62B822A2500E8609A /* MockURLResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockURLResponse.swift; sourceTree = "<group>"; };
 		ED1E39A82B82A9B100E8609A /* MockURLProtocolCondition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockURLProtocolCondition.swift; sourceTree = "<group>"; };
 		ED7B279E2B682A2700788920 /* QRCodeReaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeReaderViewController.swift; sourceTree = "<group>"; };
+		ED8B7C982C7F5AA200CBCF8C /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
+		ED9C567E2C87297900FCB048 /* A0HMAC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = A0HMAC.swift; sourceTree = "<group>"; };
+		ED9C56832C87437C00FCB048 /* A0RSA.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = A0RSA.swift; sourceTree = "<group>"; };
+		ED9C56852C874A7C00FCB048 /* A0SHA.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = A0SHA.swift; sourceTree = "<group>"; };
 		EDABB91E2BA0CB6C00623911 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		EDF15CBF2CA5AB0000170C76 /* GuardianTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = GuardianTests.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -374,15 +370,12 @@
 		5F1604FC2108D0E800B0F25B /* Crypto */ = {
 			isa = PBXGroup;
 			children = (
-				235B4B251DA3F85A00CEB5DC /* A0HMAC.h */,
-				235B4B211DA3F51D00CEB5DC /* A0HMAC.m */,
-				23B7A0481DD4E8300038124A /* A0RSA.h */,
-				23B7A0461DD4E7820038124A /* A0RSA.m */,
-				231687161DDA071A00B09526 /* A0SHA.h */,
-				231687181DDA07FD00B09526 /* A0SHA.m */,
 				234004EE1D909C91009AB77C /* Base32.swift */,
 				2331C0191DD5FC6F0047F1D4 /* Data+Base64URL.swift */,
 				5F07A5A9210FAF9600819FA2 /* JWT.swift */,
+				ED9C567E2C87297900FCB048 /* A0HMAC.swift */,
+				ED9C56832C87437C00FCB048 /* A0RSA.swift */,
+				ED9C56852C874A7C00FCB048 /* A0SHA.swift */,
 			);
 			path = Crypto;
 			sourceTree = "<group>";
@@ -496,6 +489,7 @@
 		5F2037DB1D5E1E3E0005D2E2 /* GuardianTests */ = {
 			isa = PBXGroup;
 			children = (
+				EDF15CBF2CA5AB0000170C76 /* GuardianTests.xctestplan */,
 				5F07A5A1210F9A0700819FA2 /* API */,
 				5F07A59E210F988500819FA2 /* Enrollment */,
 				5FF42BA621091EF20082459F /* Networking */,
@@ -545,6 +539,7 @@
 		5F20380B1D5E41E20005D2E2 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
+				ED8B7C982C7F5AA200CBCF8C /* Package.swift */,
 				5F2038181D5E46210005D2E2 /* Gemfile */,
 				5F2038111D5E42AD0005D2E2 /* .gitignore */,
 				5F20380C1D5E421F0005D2E2 /* Cartfile.resolved */,
@@ -585,9 +580,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				5F2037D11D5E1E3E0005D2E2 /* Guardian.h in Headers */,
-				23B7A0491DD4E8300038124A /* A0RSA.h in Headers */,
-				231687171DDA071A00B09526 /* A0SHA.h in Headers */,
-				235B4B261DA3F85A00CEB5DC /* A0HMAC.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -657,23 +649,24 @@
 		5F2037C41D5E1E3E0005D2E2 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				BuildIndependentTargetsInParallel = YES;
 				LastSwiftUpdateCheck = 0810;
-				LastUpgradeCheck = 0930;
+				LastUpgradeCheck = 1600;
 				ORGANIZATIONNAME = Auth0;
 				TargetAttributes = {
 					5F2037CC1D5E1E3E0005D2E2 = {
 						CreatedOnToolsVersion = 7.3.1;
-						LastSwiftMigration = 0940;
+						LastSwiftMigration = 1540;
 						ProvisioningStyle = Manual;
 					};
 					5F2037D61D5E1E3E0005D2E2 = {
 						CreatedOnToolsVersion = 7.3.1;
-						LastSwiftMigration = 0940;
+						LastSwiftMigration = 1540;
 						TestTargetID = 5F2037EA1D5E22590005D2E2;
 					};
 					5F2037EA1D5E22590005D2E2 = {
 						CreatedOnToolsVersion = 7.3.1;
-						LastSwiftMigration = 0940;
+						LastSwiftMigration = 1540;
 						SystemCapabilities = {
 							com.apple.Push = {
 								enabled = 1;
@@ -684,10 +677,9 @@
 			};
 			buildConfigurationList = 5F2037C71D5E1E3E0005D2E2 /* Build configuration list for PBXProject "Guardian" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				English,
 				en,
 				Base,
 			);
@@ -749,7 +741,6 @@
 				237246751D7DC63B00CCF635 /* Guardian.swift in Sources */,
 				2377A6411D806D9900D6FB04 /* DeviceAPI.swift in Sources */,
 				5FF42BA521091AD10082459F /* NetworkOperation.swift in Sources */,
-				23B7A0471DD4E7820038124A /* A0RSA.m in Sources */,
 				5F1DB45B1DA4649600264437 /* Authentication.swift in Sources */,
 				5F07A59D210F849E00819FA2 /* GuardianError.swift in Sources */,
 				5F1604F421068FCC00B0F25B /* AuthenticationDevice.swift in Sources */,
@@ -761,7 +752,6 @@
 				5F61338D2101289E00BCC182 /* AuthenticationSource.swift in Sources */,
 				233F75271D92F27000B8C15C /* Notification.swift in Sources */,
 				23C67AEE1D81EF5300A38A2E /* EnrolledDevice.swift in Sources */,
-				235B4B221DA3F51D00CEB5DC /* A0HMAC.m in Sources */,
 				5F07A5AA210FAF9600819FA2 /* JWT.swift in Sources */,
 				5F07A58D210A6DF000819FA2 /* CodableAdditions.swift in Sources */,
 				5F07A58521092C7D00819FA2 /* ClientInfo.swift in Sources */,
@@ -769,6 +759,7 @@
 				AB58F6112CF9EE4A00E642F6 /* ConsentAPIClient.swift in Sources */,
 				5F07A599210F6D1900819FA2 /* Operation.swift in Sources */,
 				5F1604C721063FA000B0F25B /* Keys+Generation.swift in Sources */,
+				ED9C56862C874A7C00FCB048 /* A0SHA.swift in Sources */,
 				2331C01A1DD5FC6F0047F1D4 /* Data+Base64URL.swift in Sources */,
 				5F1604C5210636B500B0F25B /* ASNPublicKeyDecodable.swift in Sources */,
 				5FAE6727210250D000F149A3 /* DataRSAPrivateKey.swift in Sources */,
@@ -776,7 +767,8 @@
 				5F61338B2101286200BCC182 /* AuthenticationNotification.swift in Sources */,
 				5FAE6729210250E300F149A3 /* AsymmetricPublicKey.swift in Sources */,
 				5FAE67252102509600F149A3 /* KeychainRSAPrivateKey.swift in Sources */,
-				231687191DDA07FD00B09526 /* A0SHA.m in Sources */,
+				ED9C56802C8740E700FCB048 /* A0HMAC.swift in Sources */,
+				ED9C56842C87437C00FCB048 /* A0RSA.swift in Sources */,
 				5F6133892101273300BCC182 /* AuthenticationCategory.swift in Sources */,
 				5F07A5AE2110C2C100819FA2 /* Models.swift in Sources */,
 				5F07A58B210A6D5A00819FA2 /* Additions.swift in Sources */,
@@ -879,6 +871,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -898,6 +891,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = NO;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -909,6 +903,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -923,7 +918,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -938,6 +933,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -957,6 +953,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = NO;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -968,6 +965,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -976,7 +974,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
@@ -992,26 +990,28 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				CODE_SIGN_IDENTITY = "";
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
 				INFOPLIST_FILE = Guardian/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu99 gnu++11";
 				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.sdk.Guardian;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_INSTALL_OBJC_HEADER = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -1019,25 +1019,27 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				CODE_SIGN_IDENTITY = "";
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
 				INFOPLIST_FILE = Guardian/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu99 gnu++11";
 				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.sdk.Guardian;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_INSTALL_OBJC_HEADER = NO;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -1050,6 +1052,7 @@
 				DEVELOPMENT_TEAM = 86WQXF56BC;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = GuardianTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1059,7 +1062,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GuardianApp.app/GuardianApp";
 			};
 			name = Debug;
@@ -1073,6 +1076,7 @@
 				DEVELOPMENT_TEAM = 86WQXF56BC;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = GuardianTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1081,7 +1085,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.GuardianTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GuardianApp.app/GuardianApp";
 			};
 			name = Release;
@@ -1089,7 +1093,6 @@
 		5F2037FA1D5E22590005D2E2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = GuardianApp/GuardianApp.entitlements;
@@ -1103,7 +1106,7 @@
 					"$(PROJECT_DIR)/Carthage/Build/**",
 				);
 				INFOPLIST_FILE = GuardianApp/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1115,7 +1118,7 @@
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Guardian SDK Sample App";
 				SWIFT_INSTALL_OBJC_HEADER = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
@@ -1123,7 +1126,6 @@
 		5F2037FB1D5E22590005D2E2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = GuardianApp/GuardianApp.entitlements;
@@ -1137,7 +1139,7 @@
 					"$(PROJECT_DIR)/Carthage/Build/**",
 				);
 				INFOPLIST_FILE = GuardianApp/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1148,7 +1150,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Guardian SDK Sample App";
 				SWIFT_INSTALL_OBJC_HEADER = NO;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;

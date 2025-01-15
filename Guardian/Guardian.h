@@ -27,9 +27,3 @@ FOUNDATION_EXPORT double GuardianVersionNumber;
 
 //! Project version string for Guardian.
 FOUNDATION_EXPORT const unsigned char GuardianVersionString[];
-
-// In this header, you should import all the public headers of your framework using statements like #import <Guardian/PublicHeader.h>
-
-#include <Guardian/A0HMAC.h>
-#include <Guardian/A0RSA.h>
-#include <Guardian/A0SHA.h>

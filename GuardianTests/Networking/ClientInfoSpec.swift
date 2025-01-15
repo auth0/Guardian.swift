@@ -66,7 +66,7 @@ class ClientInfoSpec: QuickSpec {
                 
                 expect(value).toNot(beNil())
                 
-                let data = Data(base64URLEncoded: value!!)
+                let data = Data(base64URLEncoded: value!)
                 let decoded = try? decoder.decode(ClientInfo.self, from: data!)
                 
                 expect(decoded?.name).to(equal("Guardian.swift"))
