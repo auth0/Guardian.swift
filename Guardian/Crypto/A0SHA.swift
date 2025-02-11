@@ -1,4 +1,4 @@
-// A0SHA.h
+// AOSHA.swift
 //
 // Copyright (c) 2016 Auth0 (http://auth0.com)
 //
@@ -20,14 +20,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import <Foundation/Foundation.h>
+import Foundation
+import CommonCrypto
 
-NS_ASSUME_NONNULL_BEGIN
-@interface A0SHA: NSObject
+struct A0SHA {
+    private let digestLength: Int
+    
+    init?(algorithm: String) {
+        let alg = algorithm.lowercased()
+        switch alg {
+        case "sha256":
+            digestLength = Int(CC_SHA256_DIGEST_LENGTH)
+        default:
+            return nil
+        }
+    }
+    
+    func hash(_ data: Data) -> Data {
+        var hashBytes = [UInt8](repeating: 0, count: digestLength)
+        
+        data.withUnsafeBytes { data in
+            _ = CC_SHA256(data.baseAddress, CC_LONG(data.count), &hashBytes)
+        }
 
-- (nullable instancetype)initWithAlgorithm: (NSString *)algorithm;
-
-- (NSData *)hash: (NSData *)data;
-
-@end
-NS_ASSUME_NONNULL_END
+        return Data(hashBytes)
+    }
+}

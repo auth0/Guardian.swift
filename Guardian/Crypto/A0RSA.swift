@@ -1,4 +1,4 @@
-// A0HMAC.h
+// AORSA.swift
 //
 // Copyright (c) 2016 Auth0 (http://auth0.com)
 //
@@ -20,16 +20,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import <Foundation/Foundation.h>
+import Foundation
+import CommonCrypto
 
-NS_ASSUME_NONNULL_BEGIN
-@interface A0HMAC: NSObject
-
-@property (readonly, nonatomic) NSInteger digestLength;
-
-- (nullable instancetype)initWithAlgorithm: (NSString *)algorithm key: (NSData *)key;
-
-- (NSData *)sign: (NSData *)data;
-
-@end
-NS_ASSUME_NONNULL_END
+struct A0RSA {
+    private let key: SecKey
+     
+    init?(key: SecKey) {
+        self.key = key
+    }
+    func sign(_ plainData: Data) -> Data? {
+        var error: Unmanaged<CFError>?
+        return SecKeyCreateSignature(key, SecKeyAlgorithm.rsaSignatureDigestPKCS1v15SHA256, plainData as CFData, &error) as? Data
+    }
+    
+    func verify(_ plainData: Data, signature: Data) -> Bool {
+        var error: Unmanaged<CFError>?
+        return SecKeyVerifySignature(key, SecKeyAlgorithm.rsaSignatureDigestPKCS1v15SHA256, plainData as CFData, signature as CFData, &error)
+    }
+}

@@ -1,0 +1,24 @@
+{
+  "configurations" : [
+    {
+      "id" : "88215E2F-A371-4C92-9ABD-C356BFD0A7CF",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:Guardian.xcodeproj",
+        "identifier" : "5F2037D61D5E1E3E0005D2E2",
+        "name" : "GuardianTests"
+      }
+    }
+  ],
+  "version" : 1
+}
