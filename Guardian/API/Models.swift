@@ -98,11 +98,19 @@ public struct ConsentRequestedDetailsEntity: Decodable {
     public let audience: String
     public let scope: [String]
     public let bindingMessage: String
+    public var authorizationDetails: [JSON]?
     
     enum CodingKeys: String, CodingKey {
         case audience
         case scope
         case bindingMessage = "binding_message"
+        case authorizationDetails = "authorization_details"
+    }
+
+    public func authorizationDetails<T: Decodable>(_ type: String) -> [T] {
+        return authorizationDetails?
+            .filter({$0["type"]?.stringValue == type})
+            .compactMap({try? decode(T.self, from:encode(body:$0))}) ?? [];
     }
 }
 
