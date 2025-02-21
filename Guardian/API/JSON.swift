@@ -72,7 +72,7 @@ public enum JSON: Equatable, Codable {
     }
     
     /// Return the string value if this is a `.string`, otherwise `nil`
-    var stringValue: String? {
+    public var stringValue: String? {
         if case .string(let value) = self {
             return value
         }
@@ -80,7 +80,7 @@ public enum JSON: Equatable, Codable {
     }
     
     /// Return the double value if this is a `.number`, otherwise `nil`
-    var doubleValue: Double? {
+    public var doubleValue: Double? {
         if case .number(let value) = self {
             return value
         }
@@ -88,7 +88,7 @@ public enum JSON: Equatable, Codable {
     }
     
     /// Return the bool value if this is a `.bool`, otherwise `nil`
-    var boolValue: Bool? {
+    public var boolValue: Bool? {
         if case .bool(let value) = self {
             return value
         }
@@ -96,7 +96,7 @@ public enum JSON: Equatable, Codable {
     }
     
     /// Return the object value if this is an `.object`, otherwise `nil`
-    var objectValue: [String: JSON]? {
+    public var objectValue: [String: JSON]? {
         if case .object(let value) = self {
             return value
         }
@@ -104,7 +104,7 @@ public enum JSON: Equatable, Codable {
     }
     
     /// Return the array value if this is an `.array`, otherwise `nil`
-    var arrayValue: [JSON]? {
+    public var arrayValue: [JSON]? {
         if case .array(let value) = self {
             return value
         }
@@ -112,7 +112,7 @@ public enum JSON: Equatable, Codable {
     }
     
     /// Return `true` iff this is `.null`
-    var isNull: Bool {
+    public var isNull: Bool {
         if case .null = self {
             return true
         }
@@ -122,7 +122,7 @@ public enum JSON: Equatable, Codable {
     /// If this is an `.array`, return item at index
     ///
     /// If this is not an `.array` or the index is out of bounds, returns `nil`.
-    subscript(index: Int) -> JSON? {
+    public subscript(index: Int) -> JSON? {
         if case .array(let arr) = self, arr.indices.contains(index) {
             return arr[index]
         }
@@ -130,7 +130,7 @@ public enum JSON: Equatable, Codable {
     }
     
     /// If this is an `.object`, return item at key
-    subscript(key: String) -> JSON? {
+    public subscript(key: String) -> JSON? {
         if case .object(let dict) = self {
             return dict[key]
         }
