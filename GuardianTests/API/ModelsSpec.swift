@@ -34,7 +34,7 @@ class ModelsSpec: QuickSpec {
                 expect(result?.audience).to(equal("my_audience"))
                 expect(result?.bindingMessage).to(equal("my_binding_message"))
                 expect(result?.scope).to(contain(["openid", "my_scope"]))
-                expect(result?.authorizationDetails).to(beNil())
+                expect(result?.authorizationDetails).to(beEmpty())
             }
             
             it("should load from Json decoder with authorization_details") {
@@ -47,12 +47,12 @@ class ModelsSpec: QuickSpec {
                 expect(result!.scope).to(contain(["openid", "my_scope"]))
                 expect(result!.authorizationDetails).toNot(beEmpty())
                 
-                let accountInfoJson = (result!.authorizationDetails?.first)!
+                let accountInfoJson = (result!.authorizationDetails.first)!
                 expect(accountInfoJson["type"]?.stringValue).to(equal("account_information"))
                 expect(accountInfoJson["actions"]?.arrayValue?.map{ $0.stringValue! }).to(contain("list_accounts", "read_balances", "read_transactions"))
                 expect(accountInfoJson["locations"]?.arrayValue?.map{ $0.stringValue! }).to(contain("https://example.com/accounts"))
                 
-                let paymentInitiationJson = (result!.authorizationDetails?.last)!
+                let paymentInitiationJson = (result!.authorizationDetails.last)!
                 expect(paymentInitiationJson["type"]?.stringValue).to(equal("payment_initiation"))
                 expect(paymentInitiationJson["actions"]?.arrayValue?.map{ $0.stringValue! }).to(contain("initiate", "status", "cancel"))
                 expect(paymentInitiationJson["locations"]?.arrayValue?.map{ $0.stringValue! }).to(contain("https://example.com/payments"))
