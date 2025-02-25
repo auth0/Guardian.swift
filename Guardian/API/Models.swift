@@ -102,7 +102,7 @@ public struct ConsentRequestedDetailsEntity: Decodable {
     public let audience: String
     public let scope: [String]
     public let bindingMessage: String
-    public let authorizationDetails: [JSON]
+    public let authorizationDetails: [Json]
     
     enum CodingKeys: String, CodingKey {
         case audience
@@ -116,7 +116,7 @@ public struct ConsentRequestedDetailsEntity: Decodable {
         self.audience = try container.decode(String.self, forKey: .audience)
         self.scope = try container.decode([String].self, forKey: .scope)
         self.bindingMessage = try container.decode(String.self, forKey: .bindingMessage)
-        self.authorizationDetails = try container.decodeIfPresent([JSON].self, forKey: .authorizationDetails) ?? []
+        self.authorizationDetails = try container.decodeIfPresent([Json].self, forKey: .authorizationDetails) ?? []
     }
     
     public func filterAuthorizationDetailsByType<T: Decodable>(_ type: String) -> [T] {

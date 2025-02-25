@@ -24,7 +24,7 @@ import UIKit
 import Guardian
 
 class DynamicAuthorizationDetailsView: UIStackView {
-    init(fromAuthorizationDetails authorizationDetails: [JSON]) {
+    init(fromAuthorizationDetails authorizationDetails: [Json]) {
         super.init(frame: .zero)
         self.axis = .vertical
         self.distribution = .fillProportionally

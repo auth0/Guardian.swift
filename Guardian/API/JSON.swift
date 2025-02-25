@@ -20,11 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-public enum JSON: Equatable, Codable {
+public enum Json: Equatable, Codable {
     case string(String)
     case number(Double)
-    case object([String:JSON])
-    case array([JSON])
+    case object([String:Json])
+    case array([Json])
     case bool(Bool)
     case null
     
@@ -52,9 +52,9 @@ public enum JSON: Equatable, Codable {
 
         let container = try decoder.singleValueContainer()
 
-        if let object = try? container.decode([String: JSON].self) {
+        if let object = try? container.decode([String: Json].self) {
             self = .object(object)
-        } else if let array = try? container.decode([JSON].self) {
+        } else if let array = try? container.decode([Json].self) {
             self = .array(array)
         } else if let string = try? container.decode(String.self) {
             self = .string(string)
@@ -96,7 +96,7 @@ public enum JSON: Equatable, Codable {
     }
     
     /// Return the object value if this is an `.object`, otherwise `nil`
-    public var objectValue: [String: JSON]? {
+    public var objectValue: [String: Json]? {
         if case .object(let value) = self {
             return value
         }
@@ -104,7 +104,7 @@ public enum JSON: Equatable, Codable {
     }
     
     /// Return the array value if this is an `.array`, otherwise `nil`
-    public var arrayValue: [JSON]? {
+    public var arrayValue: [Json]? {
         if case .array(let value) = self {
             return value
         }
@@ -122,7 +122,7 @@ public enum JSON: Equatable, Codable {
     /// If this is an `.array`, return item at index
     ///
     /// If this is not an `.array` or the index is out of bounds, returns `nil`.
-    public subscript(index: Int) -> JSON? {
+    public subscript(index: Int) -> Json? {
         if case .array(let arr) = self, arr.indices.contains(index) {
             return arr[index]
         }
@@ -130,7 +130,7 @@ public enum JSON: Equatable, Codable {
     }
     
     /// If this is an `.object`, return item at key
-    public subscript(key: String) -> JSON? {
+    public subscript(key: String) -> Json? {
         if case .object(let dict) = self {
             return dict[key]
         }
