@@ -129,7 +129,7 @@ class NotificationController: UIViewController {
         let paymentInitiation : [PaymentInitiation] = requestedDetails.authorizationDetails("payment_initiation")
         
         return !paymentInitiation.isEmpty
-        ? PaymentInitiationConsentView(fromPaymentInitiation: paymentInitiation.first!)
+        ? PaymentInitiationView(fromPaymentInitiation: paymentInitiation.first!)
         : DynamicAuthorizationDetailsView(fromAuthorizationDetails: requestedDetails.authorizationDetails)
     }
 

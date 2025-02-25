@@ -23,7 +23,7 @@
 import UIKit
 
 @IBDesignable
-class PaymentInitiationConsentView: UIView {
+class PaymentInitiationView: UIView {
     @IBOutlet weak var amount: UILabel!
     @IBOutlet weak var reference: UILabel!
     @IBOutlet weak var accountName: UILabel!
