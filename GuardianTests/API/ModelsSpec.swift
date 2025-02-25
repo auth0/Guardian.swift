@@ -90,13 +90,13 @@ class ModelsSpec: QuickSpec {
         }
     }
     
-    struct AccountInfo : Equatable, Codable{
+    struct AccountInfo : Equatable, Codable {
         let type: String;
         let actions: [String];
         let locations: [String];
     }
     
-    struct PaymentInitiation : Equatable, Codable{
+    struct PaymentInitiation : Equatable, Codable {
         let type: String;
         let actions: [String];
         let locations: [String];
@@ -106,12 +106,12 @@ class ModelsSpec: QuickSpec {
         let remittanceInformationUnstructured: String;
     }
     
-    struct Money : Equatable, Codable{
+    struct Money : Equatable, Codable {
         let amount: Decimal;
         let currency: String;
     }
     
-    struct BankAccount : Equatable, Codable{
+    struct BankAccount : Equatable, Codable {
         let iban: String;
     }
 }

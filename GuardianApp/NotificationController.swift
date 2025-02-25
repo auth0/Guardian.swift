@@ -36,7 +36,7 @@ class NotificationController: UIViewController {
     
     @IBOutlet var consentDetailsView: UIStackView!
     @IBOutlet var bindingMessageLabel: UILabel!
-
+    
     @IBAction func allowAction(_ sender: AnyObject) {
         guard let notification = notification, let enrollment = AppDelegate.state else {
             return self.dismiss(animated: true, completion: nil)
@@ -106,18 +106,31 @@ class NotificationController: UIViewController {
                 case .failure(let cause):
                     print("Fetch consent failed: \(cause)")
                 case .success(let payload):
-                    updateBindingMessage(bindingMessage: payload.requestedDetails.bindingMessage)
+                    showRichConsent(requestedDetails: payload.requestedDetails)
             }
         }
     }
     
-    func updateBindingMessage(bindingMessage:String) {
+    func showRichConsent(requestedDetails: ConsentRequestedDetailsEntity) {
         DispatchQueue.main.async { [unowned self] in
+            if !requestedDetails.authorizationDetails.isEmpty {
+                let authDetailsView = showAuthorizationDetails(requestedDetails: requestedDetails)
+                self.consentDetailsView.addArrangedSubview(authDetailsView)
+            }
+            
             self.denyButton.isHidden = false
             self.allowButton.isHidden = false
             self.consentDetailsView.isHidden = false
-            self.bindingMessageLabel.text = bindingMessage
+            self.bindingMessageLabel.text = requestedDetails.bindingMessage
         }
+    }
+    
+    func showAuthorizationDetails(requestedDetails: ConsentRequestedDetailsEntity) -> UIView {
+        let paymentInitiation : [PaymentInitiation] = requestedDetails.authorizationDetails("payment_initiation")
+        
+        return !paymentInitiation.isEmpty
+        ? PaymentInitiationConsentView(fromPaymentInitiation: paymentInitiation.first!)
+        : DynamicAuthorizationDetailsView(fromAuthorizationDetails: requestedDetails.authorizationDetails)
     }
 
     func showError(_ title: String, _ cause: Swift.Error) {

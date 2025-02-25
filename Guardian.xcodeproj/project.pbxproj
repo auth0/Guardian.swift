@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -267,6 +267,10 @@
 		EDF15CBF2CA5AB0000170C76 /* GuardianTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = GuardianTests.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		AB81100C2D6CCB3E00234DD8 /* RichAuthorization */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = RichAuthorization; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
 		5F2037C91D5E1E3E0005D2E2 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
@@ -528,6 +532,7 @@
 				234B25B11D9DA37D00078FA0 /* NotificationController.swift */,
 				5F07A592210F567900819FA2 /* State.swift */,
 				ED7B279E2B682A2700788920 /* QRCodeReaderViewController.swift */,
+				AB81100C2D6CCB3E00234DD8 /* RichAuthorization */,
 			);
 			path = GuardianApp;
 			sourceTree = "<group>";
@@ -643,6 +648,9 @@
 			);
 			dependencies = (
 				5F2038051D5E40D00005D2E2 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				AB81100C2D6CCB3E00234DD8 /* RichAuthorization */,
 			);
 			name = GuardianApp;
 			productName = GuardianApp;
