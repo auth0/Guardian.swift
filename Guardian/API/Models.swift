@@ -119,7 +119,7 @@ public struct ConsentRequestedDetailsEntity: Decodable {
         self.authorizationDetails = try container.decodeIfPresent([JSON].self, forKey: .authorizationDetails) ?? []
     }
     
-    public func authorizationDetails<T: Decodable>(_ type: String) -> [T] {
+    public func filterAuthorizationDetailsByType<T: Decodable>(_ type: String) -> [T] {
         return authorizationDetails
             .filter({$0["type"]?.stringValue == type})
             .compactMap({try? decode(T.self, from:encode(body:$0))});

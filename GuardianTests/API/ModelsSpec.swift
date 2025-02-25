@@ -62,7 +62,7 @@ class ModelsSpec: QuickSpec {
                 expect(paymentInitiationJson["creditorAccount"]?["iban"]?.stringValue).to(equal("DE02100100109307118603"))
                 expect(paymentInitiationJson["remittanceInformationUnstructured"]?.stringValue).to(equal("Ref Number Merchant"))
                 
-                let accountInfo : [AccountInfo] = result!.authorizationDetails("account_information")
+                let accountInfo : [AccountInfo] = result!.filterAuthorizationDetailsByType("account_information")
                 expect(accountInfo.count).to(equal(1))
                 expect(accountInfo).to(contain(
                     AccountInfo(
@@ -73,7 +73,7 @@ class ModelsSpec: QuickSpec {
                 ))
                 
                 
-                let paymentInitiation : [PaymentInitiation] = result!.authorizationDetails("payment_initiation")
+                let paymentInitiation : [PaymentInitiation] = result!.filterAuthorizationDetailsByType("payment_initiation")
                 expect(paymentInitiation.count).to(equal(1))
                 expect(paymentInitiation).to(contain(
                     PaymentInitiation(
