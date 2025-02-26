@@ -94,10 +94,6 @@ public struct UpdatedDevice: Codable {
     }
 }
 
-public protocol AuthorizationDetailsType : Decodable{
-    var type : String { get }
-}
-
 public struct ConsentRequestedDetails: Decodable {
     public let audience: String
     public let scope: [String]
