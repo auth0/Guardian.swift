@@ -29,7 +29,7 @@ class ModelsSpec: QuickSpec {
         describe("Decodable") {
             it("should load from Json decoder") {
                 let jsonData = "{\"audience\":\"my_audience\",\"scope\":[\"openid\",\"my_scope\"],\"binding_message\":\"my_binding_message\"}";
-                let result = try? JSONDecoder().decode(ConsentRequestedDetailsEntity.self, from: jsonData.data(using: .utf8)!);
+                let result = try? JSONDecoder().decode(ConsentRequestedDetails.self, from: jsonData.data(using: .utf8)!);
                 expect(result).toNot(beNil())
                 expect(result?.audience).to(equal("my_audience"))
                 expect(result?.bindingMessage).to(equal("my_binding_message"))
@@ -40,7 +40,7 @@ class ModelsSpec: QuickSpec {
             it("should load from Json decoder with authorization_details") {
                 let jsonData = "{\"audience\":\"my_audience\",\"scope\":[\"openid\",\"my_scope\"],\"binding_message\":\"my_binding_message\",\"authorization_details\":[{\"type\":\"account_information\",\"actions\":[\"list_accounts\",\"read_balances\",\"read_transactions\"],\"locations\":[\"https://example.com/accounts\"]},{\"type\":\"payment_initiation\",\"actions\":[\"initiate\",\"status\",\"cancel\"],\"locations\":[\"https://example.com/payments\"],\"instructedAmount\":{\"currency\":\"EUR\",\"amount\":123.50},\"creditorName\":\"Merchant123\",\"creditorAccount\":{\"iban\":\"DE02100100109307118603\"},\"remittanceInformationUnstructured\":\"Ref Number Merchant\"}]}";
                 
-                let result = try? JSONDecoder().decode(ConsentRequestedDetailsEntity.self, from: jsonData.data(using: .utf8)!);
+                let result = try? JSONDecoder().decode(ConsentRequestedDetails.self, from: jsonData.data(using: .utf8)!);
                 expect(result).toNot(beNil())
                 expect(result!.audience).to(equal("my_audience"))
                 expect(result!.bindingMessage).to(equal("my_binding_message"))

@@ -111,7 +111,7 @@ class NotificationController: UIViewController {
         }
     }
     
-    func showRichConsent(requestedDetails: ConsentRequestedDetailsEntity) {
+    func showRichConsent(requestedDetails: ConsentRequestedDetails) {
         DispatchQueue.main.async { [unowned self] in
             if !requestedDetails.authorizationDetails.isEmpty {
                 let authDetailsView = showAuthorizationDetails(requestedDetails: requestedDetails)
@@ -125,7 +125,7 @@ class NotificationController: UIViewController {
         }
     }
     
-    func showAuthorizationDetails(requestedDetails: ConsentRequestedDetailsEntity) -> UIView {
+    func showAuthorizationDetails(requestedDetails: ConsentRequestedDetails) -> UIView {
         let paymentInitiation : [PaymentInitiation] = requestedDetails.filterAuthorizationDetailsByType("payment_initiation")
         
         return !paymentInitiation.isEmpty

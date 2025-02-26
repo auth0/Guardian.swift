@@ -98,7 +98,7 @@ public protocol AuthorizationDetailsType : Decodable{
     var type : String { get }
 }
 
-public struct ConsentRequestedDetailsEntity: Decodable {
+public struct ConsentRequestedDetails: Decodable {
     public let audience: String
     public let scope: [String]
     public let bindingMessage: String
@@ -130,7 +130,7 @@ public struct Consent: Decodable {
     
     public let consentId: String
     
-    public let requestedDetails: ConsentRequestedDetailsEntity
+    public let requestedDetails: ConsentRequestedDetails
     
     public let createdAt: String
     
