@@ -44,7 +44,7 @@ class DynamicAuthorizationDetailsView: UIStackView {
                 
                 let stack = UIStackView();
                 stack.axis = .horizontal
-                stack.distribution = .fillProportionally
+                stack.distribution = .equalSpacing
                 
                 let keyLabel = UILabel()
                 keyLabel.text = key.replacingOccurrences(of: "_", with: " ").uppercased()
