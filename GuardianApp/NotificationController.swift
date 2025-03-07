@@ -126,7 +126,7 @@ class NotificationController: UIViewController {
     }
     
     func showAuthorizationDetails(requestedDetails: ConsentRequestedDetails) -> UIView {
-        let paymentInitiation : [PaymentInitiation] = requestedDetails.filterAuthorizationDetailsByType("payment_initiation")
+        let paymentInitiation = requestedDetails.filterAuthorizationDetailsByType(PaymentInitiation.self)
         
         return !paymentInitiation.isEmpty
         ? PaymentInitiationView(fromPaymentInitiation: paymentInitiation.first!)

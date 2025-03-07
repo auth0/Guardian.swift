@@ -253,19 +253,19 @@ let nestedArrayProperty = myAuthorizationDetailsTypes["nested_array_property"]?.
 
 ```
 
-Typically the shape and type of `authorization_details` will be known at compile time. In such a case, `authorization_details` can be queried in a strongly-typed manner by first defining a `Decodable` struct to represent your object and making use of the `filterAuthorizationDetailsByType` helper function, which will return all authorization details that match this type. (Note: this function will ignore values that do not match this type, care should be taken to ensure all provided authorization details are presented to the end-user for consent)
+Typically the shape and type of `authorization_details` will be known at compile time. In such a case, `authorization_details` can be queried in a strongly-typed manner by first defining a struct that implements `AuthorizationDetailsType` and `Decodable` to represent your object and making use of the `filterAuthorizationDetailsByType` helper function, which will return all authorization details that match this type. (Note: this function will ignore values that do not match this type, care should be taken to ensure all provided authorization details are presented to the end-user for consent)
 
 
 ```swift
-struct Payment : Decodable {
-    let type: String;
+struct Payment : AuthorizationDetailsType, Decodable {
+    static let type = "payment";
     let amount: Double;
     let currency: String;
 }
 ...
 
 let requestedDetails: ConsentRequestedDetails = payload.requestedDetails
-let payments: [Payment] = requestedDetails.filterAuthorizationDetailsByType("payment")
+let payments = requestedDetails.filterAuthorizationDetailsByType(Payment.self)
 let firstPayment = payments.first!
 let type: String = firstPayment.type // "payment"
 let amount: Double = firstPayment.amount

@@ -21,9 +21,10 @@
 // THE SOFTWARE.
 
 import Foundation
+import Guardian
 
-public struct PaymentInitiation : Codable {
-    let type: String;
+public struct PaymentInitiation : AuthorizationDetailsType, Codable {
+    public static let type = "payment_initiation";
     let actions: [String];
     let locations: [String];
     let instructedAmount: Money;

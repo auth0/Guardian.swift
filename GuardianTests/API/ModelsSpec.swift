@@ -62,22 +62,20 @@ class ModelsSpec: QuickSpec {
                 expect(paymentInitiationJson["creditorAccount"]?["iban"]?.stringValue).to(equal("DE02100100109307118603"))
                 expect(paymentInitiationJson["remittanceInformationUnstructured"]?.stringValue).to(equal("Ref Number Merchant"))
                 
-                let accountInfo : [AccountInfo] = result!.filterAuthorizationDetailsByType("account_information")
+                let accountInfo = result!.filterAuthorizationDetailsByType(AccountInfo.self)
                 expect(accountInfo.count).to(equal(1))
                 expect(accountInfo).to(contain(
                     AccountInfo(
-                        type: "account_information",
                         actions: ["list_accounts", "read_balances", "read_transactions"],
                         locations: ["https://example.com/accounts"]
                     )
                 ))
                 
                 
-                let paymentInitiation : [PaymentInitiation] = result!.filterAuthorizationDetailsByType("payment_initiation")
+                let paymentInitiation = result!.filterAuthorizationDetailsByType(PaymentInitiation.self)
                 expect(paymentInitiation.count).to(equal(1))
                 expect(paymentInitiation).to(contain(
                     PaymentInitiation(
-                        type: "payment_initiation",
                         actions: ["initiate", "status", "cancel"],
                         locations: ["https://example.com/payments"],
                         instructedAmount: Money(amount: 123.50, currency: "EUR"),
@@ -90,14 +88,14 @@ class ModelsSpec: QuickSpec {
         }
     }
     
-    struct AccountInfo : Equatable, Codable {
-        let type: String;
+    struct AccountInfo : AuthorizationDetailsType, Equatable, Codable {
+        static let type = "account_information";
         let actions: [String];
         let locations: [String];
     }
     
-    struct PaymentInitiation : Equatable, Codable {
-        let type: String;
+    struct PaymentInitiation : AuthorizationDetailsType, Equatable, Codable {
+        static let type = "payment_initiation";
         let actions: [String];
         let locations: [String];
         let instructedAmount: Money;
