@@ -238,7 +238,7 @@ if let consentId = notification.transactionLinkingId {
 
 #### Authorization Details
 
-If Rich Authorization Rich Authorization Requests are being used, the consent record will contains the `authorization_details` values from the initial authenication request ([RFC 9396](https://datatracker.ietf.org/doc/html/rfc9396)) for rendering to the user for consent. You can access them in the `authorizationDetails` property of the requested details object which returns an array of objects containing each of the types. `authorization_details` values are essentially arbitary JSON objects but are guaranteed to have a `type` property which must be pre-registered with the Authorization Server. As such the can be queried in a dynamic manner like you might with JSON. 
+If Rich Authorization Rich Authorization Requests are being used, the consent record will contain the `authorization_details` values from the initial authentication request ([RFC 9396](https://datatracker.ietf.org/doc/html/rfc9396)) for rendering to the user for consent. You can access them in the `authorizationDetails` property of the requested details object which returns an array of objects containing each of the types. `authorization_details` values are essentially arbitary JSON objects but are guaranteed to have a `type` property which must be pre-registered with the Authorization Server. As such the can be queried in a dynamic manner like you might with JSON. 
 
 ```swift
 let requestedDetails: ConsentRequestedDetails = payload.requestedDetails
