@@ -105,6 +105,35 @@ class ConsentSpec: QuickSpec {
                 }
             }
         }
+        
+        describe("With Authorization Details") {
+            beforeEach {
+                MockURLProtocol.stub(
+                    name: "Valid URL",
+                    condition: isGetConsent(baseUrl: ValidAuthenticationURL, consentId: ValidTransactionLinkingId),
+                    response: { req in return consentWithAuthorizationDetailsResponse() }
+                )
+            }
+            
+            it("should succeed when authorization details are present") {
+                waitUntil(timeout: Timeout) { done in
+                    Guardian.consent(forDomain: "tenant.auth0.com")
+                        .fetch(consentId: ValidTransactionLinkingId, transactionToken: ValidTransactionToken, signingKey: signingKey)
+                        .start { result in
+                            expect(result).to(beSuccess())
+                            switch result {
+                            case .success(let payload):
+                                expect(payload.requestedDetails.authorizationDetails).toNot(beNil())
+                                expect(payload.requestedDetails.authorizationDetails).to(containElementSatisfying { $0["type"]?.stringValue == "payment_initiation"})
+                                expect(payload.requestedDetails.authorizationDetails).to(containElementSatisfying { $0["type"]?.stringValue == "account_information"})
+                            case .failure(_):
+                                fail()
+                            }
+                            done()
+                        }
+                }
+            }
+        }
     }
 }
 

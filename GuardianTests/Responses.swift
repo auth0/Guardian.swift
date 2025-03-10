@@ -81,6 +81,38 @@ func consentResponse() -> MockURLResponse {
     return MockURLResponse(jsonObject: json, statusCode: 200, headers: ["Content-Type": "application/json"])
 }
 
+func consentWithAuthorizationDetailsResponse() -> MockURLResponse {
+    let json: [String : Any] = [
+        "id": "",
+        "created_at": "",
+        "expires_at": "",
+        "requested_details": [
+            "audience": "",
+            "scope": [],
+            "binding_message": "",
+            "authorization_details": [
+                [
+                    "type": "payment_initiation",
+                    "instructedAmount": [
+                        "currency": "EUR",
+                        "amount": "123.50"
+                    ]
+                ],
+                [
+                    "type": "account_information",
+                    "actions": [
+                        "list_accounts",
+                        "read_balances",
+                        "read_transactions"
+                    ]
+                ]
+            ]
+        ]
+    ]
+    
+    return MockURLResponse(jsonObject: json, statusCode: 200, headers: ["Content-Type": "application/json"])
+}
+
 func successResponse(statusCode: Int = 200) -> MockURLResponse {
     return MockURLResponse(jsonObject: [:], statusCode: statusCode, headers: ["Content-Type": "application/json"])
 }

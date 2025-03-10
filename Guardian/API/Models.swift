@@ -94,23 +94,43 @@ public struct UpdatedDevice: Codable {
     }
 }
 
-public struct ConsentRequestedDetailsEntity: Decodable {
+public struct ConsentRequestedDetails: Decodable {
     public let audience: String
     public let scope: [String]
     public let bindingMessage: String
+    public let authorizationDetails: [Json]
     
     enum CodingKeys: String, CodingKey {
         case audience
         case scope
         case bindingMessage = "binding_message"
+        case authorizationDetails = "authorization_details"
     }
+    
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.audience = try container.decode(String.self, forKey: .audience)
+        self.scope = try container.decode([String].self, forKey: .scope)
+        self.bindingMessage = try container.decode(String.self, forKey: .bindingMessage)
+        self.authorizationDetails = try container.decodeIfPresent([Json].self, forKey: .authorizationDetails) ?? []
+    }
+    
+    public func filterAuthorizationDetailsByType<T: AuthorizationDetailsType>(_ type: T.Type) -> [T] {
+        return authorizationDetails
+            .filter({$0["type"]?.stringValue == type.type})
+            .compactMap({try? decode(T.self, from:encode(body:$0))});
+    }
+}
+
+public protocol AuthorizationDetailsType: Codable {
+    static var type: String { get }
 }
 
 public struct Consent: Decodable {
     
     public let consentId: String
     
-    public let requestedDetails: ConsentRequestedDetailsEntity
+    public let requestedDetails: ConsentRequestedDetails
     
     public let createdAt: String
     

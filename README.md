@@ -236,6 +236,43 @@ if let consentId = notification.transactionLinkingId {
 }
 ```
 
+#### Authorization Details
+
+If Rich Authorization Rich Authorization Requests are being used, the consent record will contain the `authorization_details` values from the initial authentication request ([RFC 9396](https://datatracker.ietf.org/doc/html/rfc9396)) for rendering to the user for consent. You can access them in the `authorizationDetails` property of the requested details object which returns an array of objects containing each of the types. `authorization_details` values are essentially arbitary JSON objects but are guaranteed to have a `type` property which must be pre-registered with the Authorization Server. As such the can be queried in a dynamic manner like you might with JSON. 
+
+```swift
+let requestedDetails: ConsentRequestedDetails = payload.requestedDetails
+
+let myAuthorizationDetailsTypes = requestedDetails.authorizationDetails[0].objectValue!;
+let type = myAuthorizationDetailsTypes["type"]?.stringValue // Your pre-registered type value
+let stringProperty = myAuthorizationDetailsTypes["string_property"]?.stringValue
+let boolProperty = myAuthorizationDetailsTypes["bool_property"]?.boolValue
+let numericProperty = myAuthorizationDetailsTypes["numeric_property"]?.doubleValue
+let nestedObjectProperty = myAuthorizationDetailsTypes["nested_property"]?.objectValue
+let nestedArrayProperty = myAuthorizationDetailsTypes["nested_array_property"]?.arrayValue
+
+```
+
+Typically the shape and type of `authorization_details` will be known at compile time. In such a case, `authorization_details` can be queried in a strongly-typed manner by first defining a struct that implements `AuthorizationDetailsType` to represent your object and making use of the `filterAuthorizationDetailsByType` helper function, which will return all authorization details that match this type. (Note: this function will ignore values that do not match this type, care should be taken to ensure all provided authorization details are presented to the end-user for consent)
+
+
+```swift
+struct Payment : AuthorizationDetailsType {
+    static let type = "payment";
+    let amount: Double;
+    let currency: String;
+}
+...
+
+let requestedDetails: ConsentRequestedDetails = payload.requestedDetails
+let payments = requestedDetails.filterAuthorizationDetailsByType(Payment.self)
+let firstPayment = payments.first!
+let type: String = firstPayment.type // "payment"
+let amount: Double = firstPayment.amount
+let currency: String = firstPayment.currency 
+
+```
+
 ### Unenroll
 
 If you want to delete an enrollment -for example if you want to disable MFA- you can make the
