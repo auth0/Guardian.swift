@@ -88,13 +88,13 @@ class ModelsSpec: QuickSpec {
         }
     }
     
-    struct AccountInfo : AuthorizationDetailsType, Equatable, Codable {
+    struct AccountInfo : AuthorizationDetailsType, Equatable {
         static let type = "account_information";
         let actions: [String];
         let locations: [String];
     }
     
-    struct PaymentInitiation : AuthorizationDetailsType, Equatable, Codable {
+    struct PaymentInitiation : AuthorizationDetailsType, Equatable {
         static let type = "payment_initiation";
         let actions: [String];
         let locations: [String];

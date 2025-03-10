@@ -23,7 +23,7 @@
 import Foundation
 import Guardian
 
-public struct PaymentInitiation : AuthorizationDetailsType, Codable {
+public struct PaymentInitiation : AuthorizationDetailsType {
     public static let type = "payment_initiation";
     let actions: [String];
     let locations: [String];
