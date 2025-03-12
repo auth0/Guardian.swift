@@ -1,6 +1,10 @@
 # Change Log
 
-## [1.6.0](https://github.com/auth0/Guardian.swift/tree/1.5.0) (2025-03-07)
+## [1.7.0](https://github.com/auth0/Guardian.swift/tree/1.7.0) (2025-03-12)
+- Add RAR support to CIBA flow.
+[Full Changelog](https://github.com/auth0/Guardian.swift/compare/1.6.0...1.7.0)
+
+## [1.6.0](https://github.com/auth0/Guardian.swift/tree/1.6.0) (2025-03-07)
 - SPM Support
 - Swift 5 Support
 [Full Changelog](https://github.com/auth0/Guardian.swift/compare/1.5.0...1.6.0)
