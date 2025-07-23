@@ -24,15 +24,30 @@ import Foundation
 import CryptoKit
 
 struct ConsentAPIClient : ConsentAPI {
-    private let path: String = "rich-consents"
+    private static let path: String = "rich-consents"
     
-    let url:URL
+    let url: URL
     let telemetryInfo: Auth0TelemetryInfo?
     
-    init(baseConsentUrl: URL, telemetryInfo: Auth0TelemetryInfo? = nil ) {
-        let url = baseConsentUrl.appendingPathComponent(path, isDirectory: false)
-        self.url = url
+    init(baseConsentUrl: URL, telemetryInfo: Auth0TelemetryInfo? = nil, shouldModifyURL: Bool = true) {
+        self.url = shouldModifyURL ? ConsentAPIClient.adjustURL(baseConsentUrl) : baseConsentUrl
         self.telemetryInfo = telemetryInfo
+    }
+    
+    private static func adjustURL(_ url: URL) -> URL {
+        guard
+            var components = URLComponents(url: url, resolvingAgainstBaseURL: true),
+            var domainComponents = components.host?.components(separatedBy: "."),
+            domainComponents.count > 4,
+            domainComponents[domainComponents.count-4] == "guardian"
+        else {
+            return url.appendingPathComponent(path, isDirectory: false)
+        }
+        
+        domainComponents.remove(at: domainComponents.count-4)
+        components.host = domainComponents.joined(separator: ".")
+        
+        return components.url?.appendingPathComponent(path, isDirectory: false) ?? url
     }
     
     func fetch(consentId:String, transactionToken: String, signingKey: SigningKey) -> Request<NoContent, Consent> {
