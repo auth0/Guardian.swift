@@ -41,6 +41,11 @@ class ConsentAPIClientSpec: QuickSpec {
                     URL(string: "https://samples.auth0.com/rich-consents")!
                 ),
                 (
+                    "should handle url with additional path",
+                    URL(string: "https://samples.guardian.eu.auth0.com/path/")!,
+                    URL(string: "https://samples.eu.auth0.com/path/rich-consents")!
+                ),
+                (
                     "should handle canonical tenant url with region",
                     URL(string: "https://samples.eu.auth0.com")!,
                     URL(string: "https://samples.eu.auth0.com/rich-consents")!
