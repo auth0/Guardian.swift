@@ -30,17 +30,17 @@ struct ConsentAPIClient : ConsentAPI {
     let telemetryInfo: Auth0TelemetryInfo?
     
     init(baseConsentUrl: URL, telemetryInfo: Auth0TelemetryInfo? = nil) {
-        self.url = ConsentAPIClient.adjustURL(baseConsentUrl)
+        self.url = ConsentAPIClient.prepareConsentUrl(baseConsentUrl)
         self.telemetryInfo = telemetryInfo
     }
     
-    private static func adjustURL(_ url: URL) -> URL {
-        var urlString = url.absoluteString
-        if urlString.hasSuffix(".auth0.com") {
-            urlString = urlString.replacingOccurrences(of: ".guardian", with: "")
+    /// Modifies URL by removing 'guardian' subdomain from legacy URLs and appinding consent path.
+    private static func prepareConsentUrl(_ url: URL) -> URL {
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: true)
+        if let host = components?.host, host.hasSuffix(".auth0.com") {
+            components?.host = host.replacingOccurrences(of: ".guardian", with: "")
         }
-        let url = URL(string: urlString) ?? url
-        return url.appendingPathComponent(path)
+        return components?.url?.appendingPathComponent(path) ?? url
     }
     
     func fetch(consentId:String, transactionToken: String, signingKey: SigningKey) -> Request<NoContent, Consent> {
