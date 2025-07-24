@@ -36,7 +36,7 @@ struct ConsentAPIClient : ConsentAPI {
     
     private static func adjustURL(_ url: URL) -> URL {
         var urlString = url.absoluteString
-        if urlString.hasSuffix("auth0.com") {
+        if urlString.hasSuffix(".auth0.com") {
             urlString = urlString.replacingOccurrences(of: ".guardian", with: "")
         }
         let url = URL(string: urlString) ?? url
