@@ -409,15 +409,14 @@ public func consent(forDomain domain: String, telemetryInfo: Auth0TelemetryInfo?
 
  - parameter url:                 URL of your Guardian server
  - parameter telemetryInfo:       information about the app, used for internal auth0 analytics purposes
- - parameter shouldModifyURL:     use false here only if you have very specific custom url for consent API
 
 
  - returns: an `ConsentAPI` instance
 
  - seealso: Guardian.ConsentAPI
  */
-public func consent(consentUrl: URL, telemetryInfo: Auth0TelemetryInfo? = nil, shouldModifyURL: Bool = true) -> ConsentAPI {
-    ConsentAPIClient(baseConsentUrl: consentUrl, telemetryInfo: telemetryInfo, shouldModifyURL: shouldModifyURL)
+public func consent(consentUrl: URL, telemetryInfo: Auth0TelemetryInfo? = nil) -> ConsentAPI {
+    ConsentAPIClient(baseConsentUrl: consentUrl, telemetryInfo: telemetryInfo)
 }
 
 func url(from domain: String) -> URL? {

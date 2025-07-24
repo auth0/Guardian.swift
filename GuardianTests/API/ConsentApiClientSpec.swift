@@ -29,24 +29,43 @@ class ConsentAPIClientSpec: QuickSpec {
     
     override class func spec() {
         describe("init") {
-            it("should correctly handle legacy url") {
-                let consent = ConsentAPIClient(baseConsentUrl: URL(string: "https://samples.guardian.en.auth0.com")!)
-                expect(consent.url).to(equal(URL(string: "https://samples.en.auth0.com/rich-consents")!))
-            }
+            let testcases: [(description: String, input: URL, output: URL)] = [
+                (
+                    "should handle legacy url with region",
+                    URL(string: "https://samples.guardian.eu.auth0.com")!,
+                    URL(string: "https://samples.eu.auth0.com/rich-consents")!
+                ),
+                (
+                    "should handle legacy url without region",
+                    URL(string: "https://samples.guardian.auth0.com")!,
+                    URL(string: "https://samples.auth0.com/rich-consents")!
+                ),
+                (
+                    "should handle canonical tenant url with region",
+                    URL(string: "https://samples.eu.auth0.com")!,
+                    URL(string: "https://samples.eu.auth0.com/rich-consents")!
+                ),
+                (
+                    "should handle canonical tenant url without region",
+                    URL(string: "https://samples.auth0.com")!,
+                    URL(string: "https://samples.auth0.com/rich-consents")!
+                ),
+                (
+                    "should handle custom domain url",
+                    URL(string: "https://custom-domain.com")!,
+                    URL(string: "https://custom-domain.com/rich-consents")!
+                ),
+                (
+                    "should handle custom domain url with guardian subdomain",
+                    URL(string: "https://guardian.custom-domain.com")!,
+                    URL(string: "https://guardian.custom-domain.com/rich-consents")!
+                )
+            ]
             
-            it("should should correctly handle new url") {
-                let consent = ConsentAPIClient(baseConsentUrl: URL(string: "https://samples.en.auth0.com")!)
-                expect(consent.url).to(equal(URL(string: "https://samples.en.auth0.com/rich-consents")!))
-            }
-            
-            it("should should correctly handle new url with guardian word in it") {
-                let consent = ConsentAPIClient(baseConsentUrl: URL(string: "https://sample.guardian.samples.en.auth0.com")!)
-                expect(consent.url).to(equal(URL(string: "https://sample.guardian.samples.en.auth0.com/rich-consents")!))
-            }
-            
-            it("should take url as is if parameter is set") {
-                let consent = ConsentAPIClient(baseConsentUrl: URL(string: "https://sample.samples.guardian.en.auth0.com/test")!, shouldModifyURL: false)
-                expect(consent.url).to(equal(URL(string: "https://sample.samples.guardian.en.auth0.com/test")!))
+            testcases.forEach { (description: String, input: URL, output: URL) in
+                it(description) {
+                    expect(ConsentAPIClient(baseConsentUrl: input).url).to(equal(output))
+                }
             }
         }
     }

@@ -29,25 +29,18 @@ struct ConsentAPIClient : ConsentAPI {
     let url: URL
     let telemetryInfo: Auth0TelemetryInfo?
     
-    init(baseConsentUrl: URL, telemetryInfo: Auth0TelemetryInfo? = nil, shouldModifyURL: Bool = true) {
-        self.url = shouldModifyURL ? ConsentAPIClient.adjustURL(baseConsentUrl) : baseConsentUrl
+    init(baseConsentUrl: URL, telemetryInfo: Auth0TelemetryInfo? = nil) {
+        self.url = ConsentAPIClient.adjustURL(baseConsentUrl)
         self.telemetryInfo = telemetryInfo
     }
     
     private static func adjustURL(_ url: URL) -> URL {
-        guard
-            var components = URLComponents(url: url, resolvingAgainstBaseURL: true),
-            var domainComponents = components.host?.components(separatedBy: "."),
-            domainComponents.count > 4,
-            domainComponents[domainComponents.count-4] == "guardian"
-        else {
-            return url.appendingPathComponent(path, isDirectory: false)
+        var urlString = url.absoluteString
+        if urlString.hasSuffix("auth0.com") {
+            urlString = urlString.replacingOccurrences(of: ".guardian", with: "")
         }
-        
-        domainComponents.remove(at: domainComponents.count-4)
-        components.host = domainComponents.joined(separator: ".")
-        
-        return components.url?.appendingPathComponent(path, isDirectory: false) ?? url
+        let url = URL(string: urlString) ?? url
+        return url.appendingPathComponent(path)
     }
     
     func fetch(consentId:String, transactionToken: String, signingKey: SigningKey) -> Request<NoContent, Consent> {
