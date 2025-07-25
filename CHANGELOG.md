@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.8.0](https://github.com/auth0/Guardian.swift/tree/1.8.0) (2025-07-25)
+- Modify the Guardian SDKs to be more “forgiving” when using the https://{tenant}.guardian.{region}.auth0.com url
+[Full Changelog](https://github.com/auth0/Guardian.swift/compare/1.7.0...1.8.0)
+
 ## [1.7.0](https://github.com/auth0/Guardian.swift/tree/1.7.0) (2025-03-12)
 - Add RAR support to CIBA flow.
 [Full Changelog](https://github.com/auth0/Guardian.swift/compare/1.6.0...1.7.0)
