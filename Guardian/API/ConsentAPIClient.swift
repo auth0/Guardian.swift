@@ -24,15 +24,23 @@ import Foundation
 import CryptoKit
 
 struct ConsentAPIClient : ConsentAPI {
-    private let path: String = "rich-consents"
+    private static let path: String = "rich-consents"
     
-    let url:URL
+    let url: URL
     let telemetryInfo: Auth0TelemetryInfo?
     
-    init(baseConsentUrl: URL, telemetryInfo: Auth0TelemetryInfo? = nil ) {
-        let url = baseConsentUrl.appendingPathComponent(path, isDirectory: false)
-        self.url = url
+    init(baseConsentUrl: URL, telemetryInfo: Auth0TelemetryInfo? = nil) {
+        self.url = ConsentAPIClient.prepareConsentUrl(baseConsentUrl)
         self.telemetryInfo = telemetryInfo
+    }
+    
+    /// Modifies URL by removing 'guardian' subdomain from legacy URLs and appinding consent path.
+    private static func prepareConsentUrl(_ url: URL) -> URL {
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: true)
+        if let host = components?.host, host.hasSuffix(".auth0.com") {
+            components?.host = host.replacingOccurrences(of: ".guardian", with: "")
+        }
+        return components?.url?.appendingPathComponent(path) ?? url
     }
     
     func fetch(consentId:String, transactionToken: String, signingKey: SigningKey) -> Request<NoContent, Consent> {

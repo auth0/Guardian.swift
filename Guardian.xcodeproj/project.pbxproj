@@ -97,6 +97,7 @@
 		AB9381852D03359700C47B1E /* ConsentSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB9381842D03359700C47B1E /* ConsentSpec.swift */; };
 		AB96591D2D64E27600FB23F3 /* ModelsSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB96591C2D64E27600FB23F3 /* ModelsSpec.swift */; };
 		AB9659212D6620BA00FB23F3 /* Json.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB9659202D6620B300FB23F3 /* Json.swift */; };
+		ED0102702E313A9D00BA19E7 /* ConsentApiClientSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED01026F2E313A9B00BA19E7 /* ConsentApiClientSpec.swift */; };
 		ED1E39A52B7E6C1300E8609A /* MockURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1E39A42B7E6C1300E8609A /* MockURLProtocol.swift */; };
 		ED1E39A72B822A2500E8609A /* MockURLResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1E39A62B822A2500E8609A /* MockURLResponse.swift */; };
 		ED1E39A92B82A9B100E8609A /* MockURLProtocolCondition.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1E39A82B82A9B100E8609A /* MockURLProtocolCondition.swift */; };
@@ -255,6 +256,7 @@
 		AB9381842D03359700C47B1E /* ConsentSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentSpec.swift; sourceTree = "<group>"; };
 		AB96591C2D64E27600FB23F3 /* ModelsSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelsSpec.swift; sourceTree = "<group>"; };
 		AB9659202D6620B300FB23F3 /* Json.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Json.swift; sourceTree = "<group>"; };
+		ED01026F2E313A9B00BA19E7 /* ConsentApiClientSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentApiClientSpec.swift; sourceTree = "<group>"; };
 		ED1E39A42B7E6C1300E8609A /* MockURLProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockURLProtocol.swift; sourceTree = "<group>"; };
 		ED1E39A62B822A2500E8609A /* MockURLResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockURLResponse.swift; sourceTree = "<group>"; };
 		ED1E39A82B82A9B100E8609A /* MockURLProtocolCondition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockURLProtocolCondition.swift; sourceTree = "<group>"; };
@@ -327,6 +329,7 @@
 		5F07A5A1210F9A0700819FA2 /* API */ = {
 			isa = PBXGroup;
 			children = (
+				ED01026F2E313A9B00BA19E7 /* ConsentApiClientSpec.swift */,
 				5F07A5A2210F9A1200819FA2 /* NoContentSpec.swift */,
 				AB96591C2D64E27600FB23F3 /* ModelsSpec.swift */,
 				5F07A5A7210FA08B00819FA2 /* RequestSpec.swift */,
@@ -815,6 +818,7 @@
 				5F1604C92106493600B0F25B /* SigningKeyStorageSpec.swift in Sources */,
 				5F7969341DDABDDE006AC7BA /* AuthenticationSpec.swift in Sources */,
 				5F07A5AC210FD09F00819FA2 /* GuardianErrorSpec.swift in Sources */,
+				ED0102702E313A9D00BA19E7 /* ConsentApiClientSpec.swift in Sources */,
 				2374A9F31D672E4F00737F2E /* Responses.swift in Sources */,
 				5F07A5A0210F989100819FA2 /* EnrolledDeviceSpec.swift in Sources */,
 				5FF42BA821091F150082459F /* NetworkOperationSpec.swift in Sources */,
