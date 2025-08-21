@@ -40,6 +40,11 @@ struct ConsentAPIClient : ConsentAPI {
         if let host = components?.host, host.hasSuffix(".auth0.com") {
             components?.host = host.replacingOccurrences(of: ".guardian", with: "")
         }
+        
+        if url.lastPathComponent == "appliance-mfa" {
+            components?.path = url.deletingLastPathComponent().path
+        }
+        
         return components?.url?.appendingPathComponent(path) ?? url
     }
     

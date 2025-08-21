@@ -64,6 +64,16 @@ class ConsentAPIClientSpec: QuickSpec {
                     "should handle custom domain url with guardian subdomain",
                     URL(string: "https://guardian.custom-domain.com")!,
                     URL(string: "https://guardian.custom-domain.com/rich-consents")!
+                ),
+                (
+                    "should handle canonical tenant url with appliance-mfa path",
+                    URL(string: "https://samples.eu.auth0.com/appliance-mfa")!,
+                    URL(string: "https://samples.eu.auth0.com/rich-consents")!
+                ),
+                (
+                    "should handle custom domain url with appliance-mfa path",
+                    URL(string: "https://custom-domain.com/appliance-mfa")!,
+                    URL(string: "https://custom-domain.com/rich-consents")!
                 )
             ]
             
