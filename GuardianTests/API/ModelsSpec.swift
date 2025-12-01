@@ -27,7 +27,7 @@ import Nimble
 class ModelsSpec: QuickSpec {
     override class func spec() {
         describe("Decodable") {
-            it("should load from Json decoder") {
+            it("should load from Json decoder without binding_message and authorization_details") {
                 let jsonData = "{\"audience\":\"my_audience\",\"scope\":[\"openid\",\"my_scope\"]}";
                 let result = try? JSONDecoder().decode(ConsentRequestedDetails.self, from: jsonData.data(using: .utf8)!);
                 expect(result).toNot(beNil())
