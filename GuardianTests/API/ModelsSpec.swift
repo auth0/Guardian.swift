@@ -27,14 +27,21 @@ import Nimble
 class ModelsSpec: QuickSpec {
     override class func spec() {
         describe("Decodable") {
-            it("should load from Json decoder") {
-                let jsonData = "{\"audience\":\"my_audience\",\"scope\":[\"openid\",\"my_scope\"],\"binding_message\":\"my_binding_message\"}";
+            it("should load from Json decoder without binding_message and authorization_details") {
+                let jsonData = "{\"audience\":\"my_audience\",\"scope\":[\"openid\",\"my_scope\"]}";
                 let result = try? JSONDecoder().decode(ConsentRequestedDetails.self, from: jsonData.data(using: .utf8)!);
                 expect(result).toNot(beNil())
                 expect(result?.audience).to(equal("my_audience"))
-                expect(result?.bindingMessage).to(equal("my_binding_message"))
                 expect(result?.scope).to(contain(["openid", "my_scope"]))
+                expect(result?.bindingMessage).to(beNil())
                 expect(result?.authorizationDetails).to(beEmpty())
+            }
+            
+            it("should load from Json decoder with binding_message") {
+                let jsonData = "{\"audience\":\"my_audience\",\"scope\":[\"openid\",\"my_scope\"],\"binding_message\":\"my_binding_message\"}";
+                let result = try? JSONDecoder().decode(ConsentRequestedDetails.self, from: jsonData.data(using: .utf8)!);
+                expect(result).toNot(beNil())
+                expect(result?.bindingMessage).to(equal("my_binding_message"))
             }
             
             it("should load from Json decoder with authorization_details") {
