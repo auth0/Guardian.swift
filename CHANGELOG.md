@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.9.1](https://github.com/auth0/Guardian.swift/tree/1.9.1) (2025-12-04)
+- Introduces support for rich consent transactions with no binding message included in the consent details
+  [Full Changelog](https://github.com/auth0/Guardian.swift/compare/1.9.0...1.9.1)
+
 ## [1.9.0](https://github.com/auth0/Guardian.swift/tree/1.9.0) (2025-08-21)
 - Modify the Guardian SDKs to be more “forgiving” when using the https://{tenant}.{region}.auth0.com/appliance-mfa url
 [Full Changelog](https://github.com/auth0/Guardian.swift/compare/1.8.0...1.9.0)

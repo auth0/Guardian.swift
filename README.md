@@ -36,7 +36,7 @@ Guardian.swift is available through [CocoaPods](http://cocoapods.org).
 To install it, simply add the following line to your Podfile:
 
 ```ruby
-pod 'Guardian', '~> 1.9.0'
+pod 'Guardian', '~> 1.9.1'
 ```
 
 #### Carthage
@@ -44,7 +44,7 @@ pod 'Guardian', '~> 1.9.0'
 In your Cartfile add this line
 
 ```
-github "auth0/Guardian.swift" ~> 1.9.0
+github "auth0/Guardian.swift" ~> 1.9.1
 ```
 
 #### Swift Package Manager
@@ -68,7 +68,7 @@ import Guardian
 
 Set the domain for your auth0 tenant:
 ```swift
-let tenantDomain      = "<tenant>.<region>.auth0.com"
+le tenantDomain      = "<tenant>.<region>.auth0.com"
 ```
 
 alternatively you can use a custom domain if you configured one in your auth0 tenant:
