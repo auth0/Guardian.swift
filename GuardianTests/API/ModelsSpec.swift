@@ -37,6 +37,16 @@ class ModelsSpec: QuickSpec {
                 expect(result?.authorizationDetails).to(beEmpty())
             }
             
+            it("should load from Json decoder without scope, binding_message and authorization_details") {
+                let jsonData = "{\"audience\":\"my_audience\"}";
+                let result = try? JSONDecoder().decode(ConsentRequestedDetails.self, from: jsonData.data(using: .utf8)!);
+                expect(result).toNot(beNil())
+                expect(result?.audience).to(equal("my_audience"))
+                expect(result?.scope).to(beEmpty())
+                expect(result?.bindingMessage).to(beNil())
+                expect(result?.authorizationDetails).to(beEmpty())
+            }
+            
             it("should load from Json decoder with binding_message") {
                 let jsonData = "{\"audience\":\"my_audience\",\"scope\":[\"openid\",\"my_scope\"],\"binding_message\":\"my_binding_message\"}";
                 let result = try? JSONDecoder().decode(ConsentRequestedDetails.self, from: jsonData.data(using: .utf8)!);

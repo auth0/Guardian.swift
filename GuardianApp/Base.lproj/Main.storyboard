@@ -295,6 +295,7 @@
                     <connections>
                         <outlet property="allowButton" destination="pAt-hB-LdP" id="N7c-Jk-akg"/>
                         <outlet property="bindingMessageLabel" destination="xgY-uW-cgY" id="Mfg-31-j7K"/>
+                        <outlet property="bindingMessageView" destination="OpD-Lq-aZT" id="v9L-Sa-yMB"/>
                         <outlet property="browserLabel" destination="xc7-mu-JVG" id="NM3-N2-jnz"/>
                         <outlet property="consentDetailsView" destination="QZH-1e-kFg" id="Bxm-bc-n46"/>
                         <outlet property="dateLabel" destination="GSN-Uh-cn2" id="jhP-xU-RHq"/>
