@@ -35,6 +35,7 @@ class NotificationController: UIViewController {
     @IBOutlet var allowButton: UIButton!
     
     @IBOutlet var consentDetailsView: UIStackView!
+    @IBOutlet var bindingMessageView: UIStackView!
     @IBOutlet var bindingMessageLabel: UILabel!
     
     @IBAction func allowAction(_ sender: AnyObject) {
@@ -89,7 +90,8 @@ class NotificationController: UIViewController {
         browserLabel.text = notification.source?.browser?.name ?? "Unknown"
         locationLabel.text = notification.location?.name ?? "Unknown"
         dateLabel.text = "\(notification.startedAt)"
-        self.consentDetailsView.isHidden = true
+        consentDetailsView.isHidden = true
+        bindingMessageView.isHidden = true
         
         guard let consentId = notification.transactionLinkingId else {
             return
@@ -115,13 +117,17 @@ class NotificationController: UIViewController {
         DispatchQueue.main.async { [unowned self] in
             if !requestedDetails.authorizationDetails.isEmpty {
                 let authDetailsView = showAuthorizationDetails(requestedDetails: requestedDetails)
-                self.consentDetailsView.addArrangedSubview(authDetailsView)
+                consentDetailsView.addArrangedSubview(authDetailsView)
             }
             
-            self.denyButton.isHidden = false
-            self.allowButton.isHidden = false
-            self.consentDetailsView.isHidden = false
-            self.bindingMessageLabel.text = requestedDetails.bindingMessage
+            if requestedDetails.bindingMessage != nil {
+                bindingMessageLabel.text = requestedDetails.bindingMessage
+                bindingMessageView.isHidden = false
+            }
+            
+            denyButton.isHidden = false
+            allowButton.isHidden = false
+            consentDetailsView.isHidden = false
         }
     }
     
