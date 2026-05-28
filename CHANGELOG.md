@@ -1,5 +1,13 @@
 # Change Log
 
+## [1.10.0](https://github.com/auth0/Guardian.swift/tree/1.10.0) (2026-05-12)
+- Make consent details binding message optional
+- Support consent details without scope
+- Bump nokogiri from 1.16.7 to 1.18.9 (security fix)
+- Bump cocoapods from 1.10.1 to 1.16.2 (fixes cocoapods-downloader CVE-2022-24440, CVE-2022-21223)
+- Bump rexml, activesupport, and other build dependencies
+[Full Changelog](https://github.com/auth0/Guardian.swift/compare/1.9.0...1.10.0)
+
 ## [1.9.0](https://github.com/auth0/Guardian.swift/tree/1.9.0) (2025-08-21)
 - Modify the Guardian SDKs to be more “forgiving” when using the https://{tenant}.{region}.auth0.com/appliance-mfa url
 [Full Changelog](https://github.com/auth0/Guardian.swift/compare/1.8.0...1.9.0)
