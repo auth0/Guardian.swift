@@ -36,7 +36,7 @@ jobs:
 
       # ruby-version is read from .ruby-version automatically.
       # bundler: 'Gemfile.lock' installs the exact bundler version from BUNDLED WITH.
-      - uses: ruby/setup-ruby@354a1ad156761f5e6b2b415c7f7e1dbb5e23d389 # pin@v1.229.0
+      - uses: ruby/setup-ruby@14594264cd68ce8a2345dd349bc3d138a4ef85c8 # pin@v1
         with:
           bundler: 'Gemfile.lock'
 
