@@ -16,7 +16,7 @@ concurrency:
 jobs:
   test:
     name: Test
-    runs-on: macos-14
+    runs-on: macos-15
 
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # pin@v4.2.2
@@ -83,10 +83,10 @@ jobs:
         env:
           BUNDLE_PATH: vendor/bundle
           # The Fastfile defaults the scan destination to "iPhone 17", which only
-          # exists on Xcode 26+. CI pins Xcode 15.1 (.xcode-version), whose newest
-          # simulator is "iPhone 15" — override the device so the destination
+          # exists on Xcode 26+. CI pins Xcode 16.4 (.xcode-version), whose newest
+          # simulator is "iPhone 16" — override the device so the destination
           # resolves. Bump this in lockstep with .xcode-version.
-          GUARDIAN_SCAN_DEVICE: iPhone 15
+          GUARDIAN_SCAN_DEVICE: iPhone 16
 
       # Fallback: re-run the dashboard generator if the main step failed before
       # postbuild ran (e.g. a lint error). This attaches whatever partial reports exist.
