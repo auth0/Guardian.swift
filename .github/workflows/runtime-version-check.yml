@@ -30,7 +30,7 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # pin@v4.2.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # pin@v7.0.1
 
       - name: Check and update EOL runtime versions
         id: check
@@ -117,7 +117,7 @@ jobs:
 
       - name: Open PR for EOL runtime bump
         if: steps.check.outputs.any_stale == 'true'
-        uses: peter-evans/create-pull-request@271a8d0340265f5dadb8a07f5b6f1e9d6b4aae0e # pin@v7.0.6
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # pin@v8.1.1
         with:
           commit-message: "chore(ci): bump EOL runtime version"
           title: "chore(ci): pinned runtime version has reached end-of-life"

@@ -19,7 +19,7 @@ jobs:
     runs-on: macos-15
 
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # pin@v4.2.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # pin@v7.0.1
         with:
           # Full history needed so the lint lane can run git diff origin/<base>...HEAD
           fetch-depth: 0
@@ -30,7 +30,7 @@ jobs:
         id: xcode-ver
         run: echo "version=$(cat .xcode-version)" >> "$GITHUB_OUTPUT"
 
-      - uses: maxim-lobanov/setup-xcode@60606e260d2fc5762a71e64e74b2174e8ea3c8bd # pin@v1.6.0
+      - uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # pin@v1.7.0
         with:
           xcode-version: ${{ steps.xcode-ver.outputs.version }}
 
@@ -40,13 +40,13 @@ jobs:
         with:
           bundler: 'Gemfile.lock'
 
-      - uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # pin@v4.2.3
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # pin@v6.1.0
         with:
           path: vendor/bundle
           key: bundle-v1-${{ hashFiles('Gemfile.lock') }}
           restore-keys: bundle-v1-
 
-      - uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # pin@v4.2.3
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # pin@v6.1.0
         with:
           path: Carthage/Build
           # Scope the key to the Xcode version: prebuilt xcframeworks are tied to a
@@ -96,7 +96,7 @@ jobs:
         env:
           BUNDLE_PATH: vendor/bundle
 
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # pin@v4.6.2
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # pin@v7.0.1
         if: always()
         with:
           name: reports
@@ -105,7 +105,7 @@ jobs:
             output/scan
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@13ce06bfc6bbe3ecf90edbbf1bc32fe5978ca1d3 # pin@v5.3.1
+        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # pin@v7.1.1
         with:
           files: output/cobertura.xml
           token: ${{ secrets.CODECOV_TOKEN }}  # optional for public repos; required for private
