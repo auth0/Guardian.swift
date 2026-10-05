@@ -92,17 +92,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     var rootController: UIViewController? {
-        // Under the scene lifecycle (iOS 13+) the window belongs to the window
-        // scene, not AppDelegate.window, so fall back to the active scene's key
-        // window. Required for iOS 15+ SDK builds, which enforce scenes.
-        if let window = self.window {
-            return window.rootViewController
-        }
-        return UIApplication.shared.connectedScenes
-            .compactMap { $0 as? UIWindowScene }
-            .flatMap { $0.windows }
-            .first { $0.isKeyWindow }?
-            .rootViewController
+        return self.window?.rootViewController
     }
 }
 
