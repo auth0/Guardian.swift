@@ -1,6 +1,13 @@
-// Overrides the iOS deployment target for all Carthage dependencies when building
-// locally with Xcode 27+, which enforces a minimum of iOS 15.0.
-// Used by dependencies.sh via XCODE_XCCONFIG_FILE during carthage bootstrap.
-// This file is intentionally NOT applied to the Guardian framework itself — that
-// is governed by project.pbxproj.
+// Applied to all Carthage dependencies via XCODE_XCCONFIG_FILE during bootstrap.
+// NOT applied to the Guardian framework itself (governed by project.pbxproj).
+//
+// IPHONEOS_DEPLOYMENT_TARGET: Xcode 26/27 enforces a 15.0 minimum; old deps
+//   (Quick/Nimble/SimpleKeychain) declare lower targets and fail without this.
+//
+// SWIFT_VERSION / SWIFT_STRICT_CONCURRENCY: Xcode 16.4 defaults to Swift 6
+//   strict concurrency checking. Quick, Nimble, and SimpleKeychain predate Swift 6
+//   and produce errors (not warnings) under those defaults. Force Swift 5 mode so
+//   Carthage can compile them without modifications.
 IPHONEOS_DEPLOYMENT_TARGET = 15.0
+SWIFT_VERSION = 5
+SWIFT_STRICT_CONCURRENCY = minimal

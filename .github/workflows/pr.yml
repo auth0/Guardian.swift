@@ -61,22 +61,22 @@ jobs:
         env:
           BUNDLE_PATH: vendor/bundle
 
-      # SwiftLint is not pre-installed on macos-14 runners and --skip-deps bypasses
-      # the brew install in dependencies.sh, so we install it explicitly here.
-      - name: Install SwiftLint
-        run: brew install swiftlint
-
-      # Bootstrap Carthage test deps on a cache miss (first run or Cartfile.resolved
-      # changed). --skip-deps skips this in build.sh, so we handle it here.
-      - name: Bootstrap Carthage (cache miss)
+      # SwiftLint and Carthage are not guaranteed on macos-15 runners.
+      # --skip-deps bypasses the brew installs in dependencies.sh, so do them here.
+      - name: Install tools (SwiftLint + Carthage)
         run: |
-          if [ ! -d Carthage/Build ] || [ -z "$(ls -A Carthage/Build 2>/dev/null)" ]; then
-            # Carthage is preinstalled on current macos runners, but GitHub trims
-            # tooling over time — install it if absent (matches dependencies.sh).
-            command -v carthage >/dev/null 2>&1 || brew install carthage
-            XCODE_XCCONFIG_FILE="$GITHUB_WORKSPACE/carthage_build.xcconfig" \
-              carthage bootstrap --use-xcframeworks --cache-builds --platform iOS
-          fi
+          brew install swiftlint
+          brew install carthage
+
+      # Bootstrap Carthage test deps (Quick/Nimble/SimpleKeychain). --cache-builds
+      # makes this a no-op when the cached xcframeworks are still valid, so it's
+      # safe to run unconditionally; the cache step above provides the speed-up.
+      - name: Bootstrap Carthage dependencies
+        run: |
+          XCODE_XCCONFIG_FILE="$GITHUB_WORKSPACE/carthage_build.xcconfig" \
+            carthage bootstrap --use-xcframeworks --cache-builds --platform iOS
+          echo "Carthage/Build contents:"
+          ls Carthage/Build/ 2>/dev/null || echo "  (empty)"
 
       - name: Lint + Test + Coverage
         run: ./build.sh --buildType debug --lint --test --coverage --nobuild --skip-deps
