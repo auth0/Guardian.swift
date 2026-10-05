@@ -1,0 +1,73 @@
+# SwiftLint configuration for Guardian.swift
+#
+# Scope: Guardian/ source only. Tests, sample app, Carthage deps and SPM build
+# products are excluded — they would produce noise without actionable value.
+#
+# Severity model (mirrors the Android lint gate):
+#   - The CI job fails only on `error`-severity violations (no --strict flag).
+#   - Rules default to `warning` severity in SwiftLint.
+#   - We explicitly promote a small set of high-signal rules to `error` below
+#     using `custom_rules` severity overrides or the `error_level` / `severity`
+#     option on built-in rules.
+#   - All other violations surface in the reports.html dashboard as warnings only.
+#
+# To add rules over time: move entries from `opt_in_rules` to promote existing
+# warnings, or add new opt-in rules with `severity: error` to make them block.
+
+included:
+  - Guardian
+
+excluded:
+  - GuardianTests
+  - GuardianApp
+  - Carthage
+  - .build
+  - vendor
+
+# ── Disabled rules ────────────────────────────────────────────────────────────
+# Rules that produce false positives on this codebase or are not yet actionable.
+disabled_rules:
+  - todo                 # repo has existing TODOs; clean up separately
+  - file_length          # legacy files are long; address in a dedicated PR
+
+# ── Opt-in rules (all at default warning severity) ────────────────────────────
+# Enabled as warnings only — surfaces in the dashboard, does not block CI.
+opt_in_rules:
+  - empty_count
+  - empty_string
+  - explicit_init
+  - closure_spacing
+  - first_where
+  - force_unwrapping
+  - identical_operands
+  - overridden_super_call
+  - redundant_nil_coalescing
+  - vertical_parameter_alignment_on_call
+  - implicit_return            # warn only; promote to error when codebase is clean
+
+# ── Rules promoted to `error` severity (the blocking gate) ───────────────────
+# These are high-confidence, zero-noise rules. A violation in ANY of these
+# will fail the CI job.
+force_cast:
+  severity: error
+
+force_try:
+  severity: error
+
+cyclomatic_complexity:
+  warning: 15
+  error: 25                   # only genuinely complex functions block CI
+
+function_body_length:
+  warning: 60
+  error: 100
+
+# ── Style preferences (warnings) ─────────────────────────────────────────────
+line_length:
+  warning: 160
+  error: 200
+  ignores_comments: true
+  ignores_urls: true
+
+trailing_whitespace:
+  ignores_empty_lines: true

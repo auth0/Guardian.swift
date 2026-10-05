@@ -31,6 +31,32 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 
 
+### ios coverage
+
+```sh
+[bundle exec] fastlane ios coverage
+```
+
+Runs tests and generates a Slather coverage report (cobertura XML) for upload to Codecov
+
+### ios lint
+
+```sh
+[bundle exec] fastlane ios lint
+```
+
+Runs SwiftLint. Fails the lane only on error-severity violations (no --strict).
+
+Also emits a checkstyle XML to output/ for the reports dashboard.
+
+### ios build
+
+```sh
+[bundle exec] fastlane ios build
+```
+
+Assembles the Guardian framework (informational; mirrors Android's build lane)
+
 ### ios ci
 
 ```sh

@@ -1,0 +1,6 @@
+// Overrides the iOS deployment target for all Carthage dependencies when building
+// locally with Xcode 27+, which enforces a minimum of iOS 15.0.
+// Used by dependencies.sh via XCODE_XCCONFIG_FILE during carthage bootstrap.
+// This file is intentionally NOT applied to the Guardian framework itself — that
+// is governed by project.pbxproj.
+IPHONEOS_DEPLOYMENT_TARGET = 15.0

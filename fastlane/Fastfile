@@ -13,12 +13,33 @@
 # Uncomment the line if you want fastlane to automatically update itself
 # update_fastlane
 
+require 'shellwords'
+
 default_platform(:ios)
+
+# Simulator destination for unit tests. We pass an explicit `destination` AND set
+# `skip_detect_devices: true` on scan (see test/coverage) to bypass fastlane's
+# simulator auto-detection. That detection (scan's default_os_version) exact-string
+# compares `xcodebuild -showsdks` against `xcrun simctl runtime match list` and
+# crashes on recent Xcode when Apple reports mismatched point versions. Naming the
+# destination outright sidesteps it and makes runs deterministic across machines.
+#
+# Override the device per environment (CI running an older Xcode won't have the
+# latest device): set GUARDIAN_SCAN_DEVICE to a device name, or
+# GUARDIAN_SCAN_DESTINATION for a full destination string. The var is deliberately
+# NOT named SCAN_* — fastlane maps SCAN_<CONFIG> env vars onto scan's config, and a
+# SCAN_DEVICE would re-enter the very auto-detection we're avoiding.
+GUARDIAN_SCAN_DEVICE = ENV["GUARDIAN_SCAN_DEVICE"] || "iPhone 17"
+SCAN_DESTINATION     = ENV["GUARDIAN_SCAN_DESTINATION"] || "platform=iOS Simulator,name=#{GUARDIAN_SCAN_DEVICE}"
 
 platform :ios do
 
   before_all do
-    setup_circle_ci
+    setup_circle_ci if ENV['CIRCLECI']
+    # xcodebuild -showBuildSettings can be slow on recent Xcode; raise the timeout
+    # (Fastlane's default is 10s) so scan doesn't abort before it gets a response.
+    ENV['FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT'] = '120'
+    ENV['FASTLANE_XCODEBUILD_SETTINGS_RETRIES'] = '2'
   end
 
   private_lane :certificates do |options|
@@ -26,6 +47,11 @@ platform :ios do
   end
 
   private_lane :dependencies do
+    # Mirror the shell path (tools/build/dependencies.sh): override the deployment
+    # target so Quick/Nimble (which still declare iOS 13.0) build on Xcode 27+.
+    # Without this, `fastlane ios bootstrap`/`ci` fail at the Carthage build on a
+    # newer toolchain, even though `./build.sh` works (it bootstraps via the shell).
+    ENV['XCODE_XCCONFIG_FILE'] = File.expand_path("../carthage_build.xcconfig", __dir__)
     carthage(platform: "iOS", use_binaries: false, cache_builds: true, use_xcframeworks: true)
   end
 
@@ -39,15 +65,107 @@ platform :ios do
   lane :test do
     scan(
       scheme: "Guardian",
+      destination: SCAN_DESTINATION,
+      skip_detect_devices: true,   # trust `destination`; skip the crashy auto-detection
+      derived_data_path: "DerivedData",
       skip_slack: true,
       clean: true,
-      code_coverage: true
+      code_coverage: true,
+      output_directory: "output/scan",
+      output_types: "html,junit"
+    )
+  end
+
+  desc "Runs tests and generates a Slather coverage report (cobertura XML) for upload to Codecov"
+  lane :coverage do
+    # scan must run first — slather reads from the .xcresult bundle scan produces.
+    scan(
+      scheme: "Guardian",
+      destination: SCAN_DESTINATION,
+      skip_detect_devices: true,   # trust `destination`; skip the crashy auto-detection
+      derived_data_path: "DerivedData",
+      skip_slack: true,
+      clean: true,
+      code_coverage: true,
+      output_directory: "output/scan",
+      output_types: "html,junit"
+    )
+    slather(
+      output_directory: "output",
+      cobertura_xml: true,
+      scheme: "Guardian",
+      proj: "Guardian.xcodeproj",
+      # scan wrote build output to the repo-local DerivedData above; point slather
+      # there instead of the default ~/Library/Developer/Xcode/DerivedData.
+      build_directory: "DerivedData"
+    )
+  end
+
+  desc "Runs SwiftLint. Fails the lane only on error-severity violations (no --strict)."
+  desc "Also emits a checkstyle XML to output/ for the reports dashboard."
+  lane :lint do
+    config = File.expand_path("../.swiftlint.yml", __dir__)
+    sh("mkdir -p ../output")
+    # Clear any stale report so an empty run can't surface a prior run's violations.
+    sh("rm -f ../output/swiftlint-checkstyle.xml")
+
+    # Base branch to diff against. GITHUB_BASE_REF is set by Actions on
+    # pull_request, but is PRESENT-BUT-EMPTY for merge_group / workflow_dispatch,
+    # so .fetch's default (absent-only) is not enough — handle empty explicitly.
+    base = ENV['GITHUB_BASE_REF']
+    base = 'master' if base.nil? || base.empty?
+
+    # Resolve the base to a real ref: prefer origin/<base> (CI uses fetch-depth:0),
+    # fall back to a local <base>. Fail loudly if neither resolves — a lint gate
+    # that can't compute its diff must NOT silently pass as "nothing changed".
+    base_ref =
+      if system("git rev-parse --verify --quiet origin/#{base} > /dev/null")
+        "origin/#{base}"
+      elsif system("git rev-parse --verify --quiet #{base} > /dev/null")
+        base
+      else
+        UI.user_error!("Cannot resolve base ref '#{base}' (tried origin/#{base} and #{base}). Fetch the base branch and retry.")
+      end
+
+    # Committed changes since the merge-base, plus uncommitted work (staged +
+    # unstaged) so a local pre-commit run lints real edits, not just commits.
+    committed   = `git diff --name-only --diff-filter=ACMR #{base_ref}...HEAD`.split("\n")
+    uncommitted = `git diff --name-only --diff-filter=ACMR HEAD`.split("\n")
+
+    abs_files = (committed + uncommitted).uniq
+                  .select { |f| f.match?(%r{^Guardian/.*\.swift$}) }
+                  .map    { |f| File.expand_path("../#{f}", __dir__) }
+                  .select { |f| File.exist?(f) }
+
+    if abs_files.empty?
+      UI.message("No Swift files changed — skipping SwiftLint.")
+      next
+    end
+
+    files_arg = abs_files.map { |f| Shellwords.escape(f) }.join(' ')
+    # Checkstyle report for the dashboard: report goes to stdout; keep stderr out
+    # of the XML (2>/dev/null) so progress lines don't corrupt it.
+    sh("swiftlint lint --config #{config} --reporter checkstyle #{files_arg} > ../output/swiftlint-checkstyle.xml 2>/dev/null || true")
+    sh("swiftlint lint --config #{config} #{files_arg}")
+  end
+
+  desc "Assembles the Guardian framework (informational; mirrors Android's build lane)"
+  lane :build do
+    xcodebuild(
+      scheme: "Guardian",
+      project: "Guardian.xcodeproj",
+      sdk: "iphoneos",
+      configuration: "Release",
+      xcargs: "BUILD_LIBRARY_FOR_DISTRIBUTION=YES"
     )
   end
 
   lane :ci do
     bootstrap(skip_certificates: true)
-    test()
+    lint()
+    # `coverage` runs scan (the full test suite) then slather, so it subsumes
+    # `test` — calling both would clean-build and run all tests twice.
+    coverage()
   end
 
   lane :apns do
