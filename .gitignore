@@ -5,7 +5,9 @@
 .DS_Store
 
 ## Build generated
-build/
+# Anchored to the repo root so this matches only Xcode's top-level build/
+# output and NOT tools/build/ (the CI dispatcher modules, which are tracked).
+/build/
 DerivedData/
 
 ## Various settings
@@ -38,6 +40,9 @@ playground.xcworkspace
 # Add this line if you want to avoid checking in source code from Swift Package Manager dependencies.
 # Packages/
 .build/
+# Library-level resolved file: Xcode regenerates it on resolve, and CI pulls test
+# deps via Carthage, so it is an untracked artifact (never committed on master).
+Package.resolved
 
 # CocoaPods
 #
@@ -84,3 +89,11 @@ fastlane/test_output
 #
 !GuardianTests/Data/guardian-test.private.pem
 !GuardianTests/Data/guardian-test.public.pem
+
+# CI/build dispatcher
+#
+.buildsh-last
+output/
+
+# Ruby vendor
+vendor/bundle

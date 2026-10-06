@@ -95,9 +95,10 @@ class ConsentSpec: QuickSpec {
             }
             
             it("should fail when enrollment signing key is not correct") {
+                let wrongKey = try! DataRSAPrivateKey(data: Keys.shared.privateKey)
                 waitUntil(timeout: Timeout) { done in
                     Guardian.consent(forDomain: AuthenticationDomain)
-                        .fetch(consentId: ValidTransactionLinkingId, transactionToken: ValidTransactionToken, signingKey: try! DataRSAPrivateKey.new())
+                        .fetch(consentId: ValidTransactionLinkingId, transactionToken: ValidTransactionToken, signingKey: wrongKey)
                         .start { result in
                             expect(result).to(haveGuardianError(withErrorCode: "invalid_dpop_assertion"))
                             done()

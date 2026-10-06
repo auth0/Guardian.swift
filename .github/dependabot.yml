@@ -1,0 +1,19 @@
+version: 2
+updates:
+  # Bump GHA action SHAs weekly. Dependabot updates both the SHA and the
+  # `# pin@vX.Y.Z` comment so the human-readable version stays in sync.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ["*"]
+
+  # Bump gem versions in the root Gemfile weekly (fastlane, slather, cocoapods,
+  # auth0_shipper, dotenv). Note: directory is / because the Gemfile lives at the
+  # repo root (unlike Guardian.Android where it lives under /fastlane).
+  - package-ecosystem: bundler
+    directory: /
+    schedule:
+      interval: weekly

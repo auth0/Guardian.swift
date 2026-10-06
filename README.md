@@ -1,6 +1,6 @@
 # Guardian.swift (iOS)
 
-[![CircleCI](https://img.shields.io/circleci/project/github/auth0/Guardian.swift.svg?style=flat-square)](https://circleci.com/gh/auth0/Guardian.swift)
+[![PR](https://img.shields.io/github/actions/workflow/status/auth0/Guardian.swift/pr.yml?branch=master&style=flat-square)](https://github.com/auth0/Guardian.swift/actions/workflows/pr.yml)
 [![Coverage Status](https://img.shields.io/codecov/c/github/auth0/Guardian.swift/master.svg?style=flat-square)](https://codecov.io/github/auth0/Guardian.swift)
 [![Version](https://img.shields.io/cocoapods/v/Guardian.svg?style=flat-square)](http://cocoadocs.org/docsets/Guardian)
 [![License](https://img.shields.io/cocoapods/l/Guardian.svg?style=flat-square)](http://cocoadocs.org/docsets/Guardian)
