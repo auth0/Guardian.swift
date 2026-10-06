@@ -50,43 +50,68 @@ parse_test_results() {
 
   echo "  Parsing ${#xml_files[@]} test XML file(s)..." >&2
 
+  local tmpscript
+  tmpscript=$(mktemp)
+  cat > "$tmpscript" << 'PYEOF'
+import sys
+import xml.etree.ElementTree as ET
+
+for path in sys.argv[1:]:
+    try:
+        tree = ET.parse(path)
+    except Exception as e:
+        print("ERROR|{}|{}".format(path, e), flush=True)
+        continue
+    root = tree.getroot()
+
+    # Root element may be <testsuites> or <testsuite>
+    tests    = int(root.get('tests',    0))
+    failures = int(root.get('failures', 0))
+    errors   = int(root.get('errors',   0))
+    print("TOTALS|{}|{}|{}".format(tests, failures, errors), flush=True)
+
+    for tc in root.iter('testcase'):
+        classname = tc.get('classname', '').replace('|', '/')
+        name      = tc.get('name',      '').replace('|', '/')
+        failure   = tc.find('failure')
+        error     = tc.find('error')
+        if failure is not None or error is not None:
+            el  = failure if failure is not None else error
+            msg = (el.get('message', '') or '').replace('|', '/').replace('\n', ' ')[:200]
+            print("FAIL|{}|{}|{}".format(classname, name, msg), flush=True)
+        else:
+            print("PASS|{}|{}".format(classname, name), flush=True)
+PYEOF
+
   for xml in "${xml_files[@]}"; do
     [[ ! -f "$xml" ]] && continue
 
-    local tests failures errors root
-    # Grand totals live on the root <testsuites> element (first match). scan emits
-    # single-quoted attributes (tests='286'), but other tools use double quotes, so
-    # accept either. The ['\"] class matches a single OR double quote.
-    root=$(grep -E '<testsuites?[[:space:]]' "$xml" | head -1)
-    tests=$(echo "$root" | grep -oE "tests=['\"][0-9]+" | grep -oE '[0-9]+')
-    failures=$(echo "$root" | grep -oE "failures=['\"][0-9]+" | grep -oE '[0-9]+')
-    errors=$(echo "$root" | grep -oE "errors=['\"][0-9]+" | grep -oE '[0-9]+')
+    local output
+    output=$(python3 "$tmpscript" "$xml" 2>/dev/null || echo "")
 
-    tests=$(ensure_number "$tests")
-    failures=$(ensure_number "$failures")
-    errors=$(ensure_number "$errors")
-
-    local failed=$((failures + errors))
-    local passed=$((tests - failed))
-    TESTS_PASSED=$((TESTS_PASSED + passed))
-    TESTS_FAILED=$((TESTS_FAILED + failed))
-
-    while IFS= read -r testcase_line; do
-      local test_name class_name
-      # Accept single- or double-quoted attributes. For the test name, require a
-      # leading space so we don't match the "name=" inside "classname=".
-      test_name=$(echo "$testcase_line" | sed -nE "s/.*[[:space:]]name=['\"]([^'\"]*)['\"].*/\1/p")
-      class_name=$(echo "$testcase_line" | sed -nE "s/.*classname=['\"]([^'\"]*)['\"].*/\1/p")
-
-      if echo "$testcase_line" | grep -q "/>"; then
-        PASSED_TESTS="${PASSED_TESTS}${class_name}.${test_name}|${class_name}
+    while IFS='|' read -r tag a b c; do
+      case "$tag" in
+        TOTALS)
+          local t=$a f=$b e=$c
+          local failed=$((f + e))
+          local passed=$((t - failed))
+          TESTS_PASSED=$((TESTS_PASSED + passed))
+          TESTS_FAILED=$((TESTS_FAILED + failed))
+          ;;
+        PASS)
+          PASSED_TESTS="${PASSED_TESTS}${a}.${b}|${a}
 "
-      else
-        FAILED_TESTS="${FAILED_TESTS}${class_name}.${test_name}|Test failed|${class_name}
+          ;;
+        FAIL)
+          local msg="${c:-Test failed}"
+          FAILED_TESTS="${FAILED_TESTS}${a}.${b}|${msg}|${a}
 "
-      fi
-    done < <(grep '<testcase' "$xml")
+          ;;
+      esac
+    done <<< "$output"
   done
+
+  rm -f "$tmpscript"
 }
 
 # ─── Parse coverage from slather cobertura XML ────────────────────────────────
