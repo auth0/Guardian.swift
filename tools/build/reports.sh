@@ -542,30 +542,14 @@ generate_gha_summary() {
     echo ""
     echo "> Branch: \`${branch}\`"
 
-    # Failed tests — shown expanded so failures are immediately visible
     if [[ $TESTS_FAILED -gt 0 && -n "$FAILED_TESTS" ]]; then
       echo ""
-      echo "<details open><summary>❌ Failed Tests (${TESTS_FAILED})</summary>"
+      echo "### ❌ Failed Tests"
       echo ""
       while IFS='|' read -r name _msg _class; do
         [[ -z "$name" ]] && continue
         echo "- \`${name}\`"
       done <<< "$FAILED_TESTS"
-      echo ""
-      echo "</details>"
-    fi
-
-    # Passed tests — collapsed by default (can be long)
-    if [[ $TESTS_PASSED -gt 0 && -n "$PASSED_TESTS" ]]; then
-      echo ""
-      echo "<details><summary>✅ Passed Tests (${TESTS_PASSED})</summary>"
-      echo ""
-      while IFS='|' read -r name _class; do
-        [[ -z "$name" ]] && continue
-        echo "- \`${name}\`"
-      done <<< "$PASSED_TESTS"
-      echo ""
-      echo "</details>"
     fi
 
     if [[ $total_lint -gt 0 && -n "$LINT_DETAILS" ]]; then
