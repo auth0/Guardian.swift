@@ -120,8 +120,6 @@ public extension Authentication {
 
 struct RSAAuthentication: Authentication {
 
-    private static let reponseExpiration: TimeInterval = 30
-
     let api: API
     let device: AuthenticationDevice
 
@@ -139,24 +137,18 @@ struct RSAAuthentication: Authentication {
     }
 
     func resolve(transaction transactionToken: String, withChallenge challenge: String, accepted: Bool, reason: String? = nil) -> Request<Transaction, NoContent> {
-        let path = self.api.baseUrl.appendingPathComponent("api/resolve-transaction")
-        let currentTime = Date()
-        let claims = GuardianClaimSet(
-            subject: challenge,
-            issuer: self.device.localIdentifier,
-            audience: path.absoluteString,
-            expireAt: currentTime.addingTimeInterval(RSAAuthentication.reponseExpiration),
-            issuedAt: currentTime,
-            status: accepted,
-            reason: reason
-        )
-        let jwt: JWT<GuardianClaimSet>
+        let path = resolveTransactionUrl(baseUrl: self.api.baseUrl)
+        let jwt: String
         do {
-            jwt = try JWT(claimSet: claims, key: self.device.signingKey.secKey)
+            jwt = try signedChallengeResponse(baseUrl: self.api.baseUrl,
+                                              device: self.device,
+                                              challenge: challenge,
+                                              accepted: accepted,
+                                              reason: reason)
         } catch(let error) {
             return Request(method: .post, url: path, error: GuardianError(code: .cannotSignTransactionChallenge, cause: error))
         }
-        return self.api.resolve(transaction: transactionToken, withChallengeResponse: jwt.string)
+        return self.api.resolve(transaction: transactionToken, withChallengeResponse: jwt)
     }
 
     func handleAction(withIdentifier identifier: String, notification: Notification) -> Request<Transaction, NoContent> {
@@ -170,4 +162,25 @@ struct RSAAuthentication: Authentication {
         let path = self.api.baseUrl.appendingPathComponent("api/resolve-transaction")
         return Request(method: .post, url: path, error: GuardianError(code: .invalidNotificationActionIdentifier))
     }
+}
+
+private let challengeResponseExpiration: TimeInterval = 30
+
+func resolveTransactionUrl(baseUrl: URL) -> URL {
+    return baseUrl.appendingPathComponent("api/resolve-transaction")
+}
+
+func signedChallengeResponse(baseUrl: URL, device: AuthenticationDevice, challenge: String, accepted: Bool, reason: String?) throws -> String {
+    let currentTime = Date()
+    let claims = GuardianClaimSet(
+        subject: challenge,
+        issuer: device.localIdentifier,
+        audience: resolveTransactionUrl(baseUrl: baseUrl).absoluteString,
+        expireAt: currentTime.addingTimeInterval(challengeResponseExpiration),
+        issuedAt: currentTime,
+        status: accepted,
+        reason: reason
+    )
+    let jwt = try JWT(claimSet: claims, key: device.signingKey.secKey)
+    return jwt.string
 }

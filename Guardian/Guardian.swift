@@ -105,6 +105,66 @@ public func authentication(url: URL, device: AuthenticationDevice, telemetryInfo
 }
 
 /**
+ Builds the signed challenge response (a JWT) for a push notification challenge,
+ without calling the Guardian server.
+
+ ```
+ let device: AuthenticationDevice = // the object you obtained when enrolling
+ let notification: Notification = // obtained from Guardian.notification(from:)
+ let challengeResponse = try Guardian
+    .constructChallengeResponse(forDomain: "tenant.guardian.auth0.com",
+                                device: device,
+                                challenge: notification.challenge,
+                                accepted: true)
+ ```
+
+ - parameter forDomain:     domain or URL of your Guardian server
+ - parameter device:        the enrolled device whose signing key signs the response
+ - parameter challenge:     the challenge of the push notification
+ - parameter accepted:      whether the challenge is accepted or rejected
+ - parameter reason:        optional reason, usually given when rejecting
+
+ - throws: a `GuardianError` with code `cannotSignTransactionChallenge` if signing fails
+
+ - returns: the signed challenge response JWT
+ */
+public func constructChallengeResponse(forDomain domain: String, device: AuthenticationDevice, challenge: String, accepted: Bool, reason: String? = nil) throws -> String {
+    return try constructChallengeResponse(url: url(from: domain)!, device: device, challenge: challenge, accepted: accepted, reason: reason)
+}
+
+/**
+ Builds the signed challenge response (a JWT) for a push notification challenge,
+ without calling the Guardian server.
+
+ ```
+ let device: AuthenticationDevice = // the object you obtained when enrolling
+ let notification: Notification = // obtained from Guardian.notification(from:)
+ let challengeResponse = try Guardian
+    .constructChallengeResponse(url: URL(string: "https://tenant.guardian.auth0.com/")!,
+                                device: device,
+                                challenge: notification.challenge,
+                                accepted: true)
+ ```
+
+ - parameter url:           URL of your Guardian server
+ - parameter device:        the enrolled device whose signing key signs the response
+ - parameter challenge:     the challenge of the push notification
+ - parameter accepted:      whether the challenge is accepted or rejected
+ - parameter reason:        optional reason, usually given when rejecting
+
+ - throws: a `GuardianError` with code `cannotSignTransactionChallenge` if signing fails
+
+ - returns: the signed challenge response JWT
+ */
+public func constructChallengeResponse(url: URL, device: AuthenticationDevice, challenge: String, accepted: Bool, reason: String? = nil) throws -> String {
+    do {
+        return try signedChallengeResponse(baseUrl: api(url: url).baseUrl, device: device, challenge: challenge, accepted: accepted, reason: reason)
+    } catch {
+        throw GuardianError(code: .cannotSignTransactionChallenge, cause: error)
+    }
+}
+
+/**
  Creates a request to enroll from a Guardian enrollment URI
  
  You'll have to create a verification and signing key, you could create a signing key like
