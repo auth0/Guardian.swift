@@ -59,12 +59,30 @@ class ViewController: UIViewController {
         GuardianService.unenroll(enrollment) { [weak self] result in
             switch result {
             case .failure(let cause):
-                self?.showError(title: "Unenroll failed", cause: cause)
+                self?.offerToForgetLocally(after: cause)
             case .success:
                 AppDelegate.state = nil
             }
             self?.updateView()
         }
+    }
+
+    /// Unenroll can fail for good, e.g. when the enrollment was already deleted on
+    /// the tenant, which would leave the app stuck showing it. Let the user remove
+    /// it from this device anyway.
+    private func offerToForgetLocally(after cause: Swift.Error) {
+        let alert = UIAlertController(
+            title: "Unenroll failed",
+            message: "\(Self.message(for: cause))\n\nYou can remove the enrollment from this device anyway. "
+                + "If it still exists on the tenant, an admin can delete it there.",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "Remove from this device", style: .destructive) { [weak self] _ in
+            AppDelegate.state = nil
+            self?.updateView()
+        })
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        present(alert, animated: true, completion: nil)
     }
 
     func updateView() {
@@ -95,11 +113,11 @@ class ViewController: UIViewController {
     }
 
     private func showError(title: String, cause: Swift.Error) {
-        var errorMessage = "Unknown error"
-        if let cause = cause as? GuardianError {
-            errorMessage = cause.description
-        }
-        showError(title: title, message: errorMessage)
+        showError(title: title, message: Self.message(for: cause))
+    }
+
+    private static func message(for cause: Swift.Error) -> String {
+        return (cause as? GuardianError)?.description ?? "Unknown error"
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
