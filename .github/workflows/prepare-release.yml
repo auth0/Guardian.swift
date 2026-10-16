@@ -4,7 +4,7 @@ name: Prepare release
 # Start it from the Actions tab (Prepare release, Run workflow, branch master) with
 # the version to ship.
 #
-# It creates release/X.Y.Z from master, sets .version, the three Info.plist versions
+# It creates release/X.Y.Z from master, sets .version, the four Info.plist versions
 # and the README install lines, drafts the CHANGELOG.md entry, commits all of it as ONE verified commit (created
 # through the GitHub API so GitHub signs it; a `git commit` here would be unsigned)
 # and opens the "Release X.Y.Z" PR. Review and edit the CHANGELOG entry on the PR,
@@ -154,7 +154,7 @@ jobs:
         run: |
           set -euo pipefail
           echo "$VERSION" > .version
-          for plist in Guardian/Info.plist GuardianApp/Info.plist GuardianTests/Info.plist; do
+          for plist in Guardian/Info.plist GuardianTests/Info.plist GuardianTestHost/Info.plist GuardianApp/GuardianApp/Info.plist; do
             # The value is on the line after the key.
             sed -E -i "/<key>CFBundleShortVersionString<\/key>/{n;s|<string>[^<]*</string>|<string>${VERSION}</string>|;}" "$plist"
             if ! grep -A1 "<key>CFBundleShortVersionString</key>" "$plist" | grep -qF "<string>${VERSION}</string>"; then
@@ -221,7 +221,7 @@ jobs:
         if: steps.plan.outputs.mode == 'release'
         run: |
           set -euo pipefail
-          files=(.version Guardian/Info.plist GuardianApp/Info.plist GuardianTests/Info.plist README.md CHANGELOG.md)
+          files=(.version Guardian/Info.plist GuardianTests/Info.plist GuardianTestHost/Info.plist GuardianApp/GuardianApp/Info.plist README.md CHANGELOG.md)
           if git diff --quiet -- "${files[@]}"; then
             echo "Version files and CHANGELOG are already up to date on $BRANCH."
             exit 0

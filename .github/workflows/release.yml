@@ -133,7 +133,7 @@ jobs:
             echo "::error::.version on this commit is '$current', expected $VERSION. Run Prepare release for $VERSION."
             exit 1
           fi
-          for plist in Guardian/Info.plist GuardianApp/Info.plist GuardianTests/Info.plist; do
+          for plist in Guardian/Info.plist GuardianTests/Info.plist GuardianTestHost/Info.plist GuardianApp/GuardianApp/Info.plist; do
             if ! grep -A1 "<key>CFBundleShortVersionString</key>" "$plist" | grep -qF "<string>${VERSION}</string>"; then
               echo "::error::CFBundleShortVersionString in $plist is not $VERSION. Run Prepare release for $VERSION."
               exit 1
