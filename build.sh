@@ -50,7 +50,7 @@
 # DEPENDENCIES
 #   By default the script makes the Ruby/Fastlane toolchain ready before building:
 #   it installs bundler if missing, then runs 'bundle install'. Carthage is
-#   bootstrapped for the test dependency graph (Quick/Nimble/SimpleKeychain).
+#   bootstrapped for the test dependency graph (Quick/Nimble).
 #   SwiftLint is installed via Homebrew if missing. Xcode (see .xcode-version) must
 #   already be on PATH via xcode-select — provided by CI or your local setup.
 #   Pass --skip-deps to bypass all of the above (e.g. in CI after cached installs).

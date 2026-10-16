@@ -160,6 +160,20 @@ platform :ios do
     )
   end
 
+  desc "Builds the GuardianApp sample for the iOS Simulator so it cannot silently stop compiling."
+  desc "The sample consumes the SDK as a local Swift package (Package.swift); no Carthage or signing team needed."
+  lane :build_sample do
+    xcodebuild(
+      project: "GuardianApp/GuardianApp.xcodeproj",
+      scheme: "GuardianApp",
+      configuration: "Debug",
+      # A generic destination needs no booted simulator and skips device detection.
+      destination: "generic/platform=iOS Simulator",
+      derivedDataPath: "DerivedData/GuardianApp",
+      build: true
+    )
+  end
+
   lane :ci do
     bootstrap(skip_certificates: true)
     lint()

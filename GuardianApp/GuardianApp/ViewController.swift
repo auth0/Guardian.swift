@@ -25,9 +25,6 @@ import Guardian
 
 class ViewController: UIViewController {
 
-    private static let RSA_KEY_PUBLIC_TAG = "PUBLIC_TAG"
-    private static let RSA_KEY_PRIVATE_TAG = "PRIVATE_TAG"
-
     @IBOutlet var enrollButton: UIButton!
     @IBOutlet var unenrollButton: UIButton!
 
@@ -46,21 +43,21 @@ class ViewController: UIViewController {
                 .api(forDomain: AppDelegate.tenantDomain)
                 .device(forEnrollmentId: enrollment.identifier, userId: enrollment.userId, signingKey: enrollment.signingKey)
                 .delete()
-            debugPrint(request)
-            request.start { [unowned self] result in
+            request.start { [weak self] result in
                     switch result {
                     case .failure(let cause):
-                        self.showError(title: "Unenroll failed", cause: cause)
+                        self?.showError(title: "Unenroll failed", cause: cause)
                     case .success:
                         AppDelegate.state = nil
                     }
-                    self.updateView()
+                    self?.updateView()
             }
         }
     }
 
     func updateView() {
-        DispatchQueue.main.async { [unowned self] in
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
             let haveEnrollment = AppDelegate.state != nil
             if let enrollment = AppDelegate.state {
                 self.enrollmentLabel.text = enrollment.identifier
@@ -73,7 +70,8 @@ class ViewController: UIViewController {
     }
     
     private func showError(title: String, message: String) {
-        DispatchQueue.main.async { [unowned self] in
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
             let alert = UIAlertController(
                 title: title,
                 message: message,
@@ -115,45 +113,83 @@ class ViewController: UIViewController {
 
 extension ViewController: QRCodeReaderViewControllerDelegate {
     func qrCodeViewDidScan(qrCodeValue: String) {
-        print("QR scanned with result:\n\(qrCodeValue)")
         self.dismiss(animated: true) { [unowned self] in
-
-            guard let signingKey = try? KeychainRSAPrivateKey.new(with: ViewController.RSA_KEY_PRIVATE_TAG),
-                let verificationKey = try? signingKey.verificationKey() else { return }
-
-            let request = Guardian.enroll(
-                forDomain: AppDelegate.tenantDomain,
-                usingUri: qrCodeValue,
-                notificationToken: AppDelegate.pushToken!,
-                signingKey: signingKey,
-                verificationKey: verificationKey)
-            
-            debugPrint(request)
-            request
-                .on(response: { event in
-                    guard let data = event.data else { return }
-                    let body = String(data: data, encoding: .utf8) ?? "INVALID BODY"
-                    print(body)
-                })
-                .start { result in
-                    switch result {
-                    case .failure(let cause):
-                        self.showError(title: "Enroll failed", cause: cause)
-                    case .success(let enrollment):
-                        AppDelegate.state = GuardianState(identifier: enrollment.id, localIdentifier: enrollment.localIdentifier, keyTag: signingKey.tag, otp: enrollment.totp, userId: enrollment.userId)
-                    }
-                    self.updateView()
-            }
+            self.enroll(usingUri: qrCodeValue)
         }
     }
-    
+
     func qrCodeViewDidCancel() {
         dismiss(animated: true)
     }
-    
+
     func qrCodeViewDidFail() {
+        // No camera (e.g. the Simulator): let the user paste the enrollment link
+        // that the QR code encodes instead.
         dismiss(animated: false) { [weak self] in
-            self?.showError(title: "Error", message: "Camera usage not supported by the current device")
+            self?.promptForEnrollmentUri()
+        }
+    }
+
+    private func promptForEnrollmentUri() {
+        let alert = UIAlertController(
+            title: "Camera unavailable",
+            message: "Paste the enrollment link encoded in the QR code",
+            preferredStyle: .alert
+        )
+        alert.addTextField { textField in
+            textField.placeholder = "otpauth://..."
+            textField.accessibilityIdentifier = "enrollmentUri.textField"
+            textField.autocapitalizationType = .none
+            textField.autocorrectionType = .no
+            textField.keyboardType = .URL
+        }
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: "Enroll", style: .default) { [unowned self, unowned alert] _ in
+            guard let uri = alert.textFields?.first?.text?.trimmingCharacters(in: .whitespacesAndNewlines), !uri.isEmpty else {
+                return self.showError(title: "Error", message: "Enrollment link is empty")
+            }
+            self.enroll(usingUri: uri)
+        })
+        present(alert, animated: true, completion: nil)
+    }
+
+    private func enroll(usingUri enrollmentUri: String) {
+        guard let notificationToken = AppDelegate.pushToken else {
+            return showError(title: "Error", message: "Push token is empty")
+        }
+        // Each enrollment gets its own signing key. new(with:) returns the key
+        // already stored under a tag, so a fixed tag would share one key across
+        // enrollments.
+        let keyTag = "com.auth0.guardian.sample.signing-key.\(UUID().uuidString)"
+        guard let signingKey = try? KeychainRSAPrivateKey.new(with: keyTag),
+            let verificationKey = try? signingKey.verificationKey() else {
+            GuardianState.deleteSigningKey(withTag: keyTag)
+            return showError(title: "Error", message: "Could not create the device signing key")
+        }
+
+        let request = Guardian.enroll(
+            forDomain: AppDelegate.tenantDomain,
+            usingUri: enrollmentUri,
+            notificationToken: notificationToken,
+            signingKey: signingKey,
+            verificationKey: verificationKey)
+
+        request
+            .on(response: { event in
+                // Log the status only: the response body carries the TOTP secret.
+                #if DEBUG
+                print("Enroll response: HTTP \(event.response.statusCode)")
+                #endif
+            })
+            .start { result in
+                switch result {
+                case .failure(let cause):
+                    GuardianState.deleteSigningKey(withTag: keyTag)
+                    self.showError(title: "Enroll failed", cause: cause)
+                case .success(let enrollment):
+                    AppDelegate.state = GuardianState(identifier: enrollment.id, localIdentifier: enrollment.localIdentifier, signingKey: signingKey, otp: enrollment.totp, userId: enrollment.userId)
+                }
+                self.updateView()
         }
     }
 }

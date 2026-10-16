@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "5F2037EA1D5E22590005D2E2"
+               BlueprintIdentifier = "4E4150500000000000000010"
                BuildableName = "GuardianApp.app"
                BlueprintName = "GuardianApp"
-               ReferencedContainer = "container:Guardian.xcodeproj">
+               ReferencedContainer = "container:GuardianApp.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -42,10 +42,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "5F2037EA1D5E22590005D2E2"
+            BlueprintIdentifier = "4E4150500000000000000010"
             BuildableName = "GuardianApp.app"
             BlueprintName = "GuardianApp"
-            ReferencedContainer = "container:Guardian.xcodeproj">
+            ReferencedContainer = "container:GuardianApp.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -59,10 +59,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "5F2037EA1D5E22590005D2E2"
+            BlueprintIdentifier = "4E4150500000000000000010"
             BuildableName = "GuardianApp.app"
             BlueprintName = "GuardianApp"
-            ReferencedContainer = "container:Guardian.xcodeproj">
+            ReferencedContainer = "container:GuardianApp.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

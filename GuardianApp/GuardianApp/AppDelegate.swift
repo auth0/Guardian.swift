@@ -24,15 +24,29 @@ import UIKit
 import Guardian
 import UserNotifications
 
-@UIApplicationMain
+@main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-    static let tenantDomain = "https://guardian-demo.us.auth0.com"
+    static let tenantDomainKey = "GuardianTenantDomain"
+    static let defaultTenantDomain = "https://guardian-demo.us.auth0.com"
+
+    /// The tenant the sample talks to. Resolved in order from the
+    /// `-GuardianTenantDomain <url>` launch argument, the GUARDIAN_TENANT_DOMAIN
+    /// build setting (written to Info.plist), then the Guardian demo tenant.
+    static let tenantDomain: String = {
+        if let domain = UserDefaults.standard.string(forKey: tenantDomainKey), !domain.isEmpty {
+            return domain
+        }
+        if let domain = Bundle.main.object(forInfoDictionaryKey: tenantDomainKey) as? String, !domain.isEmpty {
+            return domain
+        }
+        return defaultTenantDomain
+    }()
 
     static var pushToken: String? = nil
-    var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        print("Guardian tenant: \(AppDelegate.tenantDomain)")
 
         let guardianCategory = Guardian.AuthenticationCategory.default
 
@@ -57,7 +71,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         // Request for AuthZ
         UNUserNotificationCenter.current().delegate = self
-        UNUserNotificationCenter.current().requestAuthorization(options: [.badge, .sound]) { granted, error in
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
             guard granted else {
                 return print("Permission not granted")
             }
@@ -83,7 +97,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // when the registration for push notification succeeds
         let token = deviceToken.reduce(String(), {$0 + String(format: "%02X", $1)})
         AppDelegate.pushToken = token
+        // Needed to set up push on a test tenant; never log it in release builds.
+        #if DEBUG
         print("DEVICE TOKEN = \(token)")
+        #endif
     }
 
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Swift.Error) {
@@ -92,7 +109,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     var rootController: UIViewController? {
-        return self.window?.rootViewController
+        return UIApplication.shared.connectedScenes
+            .compactMap { ($0.delegate as? SceneDelegate)?.window }
+            .first?
+            .rootViewController
     }
 }
 
@@ -117,7 +137,8 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         let userInfo = response.notification.request.content.userInfo
 
         // when the app has been activated by the user selecting an action from a remote notification
-        print("identifier: \(identifier), userInfo: \(userInfo)")
+        // Don't log userInfo: the Guardian payload carries the transaction token.
+        print("Notification action: \(identifier)")
 
         if let notification = Guardian.notification(from: userInfo),
             let enrollment = AppDelegate.state
@@ -138,7 +159,6 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
 
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         let userInfo = notification.request.content.userInfo
-        print(userInfo)
         if let notification = Guardian.notification(from: userInfo) {
             show(notification: notification)
         }
@@ -146,9 +166,9 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     }
 
     private func show(notification: Guardian.Notification) {
-        print(notification)
-
-        let notificationController = rootController?.storyboard?.instantiateViewController(withIdentifier: "NotificationView") as! NotificationController
+        guard let notificationController = rootController?.storyboard?.instantiateViewController(withIdentifier: "NotificationView") as? NotificationController else {
+            return print("NotificationView is missing from Main.storyboard")
+        }
         notificationController.notification = notification
         rootController?.present(notificationController, animated: true, completion: nil)
     }

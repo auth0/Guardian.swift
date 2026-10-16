@@ -5,6 +5,7 @@ coverage:
   ignore:
     - GuardianTests/*
     - GuardianApp
+    - GuardianTestHost
   status:
     patch:
       default:

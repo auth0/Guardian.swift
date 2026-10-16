@@ -45,16 +45,15 @@ class NotificationController: UIViewController {
         let request = Guardian
             .authentication(forDomain: AppDelegate.tenantDomain, device: enrollment)
             .allow(notification: notification)
-        debugPrint(request)
-        request.start { result in
+        request.start { [weak self] result in
                 print(result)
                 switch result {
                 case .success:
-                    DispatchQueue.main.async { [unowned self] in
-                        self.dismiss(animated: true, completion: nil)
+                    DispatchQueue.main.async {
+                        self?.dismiss(animated: true, completion: nil)
                     }
                 case .failure(let cause):
-                    self.showError("Allow failed", cause)
+                    self?.showError("Allow failed", cause)
                 }
         }
     }
@@ -66,16 +65,15 @@ class NotificationController: UIViewController {
         let request = Guardian
             .authentication(forDomain: AppDelegate.tenantDomain, device: enrollment)
             .reject(notification: notification)
-        debugPrint(request)
-        request.start { result in
+        request.start { [weak self] result in
                 print(result)
                 switch result {
                 case .success:
-                    DispatchQueue.main.async { [unowned self] in
-                        self.dismiss(animated: true, completion: nil)
+                    DispatchQueue.main.async {
+                        self?.dismiss(animated: true, completion: nil)
                     }
                 case .failure(let cause):
-                    self.showError("Reject failed", cause)
+                    self?.showError("Reject failed", cause)
                 }
         }
     }
@@ -103,18 +101,19 @@ class NotificationController: UIViewController {
         Guardian
             .consent(forDomain: AppDelegate.tenantDomain)
             .fetch(consentId: consentId, transactionToken: notification.transactionToken, signingKey: enrollment.signingKey)
-            .start{ [unowned self] result in
+            .start{ [weak self] result in
                 switch result {
                 case .failure(let cause):
                     print("Fetch consent failed: \(cause)")
                 case .success(let payload):
-                    showRichConsent(requestedDetails: payload.requestedDetails)
+                    self?.showRichConsent(requestedDetails: payload.requestedDetails)
             }
         }
     }
     
     func showRichConsent(requestedDetails: ConsentRequestedDetails) {
-        DispatchQueue.main.async { [unowned self] in
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
             if !requestedDetails.authorizationDetails.isEmpty {
                 let authDetailsView = showAuthorizationDetails(requestedDetails: requestedDetails)
                 consentDetailsView.addArrangedSubview(authDetailsView)
@@ -132,15 +131,15 @@ class NotificationController: UIViewController {
     }
     
     func showAuthorizationDetails(requestedDetails: ConsentRequestedDetails) -> UIView {
-        let paymentInitiation = requestedDetails.filterAuthorizationDetailsByType(PaymentInitiation.self)
-        
-        return !paymentInitiation.isEmpty
-        ? PaymentInitiationView(fromPaymentInitiation: paymentInitiation.first!)
-        : DynamicAuthorizationDetailsView(fromAuthorizationDetails: requestedDetails.authorizationDetails)
+        if let paymentInitiation = requestedDetails.filterAuthorizationDetailsByType(PaymentInitiation.self).first {
+            return PaymentInitiationView(fromPaymentInitiation: paymentInitiation)
+        }
+        return DynamicAuthorizationDetailsView(fromAuthorizationDetails: requestedDetails.authorizationDetails)
     }
 
     func showError(_ title: String, _ cause: Swift.Error) {
-        DispatchQueue.main.async { [unowned self] in
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
             var errorMessage = "Unknown error"
             if let cause = cause as? GuardianError {
                 errorMessage = cause.description
