@@ -1,0 +1,503 @@
+name: Release
+
+# Step 2 of a release (see the Guardian SDK Release Guide on Confluence, AA1 1156121307).
+# Runs on every push to master and carries on only when the pushed commit is the
+# squash merge of a release/X.Y.Z PR (opened by prepare-release.yml). It runs on
+# the push rather than on the PR's "closed" event so that github.ref is master,
+# which is what an environment restricted to master expects.
+#
+# Manual run, only to redo a release (for example after fixing an environment
+# problem): Actions tab, Release, Run workflow, branch master, with the version.
+# It releases the merge commit of the newest merged release/X.Y.Z PR, not master's
+# head, and fails if there is no such PR (Prepare release was never run or merged).
+#
+# Jobs: validate-version -> test -> publish (cocoapods-release approval gate).
+# After approval, publish:
+#   1. creates the GitHub Release X.Y.Z as a DRAFT targeting the merge commit,
+#      with the CHANGELOG entry as its body;
+#   2. pushes the X.Y.Z tag on the merge commit (the podspec source is the tag);
+#   3. pushes Guardian.podspec to CocoaPods trunk;
+#   4. publishes the draft and checks that X.Y.Z resolves on trunk and through SPM.
+#
+# Once the tag is pushed the version is burned: SPM and Carthage resolve straight
+# from it, so a tag is never moved and a fix after that ships as X.Y.Z+1.
+#
+# Re-runs never need a manual cleanup: a run that failed after pushing the tag is
+# picked up from there by the next run on the same commit. A newer run for the
+# same version cancels older runs that have not started publishing, and publish
+# refuses to run if a newer run for its version exists, so approving a stale run
+# does nothing.
+#
+# Required GitHub environment: cocoapods-release, with required reviewers and the
+# ENVIRONMENT secret (not repo-wide, so only the publish job can read it, and only
+# after approval):
+#   COCOAPODS_TRUNK_TOKEN  trunk session token of a Guardian pod owner
+
+# Manual runs carry the version in their title; the superseding logic below reads it back.
+run-name: ${{ github.event_name == 'workflow_dispatch' && format('Release {0} (manual)', inputs.version) || '' }}
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to release (X.Y.Z). Run on master."
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+
+  # ── 1. Detect and validate the release, supersede older runs ──────────────
+  validate-version:
+    name: Validate version
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: read  # map the pushed commit to its release PR
+      actions: write       # cancel superseded runs
+    outputs:
+      release: ${{ steps.detect.outputs.release }}
+      version: ${{ steps.detect.outputs.version }}
+      sha: ${{ steps.detect.outputs.sha }}
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+    steps:
+      - name: Detect release
+        id: detect
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          sha="$GITHUB_SHA"
+          if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]]; then
+            if [[ "$GITHUB_REF" != "refs/heads/master" ]]; then
+              echo "::error::Run Release on master (it ran on ${GITHUB_REF_NAME})."
+              exit 1
+            fi
+            version="$INPUT_VERSION"
+            if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+              echo "::error::'$version' is not X.Y.Z."
+              exit 1
+            fi
+            # Release exactly what was reviewed: the merge commit of the newest merged
+            # release/X.Y.Z PR (a correction PR, if there was one), never master's head,
+            # which may carry changes merged after the release PR.
+            sha="$(gh pr list --repo "$REPO" --head "release/$version" --base master --state merged \
+              --json mergeCommit,mergedAt --jq 'sort_by(.mergedAt) | last | .mergeCommit.oid // ""')"
+            if [[ -z "$sha" ]]; then
+              echo "::error::No merged release/$version PR. Run Prepare release for $version and merge its PR first."
+              exit 1
+            fi
+          else
+            # The squash merge of a release/X.Y.Z PR into master, or nothing to do.
+            head_ref="$(gh api "repos/$REPO/commits/$sha/pulls" --jq \
+              '[.[] | select(.merged_at != null and .base.ref == "master" and (.head.ref | test("^release/[0-9]+\\.[0-9]+\\.[0-9]+$")))][0].head.ref // ""')"
+            if [[ -z "$head_ref" ]]; then
+              echo "Not a release merge; nothing to do."
+              echo "release=false" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            version="${head_ref#release/}"
+          fi
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::'$version' is not X.Y.Z."
+            exit 1
+          fi
+          {
+            echo "release=true"
+            echo "version=$version"
+            echo "sha=$sha"
+          } >> "$GITHUB_OUTPUT"
+          echo "Release $version from $sha"
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # pin@v7.0.1
+        if: steps.detect.outputs.release == 'true'
+        with:
+          ref: ${{ steps.detect.outputs.sha }}
+
+      - name: Check the version files, the tag and the registry
+        if: steps.detect.outputs.release == 'true'
+        env:
+          VERSION: ${{ steps.detect.outputs.version }}
+          SHA: ${{ steps.detect.outputs.sha }}
+        run: |
+          set -euo pipefail
+          current="$(tr -d '[:space:]' < .version)"
+          if [[ "$current" != "$VERSION" ]]; then
+            echo "::error::.version on this commit is '$current', expected $VERSION. Run Prepare release for $VERSION."
+            exit 1
+          fi
+          for plist in Guardian/Info.plist GuardianApp/Info.plist GuardianTests/Info.plist; do
+            if ! grep -A1 "<key>CFBundleShortVersionString</key>" "$plist" | grep -qF "<string>${VERSION}</string>"; then
+              echo "::error::CFBundleShortVersionString in $plist is not $VERSION. Run Prepare release for $VERSION."
+              exit 1
+            fi
+          done
+          if ! grep -qF "## [${VERSION}](" CHANGELOG.md; then
+            echo "::error::CHANGELOG.md has no entry for $VERSION."
+            exit 1
+          fi
+          # A tag on this commit is left by an earlier run of this release, which the
+          # publish job picks up from. A tag anywhere else means the version is burned.
+          tag_sha=""
+          if [[ "$(gh api "repos/$REPO/git/matching-refs/tags/$VERSION" --jq "[.[] | select(.ref == \"refs/tags/$VERSION\")] | length")" != "0" ]]; then
+            tag_sha="$(gh api "repos/$REPO/commits/$VERSION" --jq .sha)"
+          fi
+          if [[ -n "$tag_sha" && "$tag_sha" != "$SHA" ]]; then
+            echo "::error::Tag $VERSION already points at $tag_sha, so $VERSION is burned (SPM and Carthage may have resolved it). Release the next version instead."
+            exit 1
+          fi
+          if ! versions="$(curl -sf https://trunk.cocoapods.org/api/v1/pods/Guardian)"; then
+            echo "::error::Could not read the Guardian versions from CocoaPods trunk."
+            exit 1
+          fi
+          if jq -e --arg v "$VERSION" 'any(.versions[]; .name == $v)' <<<"$versions" >/dev/null && [[ -z "$tag_sha" ]]; then
+            echo "::error::$VERSION is already on CocoaPods trunk. Release the next version instead."
+            exit 1
+          fi
+
+      # Cancel older runs for the same version that have not started publishing:
+      # still validating or testing, or waiting at the approval gate. A run whose
+      # publish job is already executing is left alone.
+      - name: Supersede older runs for this version
+        if: steps.detect.outputs.release == 'true'
+        env:
+          VERSION: ${{ steps.detect.outputs.version }}
+        run: |
+          set -euo pipefail
+          run_version() {  # event head_sha title -> the version that run releases
+            if [[ "$1" == "workflow_dispatch" ]]; then
+              sed -nE 's/^Release ([0-9]+\.[0-9]+\.[0-9]+) \(manual\)$/\1/p' <<<"$3"
+            else
+              gh api "repos/$REPO/commits/$2/pulls" \
+                --jq '[.[] | select(.merged_at != null and (.head.ref | startswith("release/")))][0].head.ref // "" | ltrimstr("release/")'
+            fi
+          }
+          for status in queued in_progress waiting; do
+            gh api "repos/$REPO/actions/workflows/release.yml/runs?status=$status&per_page=100" \
+              --jq ".workflow_runs[] | select(.id < $GITHUB_RUN_ID) | [.id, .event, .head_sha, .display_title] | @tsv"
+          done | while IFS=$'\t' read -r id event head_sha title; do
+            [[ "$(run_version "$event" "$head_sha" "$title")" == "$VERSION" ]] || continue
+            publishing="$(gh api "repos/$REPO/actions/runs/$id/jobs" \
+              --jq '[.jobs[] | select(.name == "Publish to CocoaPods" and .status == "in_progress")] | length')"
+            if [[ "$publishing" != "0" ]]; then
+              echo "Run $id is already publishing $VERSION; leaving it."
+              continue
+            fi
+            echo "Cancelling superseded run $id for $VERSION."
+            gh api -X POST "repos/$REPO/actions/runs/$id/cancel" >/dev/null || true
+          done
+
+  # ── 2. Run tests on the exact commit being released ───────────────────────
+  test:
+    name: Test
+    needs: validate-version
+    if: needs.validate-version.outputs.release == 'true'
+    runs-on: macos-15
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # pin@v7.0.1
+        with:
+          ref: ${{ needs.validate-version.outputs.sha }}
+
+      - name: Read Xcode version
+        id: xcode-ver
+        run: echo "version=$(cat .xcode-version)" >> "$GITHUB_OUTPUT"
+
+      - uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # pin@v1.7.0
+        with:
+          xcode-version: ${{ steps.xcode-ver.outputs.version }}
+
+      - uses: ruby/setup-ruby@14594264cd68ce8a2345dd349bc3d138a4ef85c8 # pin@v1
+        with:
+          bundler: 'Gemfile.lock'
+
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # pin@v6.1.0
+        with:
+          path: vendor/bundle
+          key: bundle-v1-${{ hashFiles('Gemfile.lock') }}
+          restore-keys: bundle-v1-
+
+      # Same Xcode-scoped key as pr.yml, so a release usually reuses the PR's cache.
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # pin@v6.1.0
+        with:
+          path: Carthage/Build
+          key: carthage-v2-${{ steps.xcode-ver.outputs.version }}-${{ hashFiles('Cartfile.resolved') }}
+          restore-keys: carthage-v2-${{ steps.xcode-ver.outputs.version }}-
+
+      - name: Install Ruby dependencies
+        run: bundle check || bundle install --jobs 4 --retry 3
+        env:
+          BUNDLE_PATH: vendor/bundle
+
+      - name: Install Carthage
+        run: brew install carthage
+
+      - name: Bootstrap Carthage dependencies
+        run: |
+          XCODE_XCCONFIG_FILE="$GITHUB_WORKSPACE/carthage_build.xcconfig" \
+            carthage bootstrap --use-xcframeworks --cache-builds --platform iOS
+
+      # --test + --coverage resolves to the single coverage lane: the full test suite
+      # once, plus the Slather report, the same as the PR checks.
+      - name: Test
+        run: ./build.sh --buildType debug --test --coverage --nobuild --nolint --nopublish --skip-deps
+        env:
+          BUNDLE_PATH: vendor/bundle
+          # See pr.yml: the newest simulator on the pinned Xcode.
+          GUARDIAN_SCAN_DEVICE: iPhone 16
+
+      - name: Generate reports.html (failure fallback)
+        if: failure()
+        run: ./tools/build/reports.sh
+        env:
+          BUNDLE_PATH: vendor/bundle
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # pin@v7.0.1
+        if: always()
+        with:
+          name: reports
+          path: output/reports.html
+
+  # ── 3. Publish ─────────────────────────────────────────────────────────────
+  # The cocoapods-release environment supplies BOTH the approval gate (required
+  # reviewers) AND the trunk token, so approval and secret scoping attach to the
+  # one job that uses the credential.
+  publish:
+    name: Publish to CocoaPods
+    needs: [validate-version, test]
+    if: needs.validate-version.outputs.release == 'true'
+    runs-on: macos-15
+    # No job-level timeout: the approval wait counts against it, so a job timeout
+    # would cancel the job if a reviewer takes longer than the limit. The
+    # environment has its own deployment timeout; the long steps have their own.
+    environment: cocoapods-release
+    # Never two publishes for one version at once, and never cancel one mid-flight.
+    concurrency:
+      group: cocoapods-publish-${{ needs.validate-version.outputs.version }}
+      cancel-in-progress: false
+    permissions:
+      contents: write       # GitHub Release and its tag
+      actions: read         # newest-run check
+      pull-requests: read   # newest-run check maps runs to their release PR
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+      VERSION: ${{ needs.validate-version.outputs.version }}
+      SHA: ${{ needs.validate-version.outputs.sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # pin@v7.0.1
+        with:
+          ref: ${{ needs.validate-version.outputs.sha }}
+
+      # Approving a stale run must do nothing: if a newer Release run exists for
+      # this version (a correction was merged), stop before anything public.
+      - name: Check this is the newest run for the version
+        run: |
+          set -euo pipefail
+          run_version() {  # event head_sha title -> the version that run releases
+            if [[ "$1" == "workflow_dispatch" ]]; then
+              sed -nE 's/^Release ([0-9]+\.[0-9]+\.[0-9]+) \(manual\)$/\1/p' <<<"$3"
+            else
+              gh api "repos/$REPO/commits/$2/pulls" \
+                --jq '[.[] | select(.merged_at != null and (.head.ref | startswith("release/")))][0].head.ref // "" | ltrimstr("release/")'
+            fi
+          }
+          gh api "repos/$REPO/actions/workflows/release.yml/runs?per_page=100" \
+            --jq ".workflow_runs[] | select(.id > $GITHUB_RUN_ID) | [.id, .event, .head_sha, .display_title] | @tsv" \
+          | while IFS=$'\t' read -r id event head_sha title; do
+            if [[ "$(run_version "$event" "$head_sha" "$title")" == "$VERSION" ]]; then
+              echo "::error::A newer Release run exists for $VERSION (run $id). This run is superseded: approve the newer run, or if that one failed, start Release again for $VERSION from the Actions tab."
+              exit 1
+            fi
+          done
+
+      # Decide what this run has to do, from what earlier runs left behind:
+      #   a tag on another commit     -> the version is burned: ship X.Y.Z+1
+      #   on trunk, Release published -> nothing to redo
+      #   on trunk, Release a draft   -> only publish the draft (the push succeeded)
+      #   anything else               -> create or reuse the draft and the tag, push
+      - name: Preflight
+        id: preflight
+        run: |
+          set -euo pipefail
+          tag_sha=""
+          if [[ "$(gh api "repos/$REPO/git/matching-refs/tags/$VERSION" --jq "[.[] | select(.ref == \"refs/tags/$VERSION\")] | length")" != "0" ]]; then
+            tag_sha="$(gh api "repos/$REPO/commits/$VERSION" --jq .sha)"
+          fi
+          if [[ -n "$tag_sha" ]]; then
+            if [[ "$tag_sha" != "$SHA" ]]; then
+              echo "::error::Tag $VERSION already points at $tag_sha, so $VERSION is burned. Release the next version instead."
+              exit 1
+            fi
+            echo "tagged=true" >> "$GITHUB_OUTPUT"
+          fi
+          # Look the Release up by id rather than through `gh release view`: GitHub can
+          # give a draft an "untagged-..." tag name, so match a draft by its title too.
+          # VERSION is validated as X.Y.Z, so it is safe inside the jq filter.
+          release="$(gh api "repos/$REPO/releases?per_page=100" --jq \
+            "[.[] | select(.tag_name == \"$VERSION\" or (.draft and .name == \"$VERSION\"))][0] // {}")"
+          release_id="$(jq -r '.id // ""' <<<"$release")"
+          if [[ -z "$release_id" ]]; then
+            state="none"
+          elif [[ "$(jq -r .draft <<<"$release")" == "true" ]]; then
+            state="draft"
+          else
+            state="published"
+          fi
+          echo "release_id=$release_id" >> "$GITHUB_OUTPUT"
+          echo "state=$state" >> "$GITHUB_OUTPUT"
+          if ! versions="$(curl -sf https://trunk.cocoapods.org/api/v1/pods/Guardian)"; then
+            echo "::error::Could not read the Guardian versions from CocoaPods trunk."
+            exit 1
+          fi
+          if jq -e --arg v "$VERSION" 'any(.versions[]; .name == $v)' <<<"$versions" >/dev/null; then
+            if [[ "$state" == "published" ]]; then
+              echo "::notice::$VERSION is already on CocoaPods trunk and released from this commit; nothing to redo."
+              echo "action=skip" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            echo "$VERSION is already on trunk from this commit; only the GitHub Release is left to publish."
+            echo "action=finish" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "action=publish" >> "$GITHUB_OUTPUT"
+
+      - name: Extract the CHANGELOG entry
+        if: steps.preflight.outputs.action != 'skip'
+        run: |
+          set -euo pipefail
+          awk -v h="## [${VERSION}](" '
+            index($0, h) == 1 { on = 1; next }
+            on && /^## \[/    { exit }
+            on                { print }
+          ' CHANGELOG.md > /tmp/release-notes.md
+          if ! grep -q '[^[:space:]]' /tmp/release-notes.md; then
+            echo "::error::Empty CHANGELOG entry for $VERSION."
+            exit 1
+          fi
+
+      - name: Create or update the draft GitHub Release
+        id: draft
+        if: steps.preflight.outputs.action != 'skip'
+        env:
+          STATE: ${{ steps.preflight.outputs.state }}
+          RELEASE_ID: ${{ steps.preflight.outputs.release_id }}
+        run: |
+          set -euo pipefail
+          # Always send tag_name: updating a draft without it resets the tag name.
+          if [[ "$STATE" == "draft" ]]; then
+            id="$(gh api -X PATCH "repos/$REPO/releases/$RELEASE_ID" -f tag_name="$VERSION" \
+              -f target_commitish="$SHA" -f name="$VERSION" -F body=@/tmp/release-notes.md --jq .id)"
+            echo "Reused the draft Release $VERSION, now targeting $SHA."
+          elif [[ "$STATE" == "published" ]]; then
+            id="$RELEASE_ID"
+            echo "The GitHub Release $VERSION is already published; keeping it."
+          else
+            id="$(gh api "repos/$REPO/releases" -f tag_name="$VERSION" -f target_commitish="$SHA" \
+              -f name="$VERSION" -F body=@/tmp/release-notes.md -F draft=true --jq .id)"
+            echo "Created the draft Release $VERSION targeting $SHA."
+          fi
+          echo "id=$id" >> "$GITHUB_OUTPUT"
+
+      # The point of no return: from here SPM and Carthage can resolve X.Y.Z.
+      - name: Push the tag
+        if: steps.preflight.outputs.action == 'publish' && steps.preflight.outputs.tagged != 'true'
+        run: |
+          set -euo pipefail
+          gh api "repos/$REPO/git/refs" -f ref="refs/tags/$VERSION" -f sha="$SHA" >/dev/null
+          echo "Pushed tag $VERSION on $SHA."
+
+      - name: Read Xcode version
+        if: steps.preflight.outputs.action == 'publish'
+        id: xcode-ver
+        run: echo "version=$(cat .xcode-version)" >> "$GITHUB_OUTPUT"
+
+      - uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # pin@v1.7.0
+        if: steps.preflight.outputs.action == 'publish'
+        with:
+          xcode-version: ${{ steps.xcode-ver.outputs.version }}
+
+      - uses: ruby/setup-ruby@14594264cd68ce8a2345dd349bc3d138a4ef85c8 # pin@v1
+        if: steps.preflight.outputs.action == 'publish'
+        with:
+          bundler: 'Gemfile.lock'
+
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # pin@v6.1.0
+        if: steps.preflight.outputs.action == 'publish'
+        with:
+          path: vendor/bundle
+          key: bundle-v1-${{ hashFiles('Gemfile.lock') }}
+          restore-keys: bundle-v1-
+
+      - name: Install Ruby dependencies
+        if: steps.preflight.outputs.action == 'publish'
+        run: bundle check || bundle install --jobs 4 --retry 3
+        env:
+          BUNDLE_PATH: vendor/bundle
+
+      # pod trunk push reads the token from COCOAPODS_TRUNK_TOKEN, so it is never
+      # written to disk. Trunk validates the podspec against the tag pushed above.
+      - name: Publish to CocoaPods trunk
+        if: steps.preflight.outputs.action == 'publish'
+        timeout-minutes: 30
+        run: ./build.sh --buildType release --notest --nolint --nocoverage --publish --nobuild --skip-deps
+        env:
+          BUNDLE_PATH: vendor/bundle
+          RELEASE_CONTEXT: "true"
+          COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+
+      - name: Publish the GitHub Release
+        if: steps.preflight.outputs.action != 'skip'
+        env:
+          RELEASE_ID: ${{ steps.draft.outputs.id }}
+        run: |
+          set -euo pipefail
+          gh api -X PATCH "repos/$REPO/releases/$RELEASE_ID" -f tag_name="$VERSION" -F draft=false >/dev/null
+          echo "Published the GitHub Release $VERSION."
+
+      # Trunk can take a few minutes to list a new version. Then resolve the exact
+      # version through SPM from a scratch package, as a consumer would.
+      - name: Verify
+        if: steps.preflight.outputs.action != 'skip'
+        timeout-minutes: 20
+        run: |
+          set -euo pipefail
+          for _ in $(seq 1 60); do
+            if curl -sf https://trunk.cocoapods.org/api/v1/pods/Guardian \
+              | jq -e --arg v "$VERSION" 'any(.versions[]; .name == $v)' >/dev/null; then
+              echo "$VERSION is listed on CocoaPods trunk."
+              break
+            fi
+            sleep 10
+          done
+          if ! curl -sf https://trunk.cocoapods.org/api/v1/pods/Guardian \
+            | jq -e --arg v "$VERSION" 'any(.versions[]; .name == $v)' >/dev/null; then
+            echo "::error::$VERSION is not listed on CocoaPods trunk after 10 minutes."
+            exit 1
+          fi
+          mkdir -p /tmp/spm-check/Sources/Check && cd /tmp/spm-check
+          touch Sources/Check/Check.swift
+          cat > Package.swift <<EOF
+          // swift-tools-version:5.10
+          import PackageDescription
+          let package = Package(
+              name: "Check",
+              platforms: [.iOS(.v12)],
+              dependencies: [.package(url: "https://github.com/${REPO}.git", exact: "${VERSION}")],
+              targets: [.target(name: "Check", dependencies: [.product(name: "Guardian", package: "Guardian.swift")])]
+          )
+          EOF
+          swift package resolve
+          echo "$VERSION resolves through Swift Package Manager."
+          {
+            echo "### $VERSION released"
+            echo
+            echo "On CocoaPods trunk (https://cocoapods.org/pods/Guardian) and tagged on $SHA, which SPM and Carthage resolve from."
+          } >> "$GITHUB_STEP_SUMMARY"
