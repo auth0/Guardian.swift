@@ -38,13 +38,13 @@ class DynamicAuthorizationDetailsView: UIStackView {
             self.addArrangedSubview(headerLabel)
             // Authorization details are JSON objects; skip anything else.
             guard let fields = authDetail.objectValue else { continue }
-            for (key, value) in fields.filter({$0.key != "type"}) {
+            for (key, value) in fields.filter({ $0.key != "type" }) {
                 // For simplicity we wont search nested objects in this example
                 if value.objectValue != nil || value.arrayValue != nil {
                     continue
                 }
                 
-                let stack = UIStackView();
+                let stack = UIStackView()
                 stack.axis = .horizontal
                 stack.distribution = .equalSpacing
                 

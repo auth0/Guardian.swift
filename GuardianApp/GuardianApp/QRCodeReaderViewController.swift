@@ -63,7 +63,6 @@ class QRCodeReaderViewController: UIViewController {
         previewLayer.videoGravity = .resizeAspectFill
         self.captureSession = captureSession
         
-        
         frameView.layer.borderWidth = 1
         frameView.layer.cornerRadius = 8
         frameView.layer.borderColor = UIColor.white.cgColor
@@ -81,8 +80,7 @@ class QRCodeReaderViewController: UIViewController {
         super.viewDidAppear(animated)
         if captureSession != nil {
             startScan()
-        }
-        else {
+        } else {
             delegate?.qrCodeViewDidFail()
         }
     }

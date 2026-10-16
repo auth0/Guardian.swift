@@ -25,7 +25,7 @@ import UIKit
 
 class NotificationController: UIViewController {
 
-    var notification: Guardian.Notification? = nil
+    var notification: Guardian.Notification?
 
     @IBOutlet var browserLabel: UILabel!
     @IBOutlet var locationLabel: UILabel!
@@ -148,6 +148,6 @@ class NotificationController: UIViewController {
     }
 
     private static func message(for cause: Swift.Error) -> String {
-        return (cause as? GuardianError)?.description ?? "Unknown error"
+        (cause as? GuardianError)?.description ?? "Unknown error"
     }
 }

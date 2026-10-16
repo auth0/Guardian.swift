@@ -137,7 +137,7 @@ enum GuardianService {
     /// Parses a push payload into a Guardian login request, or nil if the push
     /// is not from Guardian.
     static func notification(from userInfo: [AnyHashable: Any]) -> Guardian.Notification? {
-        return Guardian.notification(from: userInfo)
+        Guardian.notification(from: userInfo)
     }
 
     // MARK: - Allow and reject (README: "Allow a login request", "Reject a login request")

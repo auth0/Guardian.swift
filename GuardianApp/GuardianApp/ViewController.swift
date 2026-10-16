@@ -118,7 +118,7 @@ class ViewController: UIViewController {
     }
 
     private static func message(for cause: Swift.Error) -> String {
-        return (cause as? GuardianError)?.description ?? "Unknown error"
+        (cause as? GuardianError)?.description ?? "Unknown error"
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

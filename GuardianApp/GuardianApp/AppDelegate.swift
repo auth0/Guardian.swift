@@ -27,7 +27,7 @@ import UserNotifications
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-    static var pushToken: String? = nil
+    static var pushToken: String?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         print("Guardian tenant: \(GuardianService.tenantDomain)")
@@ -47,7 +47,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
 
             // Check AuthZ status to trigger remote notification registration
-            UNUserNotificationCenter.current().getNotificationSettings() { settings in
+            UNUserNotificationCenter.current().getNotificationSettings { settings in
                 guard settings.authorizationStatus == .authorized else {
                     return print("not authorized to use notifications")
                 }
@@ -60,7 +60,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         // when the registration for push notification succeeds
-        let token = deviceToken.reduce(String(), {$0 + String(format: "%02X", $1)})
+        let token = deviceToken.reduce(String(), { $0 + String(format: "%02X", $1) })
         AppDelegate.pushToken = token
         // Needed to set up push on a test tenant; never log it in release builds.
         #if DEBUG
@@ -74,7 +74,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     var rootController: UIViewController? {
-        return UIApplication.shared.connectedScenes
+        UIApplication.shared.connectedScenes
             .compactMap { ($0.delegate as? SceneDelegate)?.window }
             .first?
             .rootViewController
@@ -84,7 +84,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 extension AppDelegate {
     static var state: GuardianState? {
         get {
-            return GuardianState.load()
+            GuardianState.load()
         }
         set {
             if newValue == nil {
@@ -98,7 +98,9 @@ extension AppDelegate {
 
 // UIKit calls the notification center delegate on the main thread.
 extension AppDelegate: @preconcurrency UNUserNotificationCenterDelegate {
-    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                didReceive response: UNNotificationResponse,
+                                withCompletionHandler completionHandler: @escaping () -> Void) {
         let identifier = response.actionIdentifier
         let userInfo = response.notification.request.content.userInfo
 
@@ -107,8 +109,7 @@ extension AppDelegate: @preconcurrency UNUserNotificationCenterDelegate {
         print("Notification action: \(identifier)")
 
         if let notification = GuardianService.notification(from: userInfo),
-            let enrollment = AppDelegate.state
-        {
+            let enrollment = AppDelegate.state {
             if UNNotificationDefaultActionIdentifier == identifier { // App opened from notification
                 show(notification: notification)
                 completionHandler()
@@ -122,16 +123,19 @@ extension AppDelegate: @preconcurrency UNUserNotificationCenterDelegate {
         }
     }
 
-    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                willPresent notification: UNNotification,
+                                withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         let userInfo = notification.request.content.userInfo
         if let notification = GuardianService.notification(from: userInfo) {
             show(notification: notification)
         }
-        completionHandler([]) //Avoid displaying iOS UI when app in foreground
+        completionHandler([]) // Avoid displaying iOS UI when app in foreground
     }
 
     private func show(notification: Guardian.Notification) {
-        guard let notificationController = rootController?.storyboard?.instantiateViewController(withIdentifier: "NotificationView") as? NotificationController else {
+        let storyboard = rootController?.storyboard
+        guard let notificationController = storyboard?.instantiateViewController(withIdentifier: "NotificationView") as? NotificationController else {
             return print("NotificationView is missing from Main.storyboard")
         }
         notificationController.notification = notification
