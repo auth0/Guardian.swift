@@ -21,8 +21,9 @@
 // THE SOFTWARE.
 
 import UIKit
-import AVFoundation
+@preconcurrency import AVFoundation
 
+@MainActor
 protocol QRCodeReaderViewControllerDelegate: AnyObject {
     func qrCodeViewDidScan(qrCodeValue: String)
     func qrCodeViewDidCancel()
@@ -91,10 +92,10 @@ class QRCodeReaderViewController: UIViewController {
     }
     
     private func startScan() {
-        if captureSession?.isRunning == false {
-            DispatchQueue.global(qos: .background).async {
-                self.captureSession?.startRunning()
-            }
+        guard let session = captureSession, !session.isRunning else { return }
+        // startRunning() blocks, so keep it off the main thread.
+        DispatchQueue.global(qos: .userInitiated).async {
+            session.startRunning()
         }
     }
 
@@ -105,7 +106,9 @@ class QRCodeReaderViewController: UIViewController {
     }
 }
 
-extension QRCodeReaderViewController: AVCaptureMetadataOutputObjectsDelegate {
+// The metadata delegate is set up with the main queue in viewDidLoad, so the
+// callback always arrives on the main actor.
+extension QRCodeReaderViewController: @preconcurrency AVCaptureMetadataOutputObjectsDelegate {
     func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
         stopScan()
         guard

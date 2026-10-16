@@ -21,7 +21,7 @@
 // THE SOFTWARE.
 
 import Foundation
-import Guardian
+@preconcurrency import Guardian
 
 public struct PaymentInitiation : AuthorizationDetailsType {
     public static let type = "payment_initiation";

@@ -21,7 +21,7 @@
 // THE SOFTWARE.
 
 import UIKit
-import Guardian
+@preconcurrency import Guardian
 import UserNotifications
 
 @main
@@ -37,6 +37,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         // Request for AuthZ
         UNUserNotificationCenter.current().delegate = self
+        UNUserNotificationCenter.current().setNotificationCategories([category])
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
             guard granted else {
                 return print("Permission not granted")
@@ -45,8 +46,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 return print("failed with error \(error)")
             }
 
-            // Register guardian notification category
-            UNUserNotificationCenter.current().setNotificationCategories([category])
             // Check AuthZ status to trigger remote notification registration
             UNUserNotificationCenter.current().getNotificationSettings() { settings in
                 guard settings.authorizationStatus == .authorized else {
@@ -97,7 +96,8 @@ extension AppDelegate {
     }
 }
 
-extension AppDelegate: UNUserNotificationCenterDelegate {
+// UIKit calls the notification center delegate on the main thread.
+extension AppDelegate: @preconcurrency UNUserNotificationCenterDelegate {
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         let identifier = response.actionIdentifier
         let userInfo = response.notification.request.content.userInfo

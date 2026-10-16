@@ -21,7 +21,7 @@
 // THE SOFTWARE.
 
 import UIKit
-import Guardian
+@preconcurrency import Guardian
 
 class ViewController: UIViewController {
 
@@ -43,8 +43,9 @@ class ViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        // Scheduled on the main run loop, so the callback runs on the main actor.
         codeTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
-            self?.updateCode()
+            MainActor.assumeIsolated { self?.updateCode() }
         }
     }
 

@@ -22,7 +22,7 @@
 
 import Foundation
 import UserNotifications
-import Guardian
+@preconcurrency import Guardian
 
 /// Every Guardian SDK call the sample makes, in one place. Each function matches
 /// a section of the Guardian.swift README, so the two can be read side by side.
@@ -61,7 +61,7 @@ enum GuardianService {
     /// key across enrollments. The key is deleted again if enrollment fails.
     static func enroll(usingUri uri: String,
                        notificationToken: String,
-                       completion: @escaping (Swift.Result<GuardianState, Swift.Error>) -> Void) {
+                       completion: @escaping @MainActor (Swift.Result<GuardianState, Swift.Error>) -> Void) {
         let keyTag = "com.auth0.guardian.sample.signing-key.\(UUID().uuidString)"
         let signingKey: KeychainRSAPrivateKey
         let verificationKey: VerificationKey
@@ -144,7 +144,7 @@ enum GuardianService {
 
     static func allow(_ notification: Guardian.Notification,
                       device: GuardianState,
-                      completion: @escaping (Swift.Result<Void, Swift.Error>) -> Void) {
+                      completion: @escaping @MainActor (Swift.Result<Void, Swift.Error>) -> Void) {
         Guardian
             .authentication(forDomain: tenantDomain, device: device)
             .allow(notification: notification)
@@ -153,7 +153,7 @@ enum GuardianService {
 
     static func reject(_ notification: Guardian.Notification,
                        device: GuardianState,
-                       completion: @escaping (Swift.Result<Void, Swift.Error>) -> Void) {
+                       completion: @escaping @MainActor (Swift.Result<Void, Swift.Error>) -> Void) {
         Guardian
             .authentication(forDomain: tenantDomain, device: device)
             .reject(notification: notification)
@@ -165,7 +165,7 @@ enum GuardianService {
     static func handleAction(withIdentifier identifier: String,
                              notification: Guardian.Notification,
                              device: GuardianState,
-                             completion: @escaping (Swift.Result<Void, Swift.Error>) -> Void) {
+                             completion: @escaping @MainActor (Swift.Result<Void, Swift.Error>) -> Void) {
         Guardian
             .authentication(forDomain: tenantDomain, device: device)
             .handleAction(withIdentifier: identifier, notification: notification)
@@ -179,7 +179,7 @@ enum GuardianService {
     static func fetchConsentDetails(consentId: String,
                                     notification: Guardian.Notification,
                                     device: GuardianState,
-                                    completion: @escaping (Swift.Result<ConsentRequestedDetails, Swift.Error>) -> Void) {
+                                    completion: @escaping @MainActor (Swift.Result<ConsentRequestedDetails, Swift.Error>) -> Void) {
         Guardian
             .consent(forDomain: tenantDomain)
             .fetch(consentId: consentId, transactionToken: notification.transactionToken, signingKey: device.signingKey)
@@ -198,7 +198,7 @@ enum GuardianService {
     /// Deletes the enrollment on the tenant. The caller removes the local state
     /// and signing key once this succeeds.
     static func unenroll(_ device: GuardianState,
-                         completion: @escaping (Swift.Result<Void, Swift.Error>) -> Void) {
+                         completion: @escaping @MainActor (Swift.Result<Void, Swift.Error>) -> Void) {
         Guardian
             .api(forDomain: tenantDomain)
             .device(forEnrollmentId: device.identifier, userId: device.userId, signingKey: device.signingKey)
@@ -217,8 +217,8 @@ enum GuardianService {
         }
     }
 
-    private static func onMain<T>(_ completion: @escaping (Swift.Result<T, Swift.Error>) -> Void,
-                                  _ result: Swift.Result<T, Swift.Error>) {
+    private static func onMain<T>(_ completion: @escaping @MainActor (Swift.Result<T, Swift.Error>) -> Void,
+                                  _ result: sending Swift.Result<T, Swift.Error>) {
         DispatchQueue.main.async { completion(result) }
     }
 }

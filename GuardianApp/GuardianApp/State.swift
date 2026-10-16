@@ -21,7 +21,7 @@
 // THE SOFTWARE.
 
 import UIKit
-import Guardian
+@preconcurrency import Guardian
 
 struct GuardianState: Codable {
 
@@ -39,6 +39,7 @@ struct GuardianState: Codable {
 
     /// The vendor identifier the SDK uses as an enrollment's local identifier.
     /// It is nil after a restart until the device is first unlocked.
+    @MainActor
     static var currentLocalIdentifier: String? {
         return UIDevice.current.identifierForVendor?.uuidString
     }
@@ -70,6 +71,7 @@ struct GuardianState: Codable {
     }
 
     /// Deletes the stored enrollment and its device signing key.
+    @MainActor
     static func delete(by identifier: String? = currentLocalIdentifier) {
         guard let identifier = identifier else { return }
         if let state = load(by: identifier) {
@@ -88,6 +90,7 @@ struct GuardianState: Codable {
         SecItemDelete(query as CFDictionary)
     }
 
+    @MainActor
     static func load(by identifier: String? = currentLocalIdentifier) -> GuardianState? {
         guard let identifier = identifier else { return nil }
         let decoder = JSONDecoder()

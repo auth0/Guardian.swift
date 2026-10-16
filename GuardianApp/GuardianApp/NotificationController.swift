@@ -21,7 +21,7 @@
 // THE SOFTWARE.
 
 import UIKit
-import Guardian
+@preconcurrency import Guardian
 
 class NotificationController: UIViewController {
 
