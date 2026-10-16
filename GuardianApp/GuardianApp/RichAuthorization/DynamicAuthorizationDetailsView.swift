@@ -36,7 +36,9 @@ class DynamicAuthorizationDetailsView: UIStackView {
             headerLabel.heightAnchor.constraint(greaterThanOrEqualToConstant: 30).isActive = true
             
             self.addArrangedSubview(headerLabel)
-            for (key, value) in authDetail.objectValue!.filter({$0.key != "type"}) {
+            // Authorization details are JSON objects; skip anything else.
+            guard let fields = authDetail.objectValue else { continue }
+            for (key, value) in fields.filter({$0.key != "type"}) {
                 // For simplicity we wont search nested objects in this example
                 if value.objectValue != nil || value.arrayValue != nil {
                     continue

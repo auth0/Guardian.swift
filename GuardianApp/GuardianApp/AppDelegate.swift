@@ -166,8 +166,9 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     }
 
     private func show(notification: Guardian.Notification) {
-
-        let notificationController = rootController?.storyboard?.instantiateViewController(withIdentifier: "NotificationView") as! NotificationController
+        guard let notificationController = rootController?.storyboard?.instantiateViewController(withIdentifier: "NotificationView") as? NotificationController else {
+            return print("NotificationView is missing from Main.storyboard")
+        }
         notificationController.notification = notification
         rootController?.present(notificationController, animated: true, completion: nil)
     }

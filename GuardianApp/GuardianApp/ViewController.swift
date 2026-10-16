@@ -185,7 +185,7 @@ extension ViewController: QRCodeReaderViewControllerDelegate {
                     GuardianState.deleteSigningKey(withTag: keyTag)
                     self.showError(title: "Enroll failed", cause: cause)
                 case .success(let enrollment):
-                    AppDelegate.state = GuardianState(identifier: enrollment.id, localIdentifier: enrollment.localIdentifier, keyTag: signingKey.tag, otp: enrollment.totp, userId: enrollment.userId)
+                    AppDelegate.state = GuardianState(identifier: enrollment.id, localIdentifier: enrollment.localIdentifier, signingKey: signingKey, otp: enrollment.totp, userId: enrollment.userId)
                 }
                 self.updateView()
         }

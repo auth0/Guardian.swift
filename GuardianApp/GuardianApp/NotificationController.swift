@@ -130,11 +130,10 @@ class NotificationController: UIViewController {
     }
     
     func showAuthorizationDetails(requestedDetails: ConsentRequestedDetails) -> UIView {
-        let paymentInitiation = requestedDetails.filterAuthorizationDetailsByType(PaymentInitiation.self)
-        
-        return !paymentInitiation.isEmpty
-        ? PaymentInitiationView(fromPaymentInitiation: paymentInitiation.first!)
-        : DynamicAuthorizationDetailsView(fromAuthorizationDetails: requestedDetails.authorizationDetails)
+        if let paymentInitiation = requestedDetails.filterAuthorizationDetailsByType(PaymentInitiation.self).first {
+            return PaymentInitiationView(fromPaymentInitiation: paymentInitiation)
+        }
+        return DynamicAuthorizationDetailsView(fromAuthorizationDetails: requestedDetails.authorizationDetails)
     }
 
     func showError(_ title: String, _ cause: Swift.Error) {

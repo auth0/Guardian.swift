@@ -30,6 +30,38 @@ struct GuardianState: Codable {
     let keyTag: String
     let otp: OTPParameters?
     let userId: String
+    /// Looked up in the keychain when the state is decoded, never encoded.
+    private let key: KeychainRSAPrivateKey
+
+    private enum CodingKeys: String, CodingKey {
+        case identifier, localIdentifier, keyTag, otp, userId
+    }
+
+    /// The vendor identifier the SDK uses as an enrollment's local identifier.
+    /// It is nil after a restart until the device is first unlocked.
+    static var currentLocalIdentifier: String? {
+        return UIDevice.current.identifierForVendor?.uuidString
+    }
+
+    init(identifier: String, localIdentifier: String, signingKey: KeychainRSAPrivateKey, otp: OTPParameters?, userId: String) {
+        self.identifier = identifier
+        self.localIdentifier = localIdentifier
+        self.keyTag = signingKey.tag
+        self.key = signingKey
+        self.otp = otp
+        self.userId = userId
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        identifier = try container.decode(String.self, forKey: .identifier)
+        localIdentifier = try container.decode(String.self, forKey: .localIdentifier)
+        keyTag = try container.decode(String.self, forKey: .keyTag)
+        otp = try container.decodeIfPresent(OTPParameters.self, forKey: .otp)
+        userId = try container.decode(String.self, forKey: .userId)
+        // Fails, and so drops the state, if the signing key is gone.
+        key = try KeychainRSAPrivateKey(tag: keyTag)
+    }
 
     func save() throws {
         let encoder = JSONEncoder()
@@ -38,7 +70,8 @@ struct GuardianState: Codable {
     }
 
     /// Deletes the stored enrollment and its device signing key.
-    static func delete(by identifier: String = UIDevice.current.identifierForVendor!.uuidString) {
+    static func delete(by identifier: String? = currentLocalIdentifier) {
+        guard let identifier = identifier else { return }
         if let state = load(by: identifier) {
             deleteSigningKey(withTag: state.keyTag)
         }
@@ -55,7 +88,8 @@ struct GuardianState: Codable {
         SecItemDelete(query as CFDictionary)
     }
 
-    static func load(by identifier: String = UIDevice.current.identifierForVendor!.uuidString) -> GuardianState? {
+    static func load(by identifier: String? = currentLocalIdentifier) -> GuardianState? {
+        guard let identifier = identifier else { return nil }
         let decoder = JSONDecoder()
         guard let data = Keychain.data(forKey: identifier) else { return nil }
         guard let state = try? decoder.decode(GuardianState.self, from: data) else { return nil }
@@ -105,6 +139,6 @@ private enum Keychain {
 
 extension GuardianState: AuthenticationDevice {
     var signingKey: SigningKey {
-        return try! KeychainRSAPrivateKey(tag: self.keyTag)
+        return key
     }
 }
