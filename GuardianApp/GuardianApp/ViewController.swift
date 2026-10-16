@@ -38,48 +38,37 @@ class ViewController: UIViewController {
     }
 
     @IBAction func unenrollAction(_ sender: AnyObject) {
-        if let enrollment = AppDelegate.state {
-            let request = Guardian
-                .api(forDomain: AppDelegate.tenantDomain)
-                .device(forEnrollmentId: enrollment.identifier, userId: enrollment.userId, signingKey: enrollment.signingKey)
-                .delete()
-            request.start { [weak self] result in
-                    switch result {
-                    case .failure(let cause):
-                        self?.showError(title: "Unenroll failed", cause: cause)
-                    case .success:
-                        AppDelegate.state = nil
-                    }
-                    self?.updateView()
+        guard let enrollment = AppDelegate.state else { return }
+        GuardianService.unenroll(enrollment) { [weak self] result in
+            switch result {
+            case .failure(let cause):
+                self?.showError(title: "Unenroll failed", cause: cause)
+            case .success:
+                AppDelegate.state = nil
             }
+            self?.updateView()
         }
     }
 
     func updateView() {
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            let haveEnrollment = AppDelegate.state != nil
-            if let enrollment = AppDelegate.state {
-                self.enrollmentLabel.text = enrollment.identifier
-                self.secretLabel.text = enrollment.otp?.base32Secret
-            }
-            self.enrollButton.isHidden = haveEnrollment
-            self.unenrollButton.isHidden = !haveEnrollment
-            self.enrollmentView.isHidden = !haveEnrollment
+        let haveEnrollment = AppDelegate.state != nil
+        if let enrollment = AppDelegate.state {
+            enrollmentLabel.text = enrollment.identifier
+            secretLabel.text = enrollment.otp?.base32Secret
         }
+        enrollButton.isHidden = haveEnrollment
+        unenrollButton.isHidden = !haveEnrollment
+        enrollmentView.isHidden = !haveEnrollment
     }
-    
+
     private func showError(title: String, message: String) {
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            let alert = UIAlertController(
-                title: title,
-                message: message,
-                preferredStyle: .alert
-            )
-            alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
-            self.present(alert, animated: true, completion: nil)
-        }
+        let alert = UIAlertController(
+            title: title,
+            message: message,
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+        present(alert, animated: true, completion: nil)
     }
 
     private func showError(title: String, cause: Swift.Error) {
@@ -157,39 +146,14 @@ extension ViewController: QRCodeReaderViewControllerDelegate {
         guard let notificationToken = AppDelegate.pushToken else {
             return showError(title: "Error", message: "Push token is empty")
         }
-        // Each enrollment gets its own signing key. new(with:) returns the key
-        // already stored under a tag, so a fixed tag would share one key across
-        // enrollments.
-        let keyTag = "com.auth0.guardian.sample.signing-key.\(UUID().uuidString)"
-        guard let signingKey = try? KeychainRSAPrivateKey.new(with: keyTag),
-            let verificationKey = try? signingKey.verificationKey() else {
-            GuardianState.deleteSigningKey(withTag: keyTag)
-            return showError(title: "Error", message: "Could not create the device signing key")
-        }
-
-        let request = Guardian.enroll(
-            forDomain: AppDelegate.tenantDomain,
-            usingUri: enrollmentUri,
-            notificationToken: notificationToken,
-            signingKey: signingKey,
-            verificationKey: verificationKey)
-
-        request
-            .on(response: { event in
-                // Log the status only: the response body carries the TOTP secret.
-                #if DEBUG
-                print("Enroll response: HTTP \(event.response.statusCode)")
-                #endif
-            })
-            .start { result in
-                switch result {
-                case .failure(let cause):
-                    GuardianState.deleteSigningKey(withTag: keyTag)
-                    self.showError(title: "Enroll failed", cause: cause)
-                case .success(let enrollment):
-                    AppDelegate.state = GuardianState(identifier: enrollment.id, localIdentifier: enrollment.localIdentifier, signingKey: signingKey, otp: enrollment.totp, userId: enrollment.userId)
-                }
-                self.updateView()
+        GuardianService.enroll(usingUri: enrollmentUri, notificationToken: notificationToken) { [weak self] result in
+            switch result {
+            case .failure(let cause):
+                self?.showError(title: "Enroll failed", cause: cause)
+            case .success(let enrollment):
+                AppDelegate.state = enrollment
+            }
+            self?.updateView()
         }
     }
 }

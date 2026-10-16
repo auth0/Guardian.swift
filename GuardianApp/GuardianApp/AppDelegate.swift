@@ -27,47 +27,13 @@ import UserNotifications
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-    static let tenantDomainKey = "GuardianTenantDomain"
-    static let defaultTenantDomain = "https://guardian-demo.us.auth0.com"
-
-    /// The tenant the sample talks to. Resolved in order from the
-    /// `-GuardianTenantDomain <url>` launch argument, the GUARDIAN_TENANT_DOMAIN
-    /// build setting (written to Info.plist), then the Guardian demo tenant.
-    static let tenantDomain: String = {
-        if let domain = UserDefaults.standard.string(forKey: tenantDomainKey), !domain.isEmpty {
-            return domain
-        }
-        if let domain = Bundle.main.object(forInfoDictionaryKey: tenantDomainKey) as? String, !domain.isEmpty {
-            return domain
-        }
-        return defaultTenantDomain
-    }()
-
     static var pushToken: String? = nil
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        print("Guardian tenant: \(AppDelegate.tenantDomain)")
+        print("Guardian tenant: \(GuardianService.tenantDomain)")
 
-        let guardianCategory = Guardian.AuthenticationCategory.default
-
-        // Set up guardian notifications actions
-        let acceptAction = UNNotificationAction(
-            identifier: guardianCategory.allow.identifier,
-            title: NSLocalizedString("Allow", comment: "Accept Guardian authentication request"),
-            options: [.authenticationRequired] // Always request local AuthN
-        )
-        let rejectAction = UNNotificationAction(
-            identifier: guardianCategory.reject.identifier,
-            title: NSLocalizedString("Deny", comment: "Reject Guardian authentication request"),
-            options: [.destructive, .authenticationRequired] // Always request local AuthN
-        )
-
-        // Set up guardian notification category
-        let category = UNNotificationCategory(
-            identifier: guardianCategory.identifier,
-            actions: [acceptAction, rejectAction],
-            intentIdentifiers: [],
-            options: [])
+        // Allow and Deny actions on Guardian login request notifications
+        let category = GuardianService.notificationCategory()
 
         // Request for AuthZ
         UNUserNotificationCenter.current().delegate = self
@@ -140,17 +106,16 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         // Don't log userInfo: the Guardian payload carries the transaction token.
         print("Notification action: \(identifier)")
 
-        if let notification = Guardian.notification(from: userInfo),
+        if let notification = GuardianService.notification(from: userInfo),
             let enrollment = AppDelegate.state
         {
             if UNNotificationDefaultActionIdentifier == identifier { // App opened from notification
                 show(notification: notification)
                 completionHandler()
             } else { // Guardian allow/reject action
-                Guardian
-                    .authentication(forDomain: AppDelegate.tenantDomain, device: enrollment)
-                    .handleAction(withIdentifier: identifier, notification: notification)
-                    .start { _ in completionHandler() }
+                GuardianService.handleAction(withIdentifier: identifier, notification: notification, device: enrollment) { _ in
+                    completionHandler()
+                }
             }
         } else { // Nothing we can handle, just not known notification
             completionHandler()
@@ -159,7 +124,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
 
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         let userInfo = notification.request.content.userInfo
-        if let notification = Guardian.notification(from: userInfo) {
+        if let notification = GuardianService.notification(from: userInfo) {
             show(notification: notification)
         }
         completionHandler([]) //Avoid displaying iOS UI when app in foreground
