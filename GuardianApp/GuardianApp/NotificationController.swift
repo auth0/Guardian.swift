@@ -45,7 +45,6 @@ class NotificationController: UIViewController {
         let request = Guardian
             .authentication(forDomain: AppDelegate.tenantDomain, device: enrollment)
             .allow(notification: notification)
-        debugPrint(request)
         request.start { [weak self] result in
                 print(result)
                 switch result {
@@ -66,7 +65,6 @@ class NotificationController: UIViewController {
         let request = Guardian
             .authentication(forDomain: AppDelegate.tenantDomain, device: enrollment)
             .reject(notification: notification)
-        debugPrint(request)
         request.start { [weak self] result in
                 print(result)
                 switch result {

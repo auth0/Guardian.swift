@@ -43,7 +43,6 @@ class ViewController: UIViewController {
                 .api(forDomain: AppDelegate.tenantDomain)
                 .device(forEnrollmentId: enrollment.identifier, userId: enrollment.userId, signingKey: enrollment.signingKey)
                 .delete()
-            debugPrint(request)
             request.start { [unowned self] result in
                     switch result {
                     case .failure(let cause):
@@ -112,7 +111,6 @@ class ViewController: UIViewController {
 
 extension ViewController: QRCodeReaderViewControllerDelegate {
     func qrCodeViewDidScan(qrCodeValue: String) {
-        print("QR scanned with result:\n\(qrCodeValue)")
         self.dismiss(animated: true) { [unowned self] in
             self.enroll(usingUri: qrCodeValue)
         }
@@ -174,12 +172,12 @@ extension ViewController: QRCodeReaderViewControllerDelegate {
             signingKey: signingKey,
             verificationKey: verificationKey)
 
-        debugPrint(request)
         request
             .on(response: { event in
-                guard let data = event.data else { return }
-                let body = String(data: data, encoding: .utf8) ?? "INVALID BODY"
-                print(body)
+                // Log the status only: the response body carries the TOTP secret.
+                #if DEBUG
+                print("Enroll response: HTTP \(event.response.statusCode)")
+                #endif
             })
             .start { result in
                 switch result {

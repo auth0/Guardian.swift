@@ -97,7 +97,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // when the registration for push notification succeeds
         let token = deviceToken.reduce(String(), {$0 + String(format: "%02X", $1)})
         AppDelegate.pushToken = token
+        // Needed to set up push on a test tenant; never log it in release builds.
+        #if DEBUG
         print("DEVICE TOKEN = \(token)")
+        #endif
     }
 
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Swift.Error) {
@@ -134,7 +137,8 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         let userInfo = response.notification.request.content.userInfo
 
         // when the app has been activated by the user selecting an action from a remote notification
-        print("identifier: \(identifier), userInfo: \(userInfo)")
+        // Don't log userInfo: the Guardian payload carries the transaction token.
+        print("Notification action: \(identifier)")
 
         if let notification = Guardian.notification(from: userInfo),
             let enrollment = AppDelegate.state
@@ -155,7 +159,6 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
 
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         let userInfo = notification.request.content.userInfo
-        print(userInfo)
         if let notification = Guardian.notification(from: userInfo) {
             show(notification: notification)
         }
@@ -163,7 +166,6 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     }
 
     private func show(notification: Guardian.Notification) {
-        print(notification)
 
         let notificationController = rootController?.storyboard?.instantiateViewController(withIdentifier: "NotificationView") as! NotificationController
         notificationController.notification = notification
