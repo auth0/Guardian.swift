@@ -43,20 +43,21 @@ class ViewController: UIViewController {
                 .api(forDomain: AppDelegate.tenantDomain)
                 .device(forEnrollmentId: enrollment.identifier, userId: enrollment.userId, signingKey: enrollment.signingKey)
                 .delete()
-            request.start { [unowned self] result in
+            request.start { [weak self] result in
                     switch result {
                     case .failure(let cause):
-                        self.showError(title: "Unenroll failed", cause: cause)
+                        self?.showError(title: "Unenroll failed", cause: cause)
                     case .success:
                         AppDelegate.state = nil
                     }
-                    self.updateView()
+                    self?.updateView()
             }
         }
     }
 
     func updateView() {
-        DispatchQueue.main.async { [unowned self] in
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
             let haveEnrollment = AppDelegate.state != nil
             if let enrollment = AppDelegate.state {
                 self.enrollmentLabel.text = enrollment.identifier
@@ -69,7 +70,8 @@ class ViewController: UIViewController {
     }
     
     private func showError(title: String, message: String) {
-        DispatchQueue.main.async { [unowned self] in
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
             let alert = UIAlertController(
                 title: title,
                 message: message,

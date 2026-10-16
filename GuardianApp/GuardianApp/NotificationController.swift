@@ -101,18 +101,19 @@ class NotificationController: UIViewController {
         Guardian
             .consent(forDomain: AppDelegate.tenantDomain)
             .fetch(consentId: consentId, transactionToken: notification.transactionToken, signingKey: enrollment.signingKey)
-            .start{ [unowned self] result in
+            .start{ [weak self] result in
                 switch result {
                 case .failure(let cause):
                     print("Fetch consent failed: \(cause)")
                 case .success(let payload):
-                    showRichConsent(requestedDetails: payload.requestedDetails)
+                    self?.showRichConsent(requestedDetails: payload.requestedDetails)
             }
         }
     }
     
     func showRichConsent(requestedDetails: ConsentRequestedDetails) {
-        DispatchQueue.main.async { [unowned self] in
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
             if !requestedDetails.authorizationDetails.isEmpty {
                 let authDetailsView = showAuthorizationDetails(requestedDetails: requestedDetails)
                 consentDetailsView.addArrangedSubview(authDetailsView)
@@ -137,7 +138,8 @@ class NotificationController: UIViewController {
     }
 
     func showError(_ title: String, _ cause: Swift.Error) {
-        DispatchQueue.main.async { [unowned self] in
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
             var errorMessage = "Unknown error"
             if let cause = cause as? GuardianError {
                 errorMessage = cause.description
