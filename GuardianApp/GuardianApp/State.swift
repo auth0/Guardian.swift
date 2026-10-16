@@ -37,8 +37,22 @@ struct GuardianState: Codable {
         try Keychain.set(data, forKey: self.localIdentifier)
     }
 
+    /// Deletes the stored enrollment and its device signing key.
     static func delete(by identifier: String = UIDevice.current.identifierForVendor!.uuidString) {
+        if let state = load(by: identifier) {
+            deleteSigningKey(withTag: state.keyTag)
+        }
         Keychain.delete(forKey: identifier)
+    }
+
+    /// Deletes a device signing key created with KeychainRSAPrivateKey.new(with:).
+    /// The SDK has no API for this, so remove the keychain item directly.
+    static func deleteSigningKey(withTag tag: String) {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassKey,
+            kSecAttrApplicationTag as String: Data(tag.utf8)
+        ]
+        SecItemDelete(query as CFDictionary)
     }
 
     static func load(by identifier: String = UIDevice.current.identifierForVendor!.uuidString) -> GuardianState? {

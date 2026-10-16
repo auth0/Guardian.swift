@@ -25,9 +25,6 @@ import Guardian
 
 class ViewController: UIViewController {
 
-    private static let RSA_KEY_PUBLIC_TAG = "PUBLIC_TAG"
-    private static let RSA_KEY_PRIVATE_TAG = "PRIVATE_TAG"
-
     @IBOutlet var enrollButton: UIButton!
     @IBOutlet var unenrollButton: UIButton!
 
@@ -160,8 +157,13 @@ extension ViewController: QRCodeReaderViewControllerDelegate {
         guard let notificationToken = AppDelegate.pushToken else {
             return showError(title: "Error", message: "Push token is empty")
         }
-        guard let signingKey = try? KeychainRSAPrivateKey.new(with: ViewController.RSA_KEY_PRIVATE_TAG),
+        // Each enrollment gets its own signing key. new(with:) returns the key
+        // already stored under a tag, so a fixed tag would share one key across
+        // enrollments.
+        let keyTag = "com.auth0.guardian.sample.signing-key.\(UUID().uuidString)"
+        guard let signingKey = try? KeychainRSAPrivateKey.new(with: keyTag),
             let verificationKey = try? signingKey.verificationKey() else {
+            GuardianState.deleteSigningKey(withTag: keyTag)
             return showError(title: "Error", message: "Could not create the device signing key")
         }
 
@@ -182,6 +184,7 @@ extension ViewController: QRCodeReaderViewControllerDelegate {
             .start { result in
                 switch result {
                 case .failure(let cause):
+                    GuardianState.deleteSigningKey(withTag: keyTag)
                     self.showError(title: "Enroll failed", cause: cause)
                 case .success(let enrollment):
                     AppDelegate.state = GuardianState(identifier: enrollment.id, localIdentifier: enrollment.localIdentifier, keyTag: signingKey.tag, otp: enrollment.totp, userId: enrollment.userId)
