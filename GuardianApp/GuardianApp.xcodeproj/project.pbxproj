@@ -205,7 +205,6 @@
 				"CODE_SIGN_IDENTITY[sdk=iphonesimulator*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = "";
-				GUARDIAN_TENANT_DOMAIN = "https://guardian-demo.us.auth0.com";
 				INFOPLIST_FILE = GuardianApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -213,7 +212,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.guardian.sample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
@@ -226,7 +225,6 @@
 				"CODE_SIGN_IDENTITY[sdk=iphonesimulator*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = "";
-				GUARDIAN_TENANT_DOMAIN = "https://guardian-demo.us.auth0.com";
 				INFOPLIST_FILE = GuardianApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -234,7 +232,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.guardian.sample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
