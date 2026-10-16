@@ -1,4 +1,5 @@
-version = `agvtool mvers -terse1`.strip
+# .version is the single source of the release version (set by Prepare release).
+version = File.read(File.join(__dir__, '.version')).strip
 Pod::Spec.new do |s|
   s.name             = 'Guardian'
   s.version          = version
