@@ -26,7 +26,9 @@ import Nimble
 @testable import Guardian
 
 let Domain = "tenant.region.auth0.com"
-let Timeout: NimbleTimeInterval = .seconds(2)
+// Generous on purpose: a passing wait returns as soon as done() is called, and the
+// RSA signing specs can take over 2 seconds on a busy CI simulator.
+let Timeout: NimbleTimeInterval = .seconds(10)
 
 let ValidURL = URL(string: "https://\(Domain)")!
 let ValidTransactionId = UUID().uuidString
