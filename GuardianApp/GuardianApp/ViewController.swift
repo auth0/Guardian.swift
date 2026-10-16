@@ -31,10 +31,27 @@ class ViewController: UIViewController {
     @IBOutlet var enrollmentView: UIView!
     @IBOutlet var enrollmentLabel: UILabel!
     @IBOutlet var secretLabel: UILabel!
+    @IBOutlet var codeLabel: UILabel!
+
+    /// Refreshes the TOTP code while the screen is visible.
+    private var codeTimer: Timer?
 
     override func viewDidLoad() {
         super.viewDidLoad()
         updateView()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        codeTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
+            self?.updateCode()
+        }
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        codeTimer?.invalidate()
+        codeTimer = nil
     }
 
     @IBAction func unenrollAction(_ sender: AnyObject) {
@@ -59,6 +76,12 @@ class ViewController: UIViewController {
         enrollButton.isHidden = haveEnrollment
         unenrollButton.isHidden = !haveEnrollment
         enrollmentView.isHidden = !haveEnrollment
+        updateCode()
+    }
+
+    private func updateCode() {
+        let code = AppDelegate.state.flatMap(GuardianService.currentCode(for:))
+        codeLabel.text = code ?? "No TOTP for this enrollment"
     }
 
     private func showError(title: String, message: String) {

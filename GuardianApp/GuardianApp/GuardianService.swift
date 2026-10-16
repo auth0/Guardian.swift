@@ -98,6 +98,16 @@ enum GuardianService {
             }
     }
 
+    // MARK: - One-time codes (the SDK's totp(parameters:) generator)
+
+    /// The current TOTP code for an enrollment that has TOTP, or nil.
+    static func currentCode(for device: GuardianState) -> String? {
+        guard let parameters = device.otp, let generator = try? Guardian.totp(parameters: parameters) else {
+            return nil
+        }
+        return generator.stringCode()
+    }
+
     // MARK: - Push notifications (README: "Allow a login request")
 
     /// The notification category that adds Allow and Deny actions to Guardian
