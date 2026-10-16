@@ -293,6 +293,39 @@ Guardian
         }
 ```
 
+## Sample app
+
+`GuardianApp/GuardianApp.xcodeproj` is a small app that enrolls a device, shows push login requests and lets you allow or deny them. It consumes this repository's `Package.swift` as a local Swift package, so it always builds against the SDK sources in your checkout and needs no Carthage bootstrap.
+
+### Run it on the Simulator
+
+1. Open `GuardianApp/GuardianApp.xcodeproj` and run the `GuardianApp` scheme on an iOS 15+ Simulator. No development team is needed: Simulator builds are signed to run locally.
+2. Allow notifications when prompted. The app logs the tenant it uses (`Guardian tenant: ...`) and the push token (`DEVICE TOKEN = ...`) to the console.
+3. Tap **Enroll**. The Simulator has no camera, so the app asks you to paste the enrollment link instead; paste the `otpauth://` link encoded in the enrollment QR code shown by the tenant.
+
+On a physical device, set your own team (`DEVELOPMENT_TEAM`) in the target's Signing settings and change the bundle identifier if needed; the QR code is then scanned with the camera.
+
+### Point it at a test tenant
+
+The sample talks to `https://guardian-demo.us.auth0.com` by default. To use another tenant, either:
+
+- pass a launch argument, which takes precedence: add `-GuardianTenantDomain https://your-tenant.us.auth0.com` under the scheme's Run > Arguments, or launch with `xcrun simctl launch booted com.auth0.guardian.sample -GuardianTenantDomain https://your-tenant.us.auth0.com`
+- or set the `GUARDIAN_TENANT_DOMAIN` build setting, e.g. `xcodebuild -project GuardianApp/GuardianApp.xcodeproj -scheme GuardianApp GUARDIAN_TENANT_DOMAIN=https://your-tenant.us.auth0.com build`
+
+For push login requests to reach the app, the tenant's Guardian push notifications must be configured with APNs credentials for the sample's bundle identifier (`com.auth0.guardian.sample`, development environment).
+
+### UI test identifiers
+
+The controls carry accessibility identifiers so UI-driven integration tests can locate them:
+
+| Screen | Identifiers |
+|---|---|
+| Main | `enroll.button`, `unenroll.button`, `enrollment.identifier.label`, `enrollment.secret.label` |
+| QR scanner | `qrScanner.camera`, `qrScanner.cancel.button`, and `enrollmentUri.textField` in the paste-link prompt |
+| Login request | `notification.allow.button`, `notification.deny.button`, `notification.browser.label`, `notification.location.label`, `notification.date.label`, `notification.bindingMessage.label` |
+
+The PR workflow builds the sample (`bundle exec fastlane ios build_sample`), so a change that breaks it fails CI.
+
 ## What is Auth0?
 
 Auth0 helps you to:
