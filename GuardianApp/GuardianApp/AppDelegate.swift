@@ -71,7 +71,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         // Request for AuthZ
         UNUserNotificationCenter.current().delegate = self
-        UNUserNotificationCenter.current().requestAuthorization(options: [.badge, .sound]) { granted, error in
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
             guard granted else {
                 return print("Permission not granted")
             }
