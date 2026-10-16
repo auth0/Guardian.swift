@@ -104,7 +104,7 @@ class NotificationController: UIViewController {
             .start{ [weak self] result in
                 switch result {
                 case .failure(let cause):
-                    print("Fetch consent failed: \(cause)")
+                    self?.showConsentFailure(cause)
                 case .success(let payload):
                     self?.showRichConsent(requestedDetails: payload.requestedDetails)
             }
@@ -130,6 +130,27 @@ class NotificationController: UIViewController {
         }
     }
     
+    /// Without the consent details the user can't see what they would approve,
+    /// so offer Deny or Close, but never Allow.
+    func showConsentFailure(_ cause: Swift.Error) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.denyButton.isHidden = false
+            let alert = UIAlertController(
+                title: "Couldn't load the request details",
+                message: "\(Self.message(for: cause))\n\nYou can deny this request or close it.",
+                preferredStyle: .alert
+            )
+            alert.addAction(UIAlertAction(title: "Deny", style: .destructive) { [weak self] _ in
+                self?.denyAction(alert)
+            })
+            alert.addAction(UIAlertAction(title: "Close", style: .cancel) { [weak self] _ in
+                self?.dismiss(animated: true, completion: nil)
+            })
+            self.present(alert, animated: true, completion: nil)
+        }
+    }
+
     func showAuthorizationDetails(requestedDetails: ConsentRequestedDetails) -> UIView {
         if let paymentInitiation = requestedDetails.filterAuthorizationDetailsByType(PaymentInitiation.self).first {
             return PaymentInitiationView(fromPaymentInitiation: paymentInitiation)
@@ -140,17 +161,17 @@ class NotificationController: UIViewController {
     func showError(_ title: String, _ cause: Swift.Error) {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
-            var errorMessage = "Unknown error"
-            if let cause = cause as? GuardianError {
-                errorMessage = cause.description
-            }
             let alert = UIAlertController(
                 title: title,
-                message: errorMessage,
+                message: Self.message(for: cause),
                 preferredStyle: .alert
             )
             alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
             self.present(alert, animated: true, completion: nil)
         }
+    }
+
+    private static func message(for cause: Swift.Error) -> String {
+        return (cause as? GuardianError)?.description ?? "Unknown error"
     }
 }
