@@ -322,7 +322,7 @@ The controls carry accessibility identifiers so UI-driven integration tests can 
 
 | Screen | Identifiers |
 |---|---|
-| Main | `enroll.button`, `unenroll.button`, `enrollment.identifier.label`, `enrollment.secret.label` |
+| Main | `enroll.button`, `unenroll.button`, `enrollment.identifier.label`, `enrollment.secret.label`, `enrollment.totp.label` |
 | QR scanner | `qrScanner.camera`, `qrScanner.cancel.button`, and `enrollmentUri.textField` in the paste-link prompt |
 | Login request | `notification.allow.button`, `notification.deny.button`, `notification.browser.label`, `notification.location.label`, `notification.date.label`, `notification.bindingMessage.label` |
 
