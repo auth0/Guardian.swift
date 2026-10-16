@@ -22,6 +22,7 @@
                         <subviews>
                             <button hidden="YES" opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="d7L-C1-tps">
                                 <rect key="frame" x="16" y="604" width="343" height="44"/>
+                                <accessibility key="accessibilityConfiguration" identifier="unenroll.button"/>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="44" id="urL-ob-SEa"/>
@@ -44,6 +45,7 @@
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="dev_ABCDEFGHI" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cXQ-Gb-Pt0">
                                         <rect key="frame" x="0.0" y="21.666666666666657" width="361" height="20.333333333333329"/>
+                                        <accessibility key="accessibilityConfiguration" identifier="enrollment.identifier.label"/>
                                         <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
@@ -56,6 +58,7 @@
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="HDMDMDNDND" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="avi-gI-Rhd">
                                         <rect key="frame" x="0.0" y="69.666666666666657" width="361" height="20.333333333333329"/>
+                                        <accessibility key="accessibilityConfiguration" identifier="enrollment.secret.label"/>
                                         <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
@@ -64,6 +67,7 @@
                             </stackView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="P5n-CT-PTt">
                                 <rect key="frame" x="16" y="754" width="361" height="44"/>
+                                <accessibility key="accessibilityConfiguration" identifier="enroll.button"/>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="44" id="uL6-OO-5J1"/>
@@ -117,6 +121,7 @@
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nrM-5r-rqD">
                                 <rect key="frame" x="158" y="797" width="77" height="35"/>
+                                <accessibility key="accessibilityConfiguration" identifier="qrScanner.cancel.button"/>
                                 <buttonConfiguration key="configuration" style="plain" title="Cancel"/>
                                 <connections>
                                     <action selector="cancelAction:" destination="nOz-Ao-osG" eventType="touchUpInside" id="zSj-0S-ggQ"/>
@@ -124,6 +129,7 @@
                             </button>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="WxW-Yu-X7S">
                                 <rect key="frame" x="0.0" y="0.0" width="393" height="777"/>
+                                <accessibility key="accessibilityConfiguration" identifier="qrScanner.camera"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9MX-ow-lKK">
                                         <rect key="frame" x="30" y="222" width="333" height="333"/>
@@ -182,6 +188,7 @@
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Safari 10.0" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xc7-mu-JVG">
                                         <rect key="frame" x="0.0" y="21.666666666666657" width="361" height="20.333333333333329"/>
+                                        <accessibility key="accessibilityConfiguration" identifier="notification.browser.label"/>
                                         <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
@@ -194,6 +201,7 @@
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Argentina" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RKL-g1-tm5">
                                         <rect key="frame" x="0.0" y="69.666666666666657" width="361" height="20.333333333333329"/>
+                                        <accessibility key="accessibilityConfiguration" identifier="notification.location.label"/>
                                         <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
@@ -206,6 +214,7 @@
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Today at 17:40:10" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GSN-Uh-cn2">
                                         <rect key="frame" x="0.0" y="117.66666666666666" width="361" height="20.333333333333343"/>
+                                        <accessibility key="accessibilityConfiguration" identifier="notification.date.label"/>
                                         <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
@@ -235,6 +244,7 @@
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="ABCD1234" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xgY-uW-cgY">
                                                 <rect key="frame" x="207.66666666666663" y="0.0" width="153.33333333333337" height="30"/>
+                                                <accessibility key="accessibilityConfiguration" identifier="notification.bindingMessage.label"/>
                                                 <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
@@ -251,6 +261,7 @@
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="TSg-91-JQ7">
                                         <rect key="frame" x="0.0" y="0.0" width="172.66666666666666" height="44"/>
+                                        <accessibility key="accessibilityConfiguration" identifier="notification.deny.button"/>
                                         <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="44" id="H5h-Ay-Qfz"/>
@@ -264,6 +275,7 @@
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pAt-hB-LdP">
                                         <rect key="frame" x="188.66666666666663" y="0.0" width="172.33333333333337" height="44"/>
+                                        <accessibility key="accessibilityConfiguration" identifier="notification.allow.button"/>
                                         <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="44" id="J52-bw-CFs"/>

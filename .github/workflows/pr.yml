@@ -68,7 +68,7 @@ jobs:
           brew install swiftlint
           brew install carthage
 
-      # Bootstrap Carthage test deps (Quick/Nimble/SimpleKeychain). --cache-builds
+      # Bootstrap Carthage test deps (Quick/Nimble). --cache-builds
       # makes this a no-op when the cached xcframeworks are still valid, so it's
       # safe to run unconditionally; the cache step above provides the speed-up.
       - name: Bootstrap Carthage dependencies
@@ -108,3 +108,41 @@ jobs:
           files: output/cobertura.xml
           token: ${{ secrets.CODECOV_TOKEN }}  # optional for public repos; required for private
           fail_ci_if_error: false
+
+  sample:
+    name: Build sample app
+    runs-on: macos-15
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # pin@v7.0.1
+
+      - name: Read Xcode version
+        id: xcode-ver
+        run: echo "version=$(cat .xcode-version)" >> "$GITHUB_OUTPUT"
+
+      - uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # pin@v1.7.0
+        with:
+          xcode-version: ${{ steps.xcode-ver.outputs.version }}
+
+      - uses: ruby/setup-ruby@14594264cd68ce8a2345dd349bc3d138a4ef85c8 # pin@v1
+        with:
+          bundler: 'Gemfile.lock'
+
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # pin@v6.1.0
+        with:
+          path: vendor/bundle
+          key: bundle-v1-${{ hashFiles('Gemfile.lock') }}
+          restore-keys: bundle-v1-
+
+      - name: Install Ruby dependencies
+        run: bundle check || bundle install --jobs 4 --retry 3
+        env:
+          BUNDLE_PATH: vendor/bundle
+
+      # The sample consumes the SDK as a local Swift package, so no Carthage
+      # bootstrap or signing team is needed. Fails the PR if the sample stops
+      # compiling against the SDK sources under review.
+      - name: Build GuardianApp
+        run: bundle exec fastlane ios build_sample
+        env:
+          BUNDLE_PATH: vendor/bundle
