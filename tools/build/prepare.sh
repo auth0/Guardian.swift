@@ -18,6 +18,7 @@ print_plan() {
   log "  test          = ${DO_TEST}"
   log "  lint          = ${DO_LINT}"
   log "  coverage      = ${DO_COVERAGE}"
+  log "  publish       = ${DO_PUBLISH}"
   log "  branch        = ${BRANCH:-<current>}"
   log "  install deps  = $([[ "$SKIP_DEPS" == true ]] && echo false || echo true)"
   log "  lanes         = ${LANES[*]}"

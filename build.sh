@@ -42,6 +42,7 @@
 #              [--test | --notest]            # run unit tests (default: --test)
 #              [--lint | --nolint]            # run SwiftLint (default: --lint)
 #              [--coverage | --nocoverage]    # emit Slather coverage (default: --nocoverage)
+#              [--publish | --nopublish]      # pod trunk push, release.yml only (default: --nopublish)
 #              [--branch <name>]              # informational label for logs/artifacts
 #              [--skip-deps]                  # don't run dependency install (default: install)
 #              [--dryRun]                     # print the resolved plan, run nothing

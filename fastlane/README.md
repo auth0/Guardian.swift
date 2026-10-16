@@ -73,31 +73,17 @@ Assembles the Guardian framework (informational; mirrors Android's build lane)
 
 
 
-### ios release_prepare
+### ios publish_cocoapods
 
 ```sh
-[bundle exec] fastlane ios release_prepare
+[bundle exec] fastlane ios publish_cocoapods
 ```
 
-Prepares the library for release by updating versions and creating release pull request
+Pushes Guardian.podspec to CocoaPods trunk (the podspec source is the X.Y.Z tag).
 
-You need to specify the type of release with the `bump` parameter with the values [major|minor|patch]
+Requires RELEASE_CONTEXT=true, only set inside the publish job of release.yml,
 
-### ios release_perform
-
-```sh
-[bundle exec] fastlane ios release_perform
-```
-
-Performs the prepared release by creating a tag and pusing to remote
-
-### ios release_publish
-
-```sh
-[bundle exec] fastlane ios release_publish
-```
-
-Releases the library to CocoaPods trunk & Github Releases
+and COCOAPODS_TRUNK_TOKEN from the cocoapods-release environment.
 
 ----
 

@@ -7,7 +7,7 @@
 # Honors SKIP_DEPS (set by --skip-deps).
 #
 # iOS specifics:
-#   1. bundle install  — Fastlane + Slather + auth0_shipper (root Gemfile)
+#   1. bundle install  — Fastlane + Slather + CocoaPods (root Gemfile)
 #   2. carthage bootstrap — pulls Quick/Nimble/SimpleKeychain test deps
 #   3. swiftlint       — installed via Homebrew if missing (lint lane requires it)
 #
@@ -31,7 +31,7 @@ ensure_dependencies() {
     gem install bundler || die "Failed to install bundler. Check your Ruby/gem setup."
   fi
 
-  # Install Ruby gems (Fastlane, Slather, auth0_shipper, etc.)
+  # Install Ruby gems (Fastlane, Slather, CocoaPods, etc.)
   if bundle check >/dev/null 2>&1; then
     log "Ruby dependencies already satisfied — skipping 'bundle install'."
   else
