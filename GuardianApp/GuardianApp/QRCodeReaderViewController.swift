@@ -31,7 +31,7 @@ protocol QRCodeReaderViewControllerDelegate: AnyObject {
 
 class QRCodeReaderViewController: UIViewController {
     private var captureSession: AVCaptureSession?
-    private var previewLayer: CALayer!
+    private var previewLayer: CALayer?
     
     @IBOutlet var cameraView: UIView!
     @IBOutlet var frameView: UIView!
@@ -73,7 +73,7 @@ class QRCodeReaderViewController: UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        previewLayer.frame = cameraView.bounds
+        previewLayer?.frame = cameraView.bounds
     }
     
     override func viewDidAppear(_ animated: Bool) {

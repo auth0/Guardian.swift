@@ -117,43 +117,76 @@ extension ViewController: QRCodeReaderViewControllerDelegate {
     func qrCodeViewDidScan(qrCodeValue: String) {
         print("QR scanned with result:\n\(qrCodeValue)")
         self.dismiss(animated: true) { [unowned self] in
-
-            guard let signingKey = try? KeychainRSAPrivateKey.new(with: ViewController.RSA_KEY_PRIVATE_TAG),
-                let verificationKey = try? signingKey.verificationKey() else { return }
-
-            let request = Guardian.enroll(
-                forDomain: AppDelegate.tenantDomain,
-                usingUri: qrCodeValue,
-                notificationToken: AppDelegate.pushToken!,
-                signingKey: signingKey,
-                verificationKey: verificationKey)
-            
-            debugPrint(request)
-            request
-                .on(response: { event in
-                    guard let data = event.data else { return }
-                    let body = String(data: data, encoding: .utf8) ?? "INVALID BODY"
-                    print(body)
-                })
-                .start { result in
-                    switch result {
-                    case .failure(let cause):
-                        self.showError(title: "Enroll failed", cause: cause)
-                    case .success(let enrollment):
-                        AppDelegate.state = GuardianState(identifier: enrollment.id, localIdentifier: enrollment.localIdentifier, keyTag: signingKey.tag, otp: enrollment.totp, userId: enrollment.userId)
-                    }
-                    self.updateView()
-            }
+            self.enroll(usingUri: qrCodeValue)
         }
     }
-    
+
     func qrCodeViewDidCancel() {
         dismiss(animated: true)
     }
-    
+
     func qrCodeViewDidFail() {
+        // No camera (e.g. the Simulator): let the user paste the enrollment link
+        // that the QR code encodes instead.
         dismiss(animated: false) { [weak self] in
-            self?.showError(title: "Error", message: "Camera usage not supported by the current device")
+            self?.promptForEnrollmentUri()
+        }
+    }
+
+    private func promptForEnrollmentUri() {
+        let alert = UIAlertController(
+            title: "Camera unavailable",
+            message: "Paste the enrollment link encoded in the QR code",
+            preferredStyle: .alert
+        )
+        alert.addTextField { textField in
+            textField.placeholder = "otpauth://..."
+            textField.accessibilityIdentifier = "enrollmentUri.textField"
+            textField.autocapitalizationType = .none
+            textField.autocorrectionType = .no
+            textField.keyboardType = .URL
+        }
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: "Enroll", style: .default) { [unowned self, unowned alert] _ in
+            guard let uri = alert.textFields?.first?.text?.trimmingCharacters(in: .whitespacesAndNewlines), !uri.isEmpty else {
+                return self.showError(title: "Error", message: "Enrollment link is empty")
+            }
+            self.enroll(usingUri: uri)
+        })
+        present(alert, animated: true, completion: nil)
+    }
+
+    private func enroll(usingUri enrollmentUri: String) {
+        guard let notificationToken = AppDelegate.pushToken else {
+            return showError(title: "Error", message: "Push token is empty")
+        }
+        guard let signingKey = try? KeychainRSAPrivateKey.new(with: ViewController.RSA_KEY_PRIVATE_TAG),
+            let verificationKey = try? signingKey.verificationKey() else {
+            return showError(title: "Error", message: "Could not create the device signing key")
+        }
+
+        let request = Guardian.enroll(
+            forDomain: AppDelegate.tenantDomain,
+            usingUri: enrollmentUri,
+            notificationToken: notificationToken,
+            signingKey: signingKey,
+            verificationKey: verificationKey)
+
+        debugPrint(request)
+        request
+            .on(response: { event in
+                guard let data = event.data else { return }
+                let body = String(data: data, encoding: .utf8) ?? "INVALID BODY"
+                print(body)
+            })
+            .start { result in
+                switch result {
+                case .failure(let cause):
+                    self.showError(title: "Enroll failed", cause: cause)
+                case .success(let enrollment):
+                    AppDelegate.state = GuardianState(identifier: enrollment.id, localIdentifier: enrollment.localIdentifier, keyTag: signingKey.tag, otp: enrollment.totp, userId: enrollment.userId)
+                }
+                self.updateView()
         }
     }
 }

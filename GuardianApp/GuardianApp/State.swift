@@ -22,7 +22,6 @@
 
 import UIKit
 import Guardian
-import SimpleKeychain
 
 struct GuardianState: Codable {
 
@@ -35,22 +34,58 @@ struct GuardianState: Codable {
     func save() throws {
         let encoder = JSONEncoder()
         let data = try encoder.encode(self)
-        let keychain = A0SimpleKeychain()
-        keychain.setData(data, forKey: self.localIdentifier)
+        try Keychain.set(data, forKey: self.localIdentifier)
     }
 
     static func delete(by identifier: String = UIDevice.current.identifierForVendor!.uuidString) {
-        let keychain = A0SimpleKeychain()
-        keychain.deleteEntry(forKey: identifier)
+        Keychain.delete(forKey: identifier)
     }
 
     static func load(by identifier: String = UIDevice.current.identifierForVendor!.uuidString) -> GuardianState? {
         let decoder = JSONDecoder()
-        let keychain = A0SimpleKeychain()
-        guard let data = keychain.data(forKey: identifier) else { return nil }
+        guard let data = Keychain.data(forKey: identifier) else { return nil }
         guard let state = try? decoder.decode(GuardianState.self, from: data) else { return nil }
         guard state.localIdentifier == identifier else { return nil }
         return state
+    }
+}
+
+/// Minimal generic-password store for the sample's enrollment state, so the
+/// sample has no dependencies beyond the Guardian SDK itself.
+private enum Keychain {
+
+    private static let service = Bundle.main.bundleIdentifier ?? "com.auth0.guardian.sample"
+
+    private static func query(forKey key: String) -> [String: Any] {
+        return [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: service,
+            kSecAttrAccount as String: key
+        ]
+    }
+
+    static func set(_ data: Data, forKey key: String) throws {
+        delete(forKey: key)
+        var attributes = query(forKey: key)
+        attributes[kSecValueData as String] = data
+        attributes[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
+        let status = SecItemAdd(attributes as CFDictionary, nil)
+        guard status == errSecSuccess else {
+            throw NSError(domain: NSOSStatusErrorDomain, code: Int(status))
+        }
+    }
+
+    static func data(forKey key: String) -> Data? {
+        var lookup = query(forKey: key)
+        lookup[kSecReturnData as String] = true
+        lookup[kSecMatchLimit as String] = kSecMatchLimitOne
+        var result: AnyObject?
+        guard SecItemCopyMatching(lookup as CFDictionary, &result) == errSecSuccess else { return nil }
+        return result as? Data
+    }
+
+    static func delete(forKey key: String) {
+        SecItemDelete(query(forKey: key) as CFDictionary)
     }
 }
 

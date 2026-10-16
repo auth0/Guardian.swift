@@ -46,15 +46,15 @@ class NotificationController: UIViewController {
             .authentication(forDomain: AppDelegate.tenantDomain, device: enrollment)
             .allow(notification: notification)
         debugPrint(request)
-        request.start { result in
+        request.start { [weak self] result in
                 print(result)
                 switch result {
                 case .success:
-                    DispatchQueue.main.async { [unowned self] in
-                        self.dismiss(animated: true, completion: nil)
+                    DispatchQueue.main.async {
+                        self?.dismiss(animated: true, completion: nil)
                     }
                 case .failure(let cause):
-                    self.showError("Allow failed", cause)
+                    self?.showError("Allow failed", cause)
                 }
         }
     }
@@ -67,15 +67,15 @@ class NotificationController: UIViewController {
             .authentication(forDomain: AppDelegate.tenantDomain, device: enrollment)
             .reject(notification: notification)
         debugPrint(request)
-        request.start { result in
+        request.start { [weak self] result in
                 print(result)
                 switch result {
                 case .success:
-                    DispatchQueue.main.async { [unowned self] in
-                        self.dismiss(animated: true, completion: nil)
+                    DispatchQueue.main.async {
+                        self?.dismiss(animated: true, completion: nil)
                     }
                 case .failure(let cause):
-                    self.showError("Reject failed", cause)
+                    self?.showError("Reject failed", cause)
                 }
         }
     }

@@ -24,15 +24,29 @@ import UIKit
 import Guardian
 import UserNotifications
 
-@UIApplicationMain
+@main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-    static let tenantDomain = "https://guardian-demo.us.auth0.com"
+    static let tenantDomainKey = "GuardianTenantDomain"
+    static let defaultTenantDomain = "https://guardian-demo.us.auth0.com"
+
+    /// The tenant the sample talks to. Resolved in order from the
+    /// `-GuardianTenantDomain <url>` launch argument, the GUARDIAN_TENANT_DOMAIN
+    /// build setting (written to Info.plist), then the Guardian demo tenant.
+    static let tenantDomain: String = {
+        if let domain = UserDefaults.standard.string(forKey: tenantDomainKey), !domain.isEmpty {
+            return domain
+        }
+        if let domain = Bundle.main.object(forInfoDictionaryKey: tenantDomainKey) as? String, !domain.isEmpty {
+            return domain
+        }
+        return defaultTenantDomain
+    }()
 
     static var pushToken: String? = nil
-    var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        print("Guardian tenant: \(AppDelegate.tenantDomain)")
 
         let guardianCategory = Guardian.AuthenticationCategory.default
 
@@ -92,7 +106,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     var rootController: UIViewController? {
-        return self.window?.rootViewController
+        return UIApplication.shared.connectedScenes
+            .compactMap { ($0.delegate as? SceneDelegate)?.window }
+            .first?
+            .rootViewController
     }
 }
 
