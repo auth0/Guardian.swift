@@ -205,7 +205,6 @@
 				"CODE_SIGN_IDENTITY[sdk=iphonesimulator*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = "";
-				GUARDIAN_TENANT_DOMAIN = "https://guardian-demo.us.auth0.com";
 				INFOPLIST_FILE = GuardianApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -226,7 +225,6 @@
 				"CODE_SIGN_IDENTITY[sdk=iphonesimulator*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = "";
-				GUARDIAN_TENANT_DOMAIN = "https://guardian-demo.us.auth0.com";
 				INFOPLIST_FILE = GuardianApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

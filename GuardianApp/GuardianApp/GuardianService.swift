@@ -33,19 +33,22 @@ enum GuardianService {
 
     // MARK: - Tenant
 
-    static let tenantDomainKey = "GuardianTenantDomain"
+    static let tenantDomainArgument = "GuardianTenantDomain"
     static let defaultTenantDomain = "https://guardian-demo.us.auth0.com"
 
-    /// The tenant the sample talks to. Resolved in order from the
-    /// `-GuardianTenantDomain <url>` launch argument, the GUARDIAN_TENANT_DOMAIN
-    /// build setting (written to Info.plist), then the Guardian demo tenant.
+    /// The tenant the sample talks to. Set it in Guardian.plist (`Domain`), or
+    /// override it for one run with the `-GuardianTenantDomain <url>` launch
+    /// argument. Falls back to the Guardian demo tenant if neither is set.
     static let tenantDomain: String = {
-        if let domain = UserDefaults.standard.string(forKey: tenantDomainKey), !domain.isEmpty {
+        if let domain = UserDefaults.standard.string(forKey: tenantDomainArgument), !domain.isEmpty {
             return domain
         }
-        if let domain = Bundle.main.object(forInfoDictionaryKey: tenantDomainKey) as? String, !domain.isEmpty {
+        if let url = Bundle.main.url(forResource: "Guardian", withExtension: "plist"),
+            let config = NSDictionary(contentsOf: url),
+            let domain = config["Domain"] as? String, !domain.isEmpty {
             return domain
         }
+        print("Guardian.plist with a Domain entry is missing; using \(defaultTenantDomain)")
         return defaultTenantDomain
     }()
 

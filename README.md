@@ -307,10 +307,12 @@ On a physical device, set your own team (`DEVELOPMENT_TEAM`) in the target's Sig
 
 ### Point it at a test tenant
 
-The sample talks to `https://guardian-demo.us.auth0.com` by default. To use another tenant, either:
+The sample reads its tenant from `GuardianApp/GuardianApp/Guardian.plist`, which points at `https://guardian-demo.us.auth0.com`. To use another tenant, either:
 
-- pass a launch argument, which takes precedence: add `-GuardianTenantDomain https://your-tenant.us.auth0.com` under the scheme's Run > Arguments, or launch with `xcrun simctl launch booted com.auth0.guardian.sample -GuardianTenantDomain https://your-tenant.us.auth0.com`
-- or set the `GUARDIAN_TENANT_DOMAIN` build setting, e.g. `xcodebuild -project GuardianApp/GuardianApp.xcodeproj -scheme GuardianApp GUARDIAN_TENANT_DOMAIN=https://your-tenant.us.auth0.com build`
+- set `Domain` in `Guardian.plist` to your tenant, e.g. `https://your-tenant.us.auth0.com`
+- or override it for one run with a launch argument, which takes precedence: add `-GuardianTenantDomain https://your-tenant.us.auth0.com` under the scheme's Run > Arguments, or launch with `xcrun simctl launch booted com.auth0.guardian.sample -GuardianTenantDomain https://your-tenant.us.auth0.com`
+
+All Guardian SDK calls the sample makes live in `GuardianApp/GuardianApp/GuardianService.swift`, one function per section of this README.
 
 For push login requests to reach the app, the tenant's Guardian push notifications must be configured with APNs credentials for the sample's bundle identifier (`com.auth0.guardian.sample`, development environment).
 
