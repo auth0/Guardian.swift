@@ -112,15 +112,19 @@ class NotificationController: UIViewController {
         consentDetailsView.isHidden = false
     }
     
-    /// Without the consent details the user can't see what they would approve,
-    /// so offer Deny or Close, but never Allow.
+    /// The consent details didn't load, so the request is shown without them.
+    /// Let the user still respond to it, or close it.
     func showConsentFailure(_ cause: Swift.Error) {
+        allowButton.isHidden = false
         denyButton.isHidden = false
         let alert = UIAlertController(
             title: "Couldn't load the request details",
-            message: "\(Self.message(for: cause))\n\nYou can deny this request or close it.",
+            message: "\(Self.message(for: cause))\n\nYou can still allow or deny this request, or close it.",
             preferredStyle: .alert
         )
+        alert.addAction(UIAlertAction(title: "Allow", style: .default) { [weak self] _ in
+            self?.allowAction(alert)
+        })
         alert.addAction(UIAlertAction(title: "Deny", style: .destructive) { [weak self] _ in
             self?.denyAction(alert)
         })
