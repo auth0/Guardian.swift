@@ -58,7 +58,7 @@ class PaymentInitiationView: UIView {
     func loadViewFromNib() -> UIView? {
         let bundle = Bundle(for: type(of: self))
         let className: String = String(describing: type(of: self))
-        let nib = UINib(nibName:className, bundle: bundle)
+        let nib = UINib(nibName: className, bundle: bundle)
         return nib.instantiate(withOwner: self, options: nil).first as? UIView
     }
 }

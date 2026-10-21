@@ -21,11 +21,11 @@
 // THE SOFTWARE.
 
 import UIKit
-import Guardian
+@preconcurrency import Guardian
 
 class NotificationController: UIViewController {
 
-    var notification: Guardian.Notification? = nil
+    var notification: Guardian.Notification?
 
     @IBOutlet var browserLabel: UILabel!
     @IBOutlet var locationLabel: UILabel!
@@ -40,41 +40,29 @@ class NotificationController: UIViewController {
     
     @IBAction func allowAction(_ sender: AnyObject) {
         guard let notification = notification, let enrollment = AppDelegate.state else {
-            return self.dismiss(animated: true, completion: nil)
+            return dismiss(animated: true, completion: nil)
         }
-        let request = Guardian
-            .authentication(forDomain: AppDelegate.tenantDomain, device: enrollment)
-            .allow(notification: notification)
-        request.start { [weak self] result in
-                print(result)
-                switch result {
-                case .success:
-                    DispatchQueue.main.async {
-                        self?.dismiss(animated: true, completion: nil)
-                    }
-                case .failure(let cause):
-                    self?.showError("Allow failed", cause)
-                }
+        GuardianService.allow(notification, device: enrollment) { [weak self] result in
+            switch result {
+            case .success:
+                self?.dismiss(animated: true, completion: nil)
+            case .failure(let cause):
+                self?.showError("Allow failed", cause)
+            }
         }
     }
 
     @IBAction func denyAction(_ sender: AnyObject) {
         guard let notification = notification, let enrollment = AppDelegate.state else {
-            return self.dismiss(animated: true, completion: nil)
+            return dismiss(animated: true, completion: nil)
         }
-        let request = Guardian
-            .authentication(forDomain: AppDelegate.tenantDomain, device: enrollment)
-            .reject(notification: notification)
-        request.start { [weak self] result in
-                print(result)
-                switch result {
-                case .success:
-                    DispatchQueue.main.async {
-                        self?.dismiss(animated: true, completion: nil)
-                    }
-                case .failure(let cause):
-                    self?.showError("Reject failed", cause)
-                }
+        GuardianService.reject(notification, device: enrollment) { [weak self] result in
+            switch result {
+            case .success:
+                self?.dismiss(animated: true, completion: nil)
+            case .failure(let cause):
+                self?.showError("Reject failed", cause)
+            }
         }
     }
 
@@ -98,38 +86,54 @@ class NotificationController: UIViewController {
         denyButton.isHidden = true
         allowButton.isHidden = true
         
-        Guardian
-            .consent(forDomain: AppDelegate.tenantDomain)
-            .fetch(consentId: consentId, transactionToken: notification.transactionToken, signingKey: enrollment.signingKey)
-            .start{ [weak self] result in
-                switch result {
-                case .failure(let cause):
-                    print("Fetch consent failed: \(cause)")
-                case .success(let payload):
-                    self?.showRichConsent(requestedDetails: payload.requestedDetails)
+        GuardianService.fetchConsentDetails(consentId: consentId, notification: notification, device: enrollment) { [weak self] result in
+            switch result {
+            case .failure(let cause):
+                self?.showConsentFailure(cause)
+            case .success(let requestedDetails):
+                self?.showRichConsent(requestedDetails: requestedDetails)
             }
         }
     }
-    
+
     func showRichConsent(requestedDetails: ConsentRequestedDetails) {
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            if !requestedDetails.authorizationDetails.isEmpty {
-                let authDetailsView = showAuthorizationDetails(requestedDetails: requestedDetails)
-                consentDetailsView.addArrangedSubview(authDetailsView)
-            }
-            
-            if requestedDetails.bindingMessage != nil {
-                bindingMessageLabel.text = requestedDetails.bindingMessage
-                bindingMessageView.isHidden = false
-            }
-            
-            denyButton.isHidden = false
-            allowButton.isHidden = false
-            consentDetailsView.isHidden = false
+        if !requestedDetails.authorizationDetails.isEmpty {
+            let authDetailsView = showAuthorizationDetails(requestedDetails: requestedDetails)
+            consentDetailsView.addArrangedSubview(authDetailsView)
         }
+
+        if requestedDetails.bindingMessage != nil {
+            bindingMessageLabel.text = requestedDetails.bindingMessage
+            bindingMessageView.isHidden = false
+        }
+
+        denyButton.isHidden = false
+        allowButton.isHidden = false
+        consentDetailsView.isHidden = false
     }
     
+    /// The consent details didn't load, so the request is shown without them.
+    /// Let the user still respond to it, or close it.
+    func showConsentFailure(_ cause: Swift.Error) {
+        allowButton.isHidden = false
+        denyButton.isHidden = false
+        let alert = UIAlertController(
+            title: "Couldn't load the request details",
+            message: "\(Self.message(for: cause))\n\nYou can still allow or deny this request, or close it.",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "Allow", style: .default) { [weak self] _ in
+            self?.allowAction(alert)
+        })
+        alert.addAction(UIAlertAction(title: "Deny", style: .destructive) { [weak self] _ in
+            self?.denyAction(alert)
+        })
+        alert.addAction(UIAlertAction(title: "Close", style: .cancel) { [weak self] _ in
+            self?.dismiss(animated: true, completion: nil)
+        })
+        present(alert, animated: true, completion: nil)
+    }
+
     func showAuthorizationDetails(requestedDetails: ConsentRequestedDetails) -> UIView {
         if let paymentInitiation = requestedDetails.filterAuthorizationDetailsByType(PaymentInitiation.self).first {
             return PaymentInitiationView(fromPaymentInitiation: paymentInitiation)
@@ -138,19 +142,16 @@ class NotificationController: UIViewController {
     }
 
     func showError(_ title: String, _ cause: Swift.Error) {
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            var errorMessage = "Unknown error"
-            if let cause = cause as? GuardianError {
-                errorMessage = cause.description
-            }
-            let alert = UIAlertController(
-                title: title,
-                message: errorMessage,
-                preferredStyle: .alert
-            )
-            alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
-            self.present(alert, animated: true, completion: nil)
-        }
+        let alert = UIAlertController(
+            title: title,
+            message: Self.message(for: cause),
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+        present(alert, animated: true, completion: nil)
+    }
+
+    private static func message(for cause: Swift.Error) -> String {
+        (cause as? GuardianError)?.description ?? "Unknown error"
     }
 }

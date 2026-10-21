@@ -35,7 +35,7 @@
                                 </connections>
                             </button>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" spacing="6" translatesAutoresizingMaskIntoConstraints="NO" id="gbr-A3-4Qv">
-                                <rect key="frame" x="16" y="119" width="361" height="90"/>
+                                <rect key="frame" x="16" y="119" width="361" height="138"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="ENROLLMENT ID" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XfH-X3-eyB">
                                         <rect key="frame" x="0.0" y="0.0" width="361" height="15.666666666666666"/>
@@ -59,6 +59,19 @@
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="HDMDMDNDND" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="avi-gI-Rhd">
                                         <rect key="frame" x="0.0" y="69.666666666666657" width="361" height="20.333333333333329"/>
                                         <accessibility key="accessibilityConfiguration" identifier="enrollment.secret.label"/>
+                                        <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="CURRENT CODE" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Tp1-Hd-a01">
+                                        <rect key="frame" x="0.0" y="96" width="361" height="15.666666666666664"/>
+                                        <fontDescription key="fontDescription" style="UICTFontTextStyleFootnote"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="123456" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Tp1-Cd-a02">
+                                        <rect key="frame" x="0.0" y="117.66666666666666" width="361" height="20.333333333333329"/>
+                                        <accessibility key="accessibilityConfiguration" identifier="enrollment.totp.label"/>
                                         <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
@@ -96,6 +109,7 @@
                     <navigationItem key="navigationItem" id="MFw-sl-2Xh"/>
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
                     <connections>
+                        <outlet property="codeLabel" destination="Tp1-Cd-a02" id="Tp1-Ol-a03"/>
                         <outlet property="enrollButton" destination="P5n-CT-PTt" id="xQp-B8-5iS"/>
                         <outlet property="enrollmentLabel" destination="cXQ-Gb-Pt0" id="3JY-PC-Lht"/>
                         <outlet property="enrollmentView" destination="gbr-A3-4Qv" id="dpA-5O-rTB"/>

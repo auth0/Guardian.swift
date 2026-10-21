@@ -21,7 +21,7 @@
 // THE SOFTWARE.
 
 import UIKit
-import Guardian
+@preconcurrency import Guardian
 
 struct GuardianState: Codable {
 
@@ -39,8 +39,9 @@ struct GuardianState: Codable {
 
     /// The vendor identifier the SDK uses as an enrollment's local identifier.
     /// It is nil after a restart until the device is first unlocked.
+    @MainActor
     static var currentLocalIdentifier: String? {
-        return UIDevice.current.identifierForVendor?.uuidString
+        UIDevice.current.identifierForVendor?.uuidString
     }
 
     init(identifier: String, localIdentifier: String, signingKey: KeychainRSAPrivateKey, otp: OTPParameters?, userId: String) {
@@ -70,6 +71,7 @@ struct GuardianState: Codable {
     }
 
     /// Deletes the stored enrollment and its device signing key.
+    @MainActor
     static func delete(by identifier: String? = currentLocalIdentifier) {
         guard let identifier = identifier else { return }
         if let state = load(by: identifier) {
@@ -88,6 +90,7 @@ struct GuardianState: Codable {
         SecItemDelete(query as CFDictionary)
     }
 
+    @MainActor
     static func load(by identifier: String? = currentLocalIdentifier) -> GuardianState? {
         guard let identifier = identifier else { return nil }
         let decoder = JSONDecoder()
@@ -105,7 +108,7 @@ private enum Keychain {
     private static let service = Bundle.main.bundleIdentifier ?? "com.auth0.guardian.sample"
 
     private static func query(forKey key: String) -> [String: Any] {
-        return [
+        [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
             kSecAttrAccount as String: key
@@ -139,6 +142,6 @@ private enum Keychain {
 
 extension GuardianState: AuthenticationDevice {
     var signingKey: SigningKey {
-        return key
+        key
     }
 }
