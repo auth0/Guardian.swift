@@ -133,7 +133,7 @@ platform :ios do
     uncommitted = `git diff --name-only --diff-filter=ACMR HEAD`.split("\n")
 
     abs_files = (committed + uncommitted).uniq
-                  .select { |f| f.match?(%r{^Guardian/.*\.swift$}) }
+                  .select { |f| f.match?(%r{^Guardian(App)?/.*\.swift$}) }
                   .map    { |f| File.expand_path("../#{f}", __dir__) }
                   .select { |f| File.exist?(f) }
 

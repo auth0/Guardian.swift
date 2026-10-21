@@ -1,7 +1,7 @@
 # SwiftLint configuration for Guardian.swift
 #
-# Scope: Guardian/ source only. Tests, sample app, Carthage deps and SPM build
-# products are excluded — they would produce noise without actionable value.
+# Scope: Guardian/ (the SDK) and GuardianApp/ (the sample app, which developers
+# copy from). Tests, Carthage deps and SPM build products are excluded.
 #
 # Severity model (mirrors the Android lint gate):
 #   - The CI job fails only on `error`-severity violations (no --strict flag).
@@ -16,10 +16,10 @@
 
 included:
   - Guardian
+  - GuardianApp
 
 excluded:
   - GuardianTests
-  - GuardianApp
   - Carthage
   - .build
   - vendor

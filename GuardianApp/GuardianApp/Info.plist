@@ -20,8 +20,6 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
-	<key>GuardianTenantDomain</key>
-	<string>$(GUARDIAN_TENANT_DOMAIN)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
