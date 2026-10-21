@@ -20,6 +20,7 @@ init_defaults() {
   DO_TEST=true
   DO_LINT=true            # SwiftLint is a first-class gate — on by default
   DO_COVERAGE=false
+  DO_PUBLISH=false        # push to CocoaPods trunk, only via release.yml
   BRANCH=""
   SKIP_DEPS=false
   DRY_RUN=false
@@ -42,6 +43,8 @@ parse_args() {
       --nolint)         DO_LINT=false;     shift ;;
       --coverage)       DO_COVERAGE=true;  shift ;;
       --nocoverage)     DO_COVERAGE=false; shift ;;
+      --publish)        DO_PUBLISH=true;   shift ;;
+      --nopublish)      DO_PUBLISH=false;  shift ;;
       --branch)         need_value "$1" "${2:-}"; BRANCH="$2";         shift 2 ;;
       --skip-deps)      SKIP_DEPS=true;    shift ;;
       --dryRun)         DRY_RUN=true;      shift ;;
@@ -85,6 +88,10 @@ resolve_plan() {
 
   # Build (framework) — informational, off for PR gate.
   [[ "$DO_BUILD" == true ]] && LANES+=("build")
+
+  # Publish: pod trunk push. The lane refuses to run unless RELEASE_CONTEXT=true,
+  # which is ONLY set inside the publish job of release.yml.
+  [[ "$DO_PUBLISH" == true ]] && LANES+=("publish_cocoapods")
 
   # Guard against a fully empty plan.
   if [[ ${#LANES[@]} -eq 0 ]]; then

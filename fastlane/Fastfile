@@ -190,20 +190,13 @@ platform :ios do
     )
   end
 
-  desc "Prepares the library for release by updating versions and creating release pull request"
-  desc "You need to specify the type of release with the `bump` parameter with the values [major|minor|patch]"
-  lane :release_prepare do |options|
-    release_options = {repository: 'Guardian.swift', xcodeproj: 'Guardian.xcodeproj', target: 'Guardian'}.merge(options)
-    prepare_release release_options
-  end
-
-  desc "Performs the prepared release by creating a tag and pusing to remote"
-  lane :release_perform do
-    perform_release target: 'Guardian'
-  end
-
-  desc "Releases the library to CocoaPods trunk & Github Releases"
-  lane :release_publish do
-    publish_release repository: 'Guardian.swift'
+  desc "Pushes Guardian.podspec to CocoaPods trunk (the podspec source is the X.Y.Z tag)."
+  desc "Requires RELEASE_CONTEXT=true, only set inside the publish job of release.yml,"
+  desc "and COCOAPODS_TRUNK_TOKEN from the cocoapods-release environment."
+  lane :publish_cocoapods do
+    UI.user_error!("publish_cocoapods must only run from the release pipeline (RELEASE_CONTEXT=true not set)") \
+      unless ENV["RELEASE_CONTEXT"] == "true"
+    UI.header("Publish · pod trunk push Guardian.podspec")
+    pod_push(path: "Guardian.podspec", allow_warnings: true)
   end
 end
