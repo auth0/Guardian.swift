@@ -1,6 +1,6 @@
 # Change Log
 
-## [1.10.0](https://github.com/auth0/Guardian.swift/tree/1.10.0) (YYYY-MM-DD)
+## [1.10.0](https://github.com/auth0/Guardian.swift/tree/1.10.0) (2026-10-22)
 [Full Changelog](https://github.com/auth0/Guardian.swift/compare/1.9.2...1.10.0)
 
 No SDK code changes since 1.9.2: the library sources, Package.swift and the podspec ship the same code. This release brings master in line with the 1.9.1 and 1.9.2 patch releases, which were cut from a branch, and is the first release published by the new CI pipeline.
