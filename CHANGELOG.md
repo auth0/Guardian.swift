@@ -5,6 +5,9 @@
 
 No SDK code changes since 1.9.2: the library sources, Package.swift and the podspec ship the same code. This release brings master in line with the 1.9.1 and 1.9.2 patch releases, which were cut from a branch, and is the first release published by the new CI pipeline.
 
+**Upgrading from 1.9.0 or from master**
+- This release includes the consent changes shipped in 1.9.1 and 1.9.2, which were not on master before: `ConsentRequestedDetails.bindingMessage` is now optional (`String?`) and `scope` defaults to an empty array when absent (see [PR](https://github.com/auth0/Guardian.swift/pull/161) and [PR](https://github.com/auth0/Guardian.swift/pull/163)). Code that reads `bindingMessage` as a non-optional `String` needs updating, and rich consent transactions without a binding message or scope now decode instead of failing.
+
 **Sample app**
 - The sample app (GuardianApp) builds again and has its own project that uses the SDK as a local Swift package, with no Carthage or signing setup needed to run it on the Simulator (see [PR](https://github.com/auth0/Guardian.swift/pull/184))
 - The sample is now a developer reference: every Guardian SDK call lives in GuardianService.swift, one function per README section, and it shows the live TOTP code, handles a failed rich consent fetch, and can remove an enrollment locally when unenroll fails (see [PR](https://github.com/auth0/Guardian.swift/pull/186))
