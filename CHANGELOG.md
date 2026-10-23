@@ -5,6 +5,7 @@
 
 **Changed**
 - Bring the 1.9.1 and 1.9.2 consent changes to master: rich consent transactions with no binding message or no scope in the consent details are supported, `ConsentRequestedDetails.bindingMessage` is now `String?` and `scope` defaults to an empty array, so code upgrading from 1.9.0 that reads `bindingMessage` as a non-optional `String` needs updating (see [PR](https://github.com/auth0/Guardian.swift/pull/161) and [PR](https://github.com/auth0/Guardian.swift/pull/163))
+- The sample app (GuardianApp) builds again as its own project using the SDK as a local Swift package, and is now a developer reference with every Guardian SDK call in one place, one function per README section (see [PR](https://github.com/auth0/Guardian.swift/pull/184) and [PR](https://github.com/auth0/Guardian.swift/pull/186))
 - Releases are now built, tagged and pushed to CocoaPods trunk by GitHub Actions (see [PR](https://github.com/auth0/Guardian.swift/pull/183))
 
 ## [1.9.2](https://github.com/auth0/Guardian.swift/tree/1.9.2) (2025-12-11)
