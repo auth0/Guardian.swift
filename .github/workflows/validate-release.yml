@@ -1,0 +1,62 @@
+name: Validate release
+
+# Checks that every part of a release happened and reports each check as a pass or
+# fail row in the job summary (see .github/scripts/validate-release.sh for the
+# list). Read-only: it never changes a release. The job fails if any check fails.
+#
+# Runs automatically as the last job of the Release workflow, and can be started by
+# hand for any version: Actions tab, Validate release, Run workflow, with the version.
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: "Version to validate (X.Y.Z)"
+        required: true
+        type: string
+      wait-minutes:
+        description: "How long to wait for CocoaPods trunk and the CDN to list the version"
+        required: false
+        type: number
+        default: 0
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to validate (X.Y.Z)"
+        required: true
+        type: string
+      wait-minutes:
+        description: "How long to wait for CocoaPods trunk and the CDN to list the version"
+        required: false
+        type: number
+        default: 0
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate release ${{ inputs.version }}
+    runs-on: macos-15
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      actions: read         # find the newest Release run for the version
+      pull-requests: read   # find the release PR and map runs to it
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # pin@v7.0.1
+
+      - name: Install Carthage
+        run: brew install carthage
+
+      - name: Validate
+        run: .github/scripts/validate-release.sh "$VERSION"
+        env:
+          VERSION: ${{ inputs.version }}
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          WAIT_MINUTES: ${{ inputs.wait-minutes }}
+          # Called from Release, this is that run's id, which counts as the newest
+          # Release run for the version.
+          CURRENT_RUN_ID: ${{ github.run_id }}
+          COCOAPODS_TRUNK: ${{ vars.COCOAPODS_TRUNK_PUBLISH != 'false' }}

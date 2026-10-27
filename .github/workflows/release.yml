@@ -11,7 +11,8 @@ name: Release
 # It releases the merge commit of the newest merged release/X.Y.Z PR, not master's
 # head, and fails if there is no such PR (Prepare release was never run or merged).
 #
-# Jobs: validate-version -> test -> publish (cocoapods-release approval gate).
+# Jobs: validate-version -> test -> publish (cocoapods-release approval gate)
+#       -> validate-release.
 # Test is skipped when the release PR's Test check already passed on a commit with
 # exactly the same tree as the merge commit (the usual case: the release branch was
 # up to date with master), since it would run the same suite on the same files.
@@ -21,7 +22,11 @@ name: Release
 #   2. pushes the X.Y.Z tag on the merge commit (the podspec source is the tag);
 #   3. pushes Guardian.podspec to CocoaPods trunk (a push that fails after trunk
 #      has registered the version counts as done);
-#   4. publishes the draft and checks that X.Y.Z resolves on trunk and through SPM.
+#   4. publishes the draft.
+# Then validate-release (validate-release.yml) checks every part of the release:
+# the Release and its notes, the tag, master's versions, trunk and the CDN, and
+# that SPM and Carthage resolve X.Y.Z. It reports a pass or fail table and fails
+# the run if anything is missing, but never changes the release.
 #
 # Once the tag is pushed the version is burned: SPM and Carthage resolve straight
 # from it, so a tag is never moved and a fix after that ships as X.Y.Z+1.
@@ -611,47 +616,18 @@ jobs:
           gh api -X PATCH "repos/$REPO/releases/$RELEASE_ID" -f tag_name="$VERSION" -F draft=false >/dev/null
           echo "Published the GitHub Release $VERSION."
 
-      # Trunk can take a few minutes to list a new version. Then resolve the exact
-      # version through SPM from a scratch package, as a consumer would.
-      - name: Verify
-        if: steps.preflight.outputs.action != 'skip'
-        timeout-minutes: 20
-        run: |
-          set -euo pipefail
-          for _ in $(seq 1 60); do
-            [[ "$COCOAPODS_TRUNK" == "true" ]] || break
-            if curl -sf https://trunk.cocoapods.org/api/v1/pods/Guardian \
-              | jq -e --arg v "$VERSION" 'any(.versions[]; .name == $v)' >/dev/null; then
-              echo "$VERSION is listed on CocoaPods trunk."
-              break
-            fi
-            sleep 10
-          done
-          if [[ "$COCOAPODS_TRUNK" == "true" ]] && ! curl -sf https://trunk.cocoapods.org/api/v1/pods/Guardian \
-            | jq -e --arg v "$VERSION" 'any(.versions[]; .name == $v)' >/dev/null; then
-            echo "::error::$VERSION is not listed on CocoaPods trunk after 10 minutes."
-            exit 1
-          fi
-          mkdir -p /tmp/spm-check/Sources/Check && cd /tmp/spm-check
-          touch Sources/Check/Check.swift
-          cat > Package.swift <<EOF
-          // swift-tools-version:5.10
-          import PackageDescription
-          let package = Package(
-              name: "Check",
-              platforms: [.iOS(.v12)],
-              dependencies: [.package(url: "https://github.com/${REPO}.git", exact: "${VERSION}")],
-              targets: [.target(name: "Check", dependencies: [.product(name: "Guardian", package: "Guardian.swift")])]
-          )
-          EOF
-          swift package resolve
-          echo "$VERSION resolves through Swift Package Manager."
-          {
-            echo "### $VERSION released"
-            echo
-            if [[ "$COCOAPODS_TRUNK" == "true" ]]; then
-              echo "On CocoaPods trunk (https://cocoapods.org/pods/Guardian) and tagged on $SHA, which SPM and Carthage resolve from."
-            else
-              echo "Tagged on $SHA, which SPM and Carthage resolve from. CocoaPods trunk push is switched off (COCOAPODS_TRUNK_PUBLISH)."
-            fi
-          } >> "$GITHUB_STEP_SUMMARY"
+  # ── 4. Check every part of the release ─────────────────────────────────────
+  # Also after a run that had nothing left to redo, so the report covers it too.
+  # Trunk can take a few minutes to list a new version, so it waits up to 20.
+  validate-release:
+    name: Validate release
+    needs: [validate-version, publish]
+    if: "!cancelled() && needs.publish.result == 'success'"
+    permissions:
+      contents: read
+      actions: read
+      pull-requests: read
+    uses: ./.github/workflows/validate-release.yml
+    with:
+      version: ${{ needs.validate-version.outputs.version }}
+      wait-minutes: 20
