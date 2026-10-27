@@ -64,6 +64,7 @@ jobs:
       release: ${{ steps.detect.outputs.release }}
       version: ${{ steps.detect.outputs.version }}
       sha: ${{ steps.detect.outputs.sha }}
+      pr: ${{ steps.detect.outputs.pr }}
     env:
       GH_TOKEN: ${{ github.token }}
       REPO: ${{ github.repository }}
@@ -88,17 +89,45 @@ jobs:
             # Release exactly what was reviewed: the merge commit of the newest merged
             # release/X.Y.Z PR (a correction PR, if there was one), never master's head,
             # which may carry changes merged after the release PR.
-            sha="$(gh pr list --repo "$REPO" --head "release/$version" --base master --state merged \
-              --json mergeCommit,mergedAt --jq 'sort_by(.mergedAt) | last | .mergeCommit.oid // ""')"
-            if [[ -z "$sha" ]]; then
+            IFS=$'\t' read -r sha pr_number < <(gh pr list --repo "$REPO" --head "release/$version" --base master --state merged \
+              --json mergeCommit,mergedAt,number --jq 'sort_by(.mergedAt) | last // empty | "\(.mergeCommit.oid)\t\(.number)"') || true
+            if [[ -z "${sha:-}" ]]; then
               echo "::error::No merged release/$version PR. Run Prepare release for $version and merge its PR first."
               exit 1
             fi
           else
             # The squash merge of a release/X.Y.Z PR into master, or nothing to do.
-            head_ref="$(gh api "repos/$REPO/commits/$sha/pulls" --jq \
-              '[.[] | select(.merged_at != null and .base.ref == "master" and (.head.ref | test("^release/[0-9]+\\.[0-9]+\\.[0-9]+$")))][0].head.ref // ""')"
-            if [[ -z "$head_ref" ]]; then
+            # GitHub can take a while to link a fresh merge commit to its PR, and a run
+            # that starts seconds after the merge can find no PR yet. So first try the
+            # PR number in the squash title ("Release X.Y.Z (#N)"), which resolves at
+            # once and also settles ordinary merges quickly, then fall back to the
+            # commit-to-PR lookup with retries before deciding this is not a release.
+            # Prints the PR's head ref and number, or nothing if it is not this merge.
+            pr_by_number() {
+              gh api "repos/$REPO/pulls/$1" --jq \
+                "select(.merged_at != null and .base.ref == \"master\" and .merge_commit_sha == \"$sha\") | \"\(.head.ref)\t\(.number)\""
+            }
+            pr_by_commit() {
+              gh api "repos/$REPO/commits/$sha/pulls" --jq \
+                '[.[] | select(.merged_at != null and .base.ref == "master")] | sort_by(.head.ref | startswith("release/") | not) | .[0] // empty | "\(.head.ref)\t\(.number)"'
+            }
+            title="$(jq -r '.head_commit.message // ""' "$GITHUB_EVENT_PATH" | head -1)"
+            number="$(sed -nE 's/.*\(#([0-9]+)\)$/\1/p' <<<"$title")"
+            found=""
+            if [[ -n "$number" ]]; then
+              found="$(pr_by_number "$number" || true)"
+            fi
+            attempts=6
+            for attempt in $(seq 1 "$attempts"); do
+              [[ -n "$found" ]] && break
+              found="$(pr_by_commit || true)"
+              if [[ -z "$found" && "$attempt" -lt "$attempts" ]]; then
+                echo "No merged PR linked to $sha yet (attempt $attempt of $attempts); retrying in 5 seconds."
+                sleep 5
+              fi
+            done
+            IFS=$'\t' read -r head_ref pr_number <<<"$found" || true
+            if [[ ! "${head_ref:-}" =~ ^release/[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
               echo "Not a release merge; nothing to do."
               echo "release=false" >> "$GITHUB_OUTPUT"
               exit 0
@@ -113,8 +142,9 @@ jobs:
             echo "release=true"
             echo "version=$version"
             echo "sha=$sha"
+            echo "pr=$pr_number"
           } >> "$GITHUB_OUTPUT"
-          echo "Release $version from $sha"
+          echo "Release $version from $sha (PR #$pr_number)"
 
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # pin@v7.0.1
         if: steps.detect.outputs.release == 'true'
