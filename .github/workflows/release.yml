@@ -12,6 +12,9 @@ name: Release
 # head, and fails if there is no such PR (Prepare release was never run or merged).
 #
 # Jobs: validate-version -> test -> publish (cocoapods-release approval gate).
+# Test is skipped when the release PR's Test check already passed on a commit with
+# exactly the same tree as the merge commit (the usual case: the release branch was
+# up to date with master), since it would run the same suite on the same files.
 # After approval, publish:
 #   1. creates the GitHub Release X.Y.Z as a DRAFT targeting the merge commit,
 #      with the CHANGELOG entry as its body;
@@ -75,6 +78,7 @@ jobs:
       version: ${{ steps.detect.outputs.version }}
       sha: ${{ steps.detect.outputs.sha }}
       pr: ${{ steps.detect.outputs.pr }}
+      tested: ${{ steps.tested.outputs.tested }}
     env:
       GH_TOKEN: ${{ github.token }}
       REPO: ${{ github.repository }}
@@ -205,6 +209,33 @@ jobs:
             exit 1
           fi
 
+      # Same tree as the release PR's head, and the PR's Test check passed there:
+      # the PR checks already ran the suite on exactly these files. Any difference
+      # (master moved after the PR's last check) and the Test job runs as before.
+      - name: Check whether the release PR already tested this tree
+        id: tested
+        if: steps.detect.outputs.release == 'true'
+        env:
+          SHA: ${{ steps.detect.outputs.sha }}
+          PR: ${{ steps.detect.outputs.pr }}
+        run: |
+          set -euo pipefail
+          head="$(gh api "repos/$REPO/pulls/$PR" --jq .head.sha)"
+          merge_tree="$(gh api "repos/$REPO/git/commits/$SHA" --jq .tree.sha)"
+          head_tree="$(gh api "repos/$REPO/git/commits/$head" --jq .tree.sha)"
+          # The latest Test check run on the PR head, from GitHub Actions (pr.yml).
+          tests="$(gh api "repos/$REPO/commits/$head/check-runs?check_name=Test&filter=latest" \
+            --jq '[.check_runs[] | select(.app.slug == "github-actions")] | if length == 0 then "none" elif all(.conclusion == "success") then "success" else "failed" end')"
+          if [[ "$merge_tree" == "$head_tree" && "$tests" == "success" ]]; then
+            echo "Release PR #$PR passed Test on ${head:0:7}, whose tree is identical to ${SHA:0:7}; skipping the Test job."
+            echo "tested=true" >> "$GITHUB_OUTPUT"
+            echo "note=Passed on the release PR head ${head:0:7}, same tree as this commit, so not run again" >> "$GITHUB_OUTPUT"
+          else
+            echo "Running Test: tree ${merge_tree:0:7} vs PR head ${head_tree:0:7}, PR Test check: $tests."
+            echo "tested=false" >> "$GITHUB_OUTPUT"
+            echo "note=Run in this workflow (the merged tree differs from the PR head, or the PR's Test check did not pass)" >> "$GITHUB_OUTPUT"
+          fi
+
       # What the approver reads on the run page, right above the approval button.
       - name: Summarise the release for the approver
         if: steps.detect.outputs.release == 'true'
@@ -212,6 +243,7 @@ jobs:
           VERSION: ${{ steps.detect.outputs.version }}
           SHA: ${{ steps.detect.outputs.sha }}
           PR: ${{ steps.detect.outputs.pr }}
+          TESTS: ${{ steps.tested.outputs.note }}
         run: |
           set -euo pipefail
           channels="Swift Package Manager, Carthage"
@@ -225,6 +257,7 @@ jobs:
             echo "| Version | $VERSION |"
             echo "| Commit | [\`${SHA:0:7}\`]($GITHUB_SERVER_URL/$REPO/commit/$SHA) |"
             echo "| Release PR | [#$PR]($GITHUB_SERVER_URL/$REPO/pull/$PR) |"
+            echo "| Tests | $TESTS |"
             echo
             echo "#### CHANGELOG entry"
             echo
@@ -271,7 +304,7 @@ jobs:
   test:
     name: Test
     needs: validate-version
-    if: needs.validate-version.outputs.release == 'true'
+    if: needs.validate-version.outputs.release == 'true' && needs.validate-version.outputs.tested != 'true'
     runs-on: macos-15
     timeout-minutes: 45
     steps:
@@ -347,7 +380,10 @@ jobs:
     # dialog, so the approver knows what they are publishing.
     name: Publish Guardian.swift ${{ needs.validate-version.outputs.version }}
     needs: [validate-version, test]
-    if: needs.validate-version.outputs.release == 'true'
+    # Test is either run and green, or skipped because the release PR already ran it.
+    if: >-
+      !cancelled() && needs.validate-version.result == 'success' && needs.validate-version.outputs.release == 'true' &&
+      (needs.test.result == 'success' || (needs.test.result == 'skipped' && needs.validate-version.outputs.tested == 'true'))
     runs-on: macos-15
     # No job-level timeout: the approval wait counts against it, so a job timeout
     # would cancel the job if a reviewer takes longer than the limit. The
