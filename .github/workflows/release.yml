@@ -192,6 +192,34 @@ jobs:
             exit 1
           fi
 
+      # What the approver reads on the run page, right above the approval button.
+      - name: Summarise the release for the approver
+        if: steps.detect.outputs.release == 'true'
+        env:
+          VERSION: ${{ steps.detect.outputs.version }}
+          SHA: ${{ steps.detect.outputs.sha }}
+          PR: ${{ steps.detect.outputs.pr }}
+        run: |
+          set -euo pipefail
+          {
+            echo "### Guardian.swift $VERSION is waiting for approval"
+            echo
+            echo "| | |"
+            echo "|---|---|"
+            echo "| SDK | Guardian.swift (CocoaPods, Swift Package Manager, Carthage) |"
+            echo "| Version | $VERSION |"
+            echo "| Commit | [\`${SHA:0:7}\`]($GITHUB_SERVER_URL/$REPO/commit/$SHA) |"
+            echo "| Release PR | [#$PR]($GITHUB_SERVER_URL/$REPO/pull/$PR) |"
+            echo
+            echo "#### CHANGELOG entry"
+            echo
+            awk -v h="## [${VERSION}](" '
+              index($0, h) == 1 { on = 1; next }
+              on && /^## \[/    { exit }
+              on                { print }
+            ' CHANGELOG.md
+          } >> "$GITHUB_STEP_SUMMARY"
+
       # Cancel older runs for the same version that have not started publishing:
       # still validating or testing, or waiting at the approval gate. A run whose
       # publish job is already executing is left alone.
@@ -215,7 +243,7 @@ jobs:
           done | while IFS=$'\t' read -r id event head_sha title; do
             [[ "$(run_version "$event" "$head_sha" "$title")" == "$VERSION" ]] || continue
             publishing="$(gh api "repos/$REPO/actions/runs/$id/jobs" \
-              --jq '[.jobs[] | select(.name == "Publish to CocoaPods" and .status == "in_progress")] | length')"
+              --jq '[.jobs[] | select((.name | startswith("Publish")) and .status == "in_progress")] | length')"
             if [[ "$publishing" != "0" ]]; then
               echo "Run $id is already publishing $VERSION; leaving it."
               continue
@@ -300,7 +328,9 @@ jobs:
   # reviewers) AND the trunk token, so approval and secret scoping attach to the
   # one job that uses the credential.
   publish:
-    name: Publish to CocoaPods
+    # The SDK and version show in the review email, the run page and the approval
+    # dialog, so the approver knows what they are publishing.
+    name: Publish Guardian.swift ${{ needs.validate-version.outputs.version }}
     needs: [validate-version, test]
     if: needs.validate-version.outputs.release == 'true'
     runs-on: macos-15
