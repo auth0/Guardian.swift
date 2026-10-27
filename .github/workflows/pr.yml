@@ -53,6 +53,7 @@ jobs:
           restore-keys: bundle-v1-
 
       - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # pin@v6.1.0
+        id: carthage-cache
         with:
           path: Carthage/Build
           # Only caches saved on master are shared with PRs, so cache.yml saves this
@@ -76,20 +77,25 @@ jobs:
           brew install swiftlint
           brew install carthage
 
-      # Boot the simulator while Carthage bootstraps, instead of when the tests
-      # start (about 2 minutes of this job). Pins the scan destination to it.
+      # Boot the simulator in the background during setup, instead of when the
+      # tests start (about 2 minutes of this job). See the script.
       - name: Boot the test simulator
-        run: .github/scripts/boot-simulator.sh
+        run: .github/scripts/boot-simulator.sh start
 
-      # Bootstrap Carthage test deps (Quick/Nimble). --cache-builds
-      # makes this a no-op when the cached xcframeworks are still valid, so it's
-      # safe to run unconditionally; the cache step above provides the speed-up.
+      # Bootstrap Carthage test deps (Quick/Nimble). Skipped on an exact cache hit:
+      # the tests only need the cached xcframeworks, and even with a valid cache
+      # bootstrap spends about 3.5 minutes cloning and validating before it skips
+      # the build. A partial hit (restore-keys) still bootstraps and rebuilds.
       - name: Bootstrap Carthage dependencies
+        if: steps.carthage-cache.outputs.cache-hit != 'true'
         run: |
           XCODE_XCCONFIG_FILE="$GITHUB_WORKSPACE/carthage_build.xcconfig" \
             carthage bootstrap --use-xcframeworks --cache-builds --platform iOS
           echo "Carthage/Build contents:"
           ls Carthage/Build/ 2>/dev/null || echo "  (empty)"
+
+      - name: Use the booted simulator
+        run: .github/scripts/boot-simulator.sh use
 
       - name: Lint + Test + Coverage
         run: ./build.sh --buildType debug --lint --test --coverage --nobuild --skip-deps

@@ -340,6 +340,7 @@ jobs:
 
       # Same Xcode-scoped key as pr.yml, restored from the copy cache.yml saves on master.
       - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # pin@v6.1.0
+        id: carthage-cache
         with:
           path: Carthage/Build
           key: carthage-v2-${{ steps.xcode-ver.outputs.version }}-${{ hashFiles('Cartfile.resolved') }}
@@ -350,20 +351,26 @@ jobs:
         env:
           BUNDLE_PATH: vendor/bundle
 
+      # See pr.yml: boot the simulator in the background during setup.
+      - name: Boot the test simulator
+        run: .github/scripts/boot-simulator.sh start
+
       - name: Install Carthage
+        if: steps.carthage-cache.outputs.cache-hit != 'true'
         run: brew install carthage
 
-      # See pr.yml: boot the simulator while Carthage bootstraps.
-      - name: Boot the test simulator
-        run: .github/scripts/boot-simulator.sh
-
+      # See pr.yml: skipped on an exact cache hit.
       - name: Bootstrap Carthage dependencies
+        if: steps.carthage-cache.outputs.cache-hit != 'true'
         run: |
           XCODE_XCCONFIG_FILE="$GITHUB_WORKSPACE/carthage_build.xcconfig" \
             carthage bootstrap --use-xcframeworks --cache-builds --platform iOS
 
       # --test + --coverage resolves to the single coverage lane: the full test suite
       # once, plus the Slather report, the same as the PR checks.
+      - name: Use the booted simulator
+        run: .github/scripts/boot-simulator.sh use
+
       - name: Test
         run: ./build.sh --buildType debug --test --coverage --nobuild --nolint --nopublish --skip-deps
         env:

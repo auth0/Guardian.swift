@@ -44,15 +44,18 @@ jobs:
       # Same key as pr.yml and release.yml. On a hit there is nothing to save, and
       # the restore counts as use, which keeps the cache from being evicted.
       - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # pin@v6.1.0
+        id: carthage-cache
         with:
           path: Carthage/Build
           key: carthage-v2-${{ steps.xcode-ver.outputs.version }}-${{ hashFiles('Cartfile.resolved') }}
           restore-keys: carthage-v2-${{ steps.xcode-ver.outputs.version }}-
 
       - name: Install Carthage
+        if: steps.carthage-cache.outputs.cache-hit != 'true'
         run: brew install carthage
 
       - name: Bootstrap Carthage dependencies
+        if: steps.carthage-cache.outputs.cache-hit != 'true'
         run: |
           XCODE_XCCONFIG_FILE="$GITHUB_WORKSPACE/carthage_build.xcconfig" \
             carthage bootstrap --use-xcframeworks --cache-builds --platform iOS
