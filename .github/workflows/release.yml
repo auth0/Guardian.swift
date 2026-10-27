@@ -16,7 +16,8 @@ name: Release
 #   1. creates the GitHub Release X.Y.Z as a DRAFT targeting the merge commit,
 #      with the CHANGELOG entry as its body;
 #   2. pushes the X.Y.Z tag on the merge commit (the podspec source is the tag);
-#   3. pushes Guardian.podspec to CocoaPods trunk;
+#   3. pushes Guardian.podspec to CocoaPods trunk (a push that fails after trunk
+#      has registered the version counts as done);
 #   4. publishes the draft and checks that X.Y.Z resolves on trunk and through SPM.
 #
 # Once the tag is pushed the version is burned: SPM and Carthage resolve straight
@@ -505,13 +506,36 @@ jobs:
       # pod trunk push reads the token from COCOAPODS_TRUNK_TOKEN, so it is never
       # written to disk. Trunk validates the podspec against the tag pushed above.
       - name: Publish to CocoaPods trunk
+        id: trunk
         if: steps.preflight.outputs.action == 'publish'
         timeout-minutes: 30
+        # The next step decides whether a failure here is real.
+        continue-on-error: true
         run: ./build.sh --buildType release --notest --nolint --nocoverage --publish --nobuild --skip-deps
         env:
           BUNDLE_PATH: vendor/bundle
           RELEASE_CONTEXT: "true"
           COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+
+      # `pod trunk push` can exit 1 after trunk has registered the version, for
+      # example when trunk's own call to the GitHub commit API times out (1.10.0).
+      # Preflight saw the version missing from trunk, so if trunk lists it now, this
+      # push registered it: carry on. Otherwise fail as before.
+      - name: Check trunk after a failed push
+        if: steps.trunk.outcome == 'failure'
+        timeout-minutes: 10
+        run: |
+          set -euo pipefail
+          for _ in $(seq 1 30); do
+            if curl -sf https://trunk.cocoapods.org/api/v1/pods/Guardian \
+              | jq -e --arg v "$VERSION" 'any(.versions[]; .name == $v)' >/dev/null; then
+              echo "::warning::pod trunk push failed, but trunk lists $VERSION, so the push registered it. Continuing."
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "::error::pod trunk push failed and trunk does not list $VERSION. See the trunk step's log; re-running the job is safe."
+          exit 1
 
       - name: Publish the GitHub Release
         if: steps.preflight.outputs.action != 'skip'
