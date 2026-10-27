@@ -303,6 +303,9 @@ jobs:
   # ── 2. Run tests on the exact commit being released ───────────────────────
   test:
     name: Test
+    env:
+      # See pr.yml: the newest simulator on the pinned Xcode.
+      GUARDIAN_SCAN_DEVICE: iPhone 16
     needs: validate-version
     if: needs.validate-version.outputs.release == 'true' && needs.validate-version.outputs.tested != 'true'
     runs-on: macos-15
@@ -330,7 +333,7 @@ jobs:
           key: bundle-v1-${{ hashFiles('Gemfile.lock') }}
           restore-keys: bundle-v1-
 
-      # Same Xcode-scoped key as pr.yml, so a release usually reuses the PR's cache.
+      # Same Xcode-scoped key as pr.yml, restored from the copy cache.yml saves on master.
       - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # pin@v6.1.0
         with:
           path: Carthage/Build
@@ -345,6 +348,10 @@ jobs:
       - name: Install Carthage
         run: brew install carthage
 
+      # See pr.yml: boot the simulator while Carthage bootstraps.
+      - name: Boot the test simulator
+        run: .github/scripts/boot-simulator.sh
+
       - name: Bootstrap Carthage dependencies
         run: |
           XCODE_XCCONFIG_FILE="$GITHUB_WORKSPACE/carthage_build.xcconfig" \
@@ -356,8 +363,6 @@ jobs:
         run: ./build.sh --buildType debug --test --coverage --nobuild --nolint --nopublish --skip-deps
         env:
           BUNDLE_PATH: vendor/bundle
-          # See pr.yml: the newest simulator on the pinned Xcode.
-          GUARDIAN_SCAN_DEVICE: iPhone 16
 
       - name: Generate reports.html (failure fallback)
         if: failure()

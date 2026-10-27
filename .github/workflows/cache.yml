@@ -1,0 +1,58 @@
+name: Warm caches
+
+# GitHub shares a cache with other branches only when it was saved on the default
+# branch, and nothing else saves the Carthage build cache on master (pr.yml runs on
+# pull_request and merge_group, release.yml only restores it). So every PR and
+# Release run rebuilt Quick and Nimble from source, about 3.5 minutes. This saves
+# the cache on master under the same key pr.yml and release.yml restore:
+#   - when the inputs of the key or of the build change on master;
+#   - weekly, so it is not evicted after 7 days without use;
+#   - by hand from the Actions tab.
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - Cartfile.private
+      - Cartfile.resolved
+      - carthage_build.xcconfig
+      - .xcode-version
+      - .github/workflows/cache.yml
+  schedule:
+    - cron: "17 4 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  carthage:
+    name: Carthage build cache
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # pin@v7.0.1
+
+      - name: Read Xcode version
+        id: xcode-ver
+        run: echo "version=$(cat .xcode-version)" >> "$GITHUB_OUTPUT"
+
+      - uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # pin@v1.7.0
+        with:
+          xcode-version: ${{ steps.xcode-ver.outputs.version }}
+
+      # Same key as pr.yml and release.yml. On a hit there is nothing to save, and
+      # the restore counts as use, which keeps the cache from being evicted.
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # pin@v6.1.0
+        with:
+          path: Carthage/Build
+          key: carthage-v2-${{ steps.xcode-ver.outputs.version }}-${{ hashFiles('Cartfile.resolved') }}
+          restore-keys: carthage-v2-${{ steps.xcode-ver.outputs.version }}-
+
+      - name: Install Carthage
+        run: brew install carthage
+
+      - name: Bootstrap Carthage dependencies
+        run: |
+          XCODE_XCCONFIG_FILE="$GITHUB_WORKSPACE/carthage_build.xcconfig" \
+            carthage bootstrap --use-xcframeworks --cache-builds --platform iOS

@@ -17,6 +17,12 @@ jobs:
   test:
     name: Test
     runs-on: macos-15
+    env:
+      # The Fastfile defaults the scan destination to "iPhone 17", which only
+      # exists on Xcode 26+. CI pins Xcode 16.4 (.xcode-version), whose newest
+      # simulator is "iPhone 16", so override the device so the destination
+      # resolves. Bump this in lockstep with .xcode-version.
+      GUARDIAN_SCAN_DEVICE: iPhone 16
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # pin@v7.0.1
@@ -49,6 +55,8 @@ jobs:
       - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # pin@v6.1.0
         with:
           path: Carthage/Build
+          # Only caches saved on master are shared with PRs, so cache.yml saves this
+          # one from master; a PR saving its own would only reach that PR's re-runs.
           # Scope the key to the Xcode version: prebuilt xcframeworks are tied to a
           # Swift/module ABI, so rehydrating a cache built with a different Xcode
           # (when .xcode-version bumps but Cartfile.resolved doesn't) causes module
@@ -68,6 +76,11 @@ jobs:
           brew install swiftlint
           brew install carthage
 
+      # Boot the simulator while Carthage bootstraps, instead of when the tests
+      # start (about 2 minutes of this job). Pins the scan destination to it.
+      - name: Boot the test simulator
+        run: .github/scripts/boot-simulator.sh
+
       # Bootstrap Carthage test deps (Quick/Nimble). --cache-builds
       # makes this a no-op when the cached xcframeworks are still valid, so it's
       # safe to run unconditionally; the cache step above provides the speed-up.
@@ -82,11 +95,6 @@ jobs:
         run: ./build.sh --buildType debug --lint --test --coverage --nobuild --skip-deps
         env:
           BUNDLE_PATH: vendor/bundle
-          # The Fastfile defaults the scan destination to "iPhone 17", which only
-          # exists on Xcode 26+. CI pins Xcode 16.4 (.xcode-version), whose newest
-          # simulator is "iPhone 16" — override the device so the destination
-          # resolves. Bump this in lockstep with .xcode-version.
-          GUARDIAN_SCAN_DEVICE: iPhone 16
 
       # Fallback: re-run the dashboard generator if the main step failed before
       # postbuild ran (e.g. a lint error). This attaches whatever partial reports exist.
