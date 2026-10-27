@@ -33,6 +33,11 @@ name: Release
 # ENVIRONMENT secret (not repo-wide, so only the publish job can read it, and only
 # after approval):
 #   COCOAPODS_TRUNK_TOKEN  trunk session token of a Guardian pod owner
+#
+# CocoaPods trunk becomes read-only on 2026-12-02. Until then every release also
+# goes to trunk. From then on, set the repository variable COCOAPODS_TRUNK_PUBLISH
+# to false: the trunk push and every trunk check are skipped, and a release is the
+# draft Release, the tag, the published Release and the SPM check (NAPP-184).
 
 # Manual runs carry the version in their title; the superseding logic below reads it back.
 run-name: ${{ github.event_name == 'workflow_dispatch' && format('Release {0} (manual)', inputs.version) || '' }}
@@ -49,6 +54,10 @@ on:
 
 permissions:
   contents: read
+
+env:
+  # "true" unless the repository variable COCOAPODS_TRUNK_PUBLISH is "false".
+  COCOAPODS_TRUNK: ${{ vars.COCOAPODS_TRUNK_PUBLISH != 'false' }}
 
 jobs:
 
@@ -184,6 +193,9 @@ jobs:
             echo "::error::Tag $VERSION already points at $tag_sha, so $VERSION is burned (SPM and Carthage may have resolved it). Release the next version instead."
             exit 1
           fi
+          if [[ "$COCOAPODS_TRUNK" != "true" ]]; then
+            exit 0
+          fi
           if ! versions="$(curl -sf https://trunk.cocoapods.org/api/v1/pods/Guardian)"; then
             echo "::error::Could not read the Guardian versions from CocoaPods trunk."
             exit 1
@@ -202,12 +214,14 @@ jobs:
           PR: ${{ steps.detect.outputs.pr }}
         run: |
           set -euo pipefail
+          channels="Swift Package Manager, Carthage"
+          [[ "$COCOAPODS_TRUNK" == "true" ]] && channels="CocoaPods, $channels"
           {
             echo "### Guardian.swift $VERSION is waiting for approval"
             echo
             echo "| | |"
             echo "|---|---|"
-            echo "| SDK | Guardian.swift (CocoaPods, Swift Package Manager, Carthage) |"
+            echo "| SDK | Guardian.swift ($channels) |"
             echo "| Version | $VERSION |"
             echo "| Commit | [\`${SHA:0:7}\`]($GITHUB_SERVER_URL/$REPO/commit/$SHA) |"
             echo "| Release PR | [#$PR]($GITHUB_SERVER_URL/$REPO/pull/$PR) |"
@@ -384,6 +398,7 @@ jobs:
       #   on trunk, Release published -> nothing to redo
       #   on trunk, Release a draft   -> only publish the draft (the push succeeded)
       #   anything else               -> create or reuse the draft and the tag, push
+      # With the trunk push switched off, a published Release means nothing to redo.
       - name: Preflight
         id: preflight
         run: |
@@ -414,6 +429,15 @@ jobs:
           fi
           echo "release_id=$release_id" >> "$GITHUB_OUTPUT"
           echo "state=$state" >> "$GITHUB_OUTPUT"
+          if [[ "$COCOAPODS_TRUNK" != "true" ]]; then
+            if [[ "$state" == "published" ]]; then
+              echo "::notice::$VERSION is already released from this commit; nothing to redo."
+              echo "action=skip" >> "$GITHUB_OUTPUT"
+            else
+              echo "action=publish" >> "$GITHUB_OUTPUT"
+            fi
+            exit 0
+          fi
           if ! versions="$(curl -sf https://trunk.cocoapods.org/api/v1/pods/Guardian)"; then
             echo "::error::Could not read the Guardian versions from CocoaPods trunk."
             exit 1
@@ -476,29 +500,29 @@ jobs:
           echo "Pushed tag $VERSION on $SHA."
 
       - name: Read Xcode version
-        if: steps.preflight.outputs.action == 'publish'
+        if: steps.preflight.outputs.action == 'publish' && env.COCOAPODS_TRUNK == 'true'
         id: xcode-ver
         run: echo "version=$(cat .xcode-version)" >> "$GITHUB_OUTPUT"
 
       - uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # pin@v1.7.0
-        if: steps.preflight.outputs.action == 'publish'
+        if: steps.preflight.outputs.action == 'publish' && env.COCOAPODS_TRUNK == 'true'
         with:
           xcode-version: ${{ steps.xcode-ver.outputs.version }}
 
       - uses: ruby/setup-ruby@14594264cd68ce8a2345dd349bc3d138a4ef85c8 # pin@v1
-        if: steps.preflight.outputs.action == 'publish'
+        if: steps.preflight.outputs.action == 'publish' && env.COCOAPODS_TRUNK == 'true'
         with:
           bundler: 'Gemfile.lock'
 
       - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # pin@v6.1.0
-        if: steps.preflight.outputs.action == 'publish'
+        if: steps.preflight.outputs.action == 'publish' && env.COCOAPODS_TRUNK == 'true'
         with:
           path: vendor/bundle
           key: bundle-v1-${{ hashFiles('Gemfile.lock') }}
           restore-keys: bundle-v1-
 
       - name: Install Ruby dependencies
-        if: steps.preflight.outputs.action == 'publish'
+        if: steps.preflight.outputs.action == 'publish' && env.COCOAPODS_TRUNK == 'true'
         run: bundle check || bundle install --jobs 4 --retry 3
         env:
           BUNDLE_PATH: vendor/bundle
@@ -507,7 +531,7 @@ jobs:
       # written to disk. Trunk validates the podspec against the tag pushed above.
       - name: Publish to CocoaPods trunk
         id: trunk
-        if: steps.preflight.outputs.action == 'publish'
+        if: steps.preflight.outputs.action == 'publish' && env.COCOAPODS_TRUNK == 'true'
         timeout-minutes: 30
         # The next step decides whether a failure here is real.
         continue-on-error: true
@@ -554,6 +578,7 @@ jobs:
         run: |
           set -euo pipefail
           for _ in $(seq 1 60); do
+            [[ "$COCOAPODS_TRUNK" == "true" ]] || break
             if curl -sf https://trunk.cocoapods.org/api/v1/pods/Guardian \
               | jq -e --arg v "$VERSION" 'any(.versions[]; .name == $v)' >/dev/null; then
               echo "$VERSION is listed on CocoaPods trunk."
@@ -561,7 +586,7 @@ jobs:
             fi
             sleep 10
           done
-          if ! curl -sf https://trunk.cocoapods.org/api/v1/pods/Guardian \
+          if [[ "$COCOAPODS_TRUNK" == "true" ]] && ! curl -sf https://trunk.cocoapods.org/api/v1/pods/Guardian \
             | jq -e --arg v "$VERSION" 'any(.versions[]; .name == $v)' >/dev/null; then
             echo "::error::$VERSION is not listed on CocoaPods trunk after 10 minutes."
             exit 1
@@ -583,5 +608,9 @@ jobs:
           {
             echo "### $VERSION released"
             echo
-            echo "On CocoaPods trunk (https://cocoapods.org/pods/Guardian) and tagged on $SHA, which SPM and Carthage resolve from."
+            if [[ "$COCOAPODS_TRUNK" == "true" ]]; then
+              echo "On CocoaPods trunk (https://cocoapods.org/pods/Guardian) and tagged on $SHA, which SPM and Carthage resolve from."
+            else
+              echo "Tagged on $SHA, which SPM and Carthage resolve from. CocoaPods trunk push is switched off (COCOAPODS_TRUNK_PUBLISH)."
+            fi
           } >> "$GITHUB_STEP_SUMMARY"

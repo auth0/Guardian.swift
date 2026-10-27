@@ -30,6 +30,11 @@ on:
 permissions:
   contents: read
 
+env:
+  # "true" unless the repository variable COCOAPODS_TRUNK_PUBLISH is "false" (set
+  # once CocoaPods trunk goes read-only on 2026-12-02; see release.yml).
+  COCOAPODS_TRUNK: ${{ vars.COCOAPODS_TRUNK_PUBLISH != 'false' }}
+
 concurrency:
   group: prepare-release-${{ inputs.version }}
   cancel-in-progress: false
@@ -70,13 +75,15 @@ jobs:
             exit 1
           fi
 
-          if ! versions="$(curl -sf https://trunk.cocoapods.org/api/v1/pods/Guardian)"; then
-            echo "::error::Could not read the Guardian versions from CocoaPods trunk."
-            exit 1
-          fi
-          if jq -e --arg v "$VERSION" 'any(.versions[]; .name == $v)' <<<"$versions" >/dev/null; then
-            echo "::error::$VERSION is already on CocoaPods trunk. Versions cannot be reused there; release the next version instead."
-            exit 1
+          if [[ "$COCOAPODS_TRUNK" == "true" ]]; then
+            if ! versions="$(curl -sf https://trunk.cocoapods.org/api/v1/pods/Guardian)"; then
+              echo "::error::Could not read the Guardian versions from CocoaPods trunk."
+              exit 1
+            fi
+            if jq -e --arg v "$VERSION" 'any(.versions[]; .name == $v)' <<<"$versions" >/dev/null; then
+              echo "::error::$VERSION is already on CocoaPods trunk. Versions cannot be reused there; release the next version instead."
+              exit 1
+            fi
           fi
           # Once the tag is pushed, SPM and Carthage can resolve it, so the version is burned.
           if git ls-remote --exit-code --tags origin "refs/tags/$VERSION" >/dev/null 2>&1; then
@@ -291,7 +298,7 @@ jobs:
   pod-lib-lint:
     name: Lint the podspec
     needs: prepare
-    if: needs.prepare.outputs.mode == 'release'
+    if: needs.prepare.outputs.mode == 'release' && vars.COCOAPODS_TRUNK_PUBLISH != 'false'
     runs-on: macos-15
     timeout-minutes: 30
     steps:
