@@ -21,7 +21,8 @@ let package = Package(
             name: "Guardian",
             dependencies: [],
             path: "Guardian",
-            exclude: ["Info.plist"]
+            exclude: ["Info.plist"],
+            resources: [.copy("PrivacyInfo.xcprivacy")]
         ),
         .testTarget(
             name: "GuardianTests",

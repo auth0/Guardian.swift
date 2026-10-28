@@ -18,5 +18,7 @@ Pod::Spec.new do |s|
   s.swift_version = '4.1'
 
   s.ios.source_files = 'Guardian/**/*.{swift,h,m}'
+  # Ships the privacy manifest to CocoaPods apps in a Guardian.bundle (SPM: resources in Package.swift).
+  s.resource_bundles = { s.name => 'Guardian/PrivacyInfo.xcprivacy' }
   s.ios.frameworks = 'UIKit'
 end
