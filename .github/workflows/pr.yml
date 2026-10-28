@@ -42,7 +42,7 @@ jobs:
 
       # ruby-version is read from .ruby-version automatically.
       # bundler: 'Gemfile.lock' installs the exact bundler version from BUNDLED WITH.
-      - uses: ruby/setup-ruby@14594264cd68ce8a2345dd349bc3d138a4ef85c8 # pin@v1
+      - uses: ruby/setup-ruby@7f797815d8adceb1c412e7abefdd1ab4abc47a5f # pin@v1
         with:
           bundler: 'Gemfile.lock'
 
@@ -110,7 +110,7 @@ jobs:
         env:
           BUNDLE_PATH: vendor/bundle
 
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # pin@v7.0.1
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # pin@v7.0.2
         if: always()
         with:
           name: reports
@@ -138,7 +138,7 @@ jobs:
         with:
           xcode-version: ${{ steps.xcode-ver.outputs.version }}
 
-      - uses: ruby/setup-ruby@14594264cd68ce8a2345dd349bc3d138a4ef85c8 # pin@v1
+      - uses: ruby/setup-ruby@7f797815d8adceb1c412e7abefdd1ab4abc47a5f # pin@v1
         with:
           bundler: 'Gemfile.lock'
 
