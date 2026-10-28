@@ -188,6 +188,22 @@ class GuardianSpec: QuickSpec {
                 }
             }
 
+            it("should fail when the device identifier is unavailable") {
+                let provider = EnrolledDevice.vendorIdentifierProvider
+                EnrolledDevice.vendorIdentifierProvider = { nil }
+                defer { EnrolledDevice.vendorIdentifierProvider = provider }
+                let signingKey = try! DataRSAPrivateKey(data: keys.privateKey)
+                let verificationKey = try! signingKey.verificationKey()
+                let request = Guardian
+                    .enroll(forDomain: Domain, usingTicket: ValidTransactionId, notificationToken: ValidNotificationToken, signingKey: signingKey, verificationKey: verificationKey)
+                waitUntil(timeout: Timeout) { done in
+                    request.start { result in
+                        expect(result).to(haveGuardianError(withErrorCode: "a0.guardian.internal.unavailable.device_identifier"))
+                        done()
+                    }
+                }
+            }
+
             it("should fail when public key is invalid") {
                 waitUntil(timeout: Timeout) { done in
                     Guardian
