@@ -311,6 +311,9 @@ jobs:
     env:
       # See pr.yml: the newest simulator on the pinned Xcode.
       GUARDIAN_SCAN_DEVICE: iPhone 16
+      # No update check or usage analytics: a few seconds per fastlane call in CI.
+      FASTLANE_SKIP_UPDATE_CHECK: "1"
+      FASTLANE_OPT_OUT_USAGE: "1"
     needs: validate-version
     if: needs.validate-version.outputs.release == 'true' && needs.validate-version.outputs.tested != 'true'
     runs-on: macos-15
@@ -348,6 +351,12 @@ jobs:
 
       - name: Install Ruby dependencies
         run: bundle check || bundle install --jobs 4 --retry 3
+        env:
+          BUNDLE_PATH: vendor/bundle
+
+      # See pr.yml: warm up Xcode and fastlane in the background.
+      - name: Warm up Xcode and fastlane
+        run: .github/scripts/warm-toolchain.sh
         env:
           BUNDLE_PATH: vendor/bundle
 

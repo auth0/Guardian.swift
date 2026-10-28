@@ -23,6 +23,9 @@ jobs:
       # simulator is "iPhone 16", so override the device so the destination
       # resolves. Bump this in lockstep with .xcode-version.
       GUARDIAN_SCAN_DEVICE: iPhone 16
+      # No update check or usage analytics: a few seconds per fastlane call in CI.
+      FASTLANE_SKIP_UPDATE_CHECK: "1"
+      FASTLANE_OPT_OUT_USAGE: "1"
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # pin@v7.0.1
@@ -67,6 +70,13 @@ jobs:
 
       - name: Install Ruby dependencies
         run: bundle check || bundle install --jobs 4 --retry 3
+        env:
+          BUNDLE_PATH: vendor/bundle
+
+      # Start Xcode and fastlane once in the background: their first launch on a
+      # fresh runner took about 2 minutes of this job. See the script.
+      - name: Warm up Xcode and fastlane
+        run: .github/scripts/warm-toolchain.sh
         env:
           BUNDLE_PATH: vendor/bundle
 
