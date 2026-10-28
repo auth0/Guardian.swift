@@ -354,11 +354,9 @@ jobs:
         env:
           BUNDLE_PATH: vendor/bundle
 
-      # See pr.yml: warm up Xcode and fastlane in the background.
-      - name: Warm up Xcode and fastlane
-        run: .github/scripts/warm-toolchain.sh
-        env:
-          BUNDLE_PATH: vendor/bundle
+      # See pr.yml: warm up Xcode in the background.
+      - name: Warm up Xcode
+        run: .github/scripts/warm-xcode.sh
 
       # See pr.yml: boot the simulator in the background during setup.
       - name: Boot the test simulator

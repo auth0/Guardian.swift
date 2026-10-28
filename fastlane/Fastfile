@@ -68,6 +68,9 @@ platform :ios do
       destination: SCAN_DESTINATION,
       skip_detect_devices: true,   # trust `destination`; skip the crashy auto-detection
       derived_data_path: "DerivedData",
+      # The project has no Swift packages (Quick and Nimble come from Carthage), so
+      # skip `xcodebuild -resolvePackageDependencies`: it took about 100 s in CI.
+      skip_package_dependencies_resolution: true,
       skip_slack: true,
       clean: true,
       code_coverage: true,
@@ -84,6 +87,9 @@ platform :ios do
       destination: SCAN_DESTINATION,
       skip_detect_devices: true,   # trust `destination`; skip the crashy auto-detection
       derived_data_path: "DerivedData",
+      # The project has no Swift packages (Quick and Nimble come from Carthage), so
+      # skip `xcodebuild -resolvePackageDependencies`: it took about 100 s in CI.
+      skip_package_dependencies_resolution: true,
       skip_slack: true,
       clean: true,
       code_coverage: true,

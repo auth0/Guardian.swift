@@ -73,12 +73,10 @@ jobs:
         env:
           BUNDLE_PATH: vendor/bundle
 
-      # Start Xcode and fastlane once in the background: their first launch on a
-      # fresh runner took about 2 minutes of this job. See the script.
-      - name: Warm up Xcode and fastlane
-        run: .github/scripts/warm-toolchain.sh
-        env:
-          BUNDLE_PATH: vendor/bundle
+      # Start Xcode once in the background: its first launch on a fresh runner
+      # took 1.5 to 2 minutes of this job. See the script.
+      - name: Warm up Xcode
+        run: .github/scripts/warm-xcode.sh
 
       # SwiftLint and Carthage are not guaranteed on macos-15 runners.
       # --skip-deps bypasses the brew installs in dependencies.sh, so do them here.
