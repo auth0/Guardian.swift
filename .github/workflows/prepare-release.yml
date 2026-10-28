@@ -6,15 +6,19 @@ name: Prepare release
 #
 # It creates release/X.Y.Z from master, sets .version, the four Info.plist versions
 # and the README install lines, drafts the CHANGELOG.md entry, commits all of it as ONE verified commit (created
-# through the GitHub API so GitHub signs it; a `git commit` here would be unsigned)
-# and opens the "Release X.Y.Z" PR. Review and edit the CHANGELOG entry on the PR,
-# then squash-merge it: the Release workflow (release.yml) starts on that merge.
-# A second job runs `pod lib lint` on the release branch, so a podspec or toolchain
-# problem shows up before anything is tagged.
+# through the GitHub API so GitHub signs it; a `git commit` here would be unsigned),
+# runs `pod lib lint` on the release branch, and only if it passes opens the
+# "Release X.Y.Z" PR. So a podspec or toolchain problem stops the release before
+# anyone reviews or merges it, and long before anything is tagged. Review and edit
+# the CHANGELOG entry on the PR, then squash-merge it: the Release workflow
+# (release.yml) starts on that merge.
+#
+# Jobs: prepare (branch and commit) -> pod-lib-lint -> open-pr.
 #
 # Re-running for the same version is safe:
 #   - open release PR for X.Y.Z   -> nothing to do, prints the PR
-#   - branch exists, no PR yet    -> finishes the commit and opens the PR
+#   - branch exists, no PR yet    -> finishes the commit, lints and opens the PR
+#     (also the way on after a failed lint: fix the podspec, then run it again)
 #   - release PR already merged   -> correction mode (until the tag is pushed): recreates release/X.Y.Z from
 #     master (the old branch was squash-merged, so a PR from it would show the old
 #     commits again) so a fix can go through a new PR before the version ships.
@@ -30,6 +34,11 @@ on:
 permissions:
   contents: read
 
+env:
+  # "true" unless the repository variable COCOAPODS_TRUNK_PUBLISH is "false" (set
+  # once CocoaPods trunk goes read-only on 2026-12-02; see release.yml).
+  COCOAPODS_TRUNK: ${{ vars.COCOAPODS_TRUNK_PUBLISH != 'false' }}
+
 concurrency:
   group: prepare-release-${{ inputs.version }}
   cancel-in-progress: false
@@ -43,8 +52,7 @@ jobs:
       mode: ${{ steps.plan.outputs.mode }}
     permissions:
       contents: write       # create the branch and the release commit
-      pull-requests: write  # open the release PR
-      actions: write        # approve the PR checks on the release PR (see the last step)
+      pull-requests: read   # find an open or merged release PR
     env:
       GH_TOKEN: ${{ github.token }}
       REPO: ${{ github.repository }}
@@ -70,13 +78,15 @@ jobs:
             exit 1
           fi
 
-          if ! versions="$(curl -sf https://trunk.cocoapods.org/api/v1/pods/Guardian)"; then
-            echo "::error::Could not read the Guardian versions from CocoaPods trunk."
-            exit 1
-          fi
-          if jq -e --arg v "$VERSION" 'any(.versions[]; .name == $v)' <<<"$versions" >/dev/null; then
-            echo "::error::$VERSION is already on CocoaPods trunk. Versions cannot be reused there; release the next version instead."
-            exit 1
+          if [[ "$COCOAPODS_TRUNK" == "true" ]]; then
+            if ! versions="$(curl -sf https://trunk.cocoapods.org/api/v1/pods/Guardian)"; then
+              echo "::error::Could not read the Guardian versions from CocoaPods trunk."
+              exit 1
+            fi
+            if jq -e --arg v "$VERSION" 'any(.versions[]; .name == $v)' <<<"$versions" >/dev/null; then
+              echo "::error::$VERSION is already on CocoaPods trunk. Versions cannot be reused there; release the next version instead."
+              exit 1
+            fi
           fi
           # Once the tag is pushed, SPM and Carthage can resolve it, so the version is burned.
           if git ls-remote --exit-code --tags origin "refs/tags/$VERSION" >/dev/null 2>&1; then
@@ -243,55 +253,12 @@ jobs:
           gh api -X PATCH "repos/$REPO/git/refs/heads/$BRANCH" -f sha="$commit" >/dev/null
           echo "Committed $commit to $BRANCH."
 
-      - name: Open the release PR
-        if: steps.plan.outputs.mode == 'release'
-        run: |
-          set -euo pipefail
-          body="$(cat <<EOF
-          Releases **${VERSION}**: sets \`.version\`, the Info.plist versions and the README install lines, and adds the CHANGELOG entry.
-
-          Before merging:
-          - Edit the CHANGELOG entry on this branch: group the bullets the way previous entries do (**Added**, **Fixed**, **Changed**), drop internal-only changes, check the date.
-          - Check that the Prepare release run's \`pod lib lint\` job passed.
-          - Squash-merge once checks are green and the PR is approved. The merge starts the Release workflow, which pauses for approval before anything is tagged or published.
-          EOF
-          )"
-          url="$(gh pr create --repo "$REPO" --base master --head "$BRANCH" --title "Release $VERSION" --body "$body")"
-          echo "Opened $url"
-          echo "### Release PR: $url" >> "$GITHUB_STEP_SUMMARY"
-
-      # GitHub holds the PR checks of a PR opened by github-actions[bot] at "Approval
-      # required". Approve that run so the checks show on the PR. (Starting pr.yml with
-      # workflow_dispatch instead runs the tests, but GitHub does not show the result
-      # on the PR.) Later pushes to the branch trigger pr.yml as usual.
-      - name: Start the PR checks
-        if: steps.plan.outputs.mode == 'release'
-        run: |
-          set -euo pipefail
-          sha="$(gh api "repos/$REPO/git/ref/heads/$BRANCH" --jq .object.sha)"
-          for _ in $(seq 1 20); do
-            runs="$(gh api "repos/$REPO/actions/workflows/pr.yml/runs?event=pull_request&head_sha=$sha" \
-              --jq '[.workflow_runs[] | {id, conclusion}]')"
-            held="$(jq -r '[.[] | select(.conclusion == "action_required")][0].id // ""' <<<"$runs")"
-            if [[ -n "$held" ]]; then
-              gh api -X POST "repos/$REPO/actions/runs/$held/approve" >/dev/null
-              echo "Approved the PR checks (run $held)."
-              exit 0
-            fi
-            if [[ "$(jq length <<<"$runs")" != "0" ]]; then
-              echo "The PR checks are already running."
-              exit 0
-            fi
-            sleep 3
-          done
-          echo "::warning::No PR check run appeared for $BRANCH. Close and reopen the release PR to start the checks."
-
   # Trunk validates the podspec on publish and has no staging, so lint it now on the
-  # release branch. Informational: the result is on this run, not on the PR.
+  # release branch, before the PR exists: a failure leaves the branch without a PR.
   pod-lib-lint:
     name: Lint the podspec
     needs: prepare
-    if: needs.prepare.outputs.mode == 'release'
+    if: needs.prepare.outputs.mode == 'release' && vars.COCOAPODS_TRUNK_PUBLISH != 'false'
     runs-on: macos-15
     timeout-minutes: 30
     steps:
@@ -313,3 +280,76 @@ jobs:
 
       - name: pod lib lint
         run: bundle exec pod lib lint Guardian.podspec --allow-warnings
+
+      - name: Explain a failed lint
+        if: failure()
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          echo "::error::pod lib lint failed on release/$VERSION, so no release PR was opened. Fix the podspec or toolchain problem on master (or push the fix to release/$VERSION), then run Prepare release again for $VERSION: it lints the branch again and opens the PR."
+
+  # Opens the PR once the branch is ready: after the lint passed, or straight away
+  # when the trunk push is switched off and the lint is skipped.
+  open-pr:
+    name: Open the release PR
+    needs: [prepare, pod-lib-lint]
+    if: >-
+      always() && needs.prepare.result == 'success' && needs.prepare.outputs.mode == 'release' &&
+      (needs.pod-lib-lint.result == 'success' || needs.pod-lib-lint.result == 'skipped')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: write  # open the release PR
+      actions: write        # approve the PR checks on the release PR (see the last step)
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+      VERSION: ${{ inputs.version }}
+      BRANCH: release/${{ inputs.version }}
+      LINTED: ${{ needs.pod-lib-lint.result == 'success' }}
+    steps:
+      - name: Open the release PR
+        run: |
+          set -euo pipefail
+          lint_note="The CocoaPods trunk push is switched off, so the podspec was not linted."
+          if [[ "$LINTED" == "true" ]]; then
+            lint_note="\`pod lib lint\` passed on this branch before this PR was opened."
+          fi
+          body="$(cat <<EOF
+          Releases **${VERSION}**: sets \`.version\`, the Info.plist versions and the README install lines, and adds the CHANGELOG entry.
+
+          Before merging:
+          - Edit the CHANGELOG entry on this branch: group the bullets the way previous entries do (**Added**, **Fixed**, **Changed**), drop internal-only changes, check the date.
+          - ${lint_note}
+          - Squash-merge once checks are green and the PR is approved. The merge starts the Release workflow, which pauses for approval before anything is tagged or published.
+          EOF
+          )"
+          url="$(gh pr create --repo "$REPO" --base master --head "$BRANCH" --title "Release $VERSION" --body "$body")"
+          echo "Opened $url"
+          echo "### Release PR: $url" >> "$GITHUB_STEP_SUMMARY"
+
+      # GitHub holds the PR checks of a PR opened by github-actions[bot] at "Approval
+      # required". Approve that run so the checks show on the PR. (Starting pr.yml with
+      # workflow_dispatch instead runs the tests, but GitHub does not show the result
+      # on the PR.) Later pushes to the branch trigger pr.yml as usual.
+      - name: Start the PR checks
+        run: |
+          set -euo pipefail
+          sha="$(gh api "repos/$REPO/git/ref/heads/$BRANCH" --jq .object.sha)"
+          for _ in $(seq 1 20); do
+            runs="$(gh api "repos/$REPO/actions/workflows/pr.yml/runs?event=pull_request&head_sha=$sha" \
+              --jq '[.workflow_runs[] | {id, conclusion}]')"
+            held="$(jq -r '[.[] | select(.conclusion == "action_required")][0].id // ""' <<<"$runs")"
+            if [[ -n "$held" ]]; then
+              gh api -X POST "repos/$REPO/actions/runs/$held/approve" >/dev/null
+              echo "Approved the PR checks (run $held)."
+              exit 0
+            fi
+            if [[ "$(jq length <<<"$runs")" != "0" ]]; then
+              echo "The PR checks are already running."
+              exit 0
+            fi
+            sleep 3
+          done
+          echo "::warning::No PR check run appeared for $BRANCH. Close and reopen the release PR to start the checks."
