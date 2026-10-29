@@ -1,4 +1,5 @@
-version = `agvtool mvers -terse1`.strip
+# .version is the single source of the release version (set by Prepare release).
+version = File.read(File.join(__dir__, '.version')).strip
 Pod::Spec.new do |s|
   s.name             = 'Guardian'
   s.version          = version
@@ -12,10 +13,12 @@ Pod::Spec.new do |s|
   s.source           = { :git => 'https://github.com/auth0/Guardian.swift.git', :tag => s.version.to_s }
   s.social_media_url = 'https://twitter.com/auth0'
 
-  s.ios.deployment_target = '10.0'
+  s.ios.deployment_target = '15.0'
   s.requires_arc = true
-  s.swift_version = '4.1'
+  s.swift_versions = ['5.0']
 
   s.ios.source_files = 'Guardian/**/*.{swift,h,m}'
+  # Ships the privacy manifest to CocoaPods apps in a Guardian.bundle (SPM: resources in Package.swift).
+  s.resource_bundles = { s.name => 'Guardian/PrivacyInfo.xcprivacy' }
   s.ios.frameworks = 'UIKit'
 end

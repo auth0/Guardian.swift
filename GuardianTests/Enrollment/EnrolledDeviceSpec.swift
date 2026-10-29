@@ -22,7 +22,7 @@
 
 import Quick
 import Nimble
-import Guardian
+@testable import Guardian
 
 class EnrolledDeviceSpec: QuickSpec {
 
@@ -42,6 +42,23 @@ class EnrolledDeviceSpec: QuickSpec {
 
             it("should return vendor identifier") {
                 expect(device.localIdentifier).to(equal(UIDevice.current.identifierForVendor?.uuidString))
+            }
+
+            context("when identifierForVendor is unavailable") {
+
+                let provider = EnrolledDevice.vendorIdentifierProvider
+
+                beforeEach {
+                    EnrolledDevice.vendorIdentifierProvider = { nil }
+                }
+
+                afterEach {
+                    EnrolledDevice.vendorIdentifierProvider = provider
+                }
+
+                it("should return an empty identifier instead of crashing") {
+                    expect(device.localIdentifier).to(beEmpty())
+                }
             }
         }
     }

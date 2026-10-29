@@ -50,20 +50,34 @@ class JWTSpec: QuickSpec {
 
                     let jwt = try? JWT(claimSet: TestClaimSet(field: "value"), key: signingKey.secKey)
 
-                    it("should match hardcoded jwt") {
-                        expect(jwt?.string).to(equal(aToken))
+                    // NOTE: we deliberately do NOT assert against a hardcoded token
+                    // string here. The header is Codable-encoded with a plain
+                    // JSONEncoder, whose key order is unspecified and varies per
+                    // process on newer Foundation (Xcode 26+). Since the signature is
+                    // computed over the exact header/claims bytes, the full token
+                    // string (and signature) differs run-to-run even though every one
+                    // is a valid JWT. We assert the invariants that actually matter:
+                    // the decoded header fields, that it round-trips, and that it
+                    // verifies with the matching key.
+                    it("should produce a jwt that round-trips and verifies") {
+                        expect {
+                            let parsed: JWT<TestClaimSet>? = try? JWT(string: jwt!.string)
+                            return try parsed?.verify(with: verificationKey.secKey)
+                        }.to(beTrue())
                     }
 
-                    it("should match header part") {
-                        expect(jwt?.parts[0]).to(equal("eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9"))
+                    it("should decode to the expected header fields") {
+                        expect(jwt?.header.type).to(equal("JWT"))
+                        expect(jwt?.header.algorithm).to(equal(.rs256))
                     }
 
                     it("should match claims part") {
                         expect(jwt?.parts[1]).to(equal("eyJmaWVsZCI6InZhbHVlIn0"))
                     }
 
-                    it("should match signature part") {
-                        expect(jwt?.parts[2]).to(equal("eBuXdca1vVkJKG8af4TAkokhFU_xnflc7Cx1FyIEQksS5sqsVxFTV_LTgytJCHJUlLCHzcUzTrNLJCNM8-yN0ft274fcuM3MsbQJIsPKyhoZKqu9TLRqeBJNm984shcGaXIb-Get7tsUU-riYf2V5kIHNj6q0Dn46VG8yzdWagCOOryU2kk5Ohdkytk-LHDSsrGWqRYv4eT6y_WGYuMK7NJISMMl9Q-pkwcFo3D3wa2QUMoVsKvlIe4GV9YTP5HHizSaQGENClpvvtoGpgCRE1j44a1hj6CN-p5ZnFxVf98o0ntiJcUo6DTKufb7JGzyFq0HyZoXiIKFMpRjw7Od0A"))
+                    it("should produce a signature that verifies with the matching key") {
+                        expect(jwt?.signature).toNot(beEmpty())
+                        expect(try? jwt?.verify(with: verificationKey.secKey)).to(beTrue())
                     }
 
                     it("should verify successfuly with correct key") {

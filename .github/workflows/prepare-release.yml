@@ -1,0 +1,355 @@
+name: Prepare release
+
+# Step 1 of a release (see the Guardian SDK Release Guide on Confluence, AA1 1156121307).
+# Start it from the Actions tab (Prepare release, Run workflow, branch master) with
+# the version to ship.
+#
+# It creates release/X.Y.Z from master, sets .version, the four Info.plist versions
+# and the README install lines, drafts the CHANGELOG.md entry, commits all of it as ONE verified commit (created
+# through the GitHub API so GitHub signs it; a `git commit` here would be unsigned),
+# runs `pod lib lint` on the release branch, and only if it passes opens the
+# "Release X.Y.Z" PR. So a podspec or toolchain problem stops the release before
+# anyone reviews or merges it, and long before anything is tagged. Review and edit
+# the CHANGELOG entry on the PR, then squash-merge it: the Release workflow
+# (release.yml) starts on that merge.
+#
+# Jobs: prepare (branch and commit) -> pod-lib-lint -> open-pr.
+#
+# Re-running for the same version is safe:
+#   - open release PR for X.Y.Z   -> nothing to do, prints the PR
+#   - branch exists, no PR yet    -> finishes the commit, lints and opens the PR
+#     (also the way on after a failed lint: fix the podspec, then run it again)
+#   - release PR already merged   -> correction mode (until the tag is pushed): recreates release/X.Y.Z from
+#     master (the old branch was squash-merged, so a PR from it would show the old
+#     commits again) so a fix can go through a new PR before the version ships.
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to release (X.Y.Z, no v prefix)"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  # "true" unless the repository variable COCOAPODS_TRUNK_PUBLISH is "false" (set
+  # once CocoaPods trunk goes read-only on 2026-12-02; see release.yml).
+  COCOAPODS_TRUNK: ${{ vars.COCOAPODS_TRUNK_PUBLISH != 'false' }}
+
+concurrency:
+  group: prepare-release-${{ inputs.version }}
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    name: Prepare release
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      mode: ${{ steps.plan.outputs.mode }}
+    permissions:
+      contents: write       # create the branch and the release commit
+      pull-requests: read   # find an open or merged release PR
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+      VERSION: ${{ inputs.version }}
+      BRANCH: release/${{ inputs.version }}
+    steps:
+      - name: Require master
+        if: github.ref != 'refs/heads/master'
+        run: |
+          echo "::error::Run Prepare release on master (it ran on ${GITHUB_REF_NAME})."
+          exit 1
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # pin@v7.0.1
+        with:
+          fetch-depth: 0  # all tags, for the latest-version check and the changelog range
+
+      - name: Validate version and work out what to do
+        id: plan
+        run: |
+          set -euo pipefail
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::'$VERSION' is not X.Y.Z."
+            exit 1
+          fi
+
+          if [[ "$COCOAPODS_TRUNK" == "true" ]]; then
+            if ! versions="$(curl -sf https://trunk.cocoapods.org/api/v1/pods/Guardian)"; then
+              echo "::error::Could not read the Guardian versions from CocoaPods trunk."
+              exit 1
+            fi
+            if jq -e --arg v "$VERSION" 'any(.versions[]; .name == $v)' <<<"$versions" >/dev/null; then
+              echo "::error::$VERSION is already on CocoaPods trunk. Versions cannot be reused there; release the next version instead."
+              exit 1
+            fi
+          fi
+          # Once the tag is pushed, SPM and Carthage can resolve it, so the version is burned.
+          if git ls-remote --exit-code --tags origin "refs/tags/$VERSION" >/dev/null 2>&1; then
+            echo "::error::Tag $VERSION already exists, so $VERSION is burned (SPM and Carthage may have resolved it). Release the next version instead."
+            exit 1
+          fi
+
+          latest="$(git tag -l | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1 || true)"
+          echo "latest=$latest" >> "$GITHUB_OUTPUT"
+
+          open_pr="$(gh pr list --repo "$REPO" --head "$BRANCH" --base master --state open --json url --jq '.[0].url // ""')"
+          if [[ -n "$open_pr" ]]; then
+            echo "Release PR for $VERSION is already open: $open_pr"
+            echo "mode=done" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          merged_pr="$(gh pr list --repo "$REPO" --head "$BRANCH" --base master --state merged --json url --jq '.[0].url // ""')"
+          if [[ -n "$merged_pr" ]]; then
+            echo "The release PR for $VERSION was already merged ($merged_pr) and $VERSION is not tagged yet: correction mode."
+            echo "mode=correction" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # A fresh release: the version must be new everywhere and higher than the last one.
+          if gh release view "$VERSION" --repo "$REPO" >/dev/null 2>&1; then
+            echo "::error::A GitHub Release $VERSION already exists."
+            exit 1
+          fi
+          if [[ -n "$latest" ]]; then
+            highest="$(printf '%s\n%s\n' "$latest" "$VERSION" | sort -V | tail -1)"
+            if [[ "$VERSION" == "$latest" || "$highest" != "$VERSION" ]]; then
+              echo "::error::$VERSION is not higher than the latest release, $latest."
+              exit 1
+            fi
+          fi
+          echo "mode=release" >> "$GITHUB_OUTPUT"
+
+      # Correction mode: point release/X.Y.Z at master's head (create it if it was
+      # deleted after the merge). Nothing to commit: master already carries the
+      # version files and the CHANGELOG entry, so the fix goes on the branch next.
+      - name: Recreate the release branch from master (correction mode)
+        if: steps.plan.outputs.mode == 'correction'
+        run: |
+          set -euo pipefail
+          head="$(git rev-parse origin/master)"
+          if gh api "repos/$REPO/git/ref/heads/$BRANCH" >/dev/null 2>&1; then
+            gh api -X PATCH "repos/$REPO/git/refs/heads/$BRANCH" -f sha="$head" -F force=true >/dev/null
+          else
+            gh api "repos/$REPO/git/refs" -f ref="refs/heads/$BRANCH" -f sha="$head" >/dev/null
+          fi
+          {
+            echo "### $BRANCH recreated from master"
+            echo
+            echo "Push the fix (and any CHANGELOG correction) to \`$BRANCH\`, open a PR into master and merge it."
+            echo "The merge starts a new Release run for $VERSION, which cancels the older run if it has not started publishing."
+            echo "Do not approve the older run in the meantime."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Create the release branch
+        if: steps.plan.outputs.mode == 'release'
+        run: |
+          set -euo pipefail
+          if gh api "repos/$REPO/git/ref/heads/$BRANCH" >/dev/null 2>&1; then
+            echo "$BRANCH already exists; reusing it."
+          else
+            gh api "repos/$REPO/git/refs" -f ref="refs/heads/$BRANCH" -f sha="$(git rev-parse origin/master)" >/dev/null
+            echo "Created $BRANCH from master."
+          fi
+          git fetch origin "$BRANCH"
+          git checkout -B "$BRANCH" "origin/$BRANCH"
+
+      - name: Set the version files
+        if: steps.plan.outputs.mode == 'release'
+        run: |
+          set -euo pipefail
+          echo "$VERSION" > .version
+          for plist in Guardian/Info.plist GuardianTests/Info.plist GuardianTestHost/Info.plist GuardianApp/GuardianApp/Info.plist; do
+            # The value is on the line after the key.
+            sed -E -i "/<key>CFBundleShortVersionString<\/key>/{n;s|<string>[^<]*</string>|<string>${VERSION}</string>|;}" "$plist"
+            if ! grep -A1 "<key>CFBundleShortVersionString</key>" "$plist" | grep -qF "<string>${VERSION}</string>"; then
+              echo "::error::Could not set CFBundleShortVersionString in $plist."
+              exit 1
+            fi
+          done
+          sed -E -i \
+            -e "s/(pod 'Guardian', '~> )[0-9]+\.[0-9]+\.[0-9]+'/\1${VERSION}'/" \
+            -e "s/(github \"auth0\/Guardian\.swift\" ~> )[0-9]+\.[0-9]+\.[0-9]+/\1${VERSION}/" README.md
+          if ! grep -qF "pod 'Guardian', '~> ${VERSION}'" README.md || ! grep -qF "github \"auth0/Guardian.swift\" ~> ${VERSION}" README.md; then
+            echo "::error::Could not find the CocoaPods and Carthage install lines in README.md."
+            exit 1
+          fi
+
+      # Drafts the entry in the existing CHANGELOG format from the PRs merged since
+      # the previous tag. PR titles are untrusted text, so they only ever pass through
+      # files and Python, never through the shell.
+      - name: Draft the CHANGELOG entry
+        if: steps.plan.outputs.mode == 'release'
+        env:
+          LATEST: ${{ steps.plan.outputs.latest }}
+        run: |
+          set -euo pipefail
+          if grep -qF "## [${VERSION}](" CHANGELOG.md; then
+            echo "CHANGELOG.md already has an entry for $VERSION; keeping it."
+            exit 0
+          fi
+          args=(-f tag_name="$VERSION" -f target_commitish=master)
+          [[ -n "$LATEST" ]] && args+=(-f previous_tag_name="$LATEST")
+          gh api "repos/$REPO/releases/generate-notes" "${args[@]}" --jq '.body' > /tmp/notes.md
+          python3 - <<'PY'
+          import datetime, os, re
+
+          version, latest, repo = os.environ["VERSION"], os.environ["LATEST"], os.environ["REPO"]
+          bullets = []
+          for line in open("/tmp/notes.md", encoding="utf-8"):
+              line = line.rstrip("\n")
+              if line.startswith("## New Contributors") or line.startswith("**Full Changelog**"):
+                  break
+              m = re.match(r"^\* (.+) by @\S+ in (https://\S+/pull/\d+)$", line)
+              if m:
+                  bullets.append(f"- {m.group(1)} (see [PR]({m.group(2)}))")
+          if not bullets:
+              bullets = ["- TODO: describe the changes in this release"]
+
+          date = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d")
+          entry = [f"## [{version}](https://github.com/{repo}/tree/{version}) ({date})"]
+          if latest:
+              entry.append(f"[Full Changelog](https://github.com/{repo}/compare/{latest}...{version})")
+          entry += ["", "**Changed**", *bullets, ""]
+
+          with open("CHANGELOG.md", encoding="utf-8") as f:
+              lines = f.read().split("\n")
+          # Keep the "# Change Log" title and insert the new entry above the newest one.
+          at = next((i for i, l in enumerate(lines) if l.startswith("## ")), len(lines))
+          with open("CHANGELOG.md", "w", encoding="utf-8") as f:
+              f.write("\n".join(lines[:at] + entry + lines[at:]))
+          PY
+
+      # One commit through the Git Data API (blobs, tree, commit, ref update). No
+      # author or committer is passed, so GitHub signs it and it shows as Verified.
+      - name: Commit as one verified commit
+        if: steps.plan.outputs.mode == 'release'
+        run: |
+          set -euo pipefail
+          files=(.version Guardian/Info.plist GuardianTests/Info.plist GuardianTestHost/Info.plist GuardianApp/GuardianApp/Info.plist README.md CHANGELOG.md)
+          if git diff --quiet -- "${files[@]}"; then
+            echo "Version files and CHANGELOG are already up to date on $BRANCH."
+            exit 0
+          fi
+          parent="$(git rev-parse HEAD)"
+          base_tree="$(git rev-parse 'HEAD^{tree}')"
+          entries='[]'
+          for f in "${files[@]}"; do
+            git diff --quiet -- "$f" && continue
+            blob="$(base64 -w0 "$f" | jq -Rs '{content: ., encoding: "base64"}' \
+              | gh api "repos/$REPO/git/blobs" --input - --jq .sha)"
+            entries="$(jq -c --arg p "$f" --arg s "$blob" '. + [{path: $p, mode: "100644", type: "blob", sha: $s}]' <<<"$entries")"
+          done
+          tree="$(jq -n --arg b "$base_tree" --argjson t "$entries" '{base_tree: $b, tree: $t}' \
+            | gh api "repos/$REPO/git/trees" --input - --jq .sha)"
+          commit="$(jq -n --arg m "Release $VERSION" --arg t "$tree" --arg p "$parent" '{message: $m, tree: $t, parents: [$p]}' \
+            | gh api "repos/$REPO/git/commits" --input - --jq .sha)"
+          # Not forced: if someone pushed to the branch meanwhile, fail rather than drop their work.
+          gh api -X PATCH "repos/$REPO/git/refs/heads/$BRANCH" -f sha="$commit" >/dev/null
+          echo "Committed $commit to $BRANCH."
+
+  # Trunk validates the podspec on publish and has no staging, so lint it now on the
+  # release branch, before the PR exists: a failure leaves the branch without a PR.
+  pod-lib-lint:
+    name: Lint the podspec
+    needs: prepare
+    if: needs.prepare.outputs.mode == 'release' && vars.COCOAPODS_TRUNK_PUBLISH != 'false'
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # pin@v7.0.1
+        with:
+          ref: release/${{ inputs.version }}
+
+      - name: Read Xcode version
+        id: xcode-ver
+        run: echo "version=$(cat .xcode-version)" >> "$GITHUB_OUTPUT"
+
+      - uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # pin@v1.7.0
+        with:
+          xcode-version: ${{ steps.xcode-ver.outputs.version }}
+
+      - uses: ruby/setup-ruby@7f797815d8adceb1c412e7abefdd1ab4abc47a5f # pin@v1
+        with:
+          bundler-cache: true
+
+      - name: pod lib lint
+        run: bundle exec pod lib lint Guardian.podspec --allow-warnings
+
+      - name: Explain a failed lint
+        if: failure()
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          echo "::error::pod lib lint failed on release/$VERSION, so no release PR was opened. Fix the podspec or toolchain problem on master (or push the fix to release/$VERSION), then run Prepare release again for $VERSION: it lints the branch again and opens the PR."
+
+  # Opens the PR once the branch is ready: after the lint passed, or straight away
+  # when the trunk push is switched off and the lint is skipped.
+  open-pr:
+    name: Open the release PR
+    needs: [prepare, pod-lib-lint]
+    if: >-
+      always() && needs.prepare.result == 'success' && needs.prepare.outputs.mode == 'release' &&
+      (needs.pod-lib-lint.result == 'success' || needs.pod-lib-lint.result == 'skipped')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: write  # open the release PR
+      actions: write        # approve the PR checks on the release PR (see the last step)
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+      VERSION: ${{ inputs.version }}
+      BRANCH: release/${{ inputs.version }}
+      LINTED: ${{ needs.pod-lib-lint.result == 'success' }}
+    steps:
+      - name: Open the release PR
+        run: |
+          set -euo pipefail
+          lint_note="The CocoaPods trunk push is switched off, so the podspec was not linted."
+          if [[ "$LINTED" == "true" ]]; then
+            lint_note="\`pod lib lint\` passed on this branch before this PR was opened."
+          fi
+          body="$(cat <<EOF
+          Releases **${VERSION}**: sets \`.version\`, the Info.plist versions and the README install lines, and adds the CHANGELOG entry.
+
+          Before merging:
+          - Edit the CHANGELOG entry on this branch: group the bullets the way previous entries do (**Added**, **Fixed**, **Changed**), drop internal-only changes, check the date.
+          - ${lint_note}
+          - Squash-merge once checks are green and the PR is approved. The merge starts the Release workflow, which pauses for approval before anything is tagged or published.
+          EOF
+          )"
+          url="$(gh pr create --repo "$REPO" --base master --head "$BRANCH" --title "Release $VERSION" --body "$body")"
+          echo "Opened $url"
+          echo "### Release PR: $url" >> "$GITHUB_STEP_SUMMARY"
+
+      # GitHub holds the PR checks of a PR opened by github-actions[bot] at "Approval
+      # required". Approve that run so the checks show on the PR. (Starting pr.yml with
+      # workflow_dispatch instead runs the tests, but GitHub does not show the result
+      # on the PR.) Later pushes to the branch trigger pr.yml as usual.
+      - name: Start the PR checks
+        run: |
+          set -euo pipefail
+          sha="$(gh api "repos/$REPO/git/ref/heads/$BRANCH" --jq .object.sha)"
+          for _ in $(seq 1 20); do
+            runs="$(gh api "repos/$REPO/actions/workflows/pr.yml/runs?event=pull_request&head_sha=$sha" \
+              --jq '[.workflow_runs[] | {id, conclusion}]')"
+            held="$(jq -r '[.[] | select(.conclusion == "action_required")][0].id // ""' <<<"$runs")"
+            if [[ -n "$held" ]]; then
+              gh api -X POST "repos/$REPO/actions/runs/$held/approve" >/dev/null
+              echo "Approved the PR checks (run $held)."
+              exit 0
+            fi
+            if [[ "$(jq length <<<"$runs")" != "0" ]]; then
+              echo "The PR checks are already running."
+              exit 0
+            fi
+            sleep 3
+          done
+          echo "::warning::No PR check run appeared for $BRANCH. Close and reopen the release PR to start the checks."

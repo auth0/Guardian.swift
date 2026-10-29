@@ -1,6 +1,6 @@
 # Guardian.swift (iOS)
 
-[![CircleCI](https://img.shields.io/circleci/project/github/auth0/Guardian.swift.svg?style=flat-square)](https://circleci.com/gh/auth0/Guardian.swift)
+[![PR](https://img.shields.io/github/actions/workflow/status/auth0/Guardian.swift/pr.yml?branch=master&style=flat-square)](https://github.com/auth0/Guardian.swift/actions/workflows/pr.yml)
 [![Coverage Status](https://img.shields.io/codecov/c/github/auth0/Guardian.swift/master.svg?style=flat-square)](https://codecov.io/github/auth0/Guardian.swift)
 [![Version](https://img.shields.io/cocoapods/v/Guardian.svg?style=flat-square)](http://cocoadocs.org/docsets/Guardian)
 [![License](https://img.shields.io/cocoapods/l/Guardian.svg?style=flat-square)](http://cocoadocs.org/docsets/Guardian)
@@ -20,7 +20,7 @@ multi-factor authentication from your app.
 
 ## Requirements
 
-iOS 12+ and Swift 5 is required in order to use Guardian.
+iOS 15+ and Swift 5 is required in order to use Guardian. Apps that still support iOS 12 to 14 can stay on 1.10.0.
 
 ## Before getting started
 
@@ -36,7 +36,7 @@ Guardian.swift is available through [CocoaPods](http://cocoapods.org).
 To install it, simply add the following line to your Podfile:
 
 ```ruby
-pod 'Guardian', '~> 1.7.0'
+pod 'Guardian', '~> 1.10.0'
 ```
 
 #### Carthage
@@ -44,7 +44,7 @@ pod 'Guardian', '~> 1.7.0'
 In your Cartfile add this line
 
 ```
-github "auth0/Guardian.swift" ~> 1.7.0
+github "auth0/Guardian.swift" ~> 1.10.0
 ```
 
 #### Swift Package Manager
@@ -292,6 +292,41 @@ Guardian
             }
         }
 ```
+
+## Sample app
+
+`GuardianApp/GuardianApp.xcodeproj` is a small app that enrolls a device, shows push login requests and lets you allow or deny them. It consumes this repository's `Package.swift` as a local Swift package, so it always builds against the SDK sources in your checkout and needs no Carthage bootstrap.
+
+### Run it on the Simulator
+
+1. Open `GuardianApp/GuardianApp.xcodeproj` and run the `GuardianApp` scheme on an iOS 15+ Simulator. No development team is needed: Simulator builds are signed to run locally.
+2. Allow notifications when prompted. The app logs the tenant it uses (`Guardian tenant: ...`) and the push token (`DEVICE TOKEN = ...`) to the console.
+3. Tap **Enroll**. The Simulator has no camera, so the app asks you to paste the enrollment link instead; paste the `otpauth://` link encoded in the enrollment QR code shown by the tenant.
+
+On a physical device, set your own team (`DEVELOPMENT_TEAM`) in the target's Signing settings and change the bundle identifier if needed; the QR code is then scanned with the camera.
+
+### Point it at a test tenant
+
+The sample reads its tenant from `GuardianApp/GuardianApp/Guardian.plist`, which points at `https://guardian-demo.us.auth0.com`. To use another tenant, either:
+
+- set `Domain` in `Guardian.plist` to your tenant, e.g. `https://your-tenant.us.auth0.com`
+- or override it for one run with a launch argument, which takes precedence: add `-GuardianTenantDomain https://your-tenant.us.auth0.com` under the scheme's Run > Arguments, or launch with `xcrun simctl launch booted com.auth0.guardian.sample -GuardianTenantDomain https://your-tenant.us.auth0.com`
+
+All Guardian SDK calls the sample makes live in `GuardianApp/GuardianApp/GuardianService.swift`, one function per section of this README.
+
+For push login requests to reach the app, the tenant's Guardian push notifications must be configured with APNs credentials for the sample's bundle identifier (`com.auth0.guardian.sample`, development environment).
+
+### UI test identifiers
+
+The controls carry accessibility identifiers so UI-driven integration tests can locate them:
+
+| Screen | Identifiers |
+|---|---|
+| Main | `enroll.button`, `unenroll.button`, `enrollment.identifier.label`, `enrollment.secret.label`, `enrollment.totp.label` |
+| QR scanner | `qrScanner.camera`, `qrScanner.cancel.button`, and `enrollmentUri.textField` in the paste-link prompt |
+| Login request | `notification.allow.button`, `notification.deny.button`, `notification.browser.label`, `notification.location.label`, `notification.date.label`, `notification.bindingMessage.label` |
+
+The PR workflow builds the sample (`bundle exec fastlane ios build_sample`), so a change that breaks it fails CI.
 
 ## What is Auth0?
 

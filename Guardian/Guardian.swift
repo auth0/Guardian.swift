@@ -407,7 +407,7 @@ public func consent(forDomain domain: String, telemetryInfo: Auth0TelemetryInfo?
     .consent(url: URL(string: "https://<tenant>.<region>.auth0.com/")!)
  ```
 
- - parameter url:           URL of your Guardian server
+ - parameter url:                 URL of your Guardian server
  - parameter telemetryInfo:       information about the app, used for internal auth0 analytics purposes
 
 

@@ -1,4 +1,4 @@
-// ModelsSpec.swift
+// JSON.swift
 //
 // Copyright (c) 2025 Auth0 (http://auth0.com)
 //

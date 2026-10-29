@@ -1,5 +1,34 @@
 # Change Log
 
+## [1.10.0](https://github.com/auth0/Guardian.swift/tree/1.10.0) (2026-10-22)
+[Full Changelog](https://github.com/auth0/Guardian.swift/compare/1.9.2...1.10.0)
+
+**Changed**
+- Bring the 1.9.1 and 1.9.2 consent changes to master: rich consent transactions with no binding message or no scope in the consent details are supported, `ConsentRequestedDetails.bindingMessage` is now `String?` and `scope` defaults to an empty array, so code upgrading from 1.9.0 that reads `bindingMessage` as a non-optional `String` needs updating (see [PR](https://github.com/auth0/Guardian.swift/pull/161) and [PR](https://github.com/auth0/Guardian.swift/pull/163))
+- The sample app (GuardianApp) builds again as its own project using the SDK as a local Swift package, and is now a developer reference with every Guardian SDK call in one place, one function per README section (see [PR](https://github.com/auth0/Guardian.swift/pull/184) and [PR](https://github.com/auth0/Guardian.swift/pull/186))
+- Releases are now built, tagged and pushed to CocoaPods trunk by GitHub Actions (see [PR](https://github.com/auth0/Guardian.swift/pull/183))
+
+## [1.9.2](https://github.com/auth0/Guardian.swift/tree/1.9.2) (2025-12-11)
+[Full Changelog](https://github.com/auth0/Guardian.swift/compare/1.9.1...1.9.2)
+
+**Changed**
+- Support rich consent transactions with no scope in the consent details (see [PR](https://github.com/auth0/Guardian.swift/pull/163))
+
+## [1.9.1](https://github.com/auth0/Guardian.swift/tree/1.9.1) (2025-12-04)
+[Full Changelog](https://github.com/auth0/Guardian.swift/compare/1.9.0...1.9.1)
+
+**Changed**
+- Support rich consent transactions with no binding message in the consent details (see [PR](https://github.com/auth0/Guardian.swift/pull/161))
+
+
+## [1.9.0](https://github.com/auth0/Guardian.swift/tree/1.9.0) (2025-08-21)
+- Modify the Guardian SDKs to be more “forgiving” when using the https://{tenant}.{region}.auth0.com/appliance-mfa url
+[Full Changelog](https://github.com/auth0/Guardian.swift/compare/1.8.0...1.9.0)
+
+## [1.8.0](https://github.com/auth0/Guardian.swift/tree/1.8.0) (2025-07-25)
+- Modify the Guardian SDKs to be more “forgiving” when using the https://{tenant}.guardian.{region}.auth0.com url
+[Full Changelog](https://github.com/auth0/Guardian.swift/compare/1.7.0...1.8.0)
+
 ## [1.7.0](https://github.com/auth0/Guardian.swift/tree/1.7.0) (2025-03-12)
 - Add RAR support to CIBA flow.
 [Full Changelog](https://github.com/auth0/Guardian.swift/compare/1.6.0...1.7.0)

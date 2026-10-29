@@ -1,0 +1,162 @@
+name: PR
+
+on:
+  pull_request:
+    branches: [master]
+  merge_group:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
+
+jobs:
+  test:
+    name: Test
+    runs-on: macos-15
+    env:
+      # The Fastfile defaults the scan destination to "iPhone 17", which only
+      # exists on Xcode 26+. CI pins Xcode 16.4 (.xcode-version), whose newest
+      # simulator is "iPhone 16", so override the device so the destination
+      # resolves. Bump this in lockstep with .xcode-version.
+      GUARDIAN_SCAN_DEVICE: iPhone 16
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # pin@v7.0.1
+        with:
+          # Full history needed so the lint lane can run git diff origin/<base>...HEAD
+          fetch-depth: 0
+
+      # Read .xcode-version and pass it to setup-xcode (the action only accepts
+      # xcode-version as a string, not a file path).
+      - name: Read Xcode version
+        id: xcode-ver
+        run: echo "version=$(cat .xcode-version)" >> "$GITHUB_OUTPUT"
+
+      - uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # pin@v1.7.0
+        with:
+          xcode-version: ${{ steps.xcode-ver.outputs.version }}
+
+      # ruby-version is read from .ruby-version automatically.
+      # bundler: 'Gemfile.lock' installs the exact bundler version from BUNDLED WITH.
+      - uses: ruby/setup-ruby@7f797815d8adceb1c412e7abefdd1ab4abc47a5f # pin@v1
+        with:
+          bundler: 'Gemfile.lock'
+
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # pin@v6.1.0
+        with:
+          path: vendor/bundle
+          key: bundle-v1-${{ hashFiles('Gemfile.lock') }}
+          restore-keys: bundle-v1-
+
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # pin@v6.1.0
+        id: carthage-cache
+        with:
+          path: Carthage/Build
+          # Only caches saved on master are shared with PRs, so cache.yml saves this
+          # one from master; a PR saving its own would only reach that PR's re-runs.
+          # Scope the key to the Xcode version: prebuilt xcframeworks are tied to a
+          # Swift/module ABI, so rehydrating a cache built with a different Xcode
+          # (when .xcode-version bumps but Cartfile.resolved doesn't) causes module
+          # mismatches at test-link time. The restore-key is Xcode-scoped too.
+          key: carthage-v2-${{ steps.xcode-ver.outputs.version }}-${{ hashFiles('Cartfile.resolved') }}
+          restore-keys: carthage-v2-${{ steps.xcode-ver.outputs.version }}-
+
+      - name: Install Ruby dependencies
+        run: bundle check || bundle install --jobs 4 --retry 3
+        env:
+          BUNDLE_PATH: vendor/bundle
+
+      # SwiftLint and Carthage are not guaranteed on macos-15 runners.
+      # --skip-deps bypasses the brew installs in dependencies.sh, so do them here.
+      - name: Install tools (SwiftLint + Carthage)
+        run: |
+          brew install swiftlint
+          brew install carthage
+
+      # Boot the simulator in the background during setup, instead of when the
+      # tests start (about 2 minutes of this job). See the script.
+      - name: Boot the test simulator
+        run: .github/scripts/boot-simulator.sh start
+
+      # Bootstrap Carthage test deps (Quick/Nimble). Skipped on an exact cache hit:
+      # the tests only need the cached xcframeworks, and even with a valid cache
+      # bootstrap spends about 3.5 minutes cloning and validating before it skips
+      # the build. A partial hit (restore-keys) still bootstraps and rebuilds.
+      - name: Bootstrap Carthage dependencies
+        if: steps.carthage-cache.outputs.cache-hit != 'true'
+        run: |
+          XCODE_XCCONFIG_FILE="$GITHUB_WORKSPACE/carthage_build.xcconfig" \
+            carthage bootstrap --use-xcframeworks --cache-builds --platform iOS
+          echo "Carthage/Build contents:"
+          ls Carthage/Build/ 2>/dev/null || echo "  (empty)"
+
+      - name: Use the booted simulator
+        run: .github/scripts/boot-simulator.sh use
+
+      - name: Lint + Test + Coverage
+        run: ./build.sh --buildType debug --lint --test --coverage --nobuild --skip-deps
+        env:
+          BUNDLE_PATH: vendor/bundle
+
+      # Fallback: re-run the dashboard generator if the main step failed before
+      # postbuild ran (e.g. a lint error). This attaches whatever partial reports exist.
+      - name: Generate reports.html (failure fallback)
+        if: failure()
+        run: ./tools/build/reports.sh
+        env:
+          BUNDLE_PATH: vendor/bundle
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # pin@v7.0.2
+        if: always()
+        with:
+          name: reports
+          path: output/reports.html
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # pin@v7.1.1
+        with:
+          files: output/cobertura.xml
+          token: ${{ secrets.CODECOV_TOKEN }}  # optional for public repos; required for private
+          fail_ci_if_error: false
+
+  sample:
+    name: Build sample app
+    runs-on: macos-15
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # pin@v7.0.1
+
+      - name: Read Xcode version
+        id: xcode-ver
+        run: echo "version=$(cat .xcode-version)" >> "$GITHUB_OUTPUT"
+
+      - uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # pin@v1.7.0
+        with:
+          xcode-version: ${{ steps.xcode-ver.outputs.version }}
+
+      - uses: ruby/setup-ruby@7f797815d8adceb1c412e7abefdd1ab4abc47a5f # pin@v1
+        with:
+          bundler: 'Gemfile.lock'
+
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # pin@v6.1.0
+        with:
+          path: vendor/bundle
+          key: bundle-v1-${{ hashFiles('Gemfile.lock') }}
+          restore-keys: bundle-v1-
+
+      - name: Install Ruby dependencies
+        run: bundle check || bundle install --jobs 4 --retry 3
+        env:
+          BUNDLE_PATH: vendor/bundle
+
+      # The sample consumes the SDK as a local Swift package, so no Carthage
+      # bootstrap or signing team is needed. Fails the PR if the sample stops
+      # compiling against the SDK sources under review.
+      - name: Build GuardianApp
+        run: bundle exec fastlane ios build_sample
+        env:
+          BUNDLE_PATH: vendor/bundle

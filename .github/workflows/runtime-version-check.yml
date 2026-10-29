@@ -1,0 +1,135 @@
+name: Runtime Version Check
+
+# Neither .ruby-version nor .xcode-version is covered by Dependabot — its bundler/
+# github-actions ecosystems only bump gem versions and pinned Action SHAs, never
+# runtime version files. ruby/setup-ruby and maxim-lobanov/setup-xcode both resolve
+# a bare major/major.minor to the latest available patch on every run, so patch
+# staleness isn't the concern here. The meaningful signal is whether the pinned
+# major/minor line has gone end-of-life. This workflow checks that monthly via
+# endoflife.date and opens a draft PR (not auto-merged) with the minimal safe next
+# line, since a runtime major/minor bump can have real compatibility fallout this
+# workflow can't verify on its own (e.g. Ruby compatibility with bundled gems).
+#
+# Discovery is dynamic — all .*-version files in the repo root are checked
+# automatically. Adding a new file (e.g. .node-version) requires no workflow
+# changes. Unknown runtimes (no endoflife.date entry, including .xcode-version)
+# are skipped with a warning. The only maintenance needed is updating EOL_SLUG
+# below when a new runtime's filename stem doesn't match its endoflife.date slug.
+on:
+  schedule:
+    - cron: '0 4 1 * *'  # Monthly — EOL dates are announced well in advance
+  workflow_dispatch: {}
+
+permissions: read-all
+
+jobs:
+  check-runtime-versions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # pin@v7.0.1
+
+      - name: Check and update EOL runtime versions
+        id: check
+        run: |
+          set -euo pipefail
+
+          # Filename stem → endoflife.date product slug.
+          # Only add an entry when the stem doesn't directly match the slug.
+          # .ruby-version stem is "ruby" and the slug is "ruby" — no entry needed.
+          # .xcode-version has no endoflife.date entry — it will auto-skip.
+          declare -A EOL_SLUG
+          # (empty for iOS: ruby maps directly, xcode has no slug)
+
+          today="$(date -u +%Y-%m-%d)"
+          any_stale=false
+
+          for version_file in ./.??*-version; do
+            [ -f "$version_file" ] || continue
+            filename="$(basename "$version_file")"
+            stem="${filename#.}"
+            stem="${stem%-version}"
+            slug="${EOL_SLUG[$stem]:-$stem}"
+            current="$(tr -d '[:space:]' < "$version_file")"
+
+            echo "→ $filename  stem=$stem  slug=$slug  current=$current"
+
+            api_data="$(curl -sf "https://endoflife.date/api/${slug}.json" || true)"
+            if [ -z "$api_data" ] || [ "$api_data" = "null" ] || echo "$api_data" | grep -q '"detail"'; then
+              echo "  ⚠ No endoflife.date data for slug '$slug' — skipping"
+              continue
+            fi
+
+            # Resolve the endoflife.date cycle this version belongs to. Cycles are
+            # keyed by major.minor (e.g. "3.2"); our version files may carry a full
+            # patch ("3.2.6") or already be minor ("15.1"), so match a cycle that
+            # equals the version OR is a dotted prefix of it. (A bare `== $current`
+            # never matches a patch version — that was the original bug.)
+            cycle="$(echo "$api_data" | jq -r --arg c "$current" \
+              '[.[] | .cycle as $cy | select($cy == $c or ($c | startswith($cy + "."))) | $cy] | first // empty')"
+
+            if [ -z "$cycle" ]; then
+              echo "  ⚠ No cycle matching '$current' in endoflife.date for '$slug' — skipping"
+              continue
+            fi
+
+            eol="$(echo "$api_data" | jq -r --arg c "$cycle" \
+              '.[] | select(.cycle == $c) | .eol')"
+
+            # .eol is either a boolean (true = already EOL, false = no EOL set) or an
+            # ISO date string. Guard the boolean "true" explicitly: a lexical date
+            # compare would read "true" > "2026-…" as still-supported (wrong).
+            if [ "$eol" = "false" ]; then
+              echo "  ✓ $current (cycle $cycle) is still supported (no EOL date)"
+              continue
+            elif [ "$eol" != "true" ] && [[ "$eol" > "$today" ]]; then
+              echo "  ✓ $current (cycle $cycle) is still supported (EOL: $eol)"
+              continue
+            fi
+
+            echo "  ✗ $current (cycle $cycle) is EOL ($eol) — finding minimal safe next version"
+
+            # Pick the lowest still-supported cycle above the current one, comparing
+            # cycles as numeric version tuples so "3.10" ranks above "3.9" (plain
+            # tonumber would mis-order those and chokes on a patch like "3.2.6").
+            new_version="$(echo "$api_data" | jq -r \
+              --arg cur "$cycle" --arg today "$today" '
+              def ver: split(".") | map(tonumber);
+              map(select((.eol == false) or ((.eol | type) == "string" and .eol > $today)))
+              | map(select((.cycle | ver) > ($cur | ver)))
+              | sort_by(.cycle | ver)
+              | .[0].cycle // empty')"
+
+            if [ -z "$new_version" ]; then
+              echo "  ⚠ $current is EOL but no newer supported cycle found for '$slug'"
+              continue
+            fi
+
+            echo "  → bumping $filename: $current → $new_version"
+            echo "$new_version" > "$version_file"
+            any_stale=true
+          done
+
+          echo "any_stale=$any_stale" >> "$GITHUB_OUTPUT"
+
+      - name: Open PR for EOL runtime bump
+        if: steps.check.outputs.any_stale == 'true'
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # pin@v8.1.1
+        with:
+          commit-message: "chore(ci): bump EOL runtime version"
+          title: "chore(ci): pinned runtime version has reached end-of-life"
+          body: |
+            Automated: [endoflife.date](https://endoflife.date) reports one or more pinned
+            runtime versions (`.ruby-version` or similar `.*-version` files) have reached
+            end-of-life. This PR bumps each affected file to the nearest supported line.
+
+            ⚠️ Needs manual review before merge — a runtime major/minor bump can affect build
+            behavior (e.g. Ruby compatibility with bundled gems in `Gemfile.lock`) in ways
+            this workflow can't verify. Not a routine dependency bump like Dependabot's —
+            test the build locally before merging.
+          branch: chore/bump-eol-runtime-version
+          draft: true
+          labels: dependencies

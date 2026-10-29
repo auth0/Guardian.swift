@@ -97,7 +97,7 @@ public struct UpdatedDevice: Codable {
 public struct ConsentRequestedDetails: Decodable {
     public let audience: String
     public let scope: [String]
-    public let bindingMessage: String
+    public let bindingMessage: String?
     public let authorizationDetails: [Json]
     
     enum CodingKeys: String, CodingKey {
@@ -110,8 +110,8 @@ public struct ConsentRequestedDetails: Decodable {
     public init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.audience = try container.decode(String.self, forKey: .audience)
-        self.scope = try container.decode([String].self, forKey: .scope)
-        self.bindingMessage = try container.decode(String.self, forKey: .bindingMessage)
+        self.scope = try container.decodeIfPresent([String].self, forKey: .scope) ?? []
+        self.bindingMessage = try? container.decode(String.self, forKey: .bindingMessage)
         self.authorizationDetails = try container.decodeIfPresent([Json].self, forKey: .authorizationDetails) ?? []
     }
     
