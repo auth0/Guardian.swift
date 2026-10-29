@@ -69,9 +69,14 @@ public struct EnrolledDevice: AuthenticationDevice {
 
     /**
      The identifier of the physical device, for debug/tracking purposes
+
+     - important: Empty when the device's `identifierForVendor` is not
+                  available, for example after a reboot before the device is
+                  first unlocked. Allowing or rejecting a notification then
+                  fails with an error instead of sending an empty identifier.
      */
     public var localIdentifier: String {
-        return EnrolledDevice.vendorIdentifier
+        return EnrolledDevice.vendorIdentifier ?? ""
     }
 
     /**
@@ -112,8 +117,13 @@ public struct EnrolledDevice: AuthenticationDevice {
         self.totp = totp
     }
 
-    static var vendorIdentifier: String {
-        return UIDevice.current.identifierForVendor!.uuidString
+    // identifierForVendor is nil after a reboot until the device is first
+    // unlocked, and briefly at other times. Never substitute a generated
+    // value: the identifier is the device's identity to the Guardian server.
+    static var vendorIdentifierProvider: () -> UUID? = { UIDevice.current.identifierForVendor }
+
+    static var vendorIdentifier: String? {
+        return vendorIdentifierProvider()?.uuidString
     }
 
     static var deviceName: String {

@@ -283,6 +283,50 @@ class AuthenticationSpec: QuickSpec {
             }
         }
 
+        describe("with an unavailable device identifier") {
+
+            let notification = AuthenticationNotification(domain: Domain, enrollmentId: ValidEnrollmentId, transactionToken: ValidTransactionToken, challenge: ValidNotificationChallenge, startedAt: Date(), source: nil, location: nil)
+
+            it("should fail to allow without sending a request") {
+                let device = MockAuthenticationDevice(localIdentifier: "", signingKey: signingKey)
+                waitUntil(timeout: Timeout) { done in
+                    Guardian.authentication(forDomain: Domain, device: device)
+                        .allow(notification: notification)
+                        .start { result in
+                            expect(result).to(haveGuardianError(withErrorCode: "a0.guardian.internal.unavailable.device_identifier"))
+                            done()
+                    }
+                }
+            }
+
+            it("should fail to reject without sending a request") {
+                let device = MockAuthenticationDevice(localIdentifier: "", signingKey: signingKey)
+                waitUntil(timeout: Timeout) { done in
+                    Guardian.authentication(forDomain: Domain, device: device)
+                        .reject(notification: notification, withReason: "mistake")
+                        .start { result in
+                            expect(result).to(haveGuardianError(withErrorCode: "a0.guardian.internal.unavailable.device_identifier"))
+                            done()
+                    }
+                }
+            }
+
+            it("should fail to allow with an enrolled device when identifierForVendor is nil") {
+                let provider = EnrolledDevice.vendorIdentifierProvider
+                EnrolledDevice.vendorIdentifierProvider = { nil }
+                defer { EnrolledDevice.vendorIdentifierProvider = provider }
+                let device = EnrolledDevice(id: ValidEnrollmentId, userId: ValidUserId, deviceToken: ValidEnrollmentToken, notificationToken: ValidNotificationToken, signingKey: signingKey)
+                let request = Guardian.authentication(forDomain: Domain, device: device)
+                    .allow(notification: notification)
+                waitUntil(timeout: Timeout) { done in
+                    request.start { result in
+                        expect(result).to(haveGuardianError(withErrorCode: "a0.guardian.internal.unavailable.device_identifier"))
+                        done()
+                    }
+                }
+            }
+        }
+
         describe("using url") {
 
             describe("allow with RSA") {

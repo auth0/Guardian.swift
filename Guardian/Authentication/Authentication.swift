@@ -140,6 +140,9 @@ struct RSAAuthentication: Authentication {
 
     func resolve(transaction transactionToken: String, withChallenge challenge: String, accepted: Bool, reason: String? = nil) -> Request<Transaction, NoContent> {
         let path = self.api.baseUrl.appendingPathComponent("api/resolve-transaction")
+        guard !self.device.localIdentifier.isEmpty else {
+            return Request(method: .post, url: path, error: GuardianError(code: .unavailableDeviceIdentifier))
+        }
         let currentTime = Date()
         let claims = GuardianClaimSet(
             subject: challenge,
