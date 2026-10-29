@@ -13,7 +13,7 @@ Pod::Spec.new do |s|
   s.source           = { :git => 'https://github.com/auth0/Guardian.swift.git', :tag => s.version.to_s }
   s.social_media_url = 'https://twitter.com/auth0'
 
-  s.ios.deployment_target = '12.0'
+  s.ios.deployment_target = '15.0'
   s.requires_arc = true
   s.swift_versions = ['5.0']
 

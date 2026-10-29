@@ -20,7 +20,7 @@ multi-factor authentication from your app.
 
 ## Requirements
 
-iOS 12+ and Swift 5 is required in order to use Guardian.
+iOS 15+ and Swift 5 is required in order to use Guardian. Apps that still support iOS 12 to 14 can stay on 1.10.0.
 
 ## Before getting started
 

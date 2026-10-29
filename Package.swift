@@ -5,7 +5,7 @@ import PackageDescription
 let package = Package(
     name: "Guardian",
     platforms: [
-        .iOS(.v12)
+        .iOS(.v15)
     ],
     products: [
         .library(
