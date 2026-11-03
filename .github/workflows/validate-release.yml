@@ -37,7 +37,7 @@ permissions:
 jobs:
   validate:
     name: Validate release ${{ inputs.version }}
-    runs-on: macos-15
+    runs-on: macos-26
     timeout-minutes: 45
     permissions:
       contents: read

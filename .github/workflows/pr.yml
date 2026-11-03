@@ -16,13 +16,12 @@ concurrency:
 jobs:
   test:
     name: Test
-    runs-on: macos-15
+    runs-on: macos-26
     env:
-      # The Fastfile defaults the scan destination to "iPhone 17", which only
-      # exists on Xcode 26+. CI pins Xcode 16.4 (.xcode-version), whose newest
-      # simulator is "iPhone 16", so override the device so the destination
-      # resolves. Bump this in lockstep with .xcode-version.
-      GUARDIAN_SCAN_DEVICE: iPhone 16
+      # The simulator boot-simulator.sh picks and the tests run on (the Fastfile
+      # default). It must exist on the runner image for the pinned Xcode
+      # (.xcode-version), so check the image's simulator list when bumping either.
+      GUARDIAN_SCAN_DEVICE: iPhone 17
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # pin@v7.0.1
@@ -70,7 +69,7 @@ jobs:
         env:
           BUNDLE_PATH: vendor/bundle
 
-      # SwiftLint and Carthage are not guaranteed on macos-15 runners.
+      # SwiftLint and Carthage are not guaranteed on macos-26 runners.
       # --skip-deps bypasses the brew installs in dependencies.sh, so do them here.
       - name: Install tools (SwiftLint + Carthage)
         run: |
@@ -125,7 +124,7 @@ jobs:
 
   sample:
     name: Build sample app
-    runs-on: macos-15
+    runs-on: macos-26
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # pin@v7.0.1
