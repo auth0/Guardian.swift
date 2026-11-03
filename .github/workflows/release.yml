@@ -328,7 +328,7 @@ jobs:
         with:
           xcode-version: ${{ steps.xcode-ver.outputs.version }}
 
-      - uses: ruby/setup-ruby@7f797815d8adceb1c412e7abefdd1ab4abc47a5f # pin@v1
+      - uses: ruby/setup-ruby@de492cf36cbab201753d720ce4f4e336cd688c94 # pin@v1
         with:
           bundler: 'Gemfile.lock'
 
@@ -562,7 +562,7 @@ jobs:
         with:
           xcode-version: ${{ steps.xcode-ver.outputs.version }}
 
-      - uses: ruby/setup-ruby@7f797815d8adceb1c412e7abefdd1ab4abc47a5f # pin@v1
+      - uses: ruby/setup-ruby@de492cf36cbab201753d720ce4f4e336cd688c94 # pin@v1
         if: steps.preflight.outputs.action == 'publish' && env.COCOAPODS_TRUNK == 'true'
         with:
           bundler: 'Gemfile.lock'
