@@ -109,7 +109,7 @@ class GuardianSpec: QuickSpec {
             let signingKey = try! DataRSAPrivateKey.new()
             let verificationKey = try! AsymmetricPublicKey(privateKey: signingKey.secKey)
             let device = EnrolledDevice(id: "ID", userId: "USER_ID", deviceToken: "TOKEN", notificationToken: "TOKEN", signingKey: signingKey)
-            let audience = "https://tenant.region.auth0.com/appliance-mfa/api/resolve-transaction"
+            let audience = "https://tenant.region.auth0.com/me/"
 
             func verify(_ string: String, accepted: Bool, reason: String?) {
                 let now = Date()
@@ -137,9 +137,19 @@ class GuardianSpec: QuickSpec {
                 verify(jwt, accepted: true, reason: nil)
             }
 
-            it("should build rejected response with reason from url") {
+            it("should build response from domain with scheme") {
+                let jwt = try! Guardian.constructChallengeResponse(forDomain: "https://tenant.region.auth0.com", device: device, challenge: ValidNotificationChallenge, accepted: true)
+                verify(jwt, accepted: true, reason: nil)
+            }
+
+            it("should build rejected response with reason from url without trailing slash") {
                 let jwt = try! Guardian.constructChallengeResponse(url: URL(string: "https://tenant.region.auth0.com")!, device: device, challenge: ValidNotificationChallenge, accepted: false, reason: "not me")
                 verify(jwt, accepted: false, reason: "not me")
+            }
+
+            it("should build response from url with trailing slash") {
+                let jwt = try! Guardian.constructChallengeResponse(url: URL(string: "https://tenant.region.auth0.com/")!, device: device, challenge: ValidNotificationChallenge, accepted: true)
+                verify(jwt, accepted: true, reason: nil)
             }
 
             it("should not make any http request") {

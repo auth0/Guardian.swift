@@ -105,22 +105,22 @@ public func authentication(url: URL, device: AuthenticationDevice, telemetryInfo
 }
 
 /**
- Builds the signed challenge response (a JWT) for a push notification challenge,
- without calling the Guardian server.
+ Builds the signed challenge response (a JWT) for a push challenge,
+ without making any network request.
 
  ```
  let device: AuthenticationDevice = // the object you obtained when enrolling
- let notification: Notification = // obtained from Guardian.notification(from:)
+ let challenge: String = // the challenge of the pending request
  let challengeResponse = try Guardian
-    .constructChallengeResponse(forDomain: "tenant.guardian.auth0.com",
+    .constructChallengeResponse(forDomain: "tenant.auth0.com",
                                 device: device,
-                                challenge: notification.challenge,
+                                challenge: challenge,
                                 accepted: true)
  ```
 
- - parameter forDomain:     domain or URL of your Guardian server
+ - parameter forDomain:     the tenant's Auth0 domain or custom domain
  - parameter device:        the enrolled device whose signing key signs the response
- - parameter challenge:     the challenge of the push notification
+ - parameter challenge:     the challenge string of the pending authentication request
  - parameter accepted:      whether the challenge is accepted or rejected
  - parameter reason:        optional reason, usually given when rejecting
 
@@ -133,22 +133,22 @@ public func constructChallengeResponse(forDomain domain: String, device: Authent
 }
 
 /**
- Builds the signed challenge response (a JWT) for a push notification challenge,
- without calling the Guardian server.
+ Builds the signed challenge response (a JWT) for a push challenge,
+ without making any network request.
 
  ```
  let device: AuthenticationDevice = // the object you obtained when enrolling
- let notification: Notification = // obtained from Guardian.notification(from:)
+ let challenge: String = // the challenge of the pending request
  let challengeResponse = try Guardian
-    .constructChallengeResponse(url: URL(string: "https://tenant.guardian.auth0.com/")!,
+    .constructChallengeResponse(url: URL(string: "https://tenant.auth0.com/")!,
                                 device: device,
-                                challenge: notification.challenge,
+                                challenge: challenge,
                                 accepted: true)
  ```
 
- - parameter url:           URL of your Guardian server
+ - parameter url:           the tenant's base URL
  - parameter device:        the enrolled device whose signing key signs the response
- - parameter challenge:     the challenge of the push notification
+ - parameter challenge:     the challenge string of the pending authentication request
  - parameter accepted:      whether the challenge is accepted or rejected
  - parameter reason:        optional reason, usually given when rejecting
 
@@ -157,8 +157,10 @@ public func constructChallengeResponse(forDomain domain: String, device: Authent
  - returns: the signed challenge response JWT
  */
 public func constructChallengeResponse(url: URL, device: AuthenticationDevice, challenge: String, accepted: Bool, reason: String? = nil) throws -> String {
+    var base = url.absoluteString
+    while base.hasSuffix("/") { base.removeLast() }
     do {
-        return try signedChallengeResponse(baseUrl: api(url: url).baseUrl, device: device, challenge: challenge, accepted: accepted, reason: reason)
+        return try signedChallengeResponse(audience: base + "/me/", device: device, challenge: challenge, accepted: accepted, reason: reason)
     } catch {
         throw challengeResponseError(from: error)
     }

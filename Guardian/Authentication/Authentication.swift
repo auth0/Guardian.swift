@@ -140,7 +140,7 @@ struct RSAAuthentication: Authentication {
         let path = resolveTransactionUrl(baseUrl: self.api.baseUrl)
         let jwt: String
         do {
-            jwt = try signedChallengeResponse(baseUrl: self.api.baseUrl,
+            jwt = try signedChallengeResponse(audience: path.absoluteString,
                                               device: self.device,
                                               challenge: challenge,
                                               accepted: accepted,
@@ -170,7 +170,7 @@ func resolveTransactionUrl(baseUrl: URL) -> URL {
     return baseUrl.appendingPathComponent("api/resolve-transaction")
 }
 
-func signedChallengeResponse(baseUrl: URL, device: AuthenticationDevice, challenge: String, accepted: Bool, reason: String?) throws -> String {
+func signedChallengeResponse(audience: String, device: AuthenticationDevice, challenge: String, accepted: Bool, reason: String?) throws -> String {
     guard !device.localIdentifier.isEmpty else {
         throw GuardianError(code: .unavailableDeviceIdentifier)
     }
@@ -178,7 +178,7 @@ func signedChallengeResponse(baseUrl: URL, device: AuthenticationDevice, challen
     let claims = GuardianClaimSet(
         subject: challenge,
         issuer: device.localIdentifier,
-        audience: resolveTransactionUrl(baseUrl: baseUrl).absoluteString,
+        audience: audience,
         expireAt: currentTime.addingTimeInterval(challengeResponseExpiration),
         issuedAt: currentTime,
         status: accepted,
