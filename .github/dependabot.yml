@@ -11,7 +11,7 @@ updates:
         patterns: ["*"]
 
   # Bump gem versions in the root Gemfile weekly (fastlane, slather, cocoapods,
-  # auth0_shipper, dotenv). Note: directory is / because the Gemfile lives at the
+  # dotenv). Note: directory is / because the Gemfile lives at the
   # repo root (unlike Guardian.Android where it lives under /fastlane).
   - package-ecosystem: bundler
     directory: /

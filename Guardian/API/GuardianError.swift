@@ -48,6 +48,7 @@ public struct GuardianError: Swift.Error {
         case notFoundPrivateKey = "a0.guardian.internal.no.private_key"
         case cannotSignTransactionChallenge = "a0.guardian.internal.cannot.sign_challenge"
         case failedCreationDPoPProof = "a0.guardian.internal.failed.creation_dpop_proof"
+        case unavailableDeviceIdentifier = "a0.guardian.internal.unavailable.device_identifier"
     }
 
 }

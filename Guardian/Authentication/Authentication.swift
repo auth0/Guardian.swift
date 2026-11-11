@@ -146,7 +146,7 @@ struct RSAAuthentication: Authentication {
                                               accepted: accepted,
                                               reason: reason)
         } catch(let error) {
-            return Request(method: .post, url: path, error: GuardianError(code: .cannotSignTransactionChallenge, cause: error))
+            return Request(method: .post, url: path, error: challengeResponseError(from: error))
         }
         return self.api.resolve(transaction: transactionToken, withChallengeResponse: jwt)
     }
@@ -171,6 +171,9 @@ func resolveTransactionUrl(baseUrl: URL) -> URL {
 }
 
 func signedChallengeResponse(baseUrl: URL, device: AuthenticationDevice, challenge: String, accepted: Bool, reason: String?) throws -> String {
+    guard !device.localIdentifier.isEmpty else {
+        throw GuardianError(code: .unavailableDeviceIdentifier)
+    }
     let currentTime = Date()
     let claims = GuardianClaimSet(
         subject: challenge,
@@ -183,4 +186,11 @@ func signedChallengeResponse(baseUrl: URL, device: AuthenticationDevice, challen
     )
     let jwt = try JWT(claimSet: claims, key: device.signingKey.secKey)
     return jwt.string
+}
+
+func challengeResponseError(from error: Error) -> GuardianError {
+    if let guardianError = error as? GuardianError, guardianError.code == GuardianError.Code.unavailableDeviceIdentifier.rawValue {
+        return guardianError
+    }
+    return GuardianError(code: .cannotSignTransactionChallenge, cause: error)
 }

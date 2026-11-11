@@ -124,7 +124,7 @@ public func authentication(url: URL, device: AuthenticationDevice, telemetryInfo
  - parameter accepted:      whether the challenge is accepted or rejected
  - parameter reason:        optional reason, usually given when rejecting
 
- - throws: a `GuardianError` with code `cannotSignTransactionChallenge` if signing fails
+ - throws: a `GuardianError` with code `cannotSignTransactionChallenge` if signing fails, or `unavailableDeviceIdentifier` if the device has no identifier
 
  - returns: the signed challenge response JWT
  */
@@ -152,7 +152,7 @@ public func constructChallengeResponse(forDomain domain: String, device: Authent
  - parameter accepted:      whether the challenge is accepted or rejected
  - parameter reason:        optional reason, usually given when rejecting
 
- - throws: a `GuardianError` with code `cannotSignTransactionChallenge` if signing fails
+ - throws: a `GuardianError` with code `cannotSignTransactionChallenge` if signing fails, or `unavailableDeviceIdentifier` if the device has no identifier
 
  - returns: the signed challenge response JWT
  */
@@ -160,7 +160,7 @@ public func constructChallengeResponse(url: URL, device: AuthenticationDevice, c
     do {
         return try signedChallengeResponse(baseUrl: api(url: url).baseUrl, device: device, challenge: challenge, accepted: accepted, reason: reason)
     } catch {
-        throw GuardianError(code: .cannotSignTransactionChallenge, cause: error)
+        throw challengeResponseError(from: error)
     }
 }
 

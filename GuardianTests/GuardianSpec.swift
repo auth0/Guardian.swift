@@ -152,6 +152,17 @@ class GuardianSpec: QuickSpec {
                 _ = try! Guardian.constructChallengeResponse(forDomain: "tenant.region.auth0.com", device: device, challenge: ValidNotificationChallenge, accepted: true)
                 expect(requests).to(equal(0))
             }
+
+            it("should fail when the device identifier is unavailable") {
+                let noIdDevice = EnrolledDevice(id: "ID", userId: "USER_ID", deviceToken: "TOKEN", notificationToken: "TOKEN", signingKey: signingKey)
+                let provider = EnrolledDevice.vendorIdentifierProvider
+                EnrolledDevice.vendorIdentifierProvider = { nil }
+                defer { EnrolledDevice.vendorIdentifierProvider = provider }
+                expect { try Guardian.constructChallengeResponse(forDomain: "tenant.region.auth0.com", device: noIdDevice, challenge: ValidNotificationChallenge, accepted: true) }
+                    .to(throwError { (error: Error) in
+                        expect((error as? GuardianError)?.code).to(equal("a0.guardian.internal.unavailable.device_identifier"))
+                    })
+            }
         }
 
         describe("enroll(forDomain:, withUri:, notificationToken:)") {
@@ -234,6 +245,22 @@ class GuardianSpec: QuickSpec {
                         .start { result in
                             expect(result).to(haveGuardianError(withErrorCode: "a0.guardian.internal.invalid.enrollment_uri"))
                             done()
+                    }
+                }
+            }
+
+            it("should fail when the device identifier is unavailable") {
+                let provider = EnrolledDevice.vendorIdentifierProvider
+                EnrolledDevice.vendorIdentifierProvider = { nil }
+                defer { EnrolledDevice.vendorIdentifierProvider = provider }
+                let signingKey = try! DataRSAPrivateKey(data: keys.privateKey)
+                let verificationKey = try! signingKey.verificationKey()
+                let request = Guardian
+                    .enroll(forDomain: Domain, usingTicket: ValidTransactionId, notificationToken: ValidNotificationToken, signingKey: signingKey, verificationKey: verificationKey)
+                waitUntil(timeout: Timeout) { done in
+                    request.start { result in
+                        expect(result).to(haveGuardianError(withErrorCode: "a0.guardian.internal.unavailable.device_identifier"))
+                        done()
                     }
                 }
             }

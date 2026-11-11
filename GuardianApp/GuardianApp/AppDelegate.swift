@@ -21,43 +21,24 @@
 // THE SOFTWARE.
 
 import UIKit
-import Guardian
+@preconcurrency import Guardian
 import UserNotifications
 
-@UIApplicationMain
+@main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-    static let tenantDomain = "https://guardian-demo.us.auth0.com"
-
-    static var pushToken: String? = nil
-    var window: UIWindow?
+    static var pushToken: String?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        print("Guardian tenant: \(GuardianService.tenantDomain)")
 
-        let guardianCategory = Guardian.AuthenticationCategory.default
-
-        // Set up guardian notifications actions
-        let acceptAction = UNNotificationAction(
-            identifier: guardianCategory.allow.identifier,
-            title: NSLocalizedString("Allow", comment: "Accept Guardian authentication request"),
-            options: [.authenticationRequired] // Always request local AuthN
-        )
-        let rejectAction = UNNotificationAction(
-            identifier: guardianCategory.reject.identifier,
-            title: NSLocalizedString("Deny", comment: "Reject Guardian authentication request"),
-            options: [.destructive, .authenticationRequired] // Always request local AuthN
-        )
-
-        // Set up guardian notification category
-        let category = UNNotificationCategory(
-            identifier: guardianCategory.identifier,
-            actions: [acceptAction, rejectAction],
-            intentIdentifiers: [],
-            options: [])
+        // Allow and Deny actions on Guardian login request notifications
+        let category = GuardianService.notificationCategory()
 
         // Request for AuthZ
         UNUserNotificationCenter.current().delegate = self
-        UNUserNotificationCenter.current().requestAuthorization(options: [.badge, .sound]) { granted, error in
+        UNUserNotificationCenter.current().setNotificationCategories([category])
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
             guard granted else {
                 return print("Permission not granted")
             }
@@ -65,10 +46,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 return print("failed with error \(error)")
             }
 
-            // Register guardian notification category
-            UNUserNotificationCenter.current().setNotificationCategories([category])
             // Check AuthZ status to trigger remote notification registration
-            UNUserNotificationCenter.current().getNotificationSettings() { settings in
+            UNUserNotificationCenter.current().getNotificationSettings { settings in
                 guard settings.authorizationStatus == .authorized else {
                     return print("not authorized to use notifications")
                 }
@@ -81,9 +60,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         // when the registration for push notification succeeds
-        let token = deviceToken.reduce(String(), {$0 + String(format: "%02X", $1)})
+        let token = deviceToken.reduce(String(), { $0 + String(format: "%02X", $1) })
         AppDelegate.pushToken = token
+        // Needed to set up push on a test tenant; never log it in release builds.
+        #if DEBUG
         print("DEVICE TOKEN = \(token)")
+        #endif
     }
 
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Swift.Error) {
@@ -92,14 +74,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     var rootController: UIViewController? {
-        return self.window?.rootViewController
+        UIApplication.shared.connectedScenes
+            .compactMap { ($0.delegate as? SceneDelegate)?.window }
+            .first?
+            .rootViewController
     }
 }
 
 extension AppDelegate {
     static var state: GuardianState? {
         get {
-            return GuardianState.load()
+            GuardianState.load()
         }
         set {
             if newValue == nil {
@@ -111,44 +96,48 @@ extension AppDelegate {
     }
 }
 
-extension AppDelegate: UNUserNotificationCenterDelegate {
-    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+// UIKit calls the notification center delegate on the main thread.
+extension AppDelegate: @preconcurrency UNUserNotificationCenterDelegate {
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                didReceive response: UNNotificationResponse,
+                                withCompletionHandler completionHandler: @escaping () -> Void) {
         let identifier = response.actionIdentifier
         let userInfo = response.notification.request.content.userInfo
 
         // when the app has been activated by the user selecting an action from a remote notification
-        print("identifier: \(identifier), userInfo: \(userInfo)")
+        // Don't log userInfo: the Guardian payload carries the transaction token.
+        print("Notification action: \(identifier)")
 
-        if let notification = Guardian.notification(from: userInfo),
-            let enrollment = AppDelegate.state
-        {
+        if let notification = GuardianService.notification(from: userInfo),
+            let enrollment = AppDelegate.state {
             if UNNotificationDefaultActionIdentifier == identifier { // App opened from notification
                 show(notification: notification)
                 completionHandler()
             } else { // Guardian allow/reject action
-                Guardian
-                    .authentication(forDomain: AppDelegate.tenantDomain, device: enrollment)
-                    .handleAction(withIdentifier: identifier, notification: notification)
-                    .start { _ in completionHandler() }
+                GuardianService.handleAction(withIdentifier: identifier, notification: notification, device: enrollment) { _ in
+                    completionHandler()
+                }
             }
         } else { // Nothing we can handle, just not known notification
             completionHandler()
         }
     }
 
-    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                willPresent notification: UNNotification,
+                                withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         let userInfo = notification.request.content.userInfo
-        print(userInfo)
-        if let notification = Guardian.notification(from: userInfo) {
+        if let notification = GuardianService.notification(from: userInfo) {
             show(notification: notification)
         }
-        completionHandler([]) //Avoid displaying iOS UI when app in foreground
+        completionHandler([]) // Avoid displaying iOS UI when app in foreground
     }
 
     private func show(notification: Guardian.Notification) {
-        print(notification)
-
-        let notificationController = rootController?.storyboard?.instantiateViewController(withIdentifier: "NotificationView") as! NotificationController
+        let storyboard = rootController?.storyboard
+        guard let notificationController = storyboard?.instantiateViewController(withIdentifier: "NotificationView") as? NotificationController else {
+            return print("NotificationView is missing from Main.storyboard")
+        }
         notificationController.notification = notification
         rootController?.present(notificationController, animated: true, completion: nil)
     }

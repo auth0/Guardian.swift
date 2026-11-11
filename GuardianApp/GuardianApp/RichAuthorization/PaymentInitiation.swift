@@ -21,23 +21,23 @@
 // THE SOFTWARE.
 
 import Foundation
-import Guardian
+@preconcurrency import Guardian
 
-public struct PaymentInitiation : AuthorizationDetailsType {
-    public static let type = "payment_initiation";
-    let actions: [String];
-    let locations: [String];
-    let instructedAmount: Money;
-    let creditorName: String;
-    let creditorAccount: BankAccount;
-    let remittanceInformationUnstructured: String;
+public struct PaymentInitiation: AuthorizationDetailsType {
+    public static let type = "payment_initiation"
+    let actions: [String]
+    let locations: [String]
+    let instructedAmount: Money
+    let creditorName: String
+    let creditorAccount: BankAccount
+    let remittanceInformationUnstructured: String
 }
 
-public struct Money : Codable {
-    let amount: Decimal;
-    let currency: String;
+public struct Money: Codable {
+    let amount: Decimal
+    let currency: String
 }
 
-public struct BankAccount : Codable {
-    let iban: String;
+public struct BankAccount: Codable {
+    let iban: String
 }

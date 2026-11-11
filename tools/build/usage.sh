@@ -23,6 +23,7 @@ ${C_BOLD}OPTIONS${C_RESET} ${C_DIM}(defaults in brackets)${C_RESET}
   ${C_GREEN}--test${C_RESET} | ${C_GREEN}--notest${C_RESET}                       run unit tests ${C_DIM}[--test]${C_RESET}
   ${C_GREEN}--lint${C_RESET} | ${C_GREEN}--nolint${C_RESET}                       run SwiftLint ${C_DIM}[--lint]${C_RESET}
   ${C_GREEN}--coverage${C_RESET} | ${C_GREEN}--nocoverage${C_RESET}               emit Slather coverage report ${C_DIM}[--nocoverage]${C_RESET}
+  ${C_GREEN}--publish${C_RESET} | ${C_GREEN}--nopublish${C_RESET}                 pod trunk push, release.yml only ${C_DIM}[--nopublish]${C_RESET}
   ${C_GREEN}--branch${C_RESET} <name>                        label for logs/artifacts
   ${C_GREEN}--skip-deps${C_RESET}                            skip dependency install ${C_DIM}[install]${C_RESET}
   ${C_GREEN}--dryRun${C_RESET}                               print the plan, run nothing

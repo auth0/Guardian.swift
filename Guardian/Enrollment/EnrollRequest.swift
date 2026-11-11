@@ -58,7 +58,17 @@ public class EnrollRequest: Operation {
             return
         }
 
-        self.request = api.enroll(withTicket: ticket, identifier: EnrolledDevice.vendorIdentifier, name: EnrolledDevice.deviceName, notificationToken: notificationToken, verificationKey: self.verificationKey)
+        guard let identifier = EnrolledDevice.vendorIdentifier else {
+            let url = self.api.baseUrl.appendingPathComponent("api/enroll")
+            self.request = Request(method: .post, url: url, error: GuardianError(code: .unavailableDeviceIdentifier))
+            return
+        }
+
+        self.request = api.enroll(withTicket: ticket,
+                                  identifier: identifier,
+                                  name: EnrolledDevice.deviceName,
+                                  notificationToken: notificationToken,
+                                  verificationKey: self.verificationKey)
     }
 
     public func on(request: OnRequestEvent? = nil, response: OnResponseEvent? = nil) -> Self {
@@ -96,7 +106,12 @@ public class EnrollRequest: Operation {
                 case .failure(let cause):
                     callback(.failure(cause: cause))
                 case .success(let payload):
-                    let enrollment = EnrolledDevice(id: payload.identifier, userId: payload.userId, deviceToken: payload.token, notificationToken: self.notificationToken, signingKey: self.signingKey, totp: payload.totp)
+                    let enrollment = EnrolledDevice(id: payload.identifier,
+                                                    userId: payload.userId,
+                                                    deviceToken: payload.token,
+                                                    notificationToken: self.notificationToken,
+                                                    signingKey: self.signingKey,
+                                                    totp: payload.totp)
                     callback(.success(payload: enrollment))
                 }
         }

@@ -7,8 +7,8 @@
 # Honors SKIP_DEPS (set by --skip-deps).
 #
 # iOS specifics:
-#   1. bundle install  — Fastlane + Slather + auth0_shipper (root Gemfile)
-#   2. carthage bootstrap — pulls Quick/Nimble/SimpleKeychain test deps
+#   1. bundle install  — Fastlane + Slather + CocoaPods (root Gemfile)
+#   2. carthage bootstrap — pulls Quick/Nimble test deps
 #   3. swiftlint       — installed via Homebrew if missing (lint lane requires it)
 #
 # Xcode itself is NOT installed here — xcode-select / maxim-lobanov/setup-xcode
@@ -31,7 +31,7 @@ ensure_dependencies() {
     gem install bundler || die "Failed to install bundler. Check your Ruby/gem setup."
   fi
 
-  # Install Ruby gems (Fastlane, Slather, auth0_shipper, etc.)
+  # Install Ruby gems (Fastlane, Slather, CocoaPods, etc.)
   if bundle check >/dev/null 2>&1; then
     log "Ruby dependencies already satisfied — skipping 'bundle install'."
   else
@@ -39,7 +39,7 @@ ensure_dependencies() {
     bundle install || die "'bundle install' failed. Fix the errors above and re-run."
   fi
 
-  # Bootstrap Carthage test dependencies (Quick/Nimble/SimpleKeychain).
+  # Bootstrap Carthage test dependencies (Quick/Nimble).
   # Skipped if Carthage/Build is already populated (cache hit in CI).
   if [[ -d "$REPO_ROOT/Carthage/Build" ]] && [[ -n "$(ls -A "$REPO_ROOT/Carthage/Build" 2>/dev/null)" ]]; then
     log "Carthage/Build already populated — skipping bootstrap."

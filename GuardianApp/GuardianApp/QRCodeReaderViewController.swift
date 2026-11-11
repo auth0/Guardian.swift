@@ -21,8 +21,9 @@
 // THE SOFTWARE.
 
 import UIKit
-import AVFoundation
+@preconcurrency import AVFoundation
 
+@MainActor
 protocol QRCodeReaderViewControllerDelegate: AnyObject {
     func qrCodeViewDidScan(qrCodeValue: String)
     func qrCodeViewDidCancel()
@@ -31,7 +32,7 @@ protocol QRCodeReaderViewControllerDelegate: AnyObject {
 
 class QRCodeReaderViewController: UIViewController {
     private var captureSession: AVCaptureSession?
-    private var previewLayer: CALayer!
+    private var previewLayer: CALayer?
     
     @IBOutlet var cameraView: UIView!
     @IBOutlet var frameView: UIView!
@@ -62,7 +63,6 @@ class QRCodeReaderViewController: UIViewController {
         previewLayer.videoGravity = .resizeAspectFill
         self.captureSession = captureSession
         
-        
         frameView.layer.borderWidth = 1
         frameView.layer.cornerRadius = 8
         frameView.layer.borderColor = UIColor.white.cgColor
@@ -73,15 +73,14 @@ class QRCodeReaderViewController: UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        previewLayer.frame = cameraView.bounds
+        previewLayer?.frame = cameraView.bounds
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         if captureSession != nil {
             startScan()
-        }
-        else {
+        } else {
             delegate?.qrCodeViewDidFail()
         }
     }
@@ -91,10 +90,10 @@ class QRCodeReaderViewController: UIViewController {
     }
     
     private func startScan() {
-        if captureSession?.isRunning == false {
-            DispatchQueue.global(qos: .background).async {
-                self.captureSession?.startRunning()
-            }
+        guard let session = captureSession, !session.isRunning else { return }
+        // startRunning() blocks, so keep it off the main thread.
+        DispatchQueue.global(qos: .userInitiated).async {
+            session.startRunning()
         }
     }
 
@@ -105,7 +104,9 @@ class QRCodeReaderViewController: UIViewController {
     }
 }
 
-extension QRCodeReaderViewController: AVCaptureMetadataOutputObjectsDelegate {
+// The metadata delegate is set up with the main queue in viewDidLoad, so the
+// callback always arrives on the main actor.
+extension QRCodeReaderViewController: @preconcurrency AVCaptureMetadataOutputObjectsDelegate {
     func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
         stopScan()
         guard
