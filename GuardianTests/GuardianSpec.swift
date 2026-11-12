@@ -104,6 +104,77 @@ class GuardianSpec: QuickSpec {
             }
         }
 
+        describe("constructChallengeResponse") {
+
+            let signingKey = try! DataRSAPrivateKey.new()
+            let verificationKey = try! AsymmetricPublicKey(privateKey: signingKey.secKey)
+            let device = EnrolledDevice(id: "ID", userId: "USER_ID", deviceToken: "TOKEN", notificationToken: "TOKEN", signingKey: signingKey)
+            let audience = "https://tenant.region.auth0.com/me/"
+
+            func verify(_ string: String, accepted: Bool, reason: String?) {
+                let now = Date()
+                let jwt: JWT<GuardianClaimSet>? = try? JWT(string: string)
+                expect(jwt).toNot(beNil())
+                expect((try? jwt?.verify(with: verificationKey.secKey)) ?? false).to(beTrue())
+                expect(jwt?.claimSet.subject).to(equal(ValidNotificationChallenge))
+                expect(jwt?.claimSet.issuer).to(equal(device.localIdentifier))
+                expect(jwt?.claimSet.audience).to(equal(audience))
+                expect(jwt?.claimSet.status).to(equal(accepted))
+                expect(jwt?.claimSet.method).to(equal("push"))
+                if let reason = reason {
+                    expect(jwt?.claimSet.reason).to(equal(reason))
+                } else {
+                    expect(jwt!.claimSet.reason).to(beNil())
+                }
+                let iat = jwt!.claimSet.issuedAt
+                let exp = jwt!.claimSet.expireAt
+                expect(exp.timeIntervalSince(iat)).to(beCloseTo(30, within: 1))
+                expect(iat.timeIntervalSince(now)).to(beCloseTo(0, within: 5))
+            }
+
+            it("should build accepted response from domain") {
+                let jwt = try! Guardian.constructChallengeResponse(forDomain: "tenant.region.auth0.com", device: device, challenge: ValidNotificationChallenge, accepted: true)
+                verify(jwt, accepted: true, reason: nil)
+            }
+
+            it("should build response from domain with scheme") {
+                let jwt = try! Guardian.constructChallengeResponse(forDomain: "https://tenant.region.auth0.com", device: device, challenge: ValidNotificationChallenge, accepted: true)
+                verify(jwt, accepted: true, reason: nil)
+            }
+
+            it("should build rejected response with reason from url without trailing slash") {
+                let jwt = try! Guardian.constructChallengeResponse(url: URL(string: "https://tenant.region.auth0.com")!, device: device, challenge: ValidNotificationChallenge, accepted: false, reason: "not me")
+                verify(jwt, accepted: false, reason: "not me")
+            }
+
+            it("should build response from url with trailing slash") {
+                let jwt = try! Guardian.constructChallengeResponse(url: URL(string: "https://tenant.region.auth0.com/")!, device: device, challenge: ValidNotificationChallenge, accepted: true)
+                verify(jwt, accepted: true, reason: nil)
+            }
+
+            it("should not make any http request") {
+                var requests = 0
+                MockURLProtocol.stub(
+                    name: "Count requests",
+                    condition: { _ in requests += 1; return true },
+                    response: { _ in errorResponse(statusCode: 500, errorCode: "x", message: "x") }
+                )
+                _ = try! Guardian.constructChallengeResponse(forDomain: "tenant.region.auth0.com", device: device, challenge: ValidNotificationChallenge, accepted: true)
+                expect(requests).to(equal(0))
+            }
+
+            it("should fail when the device identifier is unavailable") {
+                let noIdDevice = EnrolledDevice(id: "ID", userId: "USER_ID", deviceToken: "TOKEN", notificationToken: "TOKEN", signingKey: signingKey)
+                let provider = EnrolledDevice.vendorIdentifierProvider
+                EnrolledDevice.vendorIdentifierProvider = { nil }
+                defer { EnrolledDevice.vendorIdentifierProvider = provider }
+                expect { try Guardian.constructChallengeResponse(forDomain: "tenant.region.auth0.com", device: noIdDevice, challenge: ValidNotificationChallenge, accepted: true) }
+                    .to(throwError { (error: Error) in
+                        expect((error as? GuardianError)?.code).to(equal("a0.guardian.internal.unavailable.device_identifier"))
+                    })
+            }
+        }
+
         describe("enroll(forDomain:, withUri:, notificationToken:)") {
 
             let keys = Keys.shared
