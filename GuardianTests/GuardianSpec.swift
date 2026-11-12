@@ -109,9 +109,8 @@ class GuardianSpec: QuickSpec {
             let signingKey = try! DataRSAPrivateKey.new()
             let verificationKey = try! AsymmetricPublicKey(privateKey: signingKey.secKey)
             let device = EnrolledDevice(id: "ID", userId: "USER_ID", deviceToken: "TOKEN", notificationToken: "TOKEN", signingKey: signingKey)
-            let audience = "https://tenant.region.auth0.com/me/"
 
-            func verify(_ string: String, accepted: Bool, reason: String?) {
+            func verify(_ string: String, audience: String, accepted: Bool, reason: String?) {
                 let now = Date()
                 let jwt: JWT<GuardianClaimSet>? = try? JWT(string: string)
                 expect(jwt).toNot(beNil())
@@ -132,24 +131,14 @@ class GuardianSpec: QuickSpec {
                 expect(iat.timeIntervalSince(now)).to(beCloseTo(0, within: 5))
             }
 
-            it("should build accepted response from domain") {
-                let jwt = try! Guardian.constructChallengeResponse(forDomain: "tenant.region.auth0.com", device: device, challenge: ValidNotificationChallenge, accepted: true)
-                verify(jwt, accepted: true, reason: nil)
+            it("should use the url with a trailing slash verbatim as audience") {
+                let jwt = try! Guardian.constructChallengeResponse(url: URL(string: "https://tenant.region.auth0.com/me/")!, device: device, challenge: ValidNotificationChallenge, accepted: true)
+                verify(jwt, audience: "https://tenant.region.auth0.com/me/", accepted: true, reason: nil)
             }
 
-            it("should build response from domain with scheme") {
-                let jwt = try! Guardian.constructChallengeResponse(forDomain: "https://tenant.region.auth0.com", device: device, challenge: ValidNotificationChallenge, accepted: true)
-                verify(jwt, accepted: true, reason: nil)
-            }
-
-            it("should build rejected response with reason from url without trailing slash") {
-                let jwt = try! Guardian.constructChallengeResponse(url: URL(string: "https://tenant.region.auth0.com")!, device: device, challenge: ValidNotificationChallenge, accepted: false, reason: "not me")
-                verify(jwt, accepted: false, reason: "not me")
-            }
-
-            it("should build response from url with trailing slash") {
-                let jwt = try! Guardian.constructChallengeResponse(url: URL(string: "https://tenant.region.auth0.com/")!, device: device, challenge: ValidNotificationChallenge, accepted: true)
-                verify(jwt, accepted: true, reason: nil)
+            it("should use the url without a trailing slash verbatim as audience") {
+                let jwt = try! Guardian.constructChallengeResponse(url: URL(string: "https://tenant.region.auth0.com/me")!, device: device, challenge: ValidNotificationChallenge, accepted: false, reason: "not me")
+                verify(jwt, audience: "https://tenant.region.auth0.com/me", accepted: false, reason: "not me")
             }
 
             it("should not make any http request") {
@@ -159,7 +148,7 @@ class GuardianSpec: QuickSpec {
                     condition: { _ in requests += 1; return true },
                     response: { _ in errorResponse(statusCode: 500, errorCode: "x", message: "x") }
                 )
-                _ = try! Guardian.constructChallengeResponse(forDomain: "tenant.region.auth0.com", device: device, challenge: ValidNotificationChallenge, accepted: true)
+                _ = try! Guardian.constructChallengeResponse(url: URL(string: "https://tenant.region.auth0.com/me/")!, device: device, challenge: ValidNotificationChallenge, accepted: true)
                 expect(requests).to(equal(0))
             }
 
@@ -168,7 +157,7 @@ class GuardianSpec: QuickSpec {
                 let provider = EnrolledDevice.vendorIdentifierProvider
                 EnrolledDevice.vendorIdentifierProvider = { nil }
                 defer { EnrolledDevice.vendorIdentifierProvider = provider }
-                expect { try Guardian.constructChallengeResponse(forDomain: "tenant.region.auth0.com", device: noIdDevice, challenge: ValidNotificationChallenge, accepted: true) }
+                expect { try Guardian.constructChallengeResponse(url: URL(string: "https://tenant.region.auth0.com/me/")!, device: noIdDevice, challenge: ValidNotificationChallenge, accepted: true) }
                     .to(throwError { (error: Error) in
                         expect((error as? GuardianError)?.code).to(equal("a0.guardian.internal.unavailable.device_identifier"))
                     })
