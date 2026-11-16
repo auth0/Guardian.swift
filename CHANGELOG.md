@@ -1,5 +1,13 @@
 # Change Log
 
+## [1.11.0](https://github.com/auth0/Guardian.swift/tree/1.11.0) (2026-11-16)
+[Full Changelog](https://github.com/auth0/Guardian.swift/compare/1.10.0...1.11.0)
+
+**Changed**
+- Require iOS 15 or later (was iOS 12 for SPM and iOS 10 for CocoaPods) and Swift 5 for the podspec, so Carthage and CocoaPods installs build on Xcode 26 and later; apps that still support iOS 12 to 14 should stay on 1.10.0 (see [PR](https://github.com/auth0/Guardian.swift/pull/193))
+- Ship the privacy manifest with SPM and CocoaPods installs (see [PR](https://github.com/auth0/Guardian.swift/pull/190))
+- Fail with the error `a0.guardian.internal.unavailable.device_identifier` instead of crashing when `identifierForVendor` is unavailable, for example after a reboot before the device is first unlocked; this affects enroll, allow and reject (see [PR](https://github.com/auth0/Guardian.swift/pull/192))
+
 ## [1.10.0](https://github.com/auth0/Guardian.swift/tree/1.10.0) (2026-10-22)
 [Full Changelog](https://github.com/auth0/Guardian.swift/compare/1.9.2...1.10.0)
 
