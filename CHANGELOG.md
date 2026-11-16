@@ -4,15 +4,9 @@
 [Full Changelog](https://github.com/auth0/Guardian.swift/compare/1.10.0...1.11.0)
 
 **Changed**
-- Match the 1.10.0 changelog entry to the earlier release format (see [PR](https://github.com/auth0/Guardian.swift/pull/188))
-- Release pipeline fixes from the first live releases (NAPP-177 to NAPP-186) (see [PR](https://github.com/auth0/Guardian.swift/pull/189))
-- Bump the actions group across 1 directory with 3 updates (see [PR](https://github.com/auth0/Guardian.swift/pull/181))
-- Ship the privacy manifest with SPM and CocoaPods installs, and require iOS 12 for CocoaPods (see [PR](https://github.com/auth0/Guardian.swift/pull/190))
-- Fail with an error instead of crashing when identifierForVendor is unavailable (see [PR](https://github.com/auth0/Guardian.swift/pull/192))
-- Require iOS 15 or later (see [PR](https://github.com/auth0/Guardian.swift/pull/193))
-- chore(ci): Remove Semgrep GHA Workflow (see [PR](https://github.com/auth0/Guardian.swift/pull/150))
-- chore: move OpsLevel ownership to authn_-_native_apps (see [PR](https://github.com/auth0/Guardian.swift/pull/194))
-- chore(ci): move CI from Xcode 16.4 to Xcode 26.6 (see [PR](https://github.com/auth0/Guardian.swift/pull/195))
+- Require iOS 15 or later (was iOS 12 for SPM and iOS 10 for CocoaPods) and Swift 5 for the podspec, so Carthage and CocoaPods installs build on Xcode 26 and later; apps that still support iOS 12 to 14 should stay on 1.10.0 (see [PR](https://github.com/auth0/Guardian.swift/pull/193))
+- Ship the privacy manifest with SPM and CocoaPods installs (see [PR](https://github.com/auth0/Guardian.swift/pull/190))
+- Fail with the error `a0.guardian.internal.unavailable.device_identifier` instead of crashing when `identifierForVendor` is unavailable, for example after a reboot before the device is first unlocked; this affects enroll, allow and reject (see [PR](https://github.com/auth0/Guardian.swift/pull/192))
 
 ## [1.10.0](https://github.com/auth0/Guardian.swift/tree/1.10.0) (2026-10-22)
 [Full Changelog](https://github.com/auth0/Guardian.swift/compare/1.9.2...1.10.0)
