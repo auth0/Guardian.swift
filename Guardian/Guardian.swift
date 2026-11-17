@@ -105,6 +105,38 @@ public func authentication(url: URL, device: AuthenticationDevice, telemetryInfo
 }
 
 /**
+ Builds the signed challenge response (a JWT) for a push challenge,
+ without making any network request.
+
+ ```
+ let device: AuthenticationDevice = // the object you obtained when enrolling
+ let challenge: String = // the challenge of the pending request
+ let challengeResponse = try Guardian
+    .constructChallengeResponse(url: URL(string: "https://tenant.auth0.com/me/")!,
+                                device: device,
+                                challenge: challenge,
+                                accepted: true)
+ ```
+
+ - parameter url:           the URL to use as the challenge response's audience
+ - parameter device:        the enrolled device whose signing key signs the response
+ - parameter challenge:     the challenge string of the pending authentication request
+ - parameter accepted:      whether the challenge is accepted or rejected
+ - parameter reason:        optional reason, usually given when rejecting
+
+ - throws: a `GuardianError` with code `cannotSignTransactionChallenge` if signing fails, or `unavailableDeviceIdentifier` if the device has no identifier
+
+ - returns: the signed challenge response JWT
+ */
+public func constructChallengeResponse(url: URL, device: AuthenticationDevice, challenge: String, accepted: Bool, reason: String? = nil) throws -> String {
+    do {
+        return try signedChallengeResponse(audience: url.absoluteString, device: device, challenge: challenge, accepted: accepted, reason: reason)
+    } catch {
+        throw challengeResponseError(from: error)
+    }
+}
+
+/**
  Creates a request to enroll from a Guardian enrollment URI
  
  You'll have to create a verification and signing key, you could create a signing key like
